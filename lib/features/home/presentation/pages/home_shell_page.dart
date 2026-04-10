@@ -75,21 +75,7 @@ class HomeShellPage extends StatelessWidget {
                   ],
                 ),
           body: SafeArea(
-            child: Row(
-              children: [
-                if (isWide)
-                  _SideNav(
-                    selectedIndex: selectedIndex,
-                    onSelected: (index) => _navigate(
-                      context,
-                      kNavigationItems[index].route,
-                    ),
-                  ),
-                Expanded(
-                  child: child,
-                ),
-              ],
-            ),
+            child: child,
           ),
         );
       },
@@ -99,163 +85,6 @@ class HomeShellPage extends StatelessWidget {
   void _navigate(BuildContext context, String route) {
     if (currentRoute == route) return;
     Navigator.of(context).pushReplacementNamed(route);
-  }
-}
-
-class _SideNav extends StatelessWidget {
-  const _SideNav({
-    required this.selectedIndex,
-    required this.onSelected,
-  });
-
-  final int selectedIndex;
-  final ValueChanged<int> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Container(
-      width: 280,
-      decoration: const BoxDecoration(
-        color: SigadColors.surface,
-        border: Border(
-          right: BorderSide(color: SigadColors.divider),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 24),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24),
-            child: BrandTitle(),
-          ),
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Text(
-              'Controle rápido de demandas e prioridades',
-              style: textTheme.bodyMedium?.copyWith(
-                color: SigadColors.muted,
-                height: 1.4,
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-          Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: kNavigationItems.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 6),
-              itemBuilder: (context, index) {
-                final item = kNavigationItems[index];
-                final selected = index == selectedIndex;
-
-                return Material(
-                  color: selected
-                      ? SigadColors.brand.withValues(alpha: 0.10)
-                      : SigadColors.surfaceAlt,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    side: selected
-                        ? BorderSide(color: SigadColors.brand.withValues(alpha: 0.22))
-                        : BorderSide(color: Colors.transparent),
-                  ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(16),
-                    onTap: () => onSelected(index),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-                      child: Row(
-                        children: [
-                          Icon(
-                            item.icon,
-                            size: 22,
-                            color: selected ? SigadColors.brand : SigadColors.muted,
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  item.label,
-                                  style: textTheme.labelLarge?.copyWith(
-                                    color: selected ? SigadColors.brand : SigadColors.ink,
-                                    fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-                                  ),
-                                ),
-                                if (item.subtitle != null) ...[
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    item.subtitle!,
-                                    style: textTheme.bodySmall?.copyWith(
-                                      color: SigadColors.muted,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: SigadColors.surfaceAlt,
-                borderRadius: BorderRadius.circular(18),
-              ),
-              child: Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 20,
-                    backgroundColor: SigadColors.brand,
-                    child: Icon(Icons.person, color: Colors.white, size: 20),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Coord. Acadêmica',
-                          style: textTheme.labelLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Unidade Central',
-                          style: textTheme.bodySmall?.copyWith(
-                            color: SigadColors.muted,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-        ],
-      ),
-    );
   }
 }
 
@@ -285,7 +114,7 @@ class _AppDrawer extends StatelessWidget {
               child: ListView.separated(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 itemCount: kNavigationItems.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 6),
+                separatorBuilder: (context, i) => const SizedBox(height: 6),
                 itemBuilder: (context, index) {
                   final item = kNavigationItems[index];
                   final selected = index == selectedIndex;

@@ -242,14 +242,6 @@ class _HeroText extends StatelessWidget {
             height: 1.2,
           ),
         ),
-        const SizedBox(height: 10),
-        Text(
-          'Sistema Integrado de Gestão Acadêmica de Demandas',
-          style: textTheme.titleMedium?.copyWith(
-            color: SigadColors.muted,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
         const SizedBox(height: 16),
         Wrap(
           spacing: 10,
