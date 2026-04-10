@@ -150,6 +150,15 @@ class DashboardPage extends StatelessWidget {
     ),
   ];
 
+  static const _UrgentSummary _urgentSummary = _UrgentSummary(
+    title: 'Atenção imediata',
+    detail: '4 demandas com risco de atraso',
+    subtext: 'Priorize revisões, aprovações e realocações.',
+    icon: Icons.warning_amber_outlined,
+    tone: SigadColors.risk,
+    actionLabel: 'Ver urgentes',
+  );
+
   static const List<_WorkloadItem> _workload = [
     _WorkloadItem(
       name: 'Prof. Marcos Vieira',
@@ -274,7 +283,10 @@ class _HeroHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: _HeroText(textTheme: textTheme),
+                  child: _HeroText(
+                    textTheme: textTheme,
+                    summary: DashboardPage._urgentSummary,
+                  ),
                 ),
                 const SizedBox(width: 24),
                 Expanded(
@@ -285,7 +297,10 @@ class _HeroHeader extends StatelessWidget {
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _HeroText(textTheme: textTheme),
+                _HeroText(
+                  textTheme: textTheme,
+                  summary: DashboardPage._urgentSummary,
+                ),
                 const SizedBox(height: 16),
                 _HeroControls(textTheme: textTheme),
               ],
@@ -295,9 +310,10 @@ class _HeroHeader extends StatelessWidget {
 }
 
 class _HeroText extends StatelessWidget {
-  const _HeroText({required this.textTheme});
+  const _HeroText({required this.textTheme, required this.summary});
 
   final TextTheme textTheme;
+  final _UrgentSummary summary;
 
   @override
   Widget build(BuildContext context) {
@@ -321,15 +337,7 @@ class _HeroText extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 18),
-        Text(
-          'Organize demandas e atividades.',
-          style: textTheme.bodyLarge?.copyWith(
-            height: 1.6,
-            color: SigadColors.ink,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        const SizedBox(height: 18),
+        _UrgentAlert(summary: summary),        
       ],
     );
   }
@@ -897,6 +905,99 @@ class _SectionHeader extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+class _UrgentSummary {
+  const _UrgentSummary({
+    required this.title,
+    required this.detail,
+    required this.subtext,
+    required this.icon,
+    required this.tone,
+    required this.actionLabel,
+  });
+
+  final String title;
+  final String detail;
+  final String subtext;
+  final IconData icon;
+  final Color tone;
+  final String actionLabel;
+}
+
+class _UrgentAlert extends StatelessWidget {
+  const _UrgentAlert({required this.summary});
+
+  final _UrgentSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: summary.tone.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: summary.tone.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: summary.tone.withValues(alpha: 0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(summary.icon, color: summary.tone, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  summary.title,
+                  style: textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: SigadColors.ink,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  summary.detail,
+                  style: textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: summary.tone,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  summary.subtext,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: SigadColors.muted,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          FilledButton(
+            onPressed: () {},
+            style: FilledButton.styleFrom(
+              backgroundColor: summary.tone,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+            child: Text(summary.actionLabel),
+          ),
+        ],
+      ),
     );
   }
 }
