@@ -13,6 +13,7 @@ class DashboardPage extends StatelessWidget {
       detail: '+6 nesta semana',
       icon: Icons.inbox_outlined,
       tone: SigadColors.brand,
+      trend: Icons.trending_up,
     ),
     _Metric(
       label: 'Em andamento',
@@ -20,6 +21,7 @@ class DashboardPage extends StatelessWidget {
       detail: '4 com risco de atraso',
       icon: Icons.play_circle_outline,
       tone: SigadColors.info,
+      trend: Icons.trending_down,
     ),
     _Metric(
       label: 'Docentes ativos',
@@ -27,6 +29,7 @@ class DashboardPage extends StatelessWidget {
       detail: '94% com carga registrada',
       icon: Icons.school_outlined,
       tone: SigadColors.success,
+      trend: Icons.trending_up,
     ),
     _Metric(
       label: 'SLA médio',
@@ -34,6 +37,7 @@ class DashboardPage extends StatelessWidget {
       detail: 'Meta: 4 dias',
       icon: Icons.timer_outlined,
       tone: SigadColors.accent,
+      trend: Icons.trending_up,
     ),
   ];
 
@@ -187,28 +191,31 @@ class DashboardPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _HeroHeader(isWide: isWide),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
                   const _SectionHeader(
                     title: 'Resumo da semana',
+                    icon: Icons.bar_chart,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   _MetricsGrid(metrics: _metrics),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
                   const _SectionHeader(
                     title: 'Ações rápidas',
+                    icon: Icons.flash_on,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   _QuickActions(actions: _quickActions),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
                   const _SectionHeader(
                     title: 'Kanban das demandas',
+                    icon: Icons.view_kanban,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   _KanbanPreview(
                     columns: _kanbanColumns,
                     isWide: isWide,
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
                   if (isWide)
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,7 +223,7 @@ class DashboardPage extends StatelessWidget {
                         Expanded(
                           child: _ActivityFeed(items: _activities),
                         ),
-                        const SizedBox(width: 24),
+                        const SizedBox(width: 32),
                         Expanded(
                           child: _WorkloadPanel(items: _workload),
                         ),
@@ -226,7 +233,7 @@ class DashboardPage extends StatelessWidget {
                     Column(
                       children: [
                         _ActivityFeed(items: _activities),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 32),
                         _WorkloadPanel(items: _workload),
                       ],
                     ),
@@ -346,8 +353,15 @@ class _HeroControls extends StatelessWidget {
         const SizedBox(height: 8),
         const TextField(
           decoration: InputDecoration(
-            hintText: 'Buscar...',
+            hintText: 'Buscar demandas, docentes, laboratórios...',
             prefixIcon: Icon(Icons.search),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+              borderSide: BorderSide.none,
+            ),
+            filled: true,
+            fillColor: SigadColors.surfaceAlt,
+            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           ),
         ),
         const SizedBox(height: 16),
@@ -437,14 +451,27 @@ class _MetricCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  metric.detail,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: SigadColors.muted,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                Row(
+                  children: [
+                    if (metric.trend != null)
+                      Icon(
+                        metric.trend,
+                        size: 14,
+                        color: metric.tone,
+                      ),
+                    if (metric.trend != null) const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        metric.detail,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: SigadColors.muted,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -468,15 +495,55 @@ class _QuickActions extends StatelessWidget {
       children: actions
           .map(
             (action) => action.primary
-                ? FilledButton.icon(
-                    onPressed: () {},
-                    icon: Icon(action.icon),
-                    label: Text(action.label),
+                ? Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: SigadColors.brand.withValues(alpha: 0.2),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: FilledButton.icon(
+                      onPressed: () {},
+                      icon: Icon(action.icon),
+                      label: Text(action.label),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: SigadColors.brand,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
                   )
-                : OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(action.icon, color: SigadColors.brand),
-                    label: Text(action.label),
+                : Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 6,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: OutlinedButton.icon(
+                      onPressed: () {},
+                      icon: Icon(action.icon, color: SigadColors.brand),
+                      label: Text(action.label),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: SigadColors.divider),
+                        foregroundColor: SigadColors.brand,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
                   ),
           )
           .toList(),
@@ -556,7 +623,7 @@ class _KanbanColumnCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                column.title,
+                '${column.title} (${column.items.length})',
                 style: textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -640,7 +707,13 @@ class _ActivityFeed extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Atividades recentes', style: textTheme.titleMedium),
+          Row(
+            children: [
+              Icon(Icons.history, color: SigadColors.brand, size: 20),
+              const SizedBox(width: 8),
+              Text('Atividades recentes', style: textTheme.titleMedium),
+            ],
+          ),
           const SizedBox(height: 12),
           for (int i = 0; i < items.length; i++) ...[
             _ActivityTile(item: items[i]),
@@ -729,7 +802,13 @@ class _WorkloadPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Carga docente', style: textTheme.titleMedium),
+          Row(
+            children: [
+              Icon(Icons.people, color: SigadColors.brand, size: 20),
+              const SizedBox(width: 8),
+              Text('Carga docente', style: textTheme.titleMedium),
+            ],
+          ),
           const SizedBox(height: 12),
           for (int i = 0; i < items.length; i++) ...[
             _WorkloadTile(item: items[i]),
@@ -792,9 +871,10 @@ class _WorkloadTile extends StatelessWidget {
 }
 
 class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title});
+  const _SectionHeader({required this.title, this.icon});
 
   final String title;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -802,11 +882,19 @@ class _SectionHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          title,
-          style: textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+        Row(
+          children: [
+            if (icon != null) ...[
+              Icon(icon, color: SigadColors.brand, size: 20),
+              const SizedBox(width: 8),
+            ],
+            Text(
+              title,
+              style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -884,6 +972,7 @@ class _Metric {
     required this.detail,
     required this.icon,
     required this.tone,
+    this.trend,
   });
 
   final String label;
@@ -891,6 +980,7 @@ class _Metric {
   final String detail;
   final IconData icon;
   final Color tone;
+  final IconData? trend;
 }
 
 class _QuickAction {
