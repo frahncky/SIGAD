@@ -90,24 +90,7 @@ class _FeaturePlaceholderPageState extends State<FeaturePlaceholderPage>
                     height: 1.6,
                   ),
                 ),
-                const SizedBox(height: 32),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: SigadColors.brand.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: SigadColors.brand.withValues(alpha: 0.2),
-                    ),
-                  ),
-                  child: Text(
-                    'Em desenvolvimento',
-                    style: textTheme.labelMedium?.copyWith(
-                      color: SigadColors.brand,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
+                const SizedBox(height: 24),
               ],
             ),
           ),

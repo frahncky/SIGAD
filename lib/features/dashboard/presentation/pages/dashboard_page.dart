@@ -190,21 +190,18 @@ class DashboardPage extends StatelessWidget {
                   const SizedBox(height: 24),
                   const _SectionHeader(
                     title: 'Resumo da semana',
-                    actionLabel: 'Ver detalhes',
                   ),
                   const SizedBox(height: 12),
                   _MetricsGrid(metrics: _metrics),
                   const SizedBox(height: 24),
                   const _SectionHeader(
-                    title: 'Acoes rapidas',
-                    actionLabel: 'Personalizar',
+                    title: 'Ações rápidas',
                   ),
                   const SizedBox(height: 12),
                   _QuickActions(actions: _quickActions),
                   const SizedBox(height: 24),
                   const _SectionHeader(
                     title: 'Kanban das demandas',
-                    actionLabel: 'Abrir quadro',
                   ),
                   const SizedBox(height: 12),
                   _KanbanPreview(
@@ -318,7 +315,7 @@ class _HeroText extends StatelessWidget {
         ),
         const SizedBox(height: 18),
         Text(
-          'Organize demandas, carga docente e atividades acadêmicas em um fluxo único.',
+          'Organize demandas e atividades.',
           style: textTheme.bodyLarge?.copyWith(
             height: 1.6,
             color: SigadColors.ink,
@@ -326,15 +323,6 @@ class _HeroText extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 18),
-        Wrap(
-          spacing: 12,
-          runSpacing: 8,
-          children: const [
-            _InfoChip(label: 'Sprint 14'),
-            _InfoChip(label: 'Semestre 2026.1'),
-            _InfoChip(label: 'Múltiplos laboratórios'),
-          ],
-        ),
       ],
     );
   }
@@ -358,70 +346,12 @@ class _HeroControls extends StatelessWidget {
         const SizedBox(height: 8),
         const TextField(
           decoration: InputDecoration(
-            hintText: 'Demandas, docentes, laboratórios...',
+            hintText: 'Buscar...',
             prefixIcon: Icon(Icons.search),
           ),
         ),
         const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: SigadColors.surfaceAlt,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.track_changes_outlined, color: SigadColors.brand),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Meta institucional',
-                      style: textTheme.labelLarge,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Reduzir SLA médio para 3 dias até junho.',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: SigadColors.muted,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const StatusTag(
-                label: 'Em andamento',
-                tone: SigadColors.info,
-              ),
-            ],
-          ),
-        ),
       ],
-    );
-  }
-}
-
-class _InfoChip extends StatelessWidget {
-  const _InfoChip({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: SigadColors.surfaceAlt,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: SigadColors.ink,
-            ),
-      ),
     );
   }
 }
@@ -862,10 +792,9 @@ class _WorkloadTile extends StatelessWidget {
 }
 
 class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title, this.actionLabel});
+  const _SectionHeader({required this.title});
 
   final String title;
-  final String? actionLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -879,11 +808,6 @@ class _SectionHeader extends StatelessWidget {
             fontWeight: FontWeight.w700,
           ),
         ),
-        if (actionLabel != null)
-          TextButton(
-            onPressed: () {},
-            child: Text(actionLabel!),
-          ),
       ],
     );
   }

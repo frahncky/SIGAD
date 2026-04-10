@@ -35,15 +35,7 @@ class BrandTitle extends StatelessWidget {
                   letterSpacing: 1.2,
                 ),
               ),
-              if (!compact)
-                Text(
-                  'Gestão acadêmica',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: SigadColors.muted,
-                  ),
-                ),
+              if (!compact) const SizedBox.shrink(),
             ],
           ),
         ),

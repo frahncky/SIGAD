@@ -12,19 +12,18 @@ const List<NavigationItem> kNavigationItems = [
     route: AppRoutes.demandas,
     label: 'Demandas',
     icon: Icons.assignment_outlined,
-    subtitle: 'Organize e priorize as solicitacoes ativas.',
+
   ),
   NavigationItem(
     route: AppRoutes.kanban,
     label: 'Kanban',
     icon: Icons.view_kanban_outlined,
-    subtitle: 'Visualize o fluxo das demandas por etapa.',
   ),
   NavigationItem(
     route: AppRoutes.cargaDocente,
     label: 'Carga docente',
     icon: Icons.schedule_outlined,
-    subtitle: 'Acompanhe distribuicao e equilibrio de horas.',
+
   ),
   NavigationItem(
     route: AppRoutes.atividades,
@@ -36,12 +35,10 @@ const List<NavigationItem> kNavigationItems = [
     route: AppRoutes.relatorios,
     label: 'Relatórios',
     icon: Icons.insights_outlined,
-    subtitle: 'Indicadores para tomada de decisão.',
   ),
   NavigationItem(
     route: AppRoutes.configuracoes,
     label: 'Configurações',
     icon: Icons.settings_outlined,
-    subtitle: 'Defina perfis, prazos e parâmetros',
   ),
 ];
