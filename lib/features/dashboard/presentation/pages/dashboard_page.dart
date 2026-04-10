@@ -1,7 +1,6 @@
 ﻿
 import 'package:flutter/material.dart';
 import '../../../../app/theme/sigad_colors.dart';
-import '../../../../shared/widgets/status_tag.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -41,113 +40,17 @@ class DashboardPage extends StatelessWidget {
     ),
   ];
 
+  static const List<_HeroStat> _heroStats = [
+    _HeroStat(label: 'Urgentes', value: '4', tone: SigadColors.risk),
+    _HeroStat(label: 'Em andamento', value: '12', tone: SigadColors.info),
+    _HeroStat(label: 'SLA', value: '3,4d', tone: SigadColors.accent),
+  ];
+
   static const List<_QuickAction> _quickActions = [
     _QuickAction('Nova demanda', Icons.add_circle_outline, true),
     _QuickAction('Registrar carga', Icons.edit_calendar_outlined, false),
     _QuickAction('Revisar sprint', Icons.flag_outlined, false),
     _QuickAction('Gerar relatório', Icons.picture_as_pdf_outlined, false),
-  ];
-
-  static const List<_KanbanColumn> _kanbanColumns = [
-    _KanbanColumn(
-      title: 'Backlog',
-      tone: SigadColors.surfaceAlt,
-      items: [
-        _KanbanItem(
-          title: 'Revisar inventário de microscópios',
-          owner: 'Laboratório de Biologia',
-          meta: 'Prioridade alta',
-        ),
-        _KanbanItem(
-          title: 'Mapear demandas do semestre 2026.1',
-          owner: 'Coordenação',
-          meta: 'Entrega em 5 dias',
-        ),
-      ],
-    ),
-    _KanbanColumn(
-      title: 'Em andamento',
-      tone: SigadColors.mint,
-      items: [
-        _KanbanItem(
-          title: 'Padronizar formulários de requisição',
-          owner: 'Secretaria Acadêmica',
-          meta: 'Sprint 14',
-        ),
-        _KanbanItem(
-          title: 'Consolidar carga horária 2026.1',
-          owner: 'Núcleo Docente',
-          meta: '42% concluído',
-        ),
-      ],
-    ),
-    _KanbanColumn(
-      title: 'Revisao',
-      tone: SigadColors.accentSoft,
-      items: [
-        _KanbanItem(
-          title: 'Auditoria de processos de estágio',
-          owner: 'Comissão de Estágio',
-          meta: 'Aguardando validacao',
-        ),
-        _KanbanItem(
-          title: 'Relatório de uso dos laboratórios',
-          owner: 'Gestão',
-          meta: 'Revisar indicadores',
-        ),
-      ],
-    ),
-    _KanbanColumn(
-      title: 'Concluido',
-      tone: SigadColors.successSoft,
-      items: [
-        _KanbanItem(
-          title: 'Planejamento das semanas de monitoria',
-          owner: 'Coord. Pedagógica',
-          meta: 'Finalizado ontem',
-        ),
-        _KanbanItem(
-          title: 'Fluxo de compra de reagentes',
-          owner: 'Laboratório de Química',
-          meta: 'OK',
-        ),
-      ],
-    ),
-  ];
-
-  static const List<_ActivityItem> _activities = [
-    _ActivityItem(
-      title: 'Laboratório de Química',
-      detail: 'Atualizou demanda de reagentes',
-      time: 'Hoje, 14:20',
-      statusLabel: 'Em andamento',
-      statusTone: SigadColors.info,
-      icon: Icons.science_outlined,
-    ),
-    _ActivityItem(
-      title: 'Prof. Ana Lemos',
-      detail: 'Registrou carga horaria adicional',
-      time: 'Hoje, 11:05',
-      statusLabel: 'Validar',
-      statusTone: SigadColors.warning,
-      icon: Icons.edit_calendar_outlined,
-    ),
-    _ActivityItem(
-      title: 'Coord. Computação',
-      detail: 'Aprovou sprint 14',
-      time: 'Ontem, 17:40',
-      statusLabel: 'Concluido',
-      statusTone: SigadColors.success,
-      icon: Icons.check_circle_outline,
-    ),
-    _ActivityItem(
-      title: 'Secretaria Acadêmica',
-      detail: 'Solicitou ajustes de prazos',
-      time: 'Ontem, 09:10',
-      statusLabel: 'Risco',
-      statusTone: SigadColors.risk,
-      icon: Icons.warning_amber_outlined,
-    ),
   ];
 
   static const _UrgentSummary _urgentSummary = _UrgentSummary(
@@ -159,29 +62,46 @@ class DashboardPage extends StatelessWidget {
     actionLabel: 'Ver urgentes',
   );
 
-  static const List<_WorkloadItem> _workload = [
-    _WorkloadItem(
-      name: 'Prof. Marcos Vieira',
-      hours: '32h / semana',
-      meta: '2 demandas abertas',
-      statusLabel: 'Em dia',
-      statusTone: SigadColors.success,
-    ),
-    _WorkloadItem(
-      name: 'Profa. Livia Santos',
-      hours: '28h / semana',
-      meta: '1 demanda critica',
-      statusLabel: 'Alerta',
-      statusTone: SigadColors.warning,
-    ),
-    _WorkloadItem(
-      name: 'Prof. Diego Costa',
-      hours: '36h / semana',
-      meta: '3 demandas abertas',
-      statusLabel: 'Revisar',
-      statusTone: SigadColors.risk,
-    ),
-  ];
+  List<Widget> _buildAccessCards() {
+    return [
+      _AccessCard(
+        icon: Icons.view_kanban,
+        label: 'Kanban',
+        description: 'Gerenciar demandas',
+        route: '/kanban',
+      ),
+      _AccessCard(
+        icon: Icons.history,
+        label: 'Atividades',
+        description: 'Registro de entregas',
+        route: '/atividades',
+      ),
+      _AccessCard(
+        icon: Icons.schedule,
+        label: 'Carga docente',
+        description: 'Distribuição de carga',
+        route: '/carga-docente',
+      ),
+      _AccessCard(
+        icon: Icons.assignment,
+        label: 'Demandas',
+        description: 'Ver todas as demandas',
+        route: '/demandas',
+      ),
+      _AccessCard(
+        icon: Icons.insights,
+        label: 'Relatórios',
+        description: 'Gerar relatórios',
+        route: '/relatorios',
+      ),
+      _AccessCard(
+        icon: Icons.settings,
+        label: 'Configurações',
+        description: 'Ajustes do sistema',
+        route: '/configuracoes',
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -216,35 +136,29 @@ class DashboardPage extends StatelessWidget {
                   _QuickActions(actions: _quickActions),
                   const SizedBox(height: 32),
                   const _SectionHeader(
-                    title: 'Kanban das demandas',
-                    icon: Icons.view_kanban,
+                    title: 'Acessos principais',
+                    icon: Icons.apps,
                   ),
                   const SizedBox(height: 16),
-                  _KanbanPreview(
-                    columns: _kanbanColumns,
-                    isWide: isWide,
-                  ),
-                  const SizedBox(height: 32),
                   if (isWide)
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: _ActivityFeed(items: _activities),
-                        ),
-                        const SizedBox(width: 32),
-                        Expanded(
-                          child: _WorkloadPanel(items: _workload),
-                        ),
-                      ],
+                    GridView.count(
+                      crossAxisCount: 3,
+                      childAspectRatio: 1.2,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 16,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: _buildAccessCards(),
                     )
                   else
-                    Column(
-                      children: [
-                        _ActivityFeed(items: _activities),
-                        const SizedBox(height: 32),
-                        _WorkloadPanel(items: _workload),
-                      ],
+                    GridView.count(
+                      crossAxisCount: 2,
+                      childAspectRatio: 1.0,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: _buildAccessCards(),
                     ),
                 ],
               ),
@@ -336,8 +250,45 @@ class _HeroText extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
         ),
+        const SizedBox(height: 16),
+        Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: DashboardPage._heroStats
+              .map(
+                (stat) => Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: stat.tone.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: stat.tone.withValues(alpha: 0.22)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        stat.value,
+                        style: textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: stat.tone,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        stat.label,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: SigadColors.muted,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+              .toList(),
+        ),
         const SizedBox(height: 18),
-        _UrgentAlert(summary: summary),        
+        _UrgentAlert(summary: summary),
       ],
     );
   }
@@ -559,325 +510,6 @@ class _QuickActions extends StatelessWidget {
   }
 }
 
-class _KanbanPreview extends StatelessWidget {
-  const _KanbanPreview({required this.columns, required this.isWide});
-
-  final List<_KanbanColumn> columns;
-  final bool isWide;
-
-  @override
-  Widget build(BuildContext context) {
-    if (isWide) {
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (final column in columns) ...[
-            Expanded(child: _KanbanColumnCard(column: column)),
-            if (column != columns.last) const SizedBox(width: 16),
-          ],
-        ],
-      );
-    }
-
-    return SizedBox(
-      height: 360,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: columns.length,
-        separatorBuilder: (_, index) => const SizedBox(width: 16),
-        itemBuilder: (context, index) => SizedBox(
-          width: 260,
-          child: _KanbanColumnCard(column: columns[index]),
-        ),
-      ),
-    );
-  }
-}
-
-class _KanbanColumnCard extends StatelessWidget {
-  const _KanbanColumnCard({required this.column});
-
-  final _KanbanColumn column;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: SigadColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: SigadColors.divider),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 10,
-                height: 10,
-                decoration: BoxDecoration(
-                  color: column.tone,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                '${column.title} (${column.items.length})',
-                style: textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          for (final item in column.items) ...[
-            _DemandCard(item: item),
-            if (item != column.items.last) const SizedBox(height: 12),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _DemandCard extends StatelessWidget {
-  const _DemandCard({required this.item});
-
-  final _KanbanItem item;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: SigadColors.surfaceAlt,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 6,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            item.title,
-            style: textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 6),
-          Text(
-            item.owner,
-            style: textTheme.bodySmall?.copyWith(
-              color: SigadColors.muted,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 8),
-          StatusTag(label: item.meta, tone: SigadColors.brand),
-        ],
-      ),
-    );
-  }
-}
-class _ActivityFeed extends StatelessWidget {
-  const _ActivityFeed({required this.items});
-
-  final List<_ActivityItem> items;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: SigadColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: SigadColors.divider),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.history, color: SigadColors.brand, size: 20),
-              const SizedBox(width: 8),
-              Text('Atividades recentes', style: textTheme.titleMedium),
-            ],
-          ),
-          const SizedBox(height: 12),
-          for (int i = 0; i < items.length; i++) ...[
-            _ActivityTile(item: items[i]),
-            if (i != items.length - 1) const Divider(height: 24),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _ActivityTile extends StatelessWidget {
-  const _ActivityTile({required this.item});
-
-  final _ActivityItem item;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: item.statusTone.withValues(alpha: 0.12),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(item.icon, color: item.statusTone),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                item.title,
-                style: textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                item.detail,
-                style: textTheme.bodySmall?.copyWith(
-                  color: SigadColors.muted,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Text(
-                    item.time,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: SigadColors.muted,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  StatusTag(label: item.statusLabel, tone: item.statusTone),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _WorkloadPanel extends StatelessWidget {
-  const _WorkloadPanel({required this.items});
-
-  final List<_WorkloadItem> items;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: SigadColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: SigadColors.divider),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.people, color: SigadColors.brand, size: 20),
-              const SizedBox(width: 8),
-              Text('Carga docente', style: textTheme.titleMedium),
-            ],
-          ),
-          const SizedBox(height: 12),
-          for (int i = 0; i < items.length; i++) ...[
-            _WorkloadTile(item: items[i]),
-            if (i != items.length - 1) const Divider(height: 24),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _WorkloadTile extends StatelessWidget {
-  const _WorkloadTile({required this.item});
-
-  final _WorkloadItem item;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const CircleAvatar(
-          radius: 18,
-          backgroundColor: SigadColors.surfaceAlt,
-          child: Icon(Icons.person_outline, color: SigadColors.brand),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                item.name,
-                style: textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                item.hours,
-                style: textTheme.bodySmall?.copyWith(
-                  color: SigadColors.muted,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                item.meta,
-                style: textTheme.bodySmall?.copyWith(
-                  color: SigadColors.muted,
-                ),
-              ),
-            ],
-          ),
-        ),
-        StatusTag(label: item.statusLabel, tone: item.statusTone),
-      ],
-    );
-  }
-}
-
 class _SectionHeader extends StatelessWidget {
   const _SectionHeader({required this.title, this.icon});
 
@@ -927,6 +559,18 @@ class _UrgentSummary {
   final String actionLabel;
 }
 
+class _HeroStat {
+  const _HeroStat({
+    required this.label,
+    required this.value,
+    required this.tone,
+  });
+
+  final String label;
+  final String value;
+  final Color tone;
+}
+
 class _UrgentAlert extends StatelessWidget {
   const _UrgentAlert({required this.summary});
 
@@ -938,9 +582,16 @@ class _UrgentAlert extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: summary.tone.withValues(alpha: 0.14),
+        color: summary.tone.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: summary.tone.withValues(alpha: 0.3)),
+        border: Border.all(color: summary.tone.withValues(alpha: 0.4)),
+        boxShadow: [
+          BoxShadow(
+            color: summary.tone.withValues(alpha: 0.12),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -949,8 +600,15 @@ class _UrgentAlert extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: summary.tone.withValues(alpha: 0.2),
+              color: summary.tone.withValues(alpha: 0.25),
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: summary.tone.withValues(alpha: 0.16),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
             child: Icon(summary.icon, color: summary.tone, size: 24),
           ),
@@ -962,7 +620,7 @@ class _UrgentAlert extends StatelessWidget {
                 Text(
                   summary.title,
                   style: textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w800,
                     color: SigadColors.ink,
                   ),
                 ),
@@ -970,7 +628,7 @@ class _UrgentAlert extends StatelessWidget {
                 Text(
                   summary.detail,
                   style: textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                     color: summary.tone,
                   ),
                 ),
@@ -984,8 +642,10 @@ class _UrgentAlert extends StatelessWidget {
               ],
             ),
           ),
-          FilledButton(
+          FilledButton.icon(
             onPressed: () {},
+            icon: const Icon(Icons.arrow_forward, size: 18),
+            label: Text(summary.actionLabel),
             style: FilledButton.styleFrom(
               backgroundColor: summary.tone,
               foregroundColor: Colors.white,
@@ -994,7 +654,6 @@ class _UrgentAlert extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14),
               ),
             ),
-            child: Text(summary.actionLabel),
           ),
         ],
       ),
@@ -1092,60 +751,88 @@ class _QuickAction {
   final bool primary;
 }
 
-class _KanbanColumn {
-  const _KanbanColumn({
-    required this.title,
-    required this.tone,
-    required this.items,
-  });
-
-  final String title;
-  final Color tone;
-  final List<_KanbanItem> items;
-}
-
-class _KanbanItem {
-  const _KanbanItem({
-    required this.title,
-    required this.owner,
-    required this.meta,
-  });
-
-  final String title;
-  final String owner;
-  final String meta;
-}
-
-class _ActivityItem {
-  const _ActivityItem({
-    required this.title,
-    required this.detail,
-    required this.time,
-    required this.statusLabel,
-    required this.statusTone,
+class _AccessCard extends StatelessWidget {
+  const _AccessCard({
     required this.icon,
+    required this.label,
+    required this.description,
+    required this.route,
   });
 
-  final String title;
-  final String detail;
-  final String time;
-  final String statusLabel;
-  final Color statusTone;
   final IconData icon;
-}
+  final String label;
+  final String description;
+  final String route;
 
-class _WorkloadItem {
-  const _WorkloadItem({
-    required this.name,
-    required this.hours,
-    required this.meta,
-    required this.statusLabel,
-    required this.statusTone,
-  });
-
-  final String name;
-  final String hours;
-  final String meta;
-  final String statusLabel;
-  final Color statusTone;
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed(route);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: SigadColors.surface,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: SigadColors.divider),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(18),
+            onTap: () {
+              Navigator.of(context).pushNamed(route);
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: SigadColors.brand.withValues(alpha: 0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      icon,
+                      color: SigadColors.brand,
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    label,
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    description,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: SigadColors.muted,
+                        ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

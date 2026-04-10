@@ -116,7 +116,7 @@ class _SideNav extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Container(
-      width: 240,
+      width: 280,
       decoration: const BoxDecoration(
         color: SigadColors.surface,
         border: Border(
@@ -124,79 +124,135 @@ class _SideNav extends StatelessWidget {
         ),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 20),
-          const BrandTitle(),
+          const SizedBox(height: 24),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            child: BrandTitle(),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Text(
+              'Controle rápido de demandas e prioridades',
+              style: textTheme.bodyMedium?.copyWith(
+                color: SigadColors.muted,
+                height: 1.4,
+              ),
+            ),
+          ),
           const SizedBox(height: 24),
           Expanded(
-            child: NavigationRailTheme(
-              data: NavigationRailThemeData(
-                backgroundColor: SigadColors.surface,
-                indicatorColor: SigadColors.accentSoft,
-                selectedIconTheme: const IconThemeData(
-                  color: SigadColors.brand,
-                ),
-                unselectedIconTheme: const IconThemeData(
-                  color: SigadColors.muted,
-                ),
-                selectedLabelTextStyle: textTheme.labelLarge?.copyWith(
-                  color: SigadColors.brand,
-                ),
-                unselectedLabelTextStyle: textTheme.labelLarge?.copyWith(
-                  color: SigadColors.muted,
-                ),
-              ),
-              child: NavigationRail(
-                selectedIndex: selectedIndex >= 0 ? selectedIndex : 0,
-                onDestinationSelected: onSelected,
-                labelType: NavigationRailLabelType.all,
-                destinations: [
-                  for (final item in kNavigationItems)
-                    NavigationRailDestination(
-                      icon: Icon(item.icon),
-                      label: Text(item.label),
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: kNavigationItems.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 6),
+              itemBuilder: (context, index) {
+                final item = kNavigationItems[index];
+                final selected = index == selectedIndex;
+
+                return Material(
+                  color: selected
+                      ? SigadColors.brand.withValues(alpha: 0.10)
+                      : SigadColors.surfaceAlt,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: selected
+                        ? BorderSide(color: SigadColors.brand.withValues(alpha: 0.22))
+                        : BorderSide(color: Colors.transparent),
+                  ),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () => onSelected(index),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                      child: Row(
+                        children: [
+                          Icon(
+                            item.icon,
+                            size: 22,
+                            color: selected ? SigadColors.brand : SigadColors.muted,
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.label,
+                                  style: textTheme.labelLarge?.copyWith(
+                                    color: selected ? SigadColors.brand : SigadColors.ink,
+                                    fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                                  ),
+                                ),
+                                if (item.subtitle != null) ...[
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    item.subtitle!,
+                                    style: textTheme.bodySmall?.copyWith(
+                                      color: SigadColors.muted,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: SigadColors.surfaceAlt,
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: Row(
+                children: [
+                  const CircleAvatar(
+                    radius: 20,
+                    backgroundColor: SigadColors.brand,
+                    child: Icon(Icons.person, color: Colors.white, size: 20),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Coord. Acadêmica',
+                          style: textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Unidade Central',
+                          style: textTheme.bodySmall?.copyWith(
+                            color: SigadColors.muted,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
-          Container(
-            margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: SigadColors.surfaceAlt,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              children: [
-                const CircleAvatar(
-                  radius: 18,
-                  backgroundColor: SigadColors.brand,
-                  child: Icon(Icons.person, color: Colors.white, size: 18),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Coord. Acadêmica',
-                        style: textTheme.labelLarge,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        'Unidade Central',
-                        style: textTheme.bodySmall?.copyWith(
-                          color: SigadColors.muted,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+          const SizedBox(height: 16),
         ],
       ),
     );
@@ -226,38 +282,65 @@ class _AppDrawer extends StatelessWidget {
             const Divider(height: 2, color: SigadColors.divider),
             const SizedBox(height: 8),
             Expanded(
-              child: ListView.builder(
+              child: ListView.separated(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 itemCount: kNavigationItems.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 6),
                 itemBuilder: (context, index) {
                   final item = kNavigationItems[index];
                   final selected = index == selectedIndex;
 
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: ListTile(
-                      leading: Icon(
-                        item.icon,
-                        color: selected ? SigadColors.brand : SigadColors.muted,
-                        size: 24,
-                      ),
-                      title: Text(
-                        item.label,
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          color: selected ? SigadColors.brand : SigadColors.ink,
-                          fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-                        ),
-                      ),
-                      selected: selected,
-                      selectedColor: SigadColors.brand,
-                      selectedTileColor: SigadColors.brand.withValues(alpha: 0.1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                  return Material(
+                    color: selected
+                        ? SigadColors.brand.withValues(alpha: 0.10)
+                        : SigadColors.surfaceAlt,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(14),
                       onTap: () {
                         Navigator.pop(context);
                         onSelected(index);
                       },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                        child: Row(
+                          children: [
+                            Icon(
+                              item.icon,
+                              color: selected ? SigadColors.brand : SigadColors.muted,
+                              size: 24,
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.label,
+                                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                          color: selected ? SigadColors.brand : SigadColors.ink,
+                                          fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                                        ),
+                                  ),
+                                  if (item.subtitle != null) ...[
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      item.subtitle!,
+                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                            color: SigadColors.muted,
+                                          ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   );
                 },
