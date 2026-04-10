@@ -34,14 +34,14 @@ const List<NavigationItem> kNavigationItems = [
   ),
   NavigationItem(
     route: AppRoutes.relatorios,
-    label: 'Relatorios',
+    label: 'Relatórios',
     icon: Icons.insights_outlined,
-    subtitle: 'Indicadores para tomada de decisao.',
+    subtitle: 'Indicadores para tomada de decisão.',
   ),
   NavigationItem(
     route: AppRoutes.configuracoes,
-    label: 'Configuracoes',
+    label: 'Configurações',
     icon: Icons.settings_outlined,
-    subtitle: 'Defina perfis, prazos e parametros.',
+    subtitle: 'Defina perfis, prazos e parâmetros',
   ),
 ];

@@ -8,7 +8,7 @@ class ConfiguracoesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const FeaturePlaceholderPage(
       title: 'Configuracoes',
-      subtitle: 'Defina perfis, prazos e parametros.',
+      subtitle: 'Personalize configurações e parâmetros',
     );
   }
 }

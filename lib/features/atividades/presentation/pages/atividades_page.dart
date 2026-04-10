@@ -8,7 +8,7 @@ class AtividadesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const FeaturePlaceholderPage(
       title: 'Atividades',
-      subtitle: 'Registro estruturado de entregas e eventos.',
+      subtitle: 'Registre entregas e marcos importantes',
     );
   }
 }

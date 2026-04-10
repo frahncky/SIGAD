@@ -8,7 +8,7 @@ class RelatoriosPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const FeaturePlaceholderPage(
       title: 'Relatorios',
-      subtitle: 'Indicadores para tomada de decisao.',
+      subtitle: 'Indicadores para tomada de decisão',
     );
   }
 }

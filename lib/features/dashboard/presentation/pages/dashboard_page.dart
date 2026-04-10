@@ -29,7 +29,7 @@ class DashboardPage extends StatelessWidget {
       tone: SigadColors.success,
     ),
     _Metric(
-      label: 'SLA medio',
+      label: 'SLA médio',
       value: '3,4 dias',
       detail: 'Meta: 4 dias',
       icon: Icons.timer_outlined,
@@ -41,7 +41,7 @@ class DashboardPage extends StatelessWidget {
     _QuickAction('Nova demanda', Icons.add_circle_outline, true),
     _QuickAction('Registrar carga', Icons.edit_calendar_outlined, false),
     _QuickAction('Revisar sprint', Icons.flag_outlined, false),
-    _QuickAction('Gerar relatorio', Icons.picture_as_pdf_outlined, false),
+    _QuickAction('Gerar relatório', Icons.picture_as_pdf_outlined, false),
   ];
 
   static const List<_KanbanColumn> _kanbanColumns = [
@@ -50,13 +50,13 @@ class DashboardPage extends StatelessWidget {
       tone: SigadColors.surfaceAlt,
       items: [
         _KanbanItem(
-          title: 'Revisar inventario de microscopios',
-          owner: 'Laboratorio de Biologia',
+          title: 'Revisar inventário de microscópios',
+          owner: 'Laboratório de Biologia',
           meta: 'Prioridade alta',
         ),
         _KanbanItem(
           title: 'Mapear demandas do semestre 2026.1',
-          owner: 'Coordenacao',
+          owner: 'Coordenação',
           meta: 'Entrega em 5 dias',
         ),
       ],
@@ -66,14 +66,14 @@ class DashboardPage extends StatelessWidget {
       tone: SigadColors.mint,
       items: [
         _KanbanItem(
-          title: 'Padronizar formularios de requisicao',
-          owner: 'Secretaria Academica',
+          title: 'Padronizar formulários de requisição',
+          owner: 'Secretaria Acadêmica',
           meta: 'Sprint 14',
         ),
         _KanbanItem(
-          title: 'Consolidar carga horaria 2026.1',
-          owner: 'Nucleo Docente',
-          meta: '42% concluido',
+          title: 'Consolidar carga horária 2026.1',
+          owner: 'Núcleo Docente',
+          meta: '42% concluído',
         ),
       ],
     ),
@@ -82,13 +82,13 @@ class DashboardPage extends StatelessWidget {
       tone: SigadColors.accentSoft,
       items: [
         _KanbanItem(
-          title: 'Auditoria de processos de estagio',
-          owner: 'Comissao de estagio',
+          title: 'Auditoria de processos de estágio',
+          owner: 'Comissão de Estágio',
           meta: 'Aguardando validacao',
         ),
         _KanbanItem(
-          title: 'Relatorio de uso dos laboratorios',
-          owner: 'Gestao',
+          title: 'Relatório de uso dos laboratórios',
+          owner: 'Gestão',
           meta: 'Revisar indicadores',
         ),
       ],
@@ -99,12 +99,12 @@ class DashboardPage extends StatelessWidget {
       items: [
         _KanbanItem(
           title: 'Planejamento das semanas de monitoria',
-          owner: 'Coord. Pedagogica',
+          owner: 'Coord. Pedagógica',
           meta: 'Finalizado ontem',
         ),
         _KanbanItem(
           title: 'Fluxo de compra de reagentes',
-          owner: 'Laboratorio de Quimica',
+          owner: 'Laboratório de Química',
           meta: 'OK',
         ),
       ],
@@ -113,7 +113,7 @@ class DashboardPage extends StatelessWidget {
 
   static const List<_ActivityItem> _activities = [
     _ActivityItem(
-      title: 'Laboratorio de Quimica',
+      title: 'Laboratório de Química',
       detail: 'Atualizou demanda de reagentes',
       time: 'Hoje, 14:20',
       statusLabel: 'Em andamento',
@@ -129,7 +129,7 @@ class DashboardPage extends StatelessWidget {
       icon: Icons.edit_calendar_outlined,
     ),
     _ActivityItem(
-      title: 'Coord. Computacao',
+      title: 'Coord. Computação',
       detail: 'Aprovou sprint 14',
       time: 'Ontem, 17:40',
       statusLabel: 'Concluido',
@@ -137,7 +137,7 @@ class DashboardPage extends StatelessWidget {
       icon: Icons.check_circle_outline,
     ),
     _ActivityItem(
-      title: 'Secretaria Academica',
+      title: 'Secretaria Acadêmica',
       detail: 'Solicitou ajustes de prazos',
       time: 'Ontem, 09:10',
       statusLabel: 'Risco',
@@ -257,6 +257,13 @@ class _HeroHeader extends StatelessWidget {
         color: SigadColors.surface,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: SigadColors.divider),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: isWide
           ? Row(
@@ -296,29 +303,36 @@ class _HeroText extends StatelessWidget {
         Text(
           'Painel SIGAD',
           style: textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.3,
+            height: 1.2,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
         Text(
-          'Sistema Integrado de Gestao Academica de Demandas',
+          'Sistema Integrado de Gestão Acadêmica de Demandas',
           style: textTheme.titleMedium?.copyWith(
             color: SigadColors.muted,
+            fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 18),
         Text(
-          'Planeje, distribua e acompanhe demandas, carga docente e atividades\nacademicas em um unico fluxo de trabalho.',
-          style: textTheme.bodyLarge,
+          'Organize demandas, carga docente e atividades acadêmicas em um fluxo único.',
+          style: textTheme.bodyLarge?.copyWith(
+            height: 1.6,
+            color: SigadColors.ink,
+            fontWeight: FontWeight.w400,
+          ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 18),
         Wrap(
           spacing: 12,
           runSpacing: 8,
           children: const [
             _InfoChip(label: 'Sprint 14'),
             _InfoChip(label: 'Semestre 2026.1'),
-            _InfoChip(label: '17 laboratorios ativos'),
+            _InfoChip(label: 'Múltiplos laboratórios'),
           ],
         ),
       ],
@@ -336,7 +350,7 @@ class _HeroControls extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Busca rapida',
+          'Busca rápida',
           style: textTheme.labelLarge?.copyWith(
             fontWeight: FontWeight.w600,
           ),
@@ -344,7 +358,7 @@ class _HeroControls extends StatelessWidget {
         const SizedBox(height: 8),
         const TextField(
           decoration: InputDecoration(
-            hintText: 'Demandas, docentes, laboratorios...',
+            hintText: 'Demandas, docentes, laboratórios...',
             prefixIcon: Icon(Icons.search),
           ),
         ),
@@ -369,7 +383,7 @@ class _HeroControls extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Reduzir SLA medio para 3 dias ate junho.',
+                      'Reduzir SLA médio para 3 dias até junho.',
                       style: textTheme.bodySmall?.copyWith(
                         color: SigadColors.muted,
                       ),
@@ -448,6 +462,13 @@ class _MetricCard extends StatelessWidget {
         color: SigadColors.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: SigadColors.divider),
+        boxShadow: [
+          BoxShadow(
+            color: metric.tone.withValues(alpha: 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -468,25 +489,29 @@ class _MetricCard extends StatelessWidget {
               children: [
                 Text(
                   metric.label,
-                  style: textTheme.labelLarge?.copyWith(
+                  style: textTheme.labelMedium?.copyWith(
                     color: SigadColors.muted,
+                    fontWeight: FontWeight.w500,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
                 Text(
                   metric.value,
                   style: textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w700,
+                    letterSpacing: -0.5,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
+                const SizedBox(height: 4),
                 Text(
                   metric.detail,
                   style: textTheme.bodySmall?.copyWith(
                     color: SigadColors.muted,
+                    fontWeight: FontWeight.w500,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -578,6 +603,13 @@ class _KanbanColumnCard extends StatelessWidget {
         color: SigadColors.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: SigadColors.divider),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -625,6 +657,13 @@ class _DemandCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: SigadColors.surfaceAlt,
         borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 6,
+            offset: const Offset(0, 1),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

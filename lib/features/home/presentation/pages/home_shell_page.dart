@@ -36,35 +36,60 @@ class HomeShellPage extends StatelessWidget {
               ? null
               : AppBar(
                   title: const BrandTitle(compact: true),
+                  elevation: 2,
+                  shadowColor: Colors.black12,
                   actions: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.notifications_outlined),
-                      tooltip: 'Notificacoes',
+                    Tooltip(
+                      message: 'Notificações',
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Ink(
+                          child: InkWell(
+                            onTap: () {},
+                            borderRadius: BorderRadius.circular(24),
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Icon(Icons.notifications_outlined, size: 24),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.account_circle_outlined),
-                      tooltip: 'Perfil',
+                    Tooltip(
+                      message: 'Perfil',
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Ink(
+                          child: InkWell(
+                            onTap: () {},
+                            borderRadius: BorderRadius.circular(24),
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Icon(Icons.account_circle_outlined, size: 24),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
+                    const SizedBox(width: 8),
                   ],
                 ),
-          body: Row(
-            children: [
-              if (isWide)
-                _SideNav(
-                  selectedIndex: selectedIndex,
-                  onSelected: (index) => _navigate(
-                    context,
-                    kNavigationItems[index].route,
+          body: SafeArea(
+            child: Row(
+              children: [
+                if (isWide)
+                  _SideNav(
+                    selectedIndex: selectedIndex,
+                    onSelected: (index) => _navigate(
+                      context,
+                      kNavigationItems[index].route,
+                    ),
                   ),
-                ),
-              Expanded(
-                child: SafeArea(
+                Expanded(
                   child: child,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
@@ -155,7 +180,7 @@ class _SideNav extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Coord. Academica',
+                        'Coord. Acadêmica',
                         style: textTheme.labelLarge,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -190,39 +215,65 @@ class _AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      elevation: 8,
       child: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 12),
-            const BrandTitle(compact: true),
-            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: const BrandTitle(compact: true),
+            ),
+            const Divider(height: 2, color: SigadColors.divider),
+            const SizedBox(height: 8),
             Expanded(
               child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 itemCount: kNavigationItems.length,
                 itemBuilder: (context, index) {
                   final item = kNavigationItems[index];
                   final selected = index == selectedIndex;
 
-                  return ListTile(
-                    leading: Icon(
-                      item.icon,
-                      color: selected ? SigadColors.brand : SigadColors.muted,
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: ListTile(
+                      leading: Icon(
+                        item.icon,
+                        color: selected ? SigadColors.brand : SigadColors.muted,
+                        size: 24,
+                      ),
+                      title: Text(
+                        item.label,
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: selected ? SigadColors.brand : SigadColors.ink,
+                          fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                        ),
+                      ),
+                      selected: selected,
+                      selectedColor: SigadColors.brand,
+                      selectedTileColor: SigadColors.brand.withValues(alpha: 0.1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        onSelected(index);
+                      },
                     ),
-                    title: Text(item.label),
-                    selected: selected,
-                    selectedColor: SigadColors.brand,
-                    onTap: () {
-                      Navigator.pop(context);
-                      onSelected(index);
-                    },
                   );
                 },
               ),
             ),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Sair'),
-              onTap: () {},
+            const Divider(height: 2, color: SigadColors.divider),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              child: ListTile(
+                leading: const Icon(Icons.logout, color: SigadColors.risk),
+                title: const Text('Sair (Logout)'),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                onTap: () {},
+              ),
             ),
           ],
         ),

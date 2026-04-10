@@ -21,15 +21,17 @@ abstract final class AppTheme {
         bodyColor: SigadColors.ink,
         displayColor: SigadColors.ink,
       ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBarTheme: AppBarTheme(
+        backgroundColor: SigadColors.surface,
+        elevation: 2,
         centerTitle: false,
-        surfaceTintColor: Colors.transparent,
+        surfaceTintColor: SigadColors.surface,
+        shadowColor: Colors.black12,
       ),
       cardTheme: CardThemeData(
         color: SigadColors.surface,
-        elevation: 0,
+        elevation: 2,
+        shadowColor: Colors.black.withValues(alpha: 0.08),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -53,10 +55,13 @@ abstract final class AppTheme {
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+          elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
-          textStyle: textTheme.labelLarge,
+          textStyle: textTheme.labelLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -65,7 +70,15 @@ abstract final class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
-          side: const BorderSide(color: SigadColors.divider),
+          side: const BorderSide(color: SigadColors.divider, width: 1.5),
+          textStyle: textTheme.labelLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          highlightColor: SigadColors.brand.withValues(alpha: 0.1),
         ),
       ),
     );

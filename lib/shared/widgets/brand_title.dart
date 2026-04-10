@@ -37,7 +37,7 @@ class BrandTitle extends StatelessWidget {
               ),
               if (!compact)
                 Text(
-                  'Gestao academica',
+                  'Gestão acadêmica',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: textTheme.bodySmall?.copyWith(

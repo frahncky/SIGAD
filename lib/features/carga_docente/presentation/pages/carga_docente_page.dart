@@ -8,7 +8,7 @@ class CargaDocentePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const FeaturePlaceholderPage(
       title: 'Carga docente',
-      subtitle: 'Acompanhe distribuicao e equilibrio de horas.',
+      subtitle: 'Acompanhe distribuição e equilíbrio de carga horária',
     );
   }
 }
