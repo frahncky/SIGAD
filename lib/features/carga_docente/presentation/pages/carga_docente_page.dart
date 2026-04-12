@@ -124,7 +124,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: disponibilidadeSelecionada,
+                initialValue: disponibilidadeSelecionada,
                 decoration: const InputDecoration(labelText: 'Disponibilidade'),
                 items: ['Disponível', 'Parcialmente', 'Indisponível']
                     .map((d) => DropdownMenuItem(value: d, child: Text(d)))
@@ -524,7 +524,7 @@ class _DocenteCard extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: disponibilidadeSelecionada,
+                initialValue: disponibilidadeSelecionada,
                 decoration: const InputDecoration(labelText: 'Disponibilidade'),
                 items: ['Disponível', 'Parcialmente', 'Indisponível']
                     .map((d) => DropdownMenuItem(value: d, child: Text(d)))

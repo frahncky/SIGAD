@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sigad/app/app.dart';
 
 void main() {
-  testWidgets('SIGAD app renders home shell', (tester) async {
+  testWidgets('SIGAD app renders login page', (tester) async {
     tester.view.devicePixelRatio = 1.0;
     tester.view.physicalSize = const Size(1920, 1080);
     addTearDown(() {
@@ -14,7 +14,7 @@ void main() {
     await tester.pumpWidget(const SigadApp());
     await tester.pumpAndSettle();
 
-    expect(find.text('SIGAD'), findsWidgets);
-    expect(find.text('Painel SIGAD'), findsOneWidget);
+    expect(find.text('Entrar no SIGAD'), findsOneWidget);
+    expect(find.text('Acesso por perfil'), findsOneWidget);
   });
 }

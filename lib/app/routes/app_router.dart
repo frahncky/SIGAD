@@ -6,6 +6,7 @@ import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/demandas/presentation/pages/demandas_page.dart';
 import '../../features/home/presentation/pages/home_shell_page.dart';
 import '../../features/kanban/presentation/pages/kanban_page.dart';
+import '../../features/login/presentation/pages/login_page.dart';
 import '../../features/relatorios/presentation/pages/relatorios_page.dart';
 import 'app_routes.dart';
 
@@ -14,6 +15,11 @@ abstract final class AppRouter {
     final routeName = settings.name ?? AppRoutes.dashboard;
 
     switch (routeName) {
+      case AppRoutes.login:
+        return MaterialPageRoute<void>(
+          settings: const RouteSettings(name: AppRoutes.login),
+          builder: (_) => const LoginPage(),
+        );
       case AppRoutes.dashboard:
         return _shell(routeName, const DashboardPage());
       case AppRoutes.demandas:

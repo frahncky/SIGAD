@@ -1,77 +1,27 @@
-﻿
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../core/models/navigation_item.dart';
+import '../../../../core/models/user_role.dart';
+import '../../../../core/navigation/navigation_items.dart';
+import '../../../../core/services/user_context_provider.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
 
-  // Métricas essenciais apenas
-  static const List<_Metric> _metrics = [
-    _Metric(
-      label: 'Demandas ativas',
-      value: '24',
-      detail: '+6 esta semana',
-      icon: Icons.inbox_outlined,
-      tone: SigadColors.brand,
-    ),
-    _Metric(
-      label: 'Docentes ativos',
-      value: '38',
-      detail: '94% com carga',
-      icon: Icons.school_outlined,
-      tone: SigadColors.success,
-    ),
-  ];
-
-  // Ações rápidas essenciais apenas
-  static const List<_QuickAction> _quickActions = [
-    _QuickAction('Nova demanda', Icons.add_circle_outline, true),
-    _QuickAction('Ver kanban', Icons.view_kanban_outlined, false),
-  ];
-
-  List<Widget> _buildAccessCards() {
-    return [
-      _AccessCard(
-        icon: Icons.view_kanban,
-        label: 'Kanban',
-        description: 'Gerenciar demandas',
-        route: '/kanban',
-      ),
-      _AccessCard(
-        icon: Icons.assignment,
-        label: 'Demandas',
-        description: 'Ver todas as demandas',
-        route: '/demandas',
-      ),
-      _AccessCard(
-        icon: Icons.schedule,
-        label: 'Carga docente',
-        description: 'Distribuição de carga',
-        route: '/carga-docente',
-      ),
-      _AccessCard(
-        icon: Icons.history,
-        label: 'Atividades',
-        description: 'Registro de entregas',
-        route: '/atividades',
-      ),
-      _AccessCard(
-        icon: Icons.insights,
-        label: 'Relatórios',
-        description: 'Gerar relatórios',
-        route: '/relatorios',
-      ),
-      _AccessCard(
-        icon: Icons.settings,
-        label: 'Configurações',
-        description: 'Ajustes do sistema',
-        route: '/configuracoes',
-      ),
-    ];
-  }
-
   @override
   Widget build(BuildContext context) {
+    final userContext = context.watch<UserContextProvider>();
+    final role = userContext.userRole;
+    final profile = _RoleProfile.fromRole(role);
+    final userName = userContext.currentUser?.name ?? 'Usuario';
+
+    final availableModules = kNavigationItems
+        .where((item) => role == null || item.isAvailableFor(role))
+        .where((item) => item.route != AppRoutes.dashboard)
+        .toList();
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth >= 1024;
@@ -86,54 +36,31 @@ class DashboardPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header simplificado
-                  _SimpleHeader(isWide: isWide),
-                  const SizedBox(height: 32),
-
-                  // Métricas essenciais
-                  const _SectionHeader(
-                    title: 'Visão geral',
-                    icon: Icons.bar_chart,
+                  _HeroPanel(
+                    profile: profile,
+                    userName: userName,
                   ),
-                  const SizedBox(height: 16),
-                  _MetricsGrid(metrics: _metrics),
-                  const SizedBox(height: 32),
-
-                  // Ações rápidas essenciais
-                  const _SectionHeader(
-                    title: 'Ações principais',
-                    icon: Icons.flash_on,
+                  const SizedBox(height: 24),
+                  const _SectionTitle(
+                    title: 'Indicadores principais',
+                    icon: Icons.insights_outlined,
                   ),
-                  const SizedBox(height: 16),
-                  _QuickActions(actions: _quickActions),
-                  const SizedBox(height: 32),
-
-                  // Acessos organizados
-                  const _SectionHeader(
-                    title: 'Módulos do sistema',
-                    icon: Icons.apps,
+                  const SizedBox(height: 12),
+                  _MetricsGrid(metrics: profile.metrics),
+                  const SizedBox(height: 24),
+                  const _SectionTitle(
+                    title: 'Atalhos do seu perfil',
+                    icon: Icons.apps_outlined,
                   ),
-                  const SizedBox(height: 16),
-                  if (isWide)
-                    GridView.count(
-                      crossAxisCount: 3,
-                      childAspectRatio: 1.2,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 16,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: _buildAccessCards(),
-                    )
-                  else
-                    GridView.count(
-                      crossAxisCount: 2,
-                      childAspectRatio: 1.0,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: _buildAccessCards(),
-                    ),
+                  const SizedBox(height: 12),
+                  _ModuleGrid(modules: availableModules),
+                  const SizedBox(height: 24),
+                  const _SectionTitle(
+                    title: 'Prioridades de hoje',
+                    icon: Icons.track_changes_outlined,
+                  ),
+                  const SizedBox(height: 12),
+                  _PriorityList(items: profile.priorities),
                 ],
               ),
             ),
@@ -144,11 +71,14 @@ class DashboardPage extends StatelessWidget {
   }
 }
 
-// Header simplificado e limpo
-class _SimpleHeader extends StatelessWidget {
-  const _SimpleHeader({required this.isWide});
+class _HeroPanel extends StatelessWidget {
+  const _HeroPanel({
+    required this.profile,
+    required this.userName,
+  });
 
-  final bool isWide;
+  final _RoleProfile profile;
+  final String userName;
 
   @override
   Widget build(BuildContext context) {
@@ -156,52 +86,70 @@ class _SimpleHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: SigadColors.surface,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            profile.tone,
+            profile.tone.withValues(alpha: 0.78),
+          ],
+        ),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: SigadColors.divider),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 2),
+            color: profile.tone.withValues(alpha: 0.32),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.dashboard_outlined,
-                color: SigadColors.brand,
-                size: 32,
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Sistema Integrado de Gestão Acadêmica',
-                      style: textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.3,
-                        height: 1.2,
+          Text(
+            'Ola, $userName',
+            style: textTheme.headlineSmall?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            profile.title,
+            style: textTheme.titleMedium?.copyWith(
+              color: Colors.white.withValues(alpha: 0.95),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            profile.subtitle,
+            style: textTheme.bodyMedium?.copyWith(
+              color: Colors.white.withValues(alpha: 0.90),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: profile.focus
+                .map(
+                  (label) => Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.18),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      label,
+                      style: textTheme.labelSmall?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Gerencie demandas, docentes e relatórios de forma eficiente',
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: SigadColors.muted,
-                        height: 1.4,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+                  ),
+                )
+                .toList(),
           ),
         ],
       ),
@@ -209,10 +157,35 @@ class _SimpleHeader extends StatelessWidget {
   }
 }
 
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle({
+    required this.title,
+    required this.icon,
+  });
+
+  final String title;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Row(
+      children: [
+        Icon(icon, color: SigadColors.brand, size: 20),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+        ),
+      ],
+    );
+  }
+}
+
 class _MetricsGrid extends StatelessWidget {
   const _MetricsGrid({required this.metrics});
 
-  final List<_Metric> metrics;
+  final List<_RoleMetric> metrics;
 
   @override
   Widget build(BuildContext context) {
@@ -221,10 +194,10 @@ class _MetricsGrid extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: metrics.length,
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 280,
-        mainAxisExtent: 130,
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 16,
+        maxCrossAxisExtent: 320,
+        mainAxisExtent: 132,
+        mainAxisSpacing: 14,
+        crossAxisSpacing: 14,
       ),
       itemBuilder: (context, index) => _MetricCard(metric: metrics[index]),
     );
@@ -234,32 +207,25 @@ class _MetricsGrid extends StatelessWidget {
 class _MetricCard extends StatelessWidget {
   const _MetricCard({required this.metric});
 
-  final _Metric metric;
+  final _RoleMetric metric;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: SigadColors.surface,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: SigadColors.divider),
-        boxShadow: [
-          BoxShadow(
-            color: metric.tone.withValues(alpha: 0.08),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: Row(
         children: [
           Container(
-            width: 42,
-            height: 42,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: metric.tone.withValues(alpha: 0.15),
+              color: metric.tone.withValues(alpha: 0.14),
               shape: BoxShape.circle,
             ),
             child: Icon(metric.icon, color: metric.tone),
@@ -272,32 +238,14 @@ class _MetricCard extends StatelessWidget {
               children: [
                 Text(
                   metric.label,
-                  style: textTheme.labelMedium?.copyWith(
-                    color: SigadColors.muted,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  metric.value,
-                  style: textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.5,
-                  ),
+                  style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  metric.detail,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: SigadColors.muted,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  metric.value,
+                  style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
               ],
             ),
@@ -308,106 +256,118 @@ class _MetricCard extends StatelessWidget {
   }
 }
 
-class _QuickActions extends StatelessWidget {
-  const _QuickActions({required this.actions});
+class _ModuleGrid extends StatelessWidget {
+  const _ModuleGrid({required this.modules});
 
-  final List<_QuickAction> actions;
+  final List<NavigationItem> modules;
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 12,
-      runSpacing: 12,
-      children: actions
+    if (modules.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final isWide = MediaQuery.of(context).size.width >= 900;
+    final crossAxisCount = isWide ? 3 : 2;
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: modules.length,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+        mainAxisExtent: 122,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+      ),
+      itemBuilder: (context, index) => _ModuleCard(item: modules[index]),
+    );
+  }
+}
+
+class _ModuleCard extends StatelessWidget {
+  const _ModuleCard({required this.item});
+
+  final NavigationItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Material(
+      color: SigadColors.surface,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => Navigator.of(context).pushNamed(item.route),
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: SigadColors.divider),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(item.icon, color: SigadColors.brand),
+              const SizedBox(height: 8),
+              Text(
+                item.label,
+                style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                item.subtitle ?? 'Abrir modulo',
+                style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PriorityList extends StatelessWidget {
+  const _PriorityList({required this.items});
+
+  final List<_PriorityItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: items
           .map(
-            (action) => action.primary
-                ? Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: SigadColors.brand.withValues(alpha: 0.2),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: FilledButton.icon(
-                      onPressed: () {},
-                      icon: Icon(action.icon),
-                      label: Text(action.label),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: SigadColors.brand,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  )
-                : Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 6,
-                          offset: const Offset(0, 1),
-                        ),
-                      ],
-                    ),
-                    child: OutlinedButton.icon(
-                      onPressed: () {},
-                      icon: Icon(action.icon, color: SigadColors.brand),
-                      label: Text(action.label),
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: SigadColors.divider),
-                        foregroundColor: SigadColors.brand,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
+            (item) => Container(
+              margin: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: SigadColors.surface,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: SigadColors.divider),
+              ),
+              child: Row(
+                children: [
+                  Icon(item.icon, color: item.tone),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      item.label,
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
+                ],
+              ),
+            ),
           )
           .toList(),
     );
   }
 }
-
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title, this.icon});
-
-  final String title;
-  final IconData? icon;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            if (icon != null) ...[
-              Icon(icon, color: SigadColors.brand, size: 20),
-              const SizedBox(width: 8),
-            ],
-            Text(
-              title,
-              style: textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
 
 class _AmbientBackground extends StatelessWidget {
   const _AmbientBackground();
@@ -423,162 +383,146 @@ class _AmbientBackground extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    SigadColors.canvas,
-                    SigadColors.surfaceAlt,
-                  ],
+                  colors: [SigadColors.canvas, SigadColors.surfaceAlt],
                 ),
               ),
             ),
           ),
-          Positioned(
-            right: -120,
-            top: -40,
-            child: _GlowOrb(color: SigadColors.accentSoft, size: 260),
-          ),
-          Positioned(
-            left: -80,
-            bottom: -60,
-            child: _GlowOrb(color: SigadColors.mint, size: 220),
-          ),
         ],
       ),
     );
   }
 }
 
-class _GlowOrb extends StatelessWidget {
-  const _GlowOrb({required this.color, required this.size});
-
-  final Color color;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: color.withValues(alpha: 0.45),
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.35),
-            blurRadius: 80,
-            spreadRadius: 20,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Metric {
-  const _Metric({
+class _RoleMetric {
+  const _RoleMetric({
     required this.label,
     required this.value,
-    required this.detail,
     required this.icon,
     required this.tone,
   });
 
   final String label;
   final String value;
-  final String detail;
   final IconData icon;
   final Color tone;
 }
 
-class _QuickAction {
-  const _QuickAction(this.label, this.icon, this.primary);
-
-  final String label;
-  final IconData icon;
-  final bool primary;
-}
-
-class _AccessCard extends StatelessWidget {
-  const _AccessCard({
-    required this.icon,
+class _PriorityItem {
+  const _PriorityItem({
     required this.label,
-    required this.description,
-    required this.route,
+    required this.icon,
+    required this.tone,
   });
 
-  final IconData icon;
   final String label;
-  final String description;
-  final String route;
+  final IconData icon;
+  final Color tone;
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pushNamed(route);
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: SigadColors.surface,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: SigadColors.divider),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
+class _RoleProfile {
+  const _RoleProfile({
+    required this.title,
+    required this.subtitle,
+    required this.tone,
+    required this.metrics,
+    required this.priorities,
+    required this.focus,
+  });
+
+  final String title;
+  final String subtitle;
+  final Color tone;
+  final List<_RoleMetric> metrics;
+  final List<_PriorityItem> priorities;
+  final List<String> focus;
+
+  static _RoleProfile fromRole(UserRole? role) {
+    switch (role) {
+      case UserRole.professor:
+        return _RoleProfile(
+          title: 'Perfil Professor',
+          subtitle: 'Acompanhe sua carga, aulas e demandas academicas.',
+          tone: SigadColors.brand,
+          metrics: const [
+            _RoleMetric(label: 'Disciplinas', value: '5', icon: Icons.menu_book_outlined, tone: SigadColors.brand),
+            _RoleMetric(label: 'Carga semanal', value: '32h', icon: Icons.schedule_outlined, tone: SigadColors.info),
+            _RoleMetric(label: 'Pendencias', value: '3', icon: Icons.pending_actions_outlined, tone: SigadColors.warning),
           ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(18),
-            onTap: () {
-              Navigator.of(context).pushNamed(route);
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: SigadColors.brand.withValues(alpha: 0.12),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      icon,
-                      color: SigadColors.brand,
-                      size: 28,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    label,
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    description,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: SigadColors.muted,
-                        ),
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
+          priorities: const [
+            _PriorityItem(label: 'Confirmar plano de aula da semana', icon: Icons.checklist_outlined, tone: SigadColors.info),
+            _PriorityItem(label: 'Atualizar registro de atividades', icon: Icons.fact_check_outlined, tone: SigadColors.brand),
+            _PriorityItem(label: 'Validar horas complementares', icon: Icons.timer_outlined, tone: SigadColors.warning),
+          ],
+          focus: const ['Aulas', 'Carga', 'Atividades'],
+        );
+      case UserRole.coordenador:
+        return _RoleProfile(
+          title: 'Perfil Coordenador',
+          subtitle: 'Gerencie demandas do curso e distribua responsabilidades.',
+          tone: SigadColors.info,
+          metrics: const [
+            _RoleMetric(label: 'Demandas abertas', value: '24', icon: Icons.assignment_outlined, tone: SigadColors.info),
+            _RoleMetric(label: 'Docentes ativos', value: '38', icon: Icons.school_outlined, tone: SigadColors.success),
+            _RoleMetric(label: 'Sprints em curso', value: '2', icon: Icons.flag_outlined, tone: SigadColors.brand),
+          ],
+          priorities: const [
+            _PriorityItem(label: 'Priorizar demandas criticas da semana', icon: Icons.priority_high_outlined, tone: SigadColors.risk),
+            _PriorityItem(label: 'Fechar distribuicao de carga docente', icon: Icons.balance_outlined, tone: SigadColors.info),
+            _PriorityItem(label: 'Aprovar quadro kanban do curso', icon: Icons.view_kanban_outlined, tone: SigadColors.brand),
+          ],
+          focus: const ['Demandas', 'Kanban', 'Relatorios'],
+        );
+      case UserRole.servidorAdministrativo:
+        return _RoleProfile(
+          title: 'Perfil Servidor Administrativo',
+          subtitle: 'Mantenha processos operacionais e fluxos documentais em dia.',
+          tone: SigadColors.accent,
+          metrics: const [
+            _RoleMetric(label: 'Processos hoje', value: '18', icon: Icons.folder_open_outlined, tone: SigadColors.accent),
+            _RoleMetric(label: 'Solicitacoes', value: '11', icon: Icons.request_page_outlined, tone: SigadColors.info),
+            _RoleMetric(label: 'Concluidos', value: '9', icon: Icons.task_alt_outlined, tone: SigadColors.success),
+          ],
+          priorities: const [
+            _PriorityItem(label: 'Conferir documentos de laboratorio', icon: Icons.description_outlined, tone: SigadColors.info),
+            _PriorityItem(label: 'Atualizar status de protocolos', icon: Icons.swap_horiz_outlined, tone: SigadColors.accent),
+            _PriorityItem(label: 'Enviar relatorio diario para coordenacao', icon: Icons.send_outlined, tone: SigadColors.brand),
+          ],
+          focus: const ['Protocolos', 'Relatorios', 'Atendimento'],
+        );
+      case UserRole.chefeDepartamento:
+        return _RoleProfile(
+          title: 'Perfil Chefe de Departamento',
+          subtitle: 'Visao estrategica de governanca, desempenho e alocacao.',
+          tone: SigadColors.brandDark,
+          metrics: const [
+            _RoleMetric(label: 'Indicadores-chave', value: '12', icon: Icons.analytics_outlined, tone: SigadColors.brandDark),
+            _RoleMetric(label: 'Demandas criticas', value: '4', icon: Icons.warning_amber_outlined, tone: SigadColors.risk),
+            _RoleMetric(label: 'Cumprimento SLA', value: '92%', icon: Icons.av_timer_outlined, tone: SigadColors.success),
+          ],
+          priorities: const [
+            _PriorityItem(label: 'Validar plano de metas do mes', icon: Icons.track_changes_outlined, tone: SigadColors.brandDark),
+            _PriorityItem(label: 'Aprovar redistribuicao de equipe', icon: Icons.groups_outlined, tone: SigadColors.info),
+            _PriorityItem(label: 'Revisar painel de desempenho institucional', icon: Icons.query_stats_outlined, tone: SigadColors.success),
+          ],
+          focus: const ['Estrategia', 'Governanca', 'KPIs'],
+        );
+      default:
+        return _RoleProfile(
+          title: 'Visao geral do SIGAD',
+          subtitle: 'Selecione um perfil para ver atalhos e prioridades personalizadas.',
+          tone: SigadColors.brand,
+          metrics: const [
+            _RoleMetric(label: 'Modulos ativos', value: '6', icon: Icons.dashboard_outlined, tone: SigadColors.brand),
+            _RoleMetric(label: 'Usuarios online', value: '42', icon: Icons.groups_outlined, tone: SigadColors.info),
+            _RoleMetric(label: 'Demandas no sistema', value: '24', icon: Icons.inbox_outlined, tone: SigadColors.success),
+          ],
+          priorities: const [
+            _PriorityItem(label: 'Realize login com um dos perfis', icon: Icons.login_outlined, tone: SigadColors.brand),
+            _PriorityItem(label: 'Explore os modulos disponiveis', icon: Icons.apps_outlined, tone: SigadColors.info),
+          ],
+          focus: const ['Planejamento', 'Fluxo', 'Transparencia'],
+        );
+    }
   }
 }

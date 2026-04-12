@@ -9,7 +9,7 @@ class KanbanPage extends StatefulWidget {
 }
 
 class _KanbanPageState extends State<KanbanPage> {
-  List<_Card> _cards = [
+  final List<_Card> _cards = [
     _Card(id: 1, titulo: 'Revisão de inventário', coluna: 'Backlog', prioridade: 'Alta'),
     _Card(id: 2, titulo: 'Mapear demandas', coluna: 'Em Progresso', prioridade: 'Alta'),
     _Card(id: 3, titulo: 'Padronizar formulários', coluna: 'Em Revisão', prioridade: 'Média'),
@@ -104,7 +104,7 @@ class _KanbanPageState extends State<KanbanPage> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: prioridadeSelecionada,
+                initialValue: prioridadeSelecionada,
                 decoration: const InputDecoration(labelText: 'Prioridade'),
                 items: ['Baixa', 'Média', 'Alta']
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
@@ -113,7 +113,7 @@ class _KanbanPageState extends State<KanbanPage> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: colunaSelecionada,
+                initialValue: colunaSelecionada,
                 decoration: const InputDecoration(labelText: 'Coluna'),
                 items: ['Backlog', 'Em Progresso', 'Em Revisão', 'Concluído']
                     .map((c) => DropdownMenuItem(value: c, child: Text(c)))

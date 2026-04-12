@@ -304,7 +304,7 @@ class _DemandasPageState extends State<DemandasPage> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: prioridadeSelecionada,
+                initialValue: prioridadeSelecionada,
                 decoration: const InputDecoration(labelText: 'Prioridade'),
                 items: ['Alta', 'Média', 'Baixa']
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
@@ -313,7 +313,7 @@ class _DemandasPageState extends State<DemandasPage> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: proprietarioSelecionado,
+                initialValue: proprietarioSelecionado,
                 decoration: const InputDecoration(labelText: 'Proprietário'),
                 items: ['Coordenação', 'Secretaria Acadêmica', 'Lab. Biologia', 'TI', 'RH']
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
@@ -577,7 +577,7 @@ class _DemandasCard extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: prioridadeSelecionada,
+                initialValue: prioridadeSelecionada,
                 decoration: const InputDecoration(labelText: 'Prioridade'),
                 items: ['Alta', 'Média', 'Baixa']
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
@@ -586,7 +586,7 @@ class _DemandasCard extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: proprietarioSelecionado,
+                initialValue: proprietarioSelecionado,
                 decoration: const InputDecoration(labelText: 'Proprietário'),
                 items: ['Coordenação', 'Secretaria Acadêmica', 'Lab. Biologia', 'TI', 'RH']
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))

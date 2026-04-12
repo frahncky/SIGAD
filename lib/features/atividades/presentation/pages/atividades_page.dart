@@ -193,7 +193,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: responsavelSelecionado,
+                initialValue: responsavelSelecionado,
                 decoration: const InputDecoration(labelText: 'Responsável'),
                 items: ['Coordenação', 'Gestão', 'TI', 'RH', 'Auditoria', 'Comunicação']
                     .map((r) => DropdownMenuItem(value: r, child: Text(r)))
@@ -421,7 +421,7 @@ class _AtividadeCard extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: responsavelSelecionado,
+                initialValue: responsavelSelecionado,
                 decoration: const InputDecoration(labelText: 'Responsável'),
                 items: ['Coordenação', 'Gestão', 'TI', 'RH', 'Auditoria', 'Comunicação']
                     .map((r) => DropdownMenuItem(value: r, child: Text(r)))

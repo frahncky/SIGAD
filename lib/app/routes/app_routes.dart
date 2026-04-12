@@ -1,4 +1,5 @@
 abstract final class AppRoutes {
+  static const String login = '/login';
   static const String dashboard = '/';
   static const String demandas = '/demandas';
   static const String kanban = '/kanban';

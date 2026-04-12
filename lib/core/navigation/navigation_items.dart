@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../app/routes/app_routes.dart';
 import '../models/navigation_item.dart';
+import '../models/user_role.dart';
 
 const List<NavigationItem> kNavigationItems = [
   NavigationItem(
@@ -12,7 +13,7 @@ const List<NavigationItem> kNavigationItems = [
     route: AppRoutes.demandas,
     label: 'Demandas',
     icon: Icons.assignment_outlined,
-
+    availableFor: {UserRole.coordenador, UserRole.chefeDepartamento},
   ),
   NavigationItem(
     route: AppRoutes.kanban,
@@ -23,7 +24,7 @@ const List<NavigationItem> kNavigationItems = [
     route: AppRoutes.cargaDocente,
     label: 'Carga docente',
     icon: Icons.schedule_outlined,
-
+    availableFor: {UserRole.professor, UserRole.coordenador, UserRole.chefeDepartamento},
   ),
   NavigationItem(
     route: AppRoutes.atividades,
@@ -33,12 +34,14 @@ const List<NavigationItem> kNavigationItems = [
   ),
   NavigationItem(
     route: AppRoutes.relatorios,
-    label: 'Relatórios',
+    label: 'Relatorios',
     icon: Icons.insights_outlined,
+    availableFor: {UserRole.coordenador, UserRole.servidorAdministrativo, UserRole.chefeDepartamento},
   ),
   NavigationItem(
     route: AppRoutes.configuracoes,
-    label: 'Configurações',
+    label: 'Configuracoes',
     icon: Icons.settings_outlined,
+    availableFor: {UserRole.chefeDepartamento},
   ),
 ];
