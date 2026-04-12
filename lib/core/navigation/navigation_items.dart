@@ -21,6 +21,13 @@ const List<NavigationItem> kNavigationItems = [
     icon: Icons.view_kanban_outlined,
   ),
   NavigationItem(
+    route: AppRoutes.aulasPraticas,
+    label: 'Aulas praticas',
+    icon: Icons.science_outlined,
+    subtitle: 'Controle de aulas praticas em laboratorios.',
+    availableFor: {UserRole.professor, UserRole.coordenador, UserRole.chefeDepartamento},
+  ),
+  NavigationItem(
     route: AppRoutes.cargaDocente,
     label: 'Carga docente',
     icon: Icons.schedule_outlined,

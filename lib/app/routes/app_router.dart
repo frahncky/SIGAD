@@ -8,6 +8,7 @@ import '../../features/home/presentation/pages/home_shell_page.dart';
 import '../../features/kanban/presentation/pages/kanban_page.dart';
 import '../../features/login/presentation/pages/login_page.dart';
 import '../../features/relatorios/presentation/pages/relatorios_page.dart';
+import '../../features/aulas_praticas/presentation/pages/aulas_praticas_page.dart';
 import 'app_routes.dart';
 
 abstract final class AppRouter {
@@ -26,6 +27,8 @@ abstract final class AppRouter {
         return _shell(routeName, const DemandasPage());
       case AppRoutes.kanban:
         return _shell(routeName, const KanbanPage());
+      case AppRoutes.aulasPraticas:
+        return _shell(routeName, const AulasPraticasPage());
       case AppRoutes.cargaDocente:
         return _shell(routeName, const CargaDocentePage());
       case AppRoutes.atividades:
