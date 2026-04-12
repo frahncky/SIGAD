@@ -12,6 +12,12 @@ class AulasPraticasPage extends StatefulWidget {
 }
 
 class _AulasPraticasPageState extends State<AulasPraticasPage> {
+  static const Set<UserRole> _allowedRoles = {
+    UserRole.professor,
+    UserRole.coordenador,
+    UserRole.chefeDepartamento,
+  };
+
   final List<_AulaPratica> _aulas = [
     _AulaPratica(
       id: 'LAB-101',
@@ -19,8 +25,9 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       professor: 'Joao Silva',
       turma: 'QX-2026.1',
       laboratorio: 'Lab Quimica 1',
-      data: '2026-04-14',
-      horario: '08:00 - 10:00',
+      diaSemana: 'Ter',
+      turno: _Turno.matutino,
+      periodo: 1,
       status: _AulaStatus.agendada,
       observacao: 'Levar equipamentos de seguranca.',
     ),
@@ -30,8 +37,9 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       professor: 'Ana Souza',
       turma: 'MB-2026.1',
       laboratorio: 'Lab Biologia 2',
-      data: '2026-04-14',
-      horario: '10:30 - 12:30',
+      diaSemana: 'Ter',
+      turno: _Turno.matutino,
+      periodo: 3,
       status: _AulaStatus.emAndamento,
       observacao: 'Aula com avaliacao pratica.',
     ),
@@ -41,8 +49,9 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       professor: 'Carlos Mendes',
       turma: 'AI-2026.1',
       laboratorio: 'Lab Automacao',
-      data: '2026-04-15',
-      horario: '14:00 - 16:00',
+      diaSemana: 'Qua',
+      turno: _Turno.vespertino,
+      periodo: 2,
       status: _AulaStatus.confirmacaoPendente,
       observacao: 'Checar disponibilidade dos kits.',
     ),
@@ -52,8 +61,9 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       professor: 'Maria Costa',
       turma: 'FA-2026.1',
       laboratorio: 'Lab Fisica 1',
-      data: '2026-04-12',
-      horario: '16:30 - 18:30',
+      diaSemana: 'Sex',
+      turno: _Turno.noturno,
+      periodo: 4,
       status: _AulaStatus.concluida,
       observacao: 'Relatorio da turma ja entregue.',
     ),
@@ -61,12 +71,6 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
   String _filtroLab = 'Todos';
   String _filtroStatus = 'Todos';
-
-  static const Set<UserRole> _allowedRoles = {
-    UserRole.professor,
-    UserRole.coordenador,
-    UserRole.chefeDepartamento,
-  };
 
   List<_AulaPratica> get _aulasFiltradas {
     return _aulas.where((aula) {
@@ -90,7 +94,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Aulas praticas'),
+        title: const Text('Aulas praticas de laboratorio'),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showNovaAulaSheet,
@@ -120,6 +124,15 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                   onStatusChanged: (value) => setState(() => _filtroStatus = value),
                 ),
                 const SizedBox(height: 16),
+                _MapaSemanal(
+                  aulas: _aulasFiltradas,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Lista de aulas',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 8),
                 if (_aulasFiltradas.isEmpty)
                   const _EmptyState()
                 else
@@ -158,8 +171,9 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     final turmaController = TextEditingController();
     final observacaoController = TextEditingController();
     String laboratorioSelecionado = 'Lab Quimica 1';
-    String dataSelecionada = '2026-04-20';
-    String horarioSelecionado = '08:00 - 10:00';
+    String diaSemanaSelecionado = 'Seg';
+    _Turno turnoSelecionado = _Turno.matutino;
+    int periodoSelecionado = 1;
     _AulaStatus statusSelecionado = _AulaStatus.agendada;
 
     showModalBottomSheet(
@@ -181,32 +195,22 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                   children: [
                     Text(
                       'Cadastrar aula pratica',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: disciplinaController,
-                      decoration: const InputDecoration(
-                        labelText: 'Disciplina',
-                        hintText: 'Ex: Quimica Experimental',
-                      ),
+                      decoration: const InputDecoration(labelText: 'Disciplina'),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: professorController,
-                      decoration: const InputDecoration(
-                        labelText: 'Professor',
-                      ),
+                      decoration: const InputDecoration(labelText: 'Professor'),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: turmaController,
-                      decoration: const InputDecoration(
-                        labelText: 'Turma',
-                        hintText: 'Ex: QX-2026.1',
-                      ),
+                      decoration: const InputDecoration(labelText: 'Turma'),
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
@@ -219,37 +223,52 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                         DropdownMenuItem(value: 'Lab Automacao', child: Text('Lab Automacao')),
                       ],
                       onChanged: (value) {
-                        if (value == null) return;
-                        setModalState(() => laboratorioSelecionado = value);
+                        if (value != null) setModalState(() => laboratorioSelecionado = value);
                       },
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      initialValue: dataSelecionada,
-                      decoration: const InputDecoration(labelText: 'Data'),
+                      initialValue: diaSemanaSelecionado,
+                      decoration: const InputDecoration(labelText: 'Dia da semana'),
                       items: const [
-                        DropdownMenuItem(value: '2026-04-20', child: Text('2026-04-20')),
-                        DropdownMenuItem(value: '2026-04-21', child: Text('2026-04-21')),
-                        DropdownMenuItem(value: '2026-04-22', child: Text('2026-04-22')),
+                        DropdownMenuItem(value: 'Seg', child: Text('Segunda')),
+                        DropdownMenuItem(value: 'Ter', child: Text('Terca')),
+                        DropdownMenuItem(value: 'Qua', child: Text('Quarta')),
+                        DropdownMenuItem(value: 'Qui', child: Text('Quinta')),
+                        DropdownMenuItem(value: 'Sex', child: Text('Sexta')),
                       ],
                       onChanged: (value) {
-                        if (value == null) return;
-                        setModalState(() => dataSelecionada = value);
+                        if (value != null) setModalState(() => diaSemanaSelecionado = value);
                       },
                     ),
                     const SizedBox(height: 12),
-                    DropdownButtonFormField<String>(
-                      initialValue: horarioSelecionado,
-                      decoration: const InputDecoration(labelText: 'Horario'),
-                      items: const [
-                        DropdownMenuItem(value: '08:00 - 10:00', child: Text('08:00 - 10:00')),
-                        DropdownMenuItem(value: '10:30 - 12:30', child: Text('10:30 - 12:30')),
-                        DropdownMenuItem(value: '14:00 - 16:00', child: Text('14:00 - 16:00')),
-                        DropdownMenuItem(value: '16:30 - 18:30', child: Text('16:30 - 18:30')),
-                      ],
+                    DropdownButtonFormField<_Turno>(
+                      initialValue: turnoSelecionado,
+                      decoration: const InputDecoration(labelText: 'Turno'),
+                      items: _Turno.values
+                          .map((turno) => DropdownMenuItem(value: turno, child: Text(turno.label)))
+                          .toList(),
                       onChanged: (value) {
                         if (value == null) return;
-                        setModalState(() => horarioSelecionado = value);
+                        setModalState(() {
+                          turnoSelecionado = value;
+                          periodoSelecionado = 1;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<int>(
+                      initialValue: periodoSelecionado,
+                      decoration: const InputDecoration(labelText: 'Horario do turno'),
+                      items: List.generate(
+                        turnoSelecionado.horarios.length,
+                        (index) => DropdownMenuItem(
+                          value: index + 1,
+                          child: Text('Periodo ${index + 1} - ${turnoSelecionado.horarios[index]}'),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        if (value != null) setModalState(() => periodoSelecionado = value);
                       },
                     ),
                     const SizedBox(height: 12),
@@ -257,25 +276,17 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                       initialValue: statusSelecionado,
                       decoration: const InputDecoration(labelText: 'Status'),
                       items: _AulaStatus.values
-                          .map(
-                            (status) => DropdownMenuItem(
-                              value: status,
-                              child: Text(status.label),
-                            ),
-                          )
+                          .map((status) => DropdownMenuItem(value: status, child: Text(status.label)))
                           .toList(),
                       onChanged: (value) {
-                        if (value == null) return;
-                        setModalState(() => statusSelecionado = value);
+                        if (value != null) setModalState(() => statusSelecionado = value);
                       },
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: observacaoController,
                       maxLines: 2,
-                      decoration: const InputDecoration(
-                        labelText: 'Observacao',
-                      ),
+                      decoration: const InputDecoration(labelText: 'Observacao'),
                     ),
                     const SizedBox(height: 18),
                     Row(
@@ -306,8 +317,9 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                                     professor: professorController.text.trim(),
                                     turma: turmaController.text.trim(),
                                     laboratorio: laboratorioSelecionado,
-                                    data: dataSelecionada,
-                                    horario: horarioSelecionado,
+                                    diaSemana: diaSemanaSelecionado,
+                                    turno: turnoSelecionado,
+                                    periodo: periodoSelecionado,
                                     status: statusSelecionado,
                                     observacao: observacaoController.text.trim().isEmpty
                                         ? 'Sem observacao adicional.'
@@ -394,9 +406,7 @@ class _BadgeInfo extends StatelessWidget {
           children: [
             Text(
               label,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: SigadColors.muted,
-                  ),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
             ),
             Text(
               value,
@@ -436,9 +446,7 @@ class _FiltroRow extends StatelessWidget {
         Expanded(
           child: DropdownButtonFormField<String>(
             initialValue: filtroLab,
-            decoration: const InputDecoration(
-              labelText: 'Laboratorio',
-            ),
+            decoration: const InputDecoration(labelText: 'Laboratorio'),
             items: labs.map((lab) => DropdownMenuItem(value: lab, child: Text(lab))).toList(),
             onChanged: (value) {
               if (value != null) onLabChanged(value);
@@ -449,9 +457,7 @@ class _FiltroRow extends StatelessWidget {
         Expanded(
           child: DropdownButtonFormField<String>(
             initialValue: filtroStatus,
-            decoration: const InputDecoration(
-              labelText: 'Status',
-            ),
+            decoration: const InputDecoration(labelText: 'Status'),
             items: statuses.map((status) => DropdownMenuItem(value: status, child: Text(status))).toList(),
             onChanged: (value) {
               if (value != null) onStatusChanged(value);
@@ -460,6 +466,218 @@ class _FiltroRow extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class _MapaSemanal extends StatelessWidget {
+  const _MapaSemanal({
+    required this.aulas,
+  });
+
+  final List<_AulaPratica> aulas;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: SigadColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: SigadColors.divider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Disponibilidade semanal do laboratorio',
+            style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Modelo IFMA por turno (manha, tarde e noite) e dias da semana.',
+            style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+          ),
+          const SizedBox(height: 12),
+          _GradeTurno(
+            turno: _Turno.matutino,
+            aulas: _aulasDoTurno(_Turno.matutino),
+          ),
+          const SizedBox(height: 12),
+          _GradeTurno(
+            turno: _Turno.vespertino,
+            aulas: _aulasDoTurno(_Turno.vespertino),
+          ),
+          const SizedBox(height: 12),
+          _GradeTurno(
+            turno: _Turno.noturno,
+            aulas: _aulasDoTurno(_Turno.noturno),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<_AulaPratica> _aulasDoTurno(_Turno turno) {
+    return aulas.where((aula) => aula.turno == turno).toList();
+  }
+}
+
+class _GradeTurno extends StatelessWidget {
+  const _GradeTurno({
+    required this.turno,
+    required this.aulas,
+  });
+
+  final _Turno turno;
+  final List<_AulaPratica> aulas;
+
+  static const List<String> _dias = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'];
+
+  @override
+  Widget build(BuildContext context) {
+    final horarios = turno.horarios;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF4EA3B),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: SigadColors.divider),
+          ),
+          child: Text(
+            turno.tituloSecao,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),
+          ),
+        ),
+        const SizedBox(height: 6),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Table(
+            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+            border: TableBorder.all(color: SigadColors.divider),
+            columnWidths: const {
+              0: FixedColumnWidth(122),
+            },
+            children: [
+              TableRow(
+                decoration: const BoxDecoration(color: SigadColors.surfaceAlt),
+                children: [
+                  _headerCell('Horario'),
+                  ..._dias.map((dia) => _headerCell(_rotuloDia(dia))),
+                ],
+              ),
+              ...List.generate(horarios.length, (index) {
+                final periodo = index + 1;
+                return TableRow(
+                  children: [
+                    _horarioCell(horarios[index]),
+                    ..._dias.map((dia) => _slotCell(context, dia, periodo)),
+                  ],
+                );
+              }),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _rotuloDia(String dia) {
+    switch (dia) {
+      case 'Seg':
+        return 'SEGUNDA';
+      case 'Ter':
+        return 'TERCA';
+      case 'Qua':
+        return 'QUARTA';
+      case 'Qui':
+        return 'QUINTA';
+      case 'Sex':
+        return 'SEXTA';
+      default:
+        return dia;
+    }
+  }
+
+  Widget _headerCell(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+      ),
+    );
+  }
+
+  Widget _horarioCell(String horario) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      child: Text(
+        horario,
+        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+      ),
+    );
+  }
+
+  Widget _slotCell(BuildContext context, String dia, int periodo) {
+    final aula = _buscarAula(dia, periodo);
+
+    if (aula == null) {
+      return const SizedBox(
+        width: 140,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+          child: Text('-', textAlign: TextAlign.center),
+        ),
+      );
+    }
+
+    return SizedBox(
+      width: 140,
+      child: Container(
+        margin: const EdgeInsets.all(3),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+        decoration: BoxDecoration(
+          color: aula.status.color.withValues(alpha: 0.14),
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: aula.status.color.withValues(alpha: 0.24)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              aula.professor.toUpperCase(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              aula.disciplina,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  _AulaPratica? _buscarAula(String dia, int periodo) {
+    for (final aula in aulas) {
+      if (aula.diaSemana == dia && aula.periodo == periodo) {
+        return aula;
+      }
+    }
+    return null;
   }
 }
 
@@ -493,12 +711,17 @@ class _AulaCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${aula.id} • ${aula.disciplina}',
+                      '${aula.id} - ${aula.disciplina}',
                       style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${aula.laboratorio} • ${aula.horario}',
+                      '${aula.laboratorio} - ${aula.diaSemana} - ${aula.turno.label}',
+                      style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Periodo ${aula.periodo} - ${aula.horario}',
                       style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
                     ),
                   ],
@@ -514,7 +737,6 @@ class _AulaCard extends StatelessWidget {
             children: [
               _metaChip(context, Icons.person_outline, aula.professor),
               _metaChip(context, Icons.groups_outlined, aula.turma),
-              _metaChip(context, Icons.calendar_today_outlined, aula.data),
             ],
           ),
           const SizedBox(height: 10),
@@ -563,10 +785,7 @@ class _AulaCard extends StatelessWidget {
         children: [
           Icon(icon, size: 14, color: SigadColors.muted),
           const SizedBox(width: 4),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
+          Text(label, style: Theme.of(context).textTheme.bodySmall),
         ],
       ),
     );
@@ -612,17 +831,13 @@ class _AccessDenied extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               'Acesso restrito',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 8),
             Text(
               'Este modulo esta disponivel para professor, coordenador e chefe do departamento.',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: SigadColors.muted,
-                  ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
             ),
           ],
         ),
@@ -669,10 +884,7 @@ class _AmbientBackground extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            SigadColors.canvas,
-            SigadColors.surfaceAlt,
-          ],
+          colors: [SigadColors.canvas, SigadColors.surfaceAlt],
         ),
       ),
     );
@@ -686,8 +898,9 @@ class _AulaPratica {
     required this.professor,
     required this.turma,
     required this.laboratorio,
-    required this.data,
-    required this.horario,
+    required this.diaSemana,
+    required this.turno,
+    required this.periodo,
     required this.status,
     required this.observacao,
   });
@@ -697,10 +910,19 @@ class _AulaPratica {
   final String professor;
   final String turma;
   final String laboratorio;
-  final String data;
-  final String horario;
+  final String diaSemana;
+  final _Turno turno;
+  final int periodo;
   final _AulaStatus status;
   final String observacao;
+
+  String get horario {
+    final horariosTurno = turno.horarios;
+    if (periodo < 1 || periodo > horariosTurno.length) {
+      return 'Horario indefinido';
+    }
+    return horariosTurno[periodo - 1];
+  }
 
   _AulaPratica copyWith({
     _AulaStatus? status,
@@ -711,11 +933,43 @@ class _AulaPratica {
       professor: professor,
       turma: turma,
       laboratorio: laboratorio,
-      data: data,
-      horario: horario,
+      diaSemana: diaSemana,
+      turno: turno,
+      periodo: periodo,
       status: status ?? this.status,
       observacao: observacao,
     );
+  }
+}
+
+enum _Turno {
+  matutino('Matutino'),
+  vespertino('Vespertino'),
+  noturno('Noturno');
+
+  const _Turno(this.label);
+  final String label;
+
+  String get tituloSecao {
+    switch (this) {
+      case _Turno.matutino:
+        return 'MANHA';
+      case _Turno.vespertino:
+        return 'TARDE';
+      case _Turno.noturno:
+        return 'NOITE';
+    }
+  }
+
+  List<String> get horarios {
+    switch (this) {
+      case _Turno.matutino:
+        return const ['07:15-08:05', '08:05-08:55', '08:55-09:45', '09:45-10:35', '10:50-11:40', '11:40-12:30'];
+      case _Turno.vespertino:
+        return const ['13:10-14:00', '14:00-14:50', '14:50-15:40', '15:55-16:45', '16:45-17:35', '17:35-18:25'];
+      case _Turno.noturno:
+        return const ['18:30-19:20', '19:20-20:10', '20:30-21:15', '21:15-22:00', '22:00-22:45'];
+    }
   }
 }
 
