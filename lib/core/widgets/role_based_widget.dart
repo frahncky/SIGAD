@@ -2,6 +2,7 @@
 // Este arquivo demonstra padrões para implementar diferentes UIs por perfil de usuário
 
 import 'package:flutter/material.dart';
+import '../../app/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 import '../../../core/models/user_role.dart';
 import '../../../core/services/user_context_provider.dart';
@@ -288,7 +289,7 @@ class AdministrativeActionExample extends StatelessWidget {
             RoleRestrictedWidget(
               allowedRoles: {UserRole.chefeDepartamento},
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () => Navigator.of(context).pushNamed(AppRoutes.configuracoes),
                 child: const Text('Configurar Departamento'),
               ),
             ),
@@ -298,7 +299,7 @@ class AdministrativeActionExample extends StatelessWidget {
             RoleRestrictedWidget(
               allowedRoles: {UserRole.coordenador, UserRole.chefeDepartamento},
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () => Navigator.of(context).pushNamed(AppRoutes.demandas),
                 child: const Text('Criar Demanda'),
               ),
             ),
@@ -306,7 +307,7 @@ class AdministrativeActionExample extends StatelessWidget {
             
             // Botão visível para todos
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () => Navigator.of(context).pushNamed(AppRoutes.atividades),
               child: const Text('Ver Atividades'),
             ),
           ],

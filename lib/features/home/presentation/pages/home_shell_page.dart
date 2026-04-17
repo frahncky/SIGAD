@@ -48,7 +48,7 @@ class HomeShellPage extends StatelessWidget {
                   shadowColor: Colors.black12,
                   actions: [
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () => _showNotifications(context),
                       tooltip: 'Notificacoes',
                       icon: const Icon(Icons.notifications_outlined),
                     ),
@@ -90,6 +90,35 @@ class HomeShellPage extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       builder: (_) => _ProfileMenu(userContext: userContext),
+    );
+  }
+
+  void _showNotifications(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            Text('Notificações', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+            SizedBox(height: 16),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.assignment_late_outlined),
+              title: Text('2 demandas aguardam revisão'),
+              subtitle: Text('Atualizado há 5 minutos'),
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.calendar_today_outlined),
+              title: Text('Aula prática agendada para amanhã'),
+              subtitle: Text('Laboratório 03, turno matutino'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

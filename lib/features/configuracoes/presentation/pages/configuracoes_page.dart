@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
 
 class ConfiguracoesPage extends StatefulWidget {
@@ -12,8 +13,46 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
   bool _notificacoesAtivas = true;
   bool _modoDark = false;
   bool _biometriaAtiva = false;
+  bool _backupAutomaticoAtivo = true;
   String _idioma = 'Português (Brasil)';
   String _tamanhoFonte = 'Médio';
+  String _nomePerfil = 'João Silva';
+  String _cargoPerfil = 'Coordenador Acadêmico';
+  String _emailUsuario = 'joao.silva@universidade.edu.br';
+  String _ultimaAlteracaoSenha = '20/02/2026';
+  String _proximoBackup = '25/04/2026';
+  String _ultimoBackup = '20/04/2026 às 14:30';
+  int _problemasReportados = 0;
+
+  String _dataAtual() {
+    final agora = DateTime.now();
+    final dia = agora.day.toString().padLeft(2, '0');
+    final mes = agora.month.toString().padLeft(2, '0');
+    final ano = agora.year.toString();
+    return '$dia/$mes/$ano';
+  }
+
+  String _dataHoraAtual() {
+    final agora = DateTime.now();
+    final dia = agora.day.toString().padLeft(2, '0');
+    final mes = agora.month.toString().padLeft(2, '0');
+    final ano = agora.year.toString();
+    final hora = agora.hour.toString().padLeft(2, '0');
+    final minuto = agora.minute.toString().padLeft(2, '0');
+    return '$dia/$mes/$ano às $hora:$minuto';
+  }
+
+  String _dataFutura(int dias) {
+    final data = DateTime.now().add(Duration(days: dias));
+    final dia = data.day.toString().padLeft(2, '0');
+    final mes = data.month.toString().padLeft(2, '0');
+    final ano = data.year.toString();
+    return '$dia/$mes/$ano';
+  }
+
+  void _mostrarFeedback(String mensagem) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensagem)));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,19 +70,19 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               _ConfigItem(
                 icon: Icons.person,
                 titulo: 'Perfil',
-                subtitulo: 'Nome: João Silva',
+                subtitulo: 'Nome: $_nomePerfil',
                 onTap: () => _showAlerta(context, 'Perfil'),
               ),
               _ConfigItem(
                 icon: Icons.email,
                 titulo: 'Email',
-                subtitulo: 'joao.silva@universidade.edu.br',
+                subtitulo: _emailUsuario,
                 onTap: () => _showAlerta(context, 'Email'),
               ),
               _ConfigItem(
                 icon: Icons.lock,
                 titulo: 'Senha',
-                subtitulo: 'Última alteração: 20/02/2026',
+                subtitulo: 'Última alteração: $_ultimaAlteracaoSenha',
                 onTap: () => _showAlerta(context, 'Alterar Senha'),
               ),
             ],
@@ -117,7 +156,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               _ConfigItem(
                 icon: Icons.backup,
                 titulo: 'Backup automático',
-                subtitulo: 'Próximo backup em: 25/04/2026',
+                subtitulo: 'Próximo backup em: $_proximoBackup',
                 onTap: () => _showAlerta(context, 'Backup'),
               ),
               _ConfigItem(
@@ -146,7 +185,9 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               _ConfigItem(
                 icon: Icons.bug_report,
                 titulo: 'Reportar problema',
-                subtitulo: 'Enviar feedback ou relatar bugs',
+                subtitulo: _problemasReportados == 0
+                    ? 'Enviar feedback ou relatar bugs'
+                    : '$_problemasReportados relato(s) enviados',
                 onTap: () => _showAlerta(context, 'Reportar Problema'),
               ),
             ],
@@ -214,8 +255,8 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
 
   void _showEditarPerfil(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final nomeController = TextEditingController(text: 'João Silva');
-    final cargoController = TextEditingController(text: 'Coordenador Acadêmico');
+    final nomeController = TextEditingController(text: _nomePerfil);
+    final cargoController = TextEditingController(text: _cargoPerfil);
 
     showModalBottomSheet(
       context: context,
@@ -265,11 +306,18 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      // Aqui seria implementada a lógica para salvar o perfil
+                      if (nomeController.text.trim().isEmpty || cargoController.text.trim().isEmpty) {
+                        _mostrarFeedback('Preencha nome e cargo');
+                        return;
+                      }
+
+                      setState(() {
+                        _nomePerfil = nomeController.text.trim();
+                        _cargoPerfil = cargoController.text.trim();
+                      });
+
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Perfil atualizado com sucesso!')),
-                      );
+                      _mostrarFeedback('Perfil atualizado com sucesso!');
                     },
                     child: const Text('Salvar'),
                   ),
@@ -284,7 +332,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
 
   void _showAlterarEmail(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final emailController = TextEditingController(text: 'joao.silva@universidade.edu.br');
+    final emailController = TextEditingController(text: _emailUsuario);
 
     showModalBottomSheet(
       context: context,
@@ -332,11 +380,19 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      // Aqui seria implementada a lógica para alterar o email
+                      final email = emailController.text.trim();
+                      final emailValido = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email);
+                      if (!emailValido) {
+                        _mostrarFeedback('Informe um email válido');
+                        return;
+                      }
+
+                      setState(() {
+                        _emailUsuario = email;
+                      });
+
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Código de verificação enviado!')),
-                      );
+                      _mostrarFeedback('Código de verificação enviado!');
                     },
                     child: const Text('Enviar Código'),
                   ),
@@ -414,11 +470,31 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      // Aqui seria implementada a lógica para alterar a senha
+                      final senhaAtual = senhaAtualController.text.trim();
+                      final novaSenha = novaSenhaController.text.trim();
+                      final confirmarSenha = confirmarSenhaController.text.trim();
+
+                      if (senhaAtual.isEmpty) {
+                        _mostrarFeedback('Informe a senha atual');
+                        return;
+                      }
+
+                      if (novaSenha.length < 6) {
+                        _mostrarFeedback('A nova senha deve ter ao menos 6 caracteres');
+                        return;
+                      }
+
+                      if (novaSenha != confirmarSenha) {
+                        _mostrarFeedback('A confirmação da senha não confere');
+                        return;
+                      }
+
+                      setState(() {
+                        _ultimaAlteracaoSenha = _dataAtual();
+                      });
+
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Senha alterada com sucesso!')),
-                      );
+                      _mostrarFeedback('Senha alterada com sucesso!');
                     },
                     child: const Text('Alterar'),
                   ),
@@ -435,59 +511,67 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
     final textTheme = Theme.of(context).textTheme;
     showModalBottomSheet(
       context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Backup Automático', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: const Icon(Icons.close),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Configurações de Backup',
-              style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 16),
-            _ConfigToggle(
-              icon: Icons.backup,
-              titulo: 'Backup automático',
-              subtitulo: 'Realizar backup diariamente',
-              value: true,
-              onChanged: (value) {
-                // Aqui seria implementada a lógica para alterar a configuração
-              },
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Último backup: 20/04/2026 às 14:30',
-              style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-            ),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      // Aqui seria implementada a lógica para fazer backup manual
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Backup realizado com sucesso!')),
-                      );
-                    },
-                    child: const Text('Fazer Backup Agora'),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Backup Automático', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(Icons.close),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Configurações de Backup',
+                style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 16),
+              _ConfigToggle(
+                icon: Icons.backup,
+                titulo: 'Backup automático',
+                subtitulo: 'Realizar backup diariamente',
+                value: _backupAutomaticoAtivo,
+                onChanged: (value) {
+                  setState(() {
+                    _backupAutomaticoAtivo = value;
+                    _proximoBackup = value ? _dataFutura(1) : 'Desativado';
+                  });
+                  setModalState(() {});
+                },
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Último backup: $_ultimoBackup',
+                style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        setState(() {
+                          _ultimoBackup = _dataHoraAtual();
+                          _proximoBackup = _backupAutomaticoAtivo ? _dataFutura(1) : 'Desativado';
+                        });
+                        Navigator.pop(context);
+                        _mostrarFeedback('Backup realizado com sucesso!');
+                      },
+                      child: const Text('Fazer Backup Agora'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -738,11 +822,17 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      // Aqui seria implementada a lógica para enviar o relatório
+                      if (tituloController.text.trim().isEmpty || descricaoController.text.trim().isEmpty) {
+                        _mostrarFeedback('Preencha título e descrição');
+                        return;
+                      }
+
+                      setState(() {
+                        _problemasReportados += 1;
+                      });
+
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Relatório enviado com sucesso!')),
-                      );
+                      _mostrarFeedback('Relatório enviado com sucesso!');
                     },
                     child: const Text('Enviar'),
                   ),
@@ -771,7 +861,10 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
             child: const Text('Cancelar'),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
+            },
             child: Text(
               'Sair',
               style: TextStyle(color: SigadColors.risk),

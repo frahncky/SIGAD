@@ -90,7 +90,7 @@ class _KanbanPageState extends State<KanbanPage> {
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
+        builder: (context, setModalState) => AlertDialog(
           title: const Text('Novo Card'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -109,7 +109,7 @@ class _KanbanPageState extends State<KanbanPage> {
                 items: ['Baixa', 'Média', 'Alta']
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                     .toList(),
-                onChanged: (value) => setState(() => prioridadeSelecionada = value!),
+                onChanged: (value) => setModalState(() => prioridadeSelecionada = value!),
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
@@ -118,7 +118,7 @@ class _KanbanPageState extends State<KanbanPage> {
                 items: ['Backlog', 'Em Progresso', 'Em Revisão', 'Concluído']
                     .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                     .toList(),
-                onChanged: (value) => setState(() => colunaSelecionada = value!),
+                onChanged: (value) => setModalState(() => colunaSelecionada = value!),
               ),
             ],
           ),
@@ -129,12 +129,12 @@ class _KanbanPageState extends State<KanbanPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                if (tituloController.text.isNotEmpty) {
+                if (tituloController.text.trim().isNotEmpty) {
                   setState(() {
                     final newId = _cards.isEmpty ? 1 : _cards.map((c) => c.id).reduce((a, b) => a > b ? a : b) + 1;
                     _cards.add(_Card(
                       id: newId,
-                      titulo: tituloController.text,
+                      titulo: tituloController.text.trim(),
                       coluna: colunaSelecionada,
                       prioridade: prioridadeSelecionada,
                     ));
@@ -142,6 +142,10 @@ class _KanbanPageState extends State<KanbanPage> {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Card criado com sucesso!')),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Informe o título do card')),
                   );
                 }
               },
@@ -418,11 +422,8 @@ class _KanbanCard extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              // Aqui seria implementada a lógica para excluir o card
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Card excluído com sucesso!')),
-              );
+              onDeleted(card);
             },
             child: const Text('Excluir', style: TextStyle(color: Colors.red)),
           ),

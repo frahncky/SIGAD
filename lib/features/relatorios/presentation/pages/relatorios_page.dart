@@ -62,6 +62,37 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
     ),
   ];
 
+  void _atualizarRelatorio(_Relatorio relatorioAtualizado) {
+    setState(() {
+      final index = _relatorios.indexWhere((item) => item.id == relatorioAtualizado.id);
+      if (index >= 0) {
+        _relatorios[index] = relatorioAtualizado;
+      }
+    });
+  }
+
+  void _baixarRelatorio(_Relatorio relatorio) {
+    final atualizado = relatorio.copyWith(
+      downloads: relatorio.downloads + 1,
+      ultimaAcao: 'PDF baixado agora',
+    );
+    _atualizarRelatorio(atualizado);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Relatório baixado: ${relatorio.titulo}')),
+    );
+  }
+
+  void _compartilharRelatorio(_Relatorio relatorio) {
+    final atualizado = relatorio.copyWith(
+      compartilhamentos: relatorio.compartilhamentos + 1,
+      ultimaAcao: 'Compartilhado agora',
+    );
+    _atualizarRelatorio(atualizado);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Link de compartilhamento gerado para ${relatorio.titulo}')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -97,7 +128,11 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
           ..._relatorios.asMap().entries.map(
                 (entry) => Padding(
                   padding: EdgeInsets.only(bottom: entry.key < _relatorios.length - 1 ? 12 : 0),
-                  child: _RelatorioCard(relatorio: entry.value),
+                  child: _RelatorioCard(
+                    relatorio: entry.value,
+                    onBaixar: () => _baixarRelatorio(entry.value),
+                    onCompartilhar: () => _compartilharRelatorio(entry.value),
+                  ),
                 ),
               ),
         ],
@@ -107,9 +142,15 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
 }
 
 class _RelatorioCard extends StatelessWidget {
-  const _RelatorioCard({required this.relatorio});
+  const _RelatorioCard({
+    required this.relatorio,
+    required this.onBaixar,
+    required this.onCompartilhar,
+  });
 
   final _Relatorio relatorio;
+  final VoidCallback onBaixar;
+  final VoidCallback onCompartilhar;
 
   @override
   Widget build(BuildContext context) {
@@ -267,6 +308,13 @@ class _RelatorioCard extends StatelessWidget {
                 ),
               ],
             ),
+            if (relatorio.ultimaAcao != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                relatorio.ultimaAcao!,
+                style: textTheme.labelSmall?.copyWith(color: SigadColors.muted),
+              ),
+            ],
           ],
         ),
       ),
@@ -279,26 +327,12 @@ class _RelatorioCard extends StatelessWidget {
         _showDetalhes(context);
         break;
       case 'baixar':
-        _baixarRelatorio(context);
+        onBaixar();
         break;
       case 'compartilhar':
-        _compartilharRelatorio(context);
+        onCompartilhar();
         break;
     }
-  }
-
-  void _baixarRelatorio(BuildContext context) {
-    // Aqui seria implementada a lógica para baixar o relatório
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Baixando relatório: ${relatorio.titulo}')),
-    );
-  }
-
-  void _compartilharRelatorio(BuildContext context) {
-    // Aqui seria implementada a lógica para compartilhar o relatório
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Compartilhando relatório: ${relatorio.titulo}')),
-    );
   }
 
   void _showDetalhes(BuildContext context) {
@@ -340,12 +374,17 @@ class _RelatorioCard extends StatelessWidget {
               _DetailSection(label: 'Autor', value: relatorio.autor),
               _DetailSection(label: 'Data', value: relatorio.data),
               _DetailSection(label: 'Status', value: relatorio.status),
+              _DetailSection(label: 'Downloads', value: '${relatorio.downloads}'),
+              _DetailSection(label: 'Compartilhamentos', value: '${relatorio.compartilhamentos}'),
               const SizedBox(height: 24),
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        onBaixar();
+                      },
                       icon: const Icon(Icons.download),
                       label: const Text('Baixar PDF'),
                     ),
@@ -353,7 +392,10 @@ class _RelatorioCard extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        onCompartilhar();
+                      },
                       icon: const Icon(Icons.share),
                       label: const Text('Compartilhar'),
                     ),
@@ -430,6 +472,9 @@ class _Relatorio {
     required this.autor,
     required this.status,
     required this.statusColor,
+    this.downloads = 0,
+    this.compartilhamentos = 0,
+    this.ultimaAcao,
   });
 
   final String id;
@@ -440,4 +485,34 @@ class _Relatorio {
   final String autor;
   final String status;
   final Color statusColor;
+  final int downloads;
+  final int compartilhamentos;
+  final String? ultimaAcao;
+
+  _Relatorio copyWith({
+    String? titulo,
+    String? descricao,
+    String? tipo,
+    String? data,
+    String? autor,
+    String? status,
+    Color? statusColor,
+    int? downloads,
+    int? compartilhamentos,
+    String? ultimaAcao,
+  }) {
+    return _Relatorio(
+      id: id,
+      titulo: titulo ?? this.titulo,
+      descricao: descricao ?? this.descricao,
+      tipo: tipo ?? this.tipo,
+      data: data ?? this.data,
+      autor: autor ?? this.autor,
+      status: status ?? this.status,
+      statusColor: statusColor ?? this.statusColor,
+      downloads: downloads ?? this.downloads,
+      compartilhamentos: compartilhamentos ?? this.compartilhamentos,
+      ultimaAcao: ultimaAcao ?? this.ultimaAcao,
+    );
+  }
 }

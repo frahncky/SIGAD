@@ -11,8 +11,25 @@ class DemandasPage extends StatefulWidget {
 class _DemandasPageState extends State<DemandasPage> {
   String _filtroStatus = 'Todas';
   String _filtroPrioridade = 'Todas';
+  static const List<String> _statusDisponiveis = [
+    'Novo',
+    'Em andamento',
+    'Aguardando',
+    'Revisão',
+    'Concluído',
+  ];
+  static const List<String> _prioridades = ['Alta', 'Média', 'Baixa'];
+  static const List<String> _proprietarios = [
+    'Coordenação',
+    'Secretaria Acadêmica',
+    'Lab. Biologia',
+    'TI',
+    'RH',
+    'Gestão',
+    'Comissão de Estágio',
+  ];
 
-  static const List<_Demanda> _demandas = [
+  final List<_Demanda> _demandas = [
     _Demanda(
       id: '#DEM-001',
       titulo: 'Revisar inventário de microscópios',
@@ -73,6 +90,61 @@ class _DemandasPageState extends State<DemandasPage> {
     }).toList();
   }
 
+  Color _toneStatus(String status) {
+    switch (status) {
+      case 'Novo':
+        return SigadColors.brand;
+      case 'Em andamento':
+        return SigadColors.info;
+      case 'Aguardando':
+        return SigadColors.warning;
+      case 'Revisão':
+        return SigadColors.accent;
+      case 'Concluído':
+        return SigadColors.success;
+      default:
+        return SigadColors.muted;
+    }
+  }
+
+  String _gerarProximoIdDemanda() {
+    var maiorId = 0;
+
+    for (final demanda in _demandas) {
+      final numero = int.tryParse(demanda.id.replaceAll(RegExp(r'[^0-9]'), ''));
+      if (numero != null && numero > maiorId) {
+        maiorId = numero;
+      }
+    }
+
+    final proximoId = maiorId + 1;
+    return '#DEM-${proximoId.toString().padLeft(3, '0')}';
+  }
+
+  String _dataAtual() {
+    final agora = DateTime.now();
+    final dia = agora.day.toString().padLeft(2, '0');
+    final mes = agora.month.toString().padLeft(2, '0');
+    final ano = agora.year.toString();
+    return '$dia/$mes/$ano';
+  }
+
+  String? _validarDemanda({required String titulo, required String descricao}) {
+    if (titulo.trim().isEmpty) {
+      return 'Informe o título da demanda';
+    }
+
+    if (descricao.trim().isEmpty) {
+      return 'Informe a descrição da demanda';
+    }
+
+    return null;
+  }
+
+  void _mostrarFeedback(String mensagem) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensagem)));
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -106,7 +178,7 @@ class _DemandasPageState extends State<DemandasPage> {
                     Expanded(
                       child: Wrap(
                         spacing: 8,
-                        children: ['Todas', 'Novo', 'Em andamento', 'Aguardando', 'Revisão', 'Concluído']
+                        children: ['Todas', ..._statusDisponiveis]
                             .map((status) => FilterChip(
                               label: Text(status),
                               selected: _filtroStatus == status,
@@ -125,7 +197,7 @@ class _DemandasPageState extends State<DemandasPage> {
                     Expanded(
                       child: Wrap(
                         spacing: 8,
-                        children: ['Todas', 'Alta', 'Média', 'Baixa']
+                        children: ['Todas', ..._prioridades]
                             .map((prioridade) => FilterChip(
                               label: Text(prioridade),
                               selected: _filtroPrioridade == prioridade,
@@ -162,6 +234,8 @@ class _DemandasPageState extends State<DemandasPage> {
                     separatorBuilder: (context, i) => const SizedBox(height: 12),
                     itemBuilder: (_, index) => _DemandasCard(
                       demanda: _demandasFiltradas[index],
+                      onEditar: () => _showEditarDemanda(context, _demandasFiltradas[index]),
+                      onExcluir: () => _showConfirmarExclusao(context, _demandasFiltradas[index]),
                     ),
                   ),
           ),
@@ -181,7 +255,7 @@ class _DemandasPageState extends State<DemandasPage> {
     showModalBottomSheet(
       context: context,
       builder: (context) => StatefulBuilder(
-        builder: (context, setState) => Container(
+        builder: (context, setModalState) => Container(
           padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,12 +276,12 @@ class _DemandasPageState extends State<DemandasPage> {
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
-                children: ['Todas', 'Novo', 'Em andamento', 'Aguardando', 'Revisão', 'Concluído']
+                children: ['Todas', ..._statusDisponiveis]
                     .map((status) => FilterChip(
                       label: Text(status),
                       selected: _filtroStatus == status,
                       onSelected: (selected) {
-                        setState(() => _filtroStatus = selected ? status : 'Todas');
+                        setModalState(() => _filtroStatus = selected ? status : 'Todas');
                       },
                     ))
                     .toList(),
@@ -217,12 +291,12 @@ class _DemandasPageState extends State<DemandasPage> {
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
-                children: ['Todas', 'Alta', 'Média', 'Baixa']
+                children: ['Todas', ..._prioridades]
                     .map((prioridade) => FilterChip(
                       label: Text(prioridade),
                       selected: _filtroPrioridade == prioridade,
                       onSelected: (selected) {
-                        setState(() => _filtroPrioridade = selected ? prioridade : 'Todas');
+                        setModalState(() => _filtroPrioridade = selected ? prioridade : 'Todas');
                       },
                     ))
                     .toList(),
@@ -264,12 +338,13 @@ class _DemandasPageState extends State<DemandasPage> {
     final descricaoController = TextEditingController();
     String prioridadeSelecionada = 'Média';
     String proprietarioSelecionado = 'Coordenação';
+    String statusSelecionado = 'Novo';
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (context) => StatefulBuilder(
-        builder: (context, setState) => Container(
+        builder: (context, setModalState) => Container(
           padding: const EdgeInsets.all(24),
           height: MediaQuery.of(context).size.height * 0.8,
           child: Column(
@@ -306,19 +381,28 @@ class _DemandasPageState extends State<DemandasPage> {
               DropdownButtonFormField<String>(
                 initialValue: prioridadeSelecionada,
                 decoration: const InputDecoration(labelText: 'Prioridade'),
-                items: ['Alta', 'Média', 'Baixa']
+                items: _prioridades
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                     .toList(),
-                onChanged: (value) => setState(() => prioridadeSelecionada = value!),
+                onChanged: (value) => setModalState(() => prioridadeSelecionada = value!),
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 initialValue: proprietarioSelecionado,
                 decoration: const InputDecoration(labelText: 'Proprietário'),
-                items: ['Coordenação', 'Secretaria Acadêmica', 'Lab. Biologia', 'TI', 'RH']
+                items: _proprietarios
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                     .toList(),
-                onChanged: (value) => setState(() => proprietarioSelecionado = value!),
+                onChanged: (value) => setModalState(() => proprietarioSelecionado = value!),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                initialValue: statusSelecionado,
+                decoration: const InputDecoration(labelText: 'Status inicial'),
+                items: _statusDisponiveis
+                    .map((status) => DropdownMenuItem(value: status, child: Text(status)))
+                    .toList(),
+                onChanged: (value) => setModalState(() => statusSelecionado = value!),
               ),
               const Spacer(),
               Row(
@@ -333,11 +417,34 @@ class _DemandasPageState extends State<DemandasPage> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        // Aqui seria implementada a lógica para salvar a demanda
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Demanda criada com sucesso!')),
+                        final erro = _validarDemanda(
+                          titulo: tituloController.text,
+                          descricao: descricaoController.text,
                         );
+
+                        if (erro != null) {
+                          _mostrarFeedback(erro);
+                          return;
+                        }
+
+                        setState(() {
+                          _demandas.insert(
+                            0,
+                            _Demanda(
+                              id: _gerarProximoIdDemanda(),
+                              titulo: tituloController.text.trim(),
+                              descricao: descricaoController.text.trim(),
+                              prioridade: prioridadeSelecionada,
+                              statusLabel: statusSelecionado,
+                              statusTone: _toneStatus(statusSelecionado),
+                              proprietario: proprietarioSelecionado,
+                              prazo: _dataAtual(),
+                            ),
+                          );
+                        });
+
+                        Navigator.pop(context);
+                        _mostrarFeedback('Demanda criada com sucesso!');
                       },
                       child: const Text('Criar'),
                     ),
@@ -350,12 +457,168 @@ class _DemandasPageState extends State<DemandasPage> {
       ),
     );
   }
+
+  void _showEditarDemanda(BuildContext context, _Demanda demanda) {
+    final textTheme = Theme.of(context).textTheme;
+    final tituloController = TextEditingController(text: demanda.titulo);
+    final descricaoController = TextEditingController(text: demanda.descricao);
+    String prioridadeSelecionada = demanda.prioridade;
+    String proprietarioSelecionado = demanda.proprietario;
+    String statusSelecionado = demanda.statusLabel;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          padding: const EdgeInsets.all(24),
+          height: MediaQuery.of(context).size.height * 0.8,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Editar Demanda', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              TextField(
+                controller: tituloController,
+                decoration: const InputDecoration(
+                  labelText: 'Título',
+                  hintText: 'Digite o título da demanda',
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: descricaoController,
+                maxLines: 3,
+                decoration: const InputDecoration(
+                  labelText: 'Descrição',
+                  hintText: 'Descreva a demanda em detalhes',
+                ),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                initialValue: prioridadeSelecionada,
+                decoration: const InputDecoration(labelText: 'Prioridade'),
+                items: _prioridades
+                    .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+                    .toList(),
+                onChanged: (value) => setModalState(() => prioridadeSelecionada = value!),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                initialValue: proprietarioSelecionado,
+                decoration: const InputDecoration(labelText: 'Proprietário'),
+                items: _proprietarios
+                    .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+                    .toList(),
+                onChanged: (value) => setModalState(() => proprietarioSelecionado = value!),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                initialValue: statusSelecionado,
+                decoration: const InputDecoration(labelText: 'Status'),
+                items: _statusDisponiveis
+                    .map((status) => DropdownMenuItem(value: status, child: Text(status)))
+                    .toList(),
+                onChanged: (value) => setModalState(() => statusSelecionado = value!),
+              ),
+              const Spacer(),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancelar'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        final erro = _validarDemanda(
+                          titulo: tituloController.text,
+                          descricao: descricaoController.text,
+                        );
+
+                        if (erro != null) {
+                          _mostrarFeedback(erro);
+                          return;
+                        }
+
+                        setState(() {
+                          final index = _demandas.indexWhere((item) => item.id == demanda.id);
+                          if (index >= 0) {
+                            _demandas[index] = demanda.copyWith(
+                              titulo: tituloController.text.trim(),
+                              descricao: descricaoController.text.trim(),
+                              prioridade: prioridadeSelecionada,
+                              statusLabel: statusSelecionado,
+                              statusTone: _toneStatus(statusSelecionado),
+                              proprietario: proprietarioSelecionado,
+                            );
+                          }
+                        });
+
+                        Navigator.pop(context);
+                        _mostrarFeedback('Demanda atualizada com sucesso!');
+                      },
+                      child: const Text('Salvar'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showConfirmarExclusao(BuildContext context, _Demanda demanda) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmar exclusão'),
+        content: Text('Tem certeza que deseja excluir ${demanda.titulo}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _demandas.removeWhere((item) => item.id == demanda.id);
+              });
+              Navigator.pop(context);
+              _mostrarFeedback('Demanda excluída com sucesso!');
+            },
+            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _DemandasCard extends StatelessWidget {
-  const _DemandasCard({required this.demanda});
+  const _DemandasCard({
+    required this.demanda,
+    required this.onEditar,
+    required this.onExcluir,
+  });
 
   final _Demanda demanda;
+  final VoidCallback onEditar;
+  final VoidCallback onExcluir;
 
   @override
   Widget build(BuildContext context) {
@@ -523,131 +786,12 @@ class _DemandasCard extends StatelessWidget {
   void _onMenuItemSelected(BuildContext context, String value, _Demanda demanda) {
     switch (value) {
       case 'editar':
-        _showEditarDemanda(context);
+        onEditar();
         break;
       case 'excluir':
-        _showConfirmarExclusao(context);
+        onExcluir();
         break;
     }
-  }
-
-  void _showEditarDemanda(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final tituloController = TextEditingController(text: demanda.titulo);
-    final descricaoController = TextEditingController(text: demanda.descricao);
-    String prioridadeSelecionada = demanda.prioridade;
-    String proprietarioSelecionado = demanda.proprietario;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => Container(
-          padding: const EdgeInsets.all(24),
-          height: MediaQuery.of(context).size.height * 0.8,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Editar Demanda', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              TextField(
-                controller: tituloController,
-                decoration: const InputDecoration(
-                  labelText: 'Título',
-                  hintText: 'Digite o título da demanda',
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: descricaoController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Descrição',
-                  hintText: 'Descreva a demanda em detalhes',
-                ),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: prioridadeSelecionada,
-                decoration: const InputDecoration(labelText: 'Prioridade'),
-                items: ['Alta', 'Média', 'Baixa']
-                    .map((p) => DropdownMenuItem(value: p, child: Text(p)))
-                    .toList(),
-                onChanged: (value) => setState(() => prioridadeSelecionada = value!),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: proprietarioSelecionado,
-                decoration: const InputDecoration(labelText: 'Proprietário'),
-                items: ['Coordenação', 'Secretaria Acadêmica', 'Lab. Biologia', 'TI', 'RH']
-                    .map((p) => DropdownMenuItem(value: p, child: Text(p)))
-                    .toList(),
-                onChanged: (value) => setState(() => proprietarioSelecionado = value!),
-              ),
-              const Spacer(),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancelar'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Aqui seria implementada a lógica para atualizar a demanda
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Demanda atualizada com sucesso!')),
-                        );
-                      },
-                      child: const Text('Salvar'),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showConfirmarExclusao(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirmar exclusão'),
-        content: const Text('Tem certeza que deseja excluir esta demanda?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () {
-              // Aqui seria implementada a lógica para excluir a demanda
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Demanda excluída com sucesso!')),
-              );
-            },
-            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
   }
 
   void _showDetalhesDemanda(BuildContext context) {
@@ -740,4 +884,25 @@ class _Demanda {
   final Color statusTone;
   final String proprietario;
   final String prazo;
+
+  _Demanda copyWith({
+    String? titulo,
+    String? descricao,
+    String? prioridade,
+    String? statusLabel,
+    Color? statusTone,
+    String? proprietario,
+    String? prazo,
+  }) {
+    return _Demanda(
+      id: id,
+      titulo: titulo ?? this.titulo,
+      descricao: descricao ?? this.descricao,
+      prioridade: prioridade ?? this.prioridade,
+      statusLabel: statusLabel ?? this.statusLabel,
+      statusTone: statusTone ?? this.statusTone,
+      proprietario: proprietario ?? this.proprietario,
+      prazo: prazo ?? this.prazo,
+    );
+  }
 }
