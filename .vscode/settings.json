@@ -1,4 +1,7 @@
 {
     "cmake.ignoreCMakeListsMissing": true,
-    "CodeGPT.apiKey": "LM Studio"
+    "CodeGPT.apiKey": "LM Studio",
+    "chat.tools.terminal.autoApprove": {
+        "Test-Path": true
+    }
 }
