@@ -418,116 +418,35 @@ class _MapaSemanal extends StatelessWidget {
   final bool podeEditar;
   final Future<void> Function(String diaSemana, _Turno turno, int periodo, _ReservaLaboratorio? reservaAtual) onTapCelula;
 
+  static const List<String> _diasAbreviados = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'];
+  static const List<String> _diasCompletos = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: SigadColors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: SigadColors.divider),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Disponibilidade semanal',
-            style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 8),
-          _GradeTurno(
-            turno: _Turno.matutino,
-            reservas: _reservasDoTurno(_Turno.matutino),
-            podeEditar: podeEditar,
-            onTapCelula: onTapCelula,
-          ),
-          const SizedBox(height: 12),
-          _GradeTurno(
-            turno: _Turno.vespertino,
-            reservas: _reservasDoTurno(_Turno.vespertino),
-            podeEditar: podeEditar,
-            onTapCelula: onTapCelula,
-          ),
-          const SizedBox(height: 12),
-          _GradeTurno(
-            turno: _Turno.noturno,
-            reservas: _reservasDoTurno(_Turno.noturno),
-            podeEditar: podeEditar,
-            onTapCelula: onTapCelula,
-          ),
-        ],
-      ),
-    );
-  }
-
-  List<_ReservaLaboratorio> _reservasDoTurno(_Turno turno) {
-    return reservas.where((reserva) => reserva.turno == turno).toList();
-  }
-}
-
-class _GradeTurno extends StatelessWidget {
-  const _GradeTurno({
-    required this.turno,
-    required this.reservas,
-    required this.podeEditar,
-    required this.onTapCelula,
-  });
-
-  final _Turno turno;
-  final List<_ReservaLaboratorio> reservas;
-  final bool podeEditar;
-  final Future<void> Function(String diaSemana, _Turno turno, int periodo, _ReservaLaboratorio? reservaAtual) onTapCelula;
-
-  static const List<String> _dias = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'];
-
-  @override
-  Widget build(BuildContext context) {
-    final horarios = turno.horarios;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF4EA3B),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: SigadColors.divider),
-          ),
-          child: Text(
-            turno.tituloSecao,
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w800),
-          ),
+        Text(
+          'Agenda por dia da semana',
+          style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 12),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          child: Table(
-            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-            border: TableBorder.all(color: SigadColors.divider),
-            columnWidths: const {
-              0: FixedColumnWidth(122),
-            },
+          padding: const EdgeInsets.symmetric(horizontal: 0),
+          child: Row(
             children: [
-              TableRow(
-                decoration: const BoxDecoration(color: SigadColors.surfaceAlt),
-                children: [
-                  _headerCell('Horario'),
-                  ..._dias.map((dia) => _headerCell(_rotuloDia(dia))),
-                ],
-              ),
-              ...List.generate(horarios.length, (index) {
-                final periodo = index + 1;
-                return TableRow(
-                  children: [
-                    _horarioCell(horarios[index]),
-                    ..._dias.map((dia) => _slotCell(context, dia, periodo)),
-                  ],
-                );
-              }),
+              ..._diasAbreviados.asMap().entries.map(
+                    (entry) => _ColunaDay(
+                      diaAbreviado: entry.value,
+                      diaCompleto: _diasCompletos[entry.key],
+                      reservas: _reservasDosDia(entry.value),
+                      podeEditar: podeEditar,
+                      onTapCelula: onTapCelula,
+                    ),
+                  ),
             ],
           ),
         ),
@@ -535,93 +454,235 @@ class _GradeTurno extends StatelessWidget {
     );
   }
 
-  String _rotuloDia(String dia) {
-    switch (dia) {
-      case 'Seg':
-        return 'SEGUNDA';
-      case 'Ter':
-        return 'TERCA';
-      case 'Qua':
-        return 'QUARTA';
-      case 'Qui':
-        return 'QUINTA';
-      case 'Sex':
-        return 'SEXTA';
-      default:
-        return dia;
-    }
+  List<_ReservaLaboratorio> _reservasDosDia(String diaSemana) {
+    return reservas.where((reserva) => reserva.diaSemana == diaSemana).toList();
   }
+}
 
-  Widget _headerCell(String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+class _ColunaDay extends StatelessWidget {
+  const _ColunaDay({
+    required this.diaAbreviado,
+    required this.diaCompleto,
+    required this.reservas,
+    required this.podeEditar,
+    required this.onTapCelula,
+  });
+
+  final String diaAbreviado;
+  final String diaCompleto;
+  final List<_ReservaLaboratorio> reservas;
+  final bool podeEditar;
+  final Future<void> Function(String diaSemana, _Turno turno, int periodo, _ReservaLaboratorio? reservaAtual) onTapCelula;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final slots = _gerarSlotsDoDia();
+
+    return Container(
+      width: 320,
+      margin: const EdgeInsets.only(right: 12, bottom: 12),
+      decoration: BoxDecoration(
+        color: SigadColors.canvas,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: SigadColors.divider),
       ),
-    );
-  }
-
-  Widget _horarioCell(String horario) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      child: Text(
-        horario,
-        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
-      ),
-    );
-  }
-
-  Widget _slotCell(BuildContext context, String diaSemana, int periodo) {
-    final reserva = _buscarReserva(diaSemana, periodo);
-    final disponivel = reserva == null;
-
-    return SizedBox(
-      width: 144,
-      child: Padding(
-        padding: const EdgeInsets.all(3),
-        child: Material(
-          color: disponivel ? SigadColors.surfaceAlt : SigadColors.brand.withValues(alpha: 0.14),
-          borderRadius: BorderRadius.circular(6),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(6),
-            onTap: podeEditar ? () => onTapCelula(diaSemana, turno, periodo, reserva) : null,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-              child: Center(
-                child: disponivel
-                    ? Text(
-                        podeEditar ? 'TOCAR PARA RESERVAR' : '-',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: SigadColors.muted,
-                              fontWeight: FontWeight.w600,
-                            ),
-                      )
-                    : Text(
-                        reserva.professor.toUpperCase(),
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700),
-                      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      diaCompleto,
+                      style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                    Text(
+                      diaAbreviado,
+                      style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                    ),
+                  ],
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: SigadColors.muted.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    '${slots.length}',
+                    style: textTheme.labelSmall?.copyWith(color: SigadColors.muted),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1),
+          Expanded(
+            child: Container(
+              constraints: const BoxConstraints(minHeight: 300),
+              child: ListView.separated(
+                padding: const EdgeInsets.all(12),
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: slots.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 10),
+                itemBuilder: (_, index) {
+                  final slot = slots[index];
+                  return _SlotCard(
+                    slot: slot,
+                    onTap: () => onTapCelula(slot.diaSemana, slot.turno, slot.periodo, slot.reserva),
+                    podeEditar: podeEditar,
+                  );
+                },
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
 
-  _ReservaLaboratorio? _buscarReserva(String diaSemana, int periodo) {
+  List<_HorarioSlot> _gerarSlotsDoDia() {
+    return [
+      for (final turno in _Turno.values)
+        for (var periodo = 1; periodo <= turno.horarios.length; periodo++)
+          _HorarioSlot(
+            diaSemana: diaAbreviado,
+            turno: turno,
+            periodo: periodo,
+            reserva: _encontrarReserva(turno, periodo),
+          ),
+    ];
+  }
+
+  _ReservaLaboratorio? _encontrarReserva(_Turno turno, int periodo) {
     for (final reserva in reservas) {
-      if (reserva.diaSemana == diaSemana && reserva.periodo == periodo) {
+      if (reserva.turno == turno && reserva.periodo == periodo) {
         return reserva;
       }
     }
     return null;
   }
+}
+
+class _SlotCard extends StatelessWidget {
+  const _SlotCard({
+    required this.slot,
+    required this.onTap,
+    required this.podeEditar,
+  });
+
+  final _HorarioSlot slot;
+  final VoidCallback onTap;
+  final bool podeEditar;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final isEmpty = slot.reserva == null;
+    final turnoColor = _corDoTurno(slot.turno);
+
+    return GestureDetector(
+      onTap: podeEditar ? onTap : null,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: isEmpty ? SigadColors.surfaceAlt : SigadColors.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: SigadColors.divider),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: turnoColor.withValues(alpha: 0.18),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    slot.turno.label,
+                    style: textTheme.labelSmall?.copyWith(
+                      color: turnoColor,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  slot.turno.horarioDo(slot.periodo),
+                  style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            if (isEmpty) ...[
+              Text(
+                'Disponível',
+                style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                podeEditar ? 'Toque para reservar' : 'Sem reserva',
+                style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+              ),
+            ] else ...[
+              Text(
+                slot.reserva!.professor,
+                style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Reservado',
+                style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _corDoTurno(_Turno turno) {
+    switch (turno) {
+      case _Turno.matutino:
+        return Colors.amber;
+      case _Turno.vespertino:
+        return Colors.orange;
+      case _Turno.noturno:
+        return Colors.indigo;
+    }
+  }
+}
+
+class _HorarioSlot {
+  const _HorarioSlot({
+    required this.diaSemana,
+    required this.turno,
+    required this.periodo,
+    this.reserva,
+  });
+
+  final String diaSemana;
+  final _Turno turno;
+  final int periodo;
+  final _ReservaLaboratorio? reserva;
 }
 
 class _AccessDenied extends StatelessWidget {
@@ -696,17 +757,6 @@ enum _Turno {
 
   const _Turno(this.label);
   final String label;
-
-  String get tituloSecao {
-    switch (this) {
-      case _Turno.matutino:
-        return 'MANHA';
-      case _Turno.vespertino:
-        return 'TARDE';
-      case _Turno.noturno:
-        return 'NOITE';
-    }
-  }
 
   List<String> get horarios {
     switch (this) {
