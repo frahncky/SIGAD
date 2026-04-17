@@ -10,6 +10,11 @@ class CargaDocentePage extends StatefulWidget {
 
 class _CargaDocentePageState extends State<CargaDocentePage> {
   String _filtro = 'Todos';
+  static const List<String> _statusDisponibilidade = [
+    'Disponível',
+    'Parcialmente',
+    'Indisponível',
+  ];
 
   final List<_Docente> _docentes = [
     _Docente(
@@ -69,6 +74,63 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     return _docentes.where((d) => d.disponibilidade == _filtro).toList();
   }
 
+  Color _toneDisponibilidade(String disponibilidade) {
+    switch (disponibilidade) {
+      case 'Disponível':
+        return SigadColors.success;
+      case 'Parcialmente':
+        return SigadColors.warning;
+      case 'Indisponível':
+        return SigadColors.risk;
+      default:
+        return SigadColors.muted;
+    }
+  }
+
+  String _gerarProximoIdDocente() {
+    var maiorId = 0;
+
+    for (final docente in _docentes) {
+      final numero = int.tryParse(docente.id.replaceAll(RegExp(r'[^0-9]'), ''));
+      if (numero != null && numero > maiorId) {
+        maiorId = numero;
+      }
+    }
+
+    final proximoId = maiorId + 1;
+    return '#DOC-${proximoId.toString().padLeft(3, '0')}';
+  }
+
+  String? _validarDocente({
+    required String nome,
+    required String departamento,
+    required String cargaMaxima,
+    required List<String> disciplinas,
+  }) {
+    if (nome.trim().isEmpty) {
+      return 'Informe o nome do docente';
+    }
+
+    if (departamento.trim().isEmpty) {
+      return 'Informe o departamento';
+    }
+
+    final carga = int.tryParse(cargaMaxima.trim());
+    if (carga == null || carga <= 0) {
+      return 'Informe uma carga horária máxima válida';
+    }
+
+    if (disciplinas.isEmpty) {
+      return 'Adicione pelo menos uma disciplina';
+    }
+
+    return null;
+  }
+
+  void _mostrarFeedback(String mensagem) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensagem)));
+  }
+
   void _showAdicionarDocente(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final nomeController = TextEditingController();
@@ -81,7 +143,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       context: context,
       isScrollControlled: true,
       builder: (context) => StatefulBuilder(
-        builder: (context, setState) => Container(
+        builder: (context, setModalState) => Container(
           padding: const EdgeInsets.all(24),
           height: MediaQuery.of(context).size.height * 0.9,
           child: Column(
@@ -126,10 +188,10 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
               DropdownButtonFormField<String>(
                 initialValue: disponibilidadeSelecionada,
                 decoration: const InputDecoration(labelText: 'Disponibilidade'),
-                items: ['Disponível', 'Parcialmente', 'Indisponível']
+                items: _statusDisponibilidade
                     .map((d) => DropdownMenuItem(value: d, child: Text(d)))
                     .toList(),
-                onChanged: (value) => setState(() => disponibilidadeSelecionada = value!),
+                onChanged: (value) => setModalState(() => disponibilidadeSelecionada = value!),
               ),
               const SizedBox(height: 16),
               Text(
@@ -143,11 +205,11 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                 children: [
                   ...disciplinas.map((d) => Chip(
                         label: Text(d),
-                        onDeleted: () => setState(() => disciplinas.remove(d)),
+                        onDeleted: () => setModalState(() => disciplinas.remove(d)),
                       )),
                   ActionChip(
                     label: const Text('Adicionar'),
-                    onPressed: () => _showAdicionarDisciplina(context, disciplinas, setState),
+                    onPressed: () => _showAdicionarDisciplina(context, disciplinas, setModalState),
                   ),
                 ],
               ),
@@ -164,11 +226,38 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        // Aqui seria implementada a lógica para salvar o docente
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Docente adicionado com sucesso!')),
+                        final erro = _validarDocente(
+                          nome: nomeController.text,
+                          departamento: departamentoController.text,
+                          cargaMaxima: cargaMaximaController.text,
+                          disciplinas: disciplinas,
                         );
+
+                        if (erro != null) {
+                          _mostrarFeedback(erro);
+                          return;
+                        }
+
+                        final cargaMaxima = int.parse(cargaMaximaController.text.trim());
+
+                        setState(() {
+                          _docentes.insert(
+                            0,
+                            _Docente(
+                              id: _gerarProximoIdDocente(),
+                              nome: nomeController.text.trim(),
+                              departamento: departamentoController.text.trim(),
+                              cargaHoraria: 0,
+                              cargaMaxima: cargaMaxima,
+                              disciplinas: List<String>.from(disciplinas),
+                              disponibilidade: disponibilidadeSelecionada,
+                              toneDisponibilidade: _toneDisponibilidade(disponibilidadeSelecionada),
+                            ),
+                          );
+                        });
+
+                        Navigator.pop(context);
+                        _mostrarFeedback('Docente adicionado com sucesso!');
                       },
                       child: const Text('Adicionar'),
                     ),
@@ -202,12 +291,177 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
           ),
           TextButton(
             onPressed: () {
-              if (disciplinaController.text.isNotEmpty) {
-                setState(() => disciplinas.add(disciplinaController.text));
+              final disciplina = disciplinaController.text.trim();
+              if (disciplina.isNotEmpty && !disciplinas.contains(disciplina)) {
+                setState(() => disciplinas.add(disciplina));
               }
               Navigator.pop(context);
             },
             child: const Text('Adicionar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditarDocente(BuildContext context, _Docente docente) {
+    final textTheme = Theme.of(context).textTheme;
+    final nomeController = TextEditingController(text: docente.nome);
+    final departamentoController = TextEditingController(text: docente.departamento);
+    final cargaMaximaController = TextEditingController(text: docente.cargaMaxima.toString());
+    String disponibilidadeSelecionada = docente.disponibilidade;
+    final List<String> disciplinas = List<String>.from(docente.disciplinas);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          padding: const EdgeInsets.all(24),
+          height: MediaQuery.of(context).size.height * 0.9,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Editar Docente', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              TextField(
+                controller: nomeController,
+                decoration: const InputDecoration(
+                  labelText: 'Nome Completo',
+                  hintText: 'Digite o nome do docente',
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: departamentoController,
+                decoration: const InputDecoration(
+                  labelText: 'Departamento',
+                  hintText: 'Digite o departamento',
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: cargaMaximaController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Carga Horária Máxima (horas)',
+                  hintText: 'Ex: 20',
+                ),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                initialValue: disponibilidadeSelecionada,
+                decoration: const InputDecoration(labelText: 'Disponibilidade'),
+                items: _statusDisponibilidade
+                    .map((d) => DropdownMenuItem(value: d, child: Text(d)))
+                    .toList(),
+                onChanged: (value) => setModalState(() => disponibilidadeSelecionada = value!),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Disciplinas',
+                style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  ...disciplinas.map((d) => Chip(
+                        label: Text(d),
+                        onDeleted: () => setModalState(() => disciplinas.remove(d)),
+                      )),
+                  ActionChip(
+                    label: const Text('Adicionar'),
+                    onPressed: () => _showAdicionarDisciplina(context, disciplinas, setModalState),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancelar'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        final erro = _validarDocente(
+                          nome: nomeController.text,
+                          departamento: departamentoController.text,
+                          cargaMaxima: cargaMaximaController.text,
+                          disciplinas: disciplinas,
+                        );
+
+                        if (erro != null) {
+                          _mostrarFeedback(erro);
+                          return;
+                        }
+
+                        final cargaMaxima = int.parse(cargaMaximaController.text.trim());
+
+                        setState(() {
+                          final index = _docentes.indexWhere((item) => item.id == docente.id);
+                          if (index >= 0) {
+                            _docentes[index] = docente.copyWith(
+                              nome: nomeController.text.trim(),
+                              departamento: departamentoController.text.trim(),
+                              cargaMaxima: cargaMaxima,
+                              disciplinas: List<String>.from(disciplinas),
+                              disponibilidade: disponibilidadeSelecionada,
+                              toneDisponibilidade: _toneDisponibilidade(disponibilidadeSelecionada),
+                            );
+                          }
+                        });
+
+                        Navigator.pop(context);
+                        _mostrarFeedback('Docente atualizado com sucesso!');
+                      },
+                      child: const Text('Salvar'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showConfirmarExclusao(BuildContext context, _Docente docente) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmar exclusão'),
+        content: Text('Tem certeza que deseja excluir ${docente.nome}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _docentes.removeWhere((item) => item.id == docente.id);
+              });
+              Navigator.pop(context);
+              _mostrarFeedback('Docente excluído com sucesso!');
+            },
+            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -274,6 +528,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                     separatorBuilder: (context, i) => const SizedBox(height: 12),
                     itemBuilder: (_, index) => _DocenteCard(
                       docente: _docentesFiltrados[index],
+                      onEditar: () => _showEditarDocente(context, _docentesFiltrados[index]),
+                      onExcluir: () => _showConfirmarExclusao(context, _docentesFiltrados[index]),
                     ),
                   ),
           ),
@@ -289,9 +545,15 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
 }
 
 class _DocenteCard extends StatelessWidget {
-  const _DocenteCard({required this.docente});
+  const _DocenteCard({
+    required this.docente,
+    required this.onEditar,
+    required this.onExcluir,
+  });
 
   final _Docente docente;
+  final VoidCallback onEditar;
+  final VoidCallback onExcluir;
 
   @override
   Widget build(BuildContext context) {
@@ -461,183 +723,12 @@ class _DocenteCard extends StatelessWidget {
   void _onMenuItemSelected(BuildContext context, String value) {
     switch (value) {
       case 'editar':
-        _showEditarDocente(context);
+        onEditar();
         break;
       case 'excluir':
-        _showConfirmarExclusao(context);
+        onExcluir();
         break;
     }
-  }
-
-  void _showEditarDocente(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final nomeController = TextEditingController(text: docente.nome);
-    final departamentoController = TextEditingController(text: docente.departamento);
-    final cargaMaximaController = TextEditingController(text: docente.cargaMaxima.toString());
-    String disponibilidadeSelecionada = docente.disponibilidade;
-    final List<String> disciplinas = List.from(docente.disciplinas);
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => Container(
-          padding: const EdgeInsets.all(24),
-          height: MediaQuery.of(context).size.height * 0.9,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Editar Docente', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              TextField(
-                controller: nomeController,
-                decoration: const InputDecoration(
-                  labelText: 'Nome Completo',
-                  hintText: 'Digite o nome do docente',
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: departamentoController,
-                decoration: const InputDecoration(
-                  labelText: 'Departamento',
-                  hintText: 'Digite o departamento',
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: cargaMaximaController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Carga Horária Máxima (horas)',
-                  hintText: 'Ex: 20',
-                ),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: disponibilidadeSelecionada,
-                decoration: const InputDecoration(labelText: 'Disponibilidade'),
-                items: ['Disponível', 'Parcialmente', 'Indisponível']
-                    .map((d) => DropdownMenuItem(value: d, child: Text(d)))
-                    .toList(),
-                onChanged: (value) => setState(() => disponibilidadeSelecionada = value!),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Disciplinas',
-                style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  ...disciplinas.map((d) => Chip(
-                        label: Text(d),
-                        onDeleted: () => setState(() => disciplinas.remove(d)),
-                      )),
-                  ActionChip(
-                    label: const Text('Adicionar'),
-                    onPressed: () => _showAdicionarDisciplina(context, disciplinas, setState),
-                  ),
-                ],
-              ),
-              const Spacer(),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancelar'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Aqui seria implementada a lógica para atualizar o docente
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Docente atualizado com sucesso!')),
-                        );
-                      },
-                      child: const Text('Salvar'),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showConfirmarExclusao(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirmar exclusão'),
-        content: const Text('Tem certeza que deseja excluir este docente?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () {
-              // Aqui seria implementada a lógica para excluir o docente
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Docente excluído com sucesso!')),
-              );
-            },
-            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showAdicionarDisciplina(BuildContext context, List<String> disciplinas, StateSetter setState) {
-    final disciplinaController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Adicionar Disciplina'),
-        content: TextField(
-          controller: disciplinaController,
-          decoration: const InputDecoration(
-            labelText: 'Nome da Disciplina',
-            hintText: 'Ex: Programação I',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () {
-              if (disciplinaController.text.isNotEmpty) {
-                setState(() => disciplinas.add(disciplinaController.text));
-              }
-              Navigator.pop(context);
-            },
-            child: const Text('Adicionar'),
-          ),
-        ],
-      ),
-    );
   }
 
   void _showDetalhes(BuildContext context) {
@@ -756,4 +847,25 @@ class _Docente {
   final List<String> disciplinas;
   final String disponibilidade;
   final Color toneDisponibilidade;
+
+  _Docente copyWith({
+    String? nome,
+    String? departamento,
+    int? cargaHoraria,
+    int? cargaMaxima,
+    List<String>? disciplinas,
+    String? disponibilidade,
+    Color? toneDisponibilidade,
+  }) {
+    return _Docente(
+      id: id,
+      nome: nome ?? this.nome,
+      departamento: departamento ?? this.departamento,
+      cargaHoraria: cargaHoraria ?? this.cargaHoraria,
+      cargaMaxima: cargaMaxima ?? this.cargaMaxima,
+      disciplinas: disciplinas ?? this.disciplinas,
+      disponibilidade: disponibilidade ?? this.disponibilidade,
+      toneDisponibilidade: toneDisponibilidade ?? this.toneDisponibilidade,
+    );
+  }
 }

@@ -10,6 +10,20 @@ class AtividadesPage extends StatefulWidget {
 
 class _AtividadesPageState extends State<AtividadesPage> {
   String _filtro = 'Todas';
+  static const List<String> _statusAtividade = [
+    'Concluída',
+    'Em progresso',
+    'Agendada',
+    'Pendente',
+  ];
+  static const List<String> _responsaveis = [
+    'Coordenação',
+    'Gestão',
+    'TI',
+    'RH',
+    'Auditoria',
+    'Comunicação',
+  ];
 
   final List<_Atividade> _atividades = [
     _Atividade(
@@ -73,6 +87,64 @@ class _AtividadesPageState extends State<AtividadesPage> {
     return _atividades.where((a) => a.status == _filtro).toList();
   }
 
+  Color _corStatus(String status) {
+    switch (status) {
+      case 'Concluída':
+        return SigadColors.success;
+      case 'Em progresso':
+        return SigadColors.info;
+      case 'Agendada':
+        return SigadColors.warning;
+      case 'Pendente':
+        return SigadColors.accent;
+      default:
+        return SigadColors.muted;
+    }
+  }
+
+  String _gerarProximoIdAtividade() {
+    var maiorId = 0;
+
+    for (final atividade in _atividades) {
+      final numero = int.tryParse(atividade.id.replaceAll(RegExp(r'[^0-9]'), ''));
+      if (numero != null && numero > maiorId) {
+        maiorId = numero;
+      }
+    }
+
+    final proximoId = maiorId + 1;
+    return '#ATV-${proximoId.toString().padLeft(3, '0')}';
+  }
+
+  String _dataPadraoNovaAtividade() {
+    final agora = DateTime.now();
+    final dia = agora.day.toString().padLeft(2, '0');
+    final mes = agora.month.toString().padLeft(2, '0');
+    final ano = agora.year.toString();
+    final hora = agora.hour.toString().padLeft(2, '0');
+    final minuto = agora.minute.toString().padLeft(2, '0');
+    return '$dia/$mes/$ano - $hora:$minuto';
+  }
+
+  String? _validarAtividade({
+    required String titulo,
+    required String descricao,
+  }) {
+    if (titulo.trim().isEmpty) {
+      return 'Informe o título da atividade';
+    }
+
+    if (descricao.trim().isEmpty) {
+      return 'Informe a descrição da atividade';
+    }
+
+    return null;
+  }
+
+  void _mostrarFeedback(String mensagem) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensagem)));
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -134,6 +206,8 @@ class _AtividadesPageState extends State<AtividadesPage> {
                     separatorBuilder: (context, i) => const SizedBox(height: 12),
                     itemBuilder: (_, index) => _AtividadeCard(
                       atividade: _atividadesFiltradas[index],
+                      onEditar: () => _showEditarAtividade(context, _atividadesFiltradas[index]),
+                      onExcluir: () => _showConfirmarExclusao(context, _atividadesFiltradas[index]),
                     ),
                   ),
           ),
@@ -153,12 +227,13 @@ class _AtividadesPageState extends State<AtividadesPage> {
     final tituloController = TextEditingController();
     final descricaoController = TextEditingController();
     String responsavelSelecionado = 'Coordenação';
+    String statusSelecionado = 'Pendente';
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (context) => StatefulBuilder(
-        builder: (context, setState) => Container(
+        builder: (context, setModalState) => Container(
           padding: const EdgeInsets.all(24),
           height: MediaQuery.of(context).size.height * 0.8,
           child: Column(
@@ -195,10 +270,19 @@ class _AtividadesPageState extends State<AtividadesPage> {
               DropdownButtonFormField<String>(
                 initialValue: responsavelSelecionado,
                 decoration: const InputDecoration(labelText: 'Responsável'),
-                items: ['Coordenação', 'Gestão', 'TI', 'RH', 'Auditoria', 'Comunicação']
+                items: _responsaveis
                     .map((r) => DropdownMenuItem(value: r, child: Text(r)))
                     .toList(),
-                onChanged: (value) => setState(() => responsavelSelecionado = value!),
+                onChanged: (value) => setModalState(() => responsavelSelecionado = value!),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                initialValue: statusSelecionado,
+                decoration: const InputDecoration(labelText: 'Status inicial'),
+                items: _statusAtividade
+                    .map((status) => DropdownMenuItem(value: status, child: Text(status)))
+                    .toList(),
+                onChanged: (value) => setModalState(() => statusSelecionado = value!),
               ),
               const Spacer(),
               Row(
@@ -213,11 +297,33 @@ class _AtividadesPageState extends State<AtividadesPage> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        // Aqui seria implementada a lógica para salvar a atividade
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Atividade criada com sucesso!')),
+                        final erro = _validarAtividade(
+                          titulo: tituloController.text,
+                          descricao: descricaoController.text,
                         );
+
+                        if (erro != null) {
+                          _mostrarFeedback(erro);
+                          return;
+                        }
+
+                        setState(() {
+                          _atividades.insert(
+                            0,
+                            _Atividade(
+                              id: _gerarProximoIdAtividade(),
+                              titulo: tituloController.text.trim(),
+                              descricao: descricaoController.text.trim(),
+                              data: _dataPadraoNovaAtividade(),
+                              responsavel: responsavelSelecionado,
+                              status: statusSelecionado,
+                              statusColor: _corStatus(statusSelecionado),
+                            ),
+                          );
+                        });
+
+                        Navigator.pop(context);
+                        _mostrarFeedback('Atividade criada com sucesso!');
                       },
                       child: const Text('Criar'),
                     ),
@@ -230,12 +336,157 @@ class _AtividadesPageState extends State<AtividadesPage> {
       ),
     );
   }
+
+  void _showEditarAtividade(BuildContext context, _Atividade atividade) {
+    final textTheme = Theme.of(context).textTheme;
+    final tituloController = TextEditingController(text: atividade.titulo);
+    final descricaoController = TextEditingController(text: atividade.descricao);
+    String responsavelSelecionado = atividade.responsavel;
+    String statusSelecionado = atividade.status;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          padding: const EdgeInsets.all(24),
+          height: MediaQuery.of(context).size.height * 0.8,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Editar Atividade', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              TextField(
+                controller: tituloController,
+                decoration: const InputDecoration(
+                  labelText: 'Título',
+                  hintText: 'Digite o título da atividade',
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: descricaoController,
+                maxLines: 3,
+                decoration: const InputDecoration(
+                  labelText: 'Descrição',
+                  hintText: 'Descreva a atividade em detalhes',
+                ),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                initialValue: responsavelSelecionado,
+                decoration: const InputDecoration(labelText: 'Responsável'),
+                items: _responsaveis
+                    .map((r) => DropdownMenuItem(value: r, child: Text(r)))
+                    .toList(),
+                onChanged: (value) => setModalState(() => responsavelSelecionado = value!),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                initialValue: statusSelecionado,
+                decoration: const InputDecoration(labelText: 'Status'),
+                items: _statusAtividade
+                    .map((status) => DropdownMenuItem(value: status, child: Text(status)))
+                    .toList(),
+                onChanged: (value) => setModalState(() => statusSelecionado = value!),
+              ),
+              const Spacer(),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancelar'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        final erro = _validarAtividade(
+                          titulo: tituloController.text,
+                          descricao: descricaoController.text,
+                        );
+
+                        if (erro != null) {
+                          _mostrarFeedback(erro);
+                          return;
+                        }
+
+                        setState(() {
+                          final index = _atividades.indexWhere((item) => item.id == atividade.id);
+                          if (index >= 0) {
+                            _atividades[index] = atividade.copyWith(
+                              titulo: tituloController.text.trim(),
+                              descricao: descricaoController.text.trim(),
+                              responsavel: responsavelSelecionado,
+                              status: statusSelecionado,
+                              statusColor: _corStatus(statusSelecionado),
+                            );
+                          }
+                        });
+
+                        Navigator.pop(context);
+                        _mostrarFeedback('Atividade atualizada com sucesso!');
+                      },
+                      child: const Text('Salvar'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showConfirmarExclusao(BuildContext context, _Atividade atividade) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmar exclusão'),
+        content: Text('Tem certeza que deseja excluir ${atividade.titulo}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _atividades.removeWhere((item) => item.id == atividade.id);
+              });
+              Navigator.pop(context);
+              _mostrarFeedback('Atividade excluída com sucesso!');
+            },
+            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _AtividadeCard extends StatelessWidget {
-  const _AtividadeCard({required this.atividade});
+  const _AtividadeCard({
+    required this.atividade,
+    required this.onEditar,
+    required this.onExcluir,
+  });
 
   final _Atividade atividade;
+  final VoidCallback onEditar;
+  final VoidCallback onExcluir;
 
   @override
   Widget build(BuildContext context) {
@@ -368,121 +619,12 @@ class _AtividadeCard extends StatelessWidget {
   void _onMenuItemSelected(BuildContext context, String value) {
     switch (value) {
       case 'editar':
-        _showEditarAtividade(context);
+        onEditar();
         break;
       case 'excluir':
-        _showConfirmarExclusao(context);
+        onExcluir();
         break;
     }
-  }
-
-  void _showEditarAtividade(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final tituloController = TextEditingController(text: atividade.titulo);
-    final descricaoController = TextEditingController(text: atividade.descricao);
-    String responsavelSelecionado = atividade.responsavel;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => Container(
-          padding: const EdgeInsets.all(24),
-          height: MediaQuery.of(context).size.height * 0.8,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Editar Atividade', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              TextField(
-                controller: tituloController,
-                decoration: const InputDecoration(
-                  labelText: 'Título',
-                  hintText: 'Digite o título da atividade',
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: descricaoController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Descrição',
-                  hintText: 'Descreva a atividade em detalhes',
-                ),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: responsavelSelecionado,
-                decoration: const InputDecoration(labelText: 'Responsável'),
-                items: ['Coordenação', 'Gestão', 'TI', 'RH', 'Auditoria', 'Comunicação']
-                    .map((r) => DropdownMenuItem(value: r, child: Text(r)))
-                    .toList(),
-                onChanged: (value) => setState(() => responsavelSelecionado = value!),
-              ),
-              const Spacer(),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancelar'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Aqui seria implementada a lógica para atualizar a atividade
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Atividade atualizada com sucesso!')),
-                        );
-                      },
-                      child: const Text('Salvar'),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showConfirmarExclusao(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirmar exclusão'),
-        content: const Text('Tem certeza que deseja excluir esta atividade?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () {
-              // Aqui seria implementada a lógica para excluir a atividade
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Atividade excluída com sucesso!')),
-              );
-            },
-            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
   }
 
   void _showDetalhes(BuildContext context) {
@@ -541,7 +683,10 @@ class _AtividadeCard extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        onEditar();
+                      },
                       child: const Text('Editar'),
                     ),
                   ),
@@ -625,4 +770,23 @@ class _Atividade {
   final String responsavel;
   final String status;
   final Color statusColor;
+
+  _Atividade copyWith({
+    String? titulo,
+    String? descricao,
+    String? data,
+    String? responsavel,
+    String? status,
+    Color? statusColor,
+  }) {
+    return _Atividade(
+      id: id,
+      titulo: titulo ?? this.titulo,
+      descricao: descricao ?? this.descricao,
+      data: data ?? this.data,
+      responsavel: responsavel ?? this.responsavel,
+      status: status ?? this.status,
+      statusColor: statusColor ?? this.statusColor,
+    );
+  }
 }
