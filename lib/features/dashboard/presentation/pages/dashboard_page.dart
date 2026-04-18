@@ -30,7 +30,7 @@ class DashboardPage extends StatelessWidget {
             const _AmbientBackground(),
             SingleChildScrollView(
               padding: EdgeInsets.symmetric(
-                horizontal: isWide ? 32 : 20,
+                horizontal: isWide ? 8 : 10,
                 vertical: 24,
               ),
               child: Column(
@@ -83,8 +83,12 @@ class _HeroPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final isWide = MediaQuery.of(context).size.width >= 1024;
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.symmetric(
+        horizontal: isWide ? 34 : 24,
+        vertical: isWide ? 22 : 20,
+      ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -475,7 +479,7 @@ class _RoleProfile {
           ],
           priorities: const [
             _PriorityItem(label: 'Priorizar demandas críticas da semana', icon: Icons.priority_high_outlined, tone: SigadColors.risk),
-            _PriorityItem(label: 'Fechar distribuição de carga docente', icon: Icons.balance_outlined, tone: SigadColors.info),
+            _PriorityItem(label: 'Fechar horários dos docentes', icon: Icons.balance_outlined, tone: SigadColors.info),
             _PriorityItem(label: 'Aprovar quadro de tarefas do curso', icon: Icons.view_kanban_outlined, tone: SigadColors.brand),
           ],
           focus: const ['Demandas', 'Quadro de Tarefas', 'Relatórios'],

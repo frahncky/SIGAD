@@ -473,7 +473,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Carga Docente'),
+        title: const Text('Horários dos Docentes'),
         elevation: 0,
       ),
       body: Column(

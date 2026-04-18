@@ -102,9 +102,13 @@ class HomeShellPage extends StatelessWidget {
                         child: Align(
                           alignment: Alignment.topCenter,
                           child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 1480),
+                            constraints: BoxConstraints(
+                              maxWidth: currentRoute == AppRoutes.dashboard ? 1720 : 1480,
+                            ),
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: currentRoute == AppRoutes.dashboard ? 8 : 20,
+                              ),
                               child: child,
                             ),
                           ),

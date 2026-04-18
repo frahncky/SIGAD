@@ -33,7 +33,7 @@ const List<NavigationItem> kNavigationItems = [
   ),
   NavigationItem(
     route: AppRoutes.cargaDocente,
-    label: 'Carga docente',
+    label: 'Horários dos Docentes',
     icon: Icons.schedule_outlined,
     availableFor: {UserRole.professor, UserRole.coordenador, UserRole.chefeDepartamento},
   ),
