@@ -104,10 +104,6 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Configurações'),
-        elevation: 0,
-      ),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 16),
         children: [

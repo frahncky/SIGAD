@@ -20,7 +20,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     UserRole.chefeDepartamento,
   };
 
-  String _filtro = 'Todos';
   static const String _kKey = 'sigad_docentes';
   static const List<String> _statusDisponibilidade = [
     'Disponível',
@@ -250,8 +249,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
           .toList();
     }
 
-    if (_filtro == 'Todos') return _docentes;
-    return _docentes.where((d) => d.disponibilidade == _filtro).toList();
+    return _docentes;
   }
 
   Color _toneDisponibilidade(String disponibilidade) {
@@ -822,38 +820,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Horários dos Docentes'),
-        elevation: 0,
-      ),
       body: Column(
         children: [
-          if (podeGerenciar)
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    'Todos',
-                    'Disponível',
-                    'Parcialmente',
-                    'Indisponível'
-                  ]
-                      .map((status) => Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: FilterChip(
-                              label: Text(status),
-                              selected: _filtro == status,
-                              onSelected: (selected) {
-                                setState(() => _filtro = selected ? status : 'Todos');
-                              },
-                            ),
-                          ))
-                      .toList(),
-                ),
-              ),
-            ),
           if (!podeGerenciar)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),

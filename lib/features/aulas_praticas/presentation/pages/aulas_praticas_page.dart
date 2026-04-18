@@ -174,9 +174,6 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       role == UserRole.professor || role == UserRole.coordenador || role == UserRole.chefeDepartamento;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Laboratórios'),
-      ),
       body: Stack(
         children: [
           const _AmbientBackground(),
@@ -474,7 +471,7 @@ class _FiltroLabRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      value: laboratorioSelecionado,
+      initialValue: laboratorioSelecionado,
       decoration: const InputDecoration(labelText: 'Laboratório'),
       items: laboratorios.map((lab) => DropdownMenuItem(value: lab, child: Text(lab))).toList(),
       onChanged: (value) {
@@ -498,7 +495,7 @@ class _FiltroPeriodoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<int>(
-      value: mesSelecionado,
+      initialValue: mesSelecionado,
       decoration: const InputDecoration(labelText: 'Mês'),
       items: [
         for (var i = 0; i < meses.length; i++)

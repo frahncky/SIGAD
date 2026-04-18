@@ -202,10 +202,6 @@ class _AtividadesPageState extends State<AtividadesPage> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Atividades'),
-        elevation: 0,
-      ),
       body: Column(
         children: [
           Padding(

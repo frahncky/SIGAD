@@ -178,10 +178,6 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Relatórios'),
-        elevation: 0,
-      ),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         children: [

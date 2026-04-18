@@ -256,7 +256,6 @@ class _DemandasPageState extends State<DemandasPage> {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Demandas'),
         elevation: 0,
         actions: [
           IconButton(
