@@ -22,7 +22,7 @@ class SigadApp extends StatelessWidget {
             title: 'SIGAD',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light(),
-            initialRoute: userContext.isAuthenticated ? AppRoutes.dashboard : AppRoutes.login,
+            initialRoute: AppRoutes.splash,
             onGenerateRoute: AppRouter.onGenerateRoute,
           );
         },
