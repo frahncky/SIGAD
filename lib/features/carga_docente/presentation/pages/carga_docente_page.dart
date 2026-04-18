@@ -758,7 +758,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     }
 
     final podeGerenciar = role == UserRole.coordenador || role == UserRole.chefeDepartamento;
-    final podeVisualizarHorarios = podeGerenciar || role == UserRole.professor;
+    final podeVisualizarHorarios = podeGerenciar;
     final emailNormalizado = (user?.email ?? '').trim().toLowerCase();
     final docentesVisiveis = _docentesVisiveis(role, emailUsuario: user?.email);
     final docentesOrdenados = podeGerenciar
@@ -833,6 +833,8 @@ class _DocenteCard extends StatefulWidget {
 }
 
 class _DocenteCardState extends State<_DocenteCard> {
+  bool _isExpanded = false;
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -863,27 +865,38 @@ class _DocenteCardState extends State<_DocenteCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          docente.nome,
-                          style: textTheme.labelLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
+                    child: GestureDetector(
+                      onTap: podeVisualizarHorarios ? () => setState(() => _isExpanded = !_isExpanded) : null,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            docente.nome,
+                            style: textTheme.labelLarge?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          docente.departamento,
-                          style: textTheme.bodySmall?.copyWith(
-                            color: SigadColors.muted,
+                          const SizedBox(height: 4),
+                          Text(
+                            docente.departamento,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: SigadColors.muted,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
+                  if (podeVisualizarHorarios)
+                    GestureDetector(
+                      onTap: () => setState(() => _isExpanded = !_isExpanded),
+                      child: Icon(
+                        _isExpanded ? Icons.expand_less : Icons.expand_more,
+                        color: SigadColors.muted,
+                      ),
+                    ),
                   if (widget.canManage)
                     PopupMenuButton<String>(
                       onSelected: _onMenuItemSelected,
@@ -940,32 +953,26 @@ class _DocenteCardState extends State<_DocenteCard> {
                         ))
                     .toList(),
               ),
-            ],
-          ),
-        ),
-        if (podeVisualizarHorarios) ...[
-          const SizedBox(height: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: Text(
+              if (_isExpanded && podeVisualizarHorarios && docente.horariosAula.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                Divider(color: SigadColors.divider.withValues(alpha: 0.5)),
+                const SizedBox(height: 12),
+                Text(
                   'Distribuição semanal',
                   style: textTheme.labelSmall?.copyWith(
                     color: SigadColors.muted,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              _MapaSemanalHorarios(
-                horarios: docente.horariosAula,
-                compacto: true,
-              ),
+                const SizedBox(height: 8),
+                _MapaSemanalHorarios(
+                  horarios: docente.horariosAula,
+                  compacto: true,
+                ),
+              ],
             ],
           ),
-        ],
+        ),
       ],
     );
   }
