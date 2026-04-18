@@ -5,6 +5,7 @@ import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/models/navigation_item.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/navigation/navigation_items.dart';
+import '../../../../core/services/local_storage_service.dart';
 import '../../../../core/services/user_context_provider.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -60,7 +61,10 @@ class DashboardPage extends StatelessWidget {
                     icon: Icons.track_changes_outlined,
                   ),
                   const SizedBox(height: 12),
-                  _PriorityList(items: profile.priorities),
+                  _DynamicPriorityList(
+                    role: role,
+                    fallbackItems: profile.priorities,
+                  ),
                 ],
               ),
             ),
@@ -384,6 +388,170 @@ class _PriorityList extends StatelessWidget {
   }
 }
 
+class _DynamicPriorityList extends StatefulWidget {
+  const _DynamicPriorityList({
+    required this.role,
+    required this.fallbackItems,
+  });
+
+  final UserRole? role;
+  final List<_PriorityItem> fallbackItems;
+
+  @override
+  State<_DynamicPriorityList> createState() => _DynamicPriorityListState();
+}
+
+class _DynamicPriorityListState extends State<_DynamicPriorityList> {
+  static const String _demandasKey = 'sigad_demandas';
+  static const String _kanbanKey = 'sigad_kanban';
+  late Future<List<_PriorityItem>> _futureItems;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureItems = _buildDynamicItems();
+  }
+
+  Future<List<_PriorityItem>> _buildDynamicItems() async {
+    final demandas = await LocalStorageService.loadList(_demandasKey);
+    final kanban = await LocalStorageService.loadList(_kanbanKey);
+
+    final items = <_PriorityItem>[];
+
+    final demandasAtrasadas = _countDemandasAtrasadas(demandas);
+    if (demandasAtrasadas > 0) {
+      items.add(
+        _PriorityItem(
+          label: 'Resolver $demandasAtrasadas demanda(s) em atraso',
+          icon: Icons.warning_amber_outlined,
+          tone: SigadColors.risk,
+        ),
+      );
+    }
+
+    final demandasAltasAbertas = _countDemandasAltasAbertas(demandas);
+    if (demandasAltasAbertas > 0) {
+      items.add(
+        _PriorityItem(
+          label: 'Tratar $demandasAltasAbertas demanda(s) de alta prioridade',
+          icon: Icons.priority_high_outlined,
+          tone: SigadColors.warning,
+        ),
+      );
+    }
+
+    final cardsEmRevisao = _countKanbanByColumn(kanban, 'Em Revisão');
+    if (cardsEmRevisao > 0) {
+      items.add(
+        _PriorityItem(
+          label: 'Validar $cardsEmRevisao card(s) em revisão no Kanban',
+          icon: Icons.rate_review_outlined,
+          tone: SigadColors.info,
+        ),
+      );
+    }
+
+    final cardsBacklogAlto = _countKanbanBacklogHigh(kanban);
+    if (cardsBacklogAlto > 0) {
+      items.add(
+        _PriorityItem(
+          label: 'Priorizar $cardsBacklogAlto card(s) críticos do backlog',
+          icon: Icons.view_kanban_outlined,
+          tone: SigadColors.brand,
+        ),
+      );
+    }
+
+    if (items.isEmpty) {
+      return widget.fallbackItems;
+    }
+
+    return items.take(3).toList();
+  }
+
+  int _countDemandasAtrasadas(List<dynamic> demandas) {
+    final now = DateTime.now();
+    var total = 0;
+    for (final item in demandas) {
+      if (item is! Map<String, dynamic>) continue;
+      final status = (item['statusLabel'] as String? ?? '').toLowerCase();
+      if (status == 'concluído' || status == 'concluido') continue;
+      final prazo = _parseDate(item['prazo'] as String?);
+      if (prazo != null && prazo.isBefore(DateTime(now.year, now.month, now.day))) {
+        total++;
+      }
+    }
+    return total;
+  }
+
+  int _countDemandasAltasAbertas(List<dynamic> demandas) {
+    var total = 0;
+    for (final item in demandas) {
+      if (item is! Map<String, dynamic>) continue;
+      final prioridade = (item['prioridade'] as String? ?? '').toLowerCase();
+      final status = (item['statusLabel'] as String? ?? '').toLowerCase();
+      if (prioridade == 'alta' && status != 'concluído' && status != 'concluido') {
+        total++;
+      }
+    }
+    return total;
+  }
+
+  int _countKanbanByColumn(List<dynamic> cards, String column) {
+    var total = 0;
+    for (final item in cards) {
+      if (item is! Map<String, dynamic>) continue;
+      final coluna = (item['coluna'] as String? ?? '').toLowerCase();
+      if (coluna == column.toLowerCase()) {
+        total++;
+      }
+    }
+    return total;
+  }
+
+  int _countKanbanBacklogHigh(List<dynamic> cards) {
+    var total = 0;
+    for (final item in cards) {
+      if (item is! Map<String, dynamic>) continue;
+      final coluna = (item['coluna'] as String? ?? '').toLowerCase();
+      final prioridade = (item['prioridade'] as String? ?? '').toLowerCase();
+      if (coluna == 'backlog' && prioridade == 'alta') {
+        total++;
+      }
+    }
+    return total;
+  }
+
+  DateTime? _parseDate(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return null;
+    final parts = raw.split('/');
+    if (parts.length != 3) return null;
+    final day = int.tryParse(parts[0]);
+    final month = int.tryParse(parts[1]);
+    final year = int.tryParse(parts[2]);
+    if (day == null || month == null || year == null) return null;
+    return DateTime(year, month, day);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<_PriorityItem>>(
+      future: _futureItems,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(
+            height: 70,
+            child: Center(child: CircularProgressIndicator(strokeWidth: 2.2)),
+          );
+        }
+
+        final items = snapshot.data ?? widget.fallbackItems;
+        return _PriorityList(items: items);
+      },
+    );
+  }
+}
+
 class _AmbientBackground extends StatelessWidget {
   const _AmbientBackground();
 
@@ -484,9 +652,9 @@ class _RoleProfile {
           priorities: const [
             _PriorityItem(label: 'Priorizar demandas críticas da semana', icon: Icons.priority_high_outlined, tone: SigadColors.risk),
             _PriorityItem(label: 'Fechar horários dos docentes', icon: Icons.balance_outlined, tone: SigadColors.info),
-            _PriorityItem(label: 'Aprovar quadro de tarefas do curso', icon: Icons.view_kanban_outlined, tone: SigadColors.brand),
+            _PriorityItem(label: 'Aprovar tarefas do curso', icon: Icons.view_kanban_outlined, tone: SigadColors.brand),
           ],
-          focus: const ['Demandas', 'Quadro de Tarefas', 'Relatórios'],
+          focus: const ['Demandas', 'Tarefas', 'Relatórios'],
         );
       case UserRole.servidorAdministrativo:
         return _RoleProfile(

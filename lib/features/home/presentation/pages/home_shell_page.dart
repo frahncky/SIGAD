@@ -4,6 +4,7 @@ import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/models/navigation_item.dart';
 import '../../../../core/navigation/navigation_items.dart';
+import '../../../../core/services/chat_provider.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../../../../shared/widgets/brand_title.dart';
 
@@ -23,7 +24,10 @@ class HomeShellPage extends StatelessWidget {
       builder: (context, constraints) {
         final isWide = constraints.maxWidth >= 1024;
         final userContext = context.watch<UserContextProvider>();
+        final chatProvider = context.watch<ChatProvider>();
         final userRole = userContext.userRole;
+        final currentUser = userContext.currentUser;
+        final unreadChatCount = currentUser == null ? 0 : chatProvider.unreadCountForUser(currentUser.email);
 
         final availableItems = userRole == null
             ? kNavigationItems
@@ -75,7 +79,12 @@ class HomeShellPage extends StatelessWidget {
                   destinations: mobilePrimaryItems
                       .map(
                         (item) => NavigationDestination(
-                          icon: Icon(item.icon),
+                          icon: item.route == AppRoutes.batePapo && unreadChatCount > 0
+                              ? Badge(
+                                  label: Text(unreadChatCount > 99 ? '99+' : '$unreadChatCount'),
+                                  child: Icon(item.icon),
+                                )
+                              : Icon(item.icon),
                           label: item.label,
                         ),
                       )

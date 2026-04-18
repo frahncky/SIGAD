@@ -17,6 +17,7 @@ class _BatePapoPageState extends State<BatePapoPage> {
   String? _selectedContactEmail;
   bool _mobileConversationOpen = false;
   String _conversationSearch = '';
+  String? _lastScheduledReadKey;
 
   @override
   void dispose() {
@@ -52,6 +53,21 @@ class _BatePapoPageState extends State<BatePapoPage> {
         ? <ChatMessage>[]
         : chatProvider.messagesBetween(currentUser.email, selectedContact.email);
 
+    void scheduleMarkRead(String contactEmail) {
+      final key = '${currentUser.email}|$contactEmail';
+      if (_lastScheduledReadKey == key) {
+        return;
+      }
+      _lastScheduledReadKey = key;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        context.read<ChatProvider>().markConversationAsRead(
+              userEmail: currentUser.email,
+              contactEmail: contactEmail,
+            );
+      });
+    }
+
     void openNewConversation() {
       _showNewConversationSheet(context, allContacts, (email) {
         setState(() {
@@ -65,6 +81,9 @@ class _BatePapoPageState extends State<BatePapoPage> {
       builder: (context, constraints) {
         final isWide = constraints.maxWidth >= 980;
         if (isWide) {
+          if (selectedContact != null) {
+            scheduleMarkRead(selectedContact.email);
+          }
           return Row(
             children: [
               SizedBox(
@@ -110,6 +129,8 @@ class _BatePapoPageState extends State<BatePapoPage> {
             onNewConversation: openNewConversation,
           );
         }
+
+        scheduleMarkRead(selectedContact.email);
 
         return _ChatPanel(
           currentUserEmail: currentUser.email,

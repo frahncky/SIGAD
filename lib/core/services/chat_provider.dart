@@ -61,6 +61,7 @@ class ChatProvider extends ChangeNotifier {
   ];
 
   final Map<String, List<ChatMessage>> _messagesByConversation = {};
+  final Map<String, DateTime> _lastReadByUserConversation = {};
 
   List<ChatContact> contactsFor(User currentUser) {
     final currentEmail = _normalizeEmail(currentUser.email);
@@ -90,6 +91,62 @@ class ChatProvider extends ChangeNotifier {
     return messages;
   }
 
+  int unreadCountForUser(String userEmail) {
+    final normalizedUser = _normalizeEmail(userEmail);
+    var total = 0;
+
+    for (final entry in _messagesByConversation.entries) {
+      final conversationKey = entry.key;
+      final messages = entry.value;
+      final readKey = _userConversationReadKey(normalizedUser, conversationKey);
+      final lastReadAt = _lastReadByUserConversation[readKey];
+
+      for (final message in messages) {
+        final isRecipient = _normalizeEmail(message.recipientEmail) == normalizedUser;
+        if (!isRecipient) continue;
+        if (lastReadAt == null || message.sentAt.isAfter(lastReadAt)) {
+          total++;
+        }
+      }
+    }
+
+    return total;
+  }
+
+  void markConversationAsRead({
+    required String userEmail,
+    required String contactEmail,
+  }) {
+    final normalizedUser = _normalizeEmail(userEmail);
+    final conversationKey = _conversationKey(userEmail, contactEmail);
+    final messages = _messagesByConversation[conversationKey] ?? const <ChatMessage>[];
+    if (messages.isEmpty) {
+      return;
+    }
+
+    DateTime? latestIncomingAt;
+    for (final message in messages) {
+      if (_normalizeEmail(message.recipientEmail) != normalizedUser) continue;
+      if (latestIncomingAt == null || message.sentAt.isAfter(latestIncomingAt)) {
+        latestIncomingAt = message.sentAt;
+      }
+    }
+
+    if (latestIncomingAt == null) {
+      return;
+    }
+
+    final readKey = _userConversationReadKey(normalizedUser, conversationKey);
+    final current = _lastReadByUserConversation[readKey];
+    if (current != null && !latestIncomingAt.isAfter(current)) {
+      return;
+    }
+
+    _lastReadByUserConversation[readKey] = latestIncomingAt;
+    notifyListeners();
+    _saveReadState();
+  }
+
   void sendMessage({
     required User sender,
     required String recipientEmail,
@@ -115,11 +172,13 @@ class ChatProvider extends ChangeNotifier {
   }
 
   static const String _kKey = 'sigad_chat_messages';
+  static const String _kReadKey = 'sigad_chat_read_state';
 
   Future<void> _loadData() async {
     final list = await LocalStorageService.loadList(_kKey);
     if (list.isEmpty) {
       _seedMessages();
+      await _loadReadState();
       return;
     }
     for (final json in list) {
@@ -136,6 +195,7 @@ class ChatProvider extends ChangeNotifier {
         ),
       );
     }
+    await _loadReadState();
     notifyListeners();
   }
 
@@ -153,6 +213,37 @@ class ChatProvider extends ChangeNotifier {
       }
     }
     LocalStorageService.saveList(_kKey, allMessages);
+  }
+
+  Future<void> _loadReadState() async {
+    final list = await LocalStorageService.loadList(_kReadKey);
+    _lastReadByUserConversation.clear();
+    for (final json in list) {
+      final userEmail = json['userEmail'] as String?;
+      final conversationKey = json['conversationKey'] as String?;
+      final readAtRaw = json['readAt'] as String?;
+      if (userEmail == null || conversationKey == null || readAtRaw == null) continue;
+      final readAt = DateTime.tryParse(readAtRaw);
+      if (readAt == null) continue;
+      final key = _userConversationReadKey(userEmail, conversationKey);
+      _lastReadByUserConversation[key] = readAt;
+    }
+  }
+
+  void _saveReadState() {
+    final data = <Map<String, dynamic>>[];
+    for (final entry in _lastReadByUserConversation.entries) {
+      final parts = entry.key.split('|');
+      if (parts.length < 3) continue;
+      final userEmail = parts.first;
+      final conversationKey = '${parts[1]}|${parts[2]}';
+      data.add({
+        'userEmail': userEmail,
+        'conversationKey': conversationKey,
+        'readAt': entry.value.toIso8601String(),
+      });
+    }
+    LocalStorageService.saveList(_kReadKey, data);
   }
 
   void _seedMessages() {
@@ -204,6 +295,11 @@ class ChatProvider extends ChangeNotifier {
   String _conversationKey(String emailA, String emailB) {
     final normalized = [_normalizeEmail(emailA), _normalizeEmail(emailB)]..sort();
     return '${normalized.first}|${normalized.last}';
+  }
+
+  String _userConversationReadKey(String userEmail, String conversationKey) {
+    final normalizedUser = _normalizeEmail(userEmail);
+    return '$normalizedUser|$conversationKey';
   }
 
   String _normalizeEmail(String email) => email.trim().toLowerCase();

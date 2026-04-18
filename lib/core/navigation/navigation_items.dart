@@ -22,7 +22,7 @@ const List<NavigationItem> kNavigationItems = [
   ),
   NavigationItem(
     route: AppRoutes.kanban,
-    label: 'Quadro de Tarefas',
+    label: 'Tarefas',
     icon: Icons.view_kanban_outlined,
   ),
   NavigationItem(
