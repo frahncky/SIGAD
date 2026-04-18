@@ -59,8 +59,8 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF1e40af),
-              Color(0xFF7c3aed),
+              Color(0xFF0C6B5E), // Brand color - verde-teal
+              Color(0xFF08453C), // Brand dark
             ],
           ),
         ),
