@@ -290,6 +290,8 @@ class _ModuleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final subtitle = item.subtitle?.trim();
+
     return Material(
       color: SigadColors.surface,
       borderRadius: BorderRadius.circular(16),
@@ -328,13 +330,15 @@ class _ModuleCard extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 4),
-              Text(
-                item.subtitle ?? 'Abrir módulo',
-                style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
+              if (subtitle != null && subtitle.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ],
           ),
         ),

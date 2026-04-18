@@ -55,11 +55,6 @@ class HomeShellPage extends StatelessWidget {
                   shadowColor: Colors.black12,
                   actions: [
                     IconButton(
-                      onPressed: () => _showQuickAccess(context, availableItems),
-                      tooltip: 'Acesso rápido',
-                      icon: const Icon(Icons.search_outlined),
-                    ),
-                    IconButton(
                       onPressed: () => _showNotifications(context),
                       tooltip: 'Notificações',
                       icon: const Icon(Icons.notifications_outlined),
