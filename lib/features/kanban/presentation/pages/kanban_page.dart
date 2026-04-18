@@ -55,7 +55,6 @@ class _KanbanPageState extends State<KanbanPage> {
     coluna: json['coluna'] as String,
     prioridade: json['prioridade'] as String,
   );
-  ];
 
   Map<String, List<_Card>> get _colunas {
     const colunaNames = ['Backlog', 'Em Progresso', 'Em Revisão', 'Concluído'];
@@ -109,7 +108,6 @@ class _KanbanPageState extends State<KanbanPage> {
         );
       }
     });
-    _saveData();
     _saveData();
   }
 

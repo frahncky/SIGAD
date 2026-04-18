@@ -11,8 +11,8 @@ class CargaDocentePage extends StatefulWidget {
 
 class _CargaDocentePageState extends State<CargaDocentePage> {
   String _filtro = 'Todos';
-  static const List<String> _statusDisponibilidade = [
   static const String _kKey = 'sigad_docentes';
+  static const List<String> _statusDisponibilidade = [
     'Disponível',
     'Parcialmente',
     'Indisponível',

@@ -12,8 +12,8 @@ class RelatoriosPage extends StatefulWidget {
 class _RelatoriosPageState extends State<RelatoriosPage> {
   String _busca = '';
   String _filtroStatus = 'Todos';
-  final List<_Relatorio> _relatorios = [
   static const String _kKey = 'sigad_relatorios';
+  final List<_Relatorio> _relatorios = [
     _Relatorio(
       id: '#REL-001',
       titulo: 'Mapeamento de Demandas do Período',

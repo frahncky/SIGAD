@@ -25,7 +25,6 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
   String _ultimoBackup = '20/04/2026 às 14:30';
   int _problemasReportados = 0;
 
-  String _dataAtual() {
   static const String _kKey = 'sigad_configuracoes';
 
   @override
@@ -71,6 +70,8 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
       'problemasReportados': _problemasReportados,
     });
   }
+
+  String _dataAtual() {
     final agora = DateTime.now();
     final dia = agora.day.toString().padLeft(2, '0');
     final mes = agora.month.toString().padLeft(2, '0');

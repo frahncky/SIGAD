@@ -12,8 +12,8 @@ class AtividadesPage extends StatefulWidget {
 class _AtividadesPageState extends State<AtividadesPage> {
   String _busca = '';
   String _filtro = 'Todas';
-  static const List<String> _statusAtividade = [
   static const String _kKey = 'sigad_atividades';
+  static const List<String> _statusAtividade = [
     'Concluída',
     'Em progresso',
     'Agendada',
