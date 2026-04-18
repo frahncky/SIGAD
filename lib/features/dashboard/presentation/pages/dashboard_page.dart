@@ -45,28 +45,11 @@ class DashboardPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   const _SectionTitle(
-                    title: 'Indicadores principais',
-                    icon: Icons.insights_outlined,
-                  ),
-                  const SizedBox(height: 12),
-                  _MetricsGrid(metrics: profile.metrics),
-                  const SizedBox(height: 24),
-                  const _SectionTitle(
                     title: 'Atalhos do seu perfil',
                     icon: Icons.apps_outlined,
                   ),
                   const SizedBox(height: 12),
                   _ModuleGrid(modules: availableModules),
-                  const SizedBox(height: 24),
-                  const _SectionTitle(
-                    title: 'Prioridades de hoje',
-                    icon: Icons.track_changes_outlined,
-                  ),
-                  const SizedBox(height: 12),
-                  _DynamicPriorityList(
-                    role: role,
-                    fallbackItems: profile.priorities,
-                  ),
                 ],
               ),
             ),
@@ -217,80 +200,6 @@ class _SectionTitle extends StatelessWidget {
   }
 }
 
-class _MetricsGrid extends StatelessWidget {
-  const _MetricsGrid({required this.metrics});
-
-  final List<_RoleMetric> metrics;
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: metrics.length,
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 320,
-        mainAxisExtent: 132,
-        mainAxisSpacing: 14,
-        crossAxisSpacing: 14,
-      ),
-      itemBuilder: (context, index) => _MetricCard(metric: metrics[index]),
-    );
-  }
-}
-
-class _MetricCard extends StatelessWidget {
-  const _MetricCard({required this.metric});
-
-  final _RoleMetric metric;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: SigadColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: SigadColors.divider),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: metric.tone.withValues(alpha: 0.14),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(metric.icon, color: metric.tone),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  metric.label,
-                  style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  metric.value,
-                  style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _ModuleGrid extends StatelessWidget {
   const _ModuleGrid({required this.modules});
 
@@ -311,7 +220,7 @@ class _ModuleGrid extends StatelessWidget {
       itemCount: modules.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: crossAxisCount,
-        mainAxisExtent: 122,
+        mainAxisExtent: 102,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
       ),
@@ -337,7 +246,7 @@ class _ModuleCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         onTap: () => Navigator.of(context).pushReplacementNamed(item.route),
         child: Container(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: SigadColors.divider),
@@ -349,19 +258,19 @@ class _ModuleCard extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    width: 36,
-                    height: 36,
+                    width: 32,
+                    height: 32,
                     decoration: BoxDecoration(
                       color: SigadColors.brand.withValues(alpha: 0.10),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(item.icon, color: SigadColors.brand),
+                    child: Icon(item.icon, color: SigadColors.brand, size: 18),
                   ),
                   const Spacer(),
-                  const Icon(Icons.arrow_outward_rounded, color: SigadColors.muted, size: 18),
+                  const Icon(Icons.arrow_outward_rounded, color: SigadColors.muted, size: 16),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               Text(
                 item.label,
                 style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
@@ -369,11 +278,11 @@ class _ModuleCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               if (subtitle != null && subtitle.isNotEmpty) ...[
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
                   subtitle,
                   style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
