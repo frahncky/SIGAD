@@ -28,6 +28,22 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     'Indisponível',
   ];
 
+  static const List<String> _diasSemana = [
+    'Segunda',
+    'Terça',
+    'Quarta',
+    'Quinta',
+    'Sexta',
+  ];
+
+  static const List<String> _modalidades = [
+    'Integral',
+    'Concomitante',
+    'Subsequente',
+    'EJA',
+    'Superior',
+  ];
+
   final List<_Docente> _docentes = [
     _Docente(
       id: '#DOC-001',
@@ -38,9 +54,9 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       cargaMaxima: 20,
       disciplinas: ['Programação I', 'Programação II', 'Engenharia de Software'],
       horariosAula: const [
-        _HorarioAula(diaSemana: 'Segunda', inicio: '08:00', fim: '09:40'),
-        _HorarioAula(diaSemana: 'Quarta', inicio: '10:00', fim: '11:40'),
-        _HorarioAula(diaSemana: 'Sexta', inicio: '19:00', fim: '20:40'),
+        _HorarioAula(diaSemana: 'Segunda', inicio: '08:00', fim: '09:40', disciplina: 'Programação I', cargaHoraria: '2h/sem · 80h', turma: 'SI-2A', modalidade: 'Integral'),
+        _HorarioAula(diaSemana: 'Quarta', inicio: '10:00', fim: '11:40', disciplina: 'Programação II', cargaHoraria: '2h/sem · 80h', turma: 'SI-2B', modalidade: 'Concomitante'),
+        _HorarioAula(diaSemana: 'Sexta', inicio: '19:00', fim: '20:40', disciplina: 'Engenharia de Software', cargaHoraria: '4h/sem · 120h', turma: 'SI-3A', modalidade: 'Superior'),
       ],
       disponibilidade: 'Indisponível',
       toneDisponibilidade: SigadColors.risk,
@@ -54,8 +70,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       cargaMaxima: 20,
       disciplinas: ['Banco de Dados', 'Web Design'],
       horariosAula: const [
-        _HorarioAula(diaSemana: 'Terça', inicio: '08:00', fim: '09:40'),
-        _HorarioAula(diaSemana: 'Quinta', inicio: '08:00', fim: '09:40'),
+        _HorarioAula(diaSemana: 'Terça', inicio: '08:00', fim: '09:40', disciplina: 'Banco de Dados', cargaHoraria: '4h/sem · 120h', turma: 'SI-3A', modalidade: 'Subsequente'),
+        _HorarioAula(diaSemana: 'Quinta', inicio: '08:00', fim: '09:40', disciplina: 'Web Design', cargaHoraria: '2h/sem · 60h', turma: 'SI-2A', modalidade: 'EJA'),
       ],
       disponibilidade: 'Disponível',
       toneDisponibilidade: SigadColors.success,
@@ -69,8 +85,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       cargaMaxima: 20,
       disciplinas: ['Computação Gráfica'],
       horariosAula: const [
-        _HorarioAula(diaSemana: 'Segunda', inicio: '14:00', fim: '15:40'),
-        _HorarioAula(diaSemana: 'Quarta', inicio: '14:00', fim: '15:40'),
+        _HorarioAula(diaSemana: 'Segunda', inicio: '14:00', fim: '15:40', disciplina: 'Computação Gráfica', cargaHoraria: '2h/sem · 60h', turma: 'ES-3B', modalidade: 'Integral'),
+        _HorarioAula(diaSemana: 'Quarta', inicio: '14:00', fim: '15:40', disciplina: 'Computação Gráfica', cargaHoraria: '2h/sem · 60h', turma: 'ES-3B', modalidade: 'Integral'),
       ],
       disponibilidade: 'Disponível',
       toneDisponibilidade: SigadColors.success,
@@ -84,9 +100,9 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       cargaMaxima: 20,
       disciplinas: ['Redes I', 'Redes II', 'Segurança de Redes'],
       horariosAula: const [
-        _HorarioAula(diaSemana: 'Terça', inicio: '19:00', fim: '20:40'),
-        _HorarioAula(diaSemana: 'Quinta', inicio: '19:00', fim: '20:40'),
-        _HorarioAula(diaSemana: 'Sexta', inicio: '21:00', fim: '22:40'),
+        _HorarioAula(diaSemana: 'Terça', inicio: '19:00', fim: '20:40', disciplina: 'Redes I', cargaHoraria: '2h/sem · 60h', turma: 'RT-2A', modalidade: 'Subsequente'),
+        _HorarioAula(diaSemana: 'Quinta', inicio: '19:00', fim: '20:40', disciplina: 'Redes II', cargaHoraria: '2h/sem · 80h', turma: 'RT-3A', modalidade: 'Concomitante'),
+        _HorarioAula(diaSemana: 'Sexta', inicio: '21:00', fim: '22:40', disciplina: 'Segurança de Redes', cargaHoraria: '4h/sem · 120h', turma: 'RT-4A', modalidade: 'Superior'),
       ],
       disponibilidade: 'Parcialmente',
       toneDisponibilidade: SigadColors.warning,
@@ -100,8 +116,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       cargaMaxima: 20,
       disciplinas: ['Qualidade de Software'],
       horariosAula: const [
-        _HorarioAula(diaSemana: 'Terça', inicio: '10:00', fim: '11:40'),
-        _HorarioAula(diaSemana: 'Quinta', inicio: '10:00', fim: '11:40'),
+        _HorarioAula(diaSemana: 'Terça', inicio: '10:00', fim: '11:40', disciplina: 'Qualidade de Software', cargaHoraria: '2h/sem · 60h', turma: 'ES-4A', modalidade: 'EJA'),
+        _HorarioAula(diaSemana: 'Quinta', inicio: '10:00', fim: '11:40', disciplina: 'Qualidade de Software', cargaHoraria: '2h/sem · 60h', turma: 'ES-4B', modalidade: 'Integral'),
       ],
       disponibilidade: 'Disponível',
       toneDisponibilidade: SigadColors.success,
@@ -142,6 +158,10 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
             'diaSemana': h.diaSemana,
             'inicio': h.inicio,
             'fim': h.fim,
+            if (h.disciplina != null) 'disciplina': h.disciplina,
+            if (h.cargaHoraria != null) 'cargaHoraria': h.cargaHoraria,
+            if (h.turma != null) 'turma': h.turma,
+            if (h.modalidade != null) 'modalidade': h.modalidade,
           },
         )
         .toList(),
@@ -156,19 +176,39 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     cargaHoraria: json['cargaHoraria'] as int,
     cargaMaxima: json['cargaMaxima'] as int,
     disciplinas: List<String>.from(json['disciplinas'] as List),
-    horariosAula: (json['horariosAula'] as List?)
-            ?.map(
-              (item) => _HorarioAula(
-                diaSemana: item['diaSemana'] as String,
-                inicio: item['inicio'] as String,
-                fim: item['fim'] as String,
-              ),
-            )
-            .toList() ??
-        const [],
+    horariosAula: _horariosAulaFromJson(json['horariosAula']),
     disponibilidade: json['disponibilidade'] as String,
     toneDisponibilidade: _toneDisponibilidade(json['disponibilidade'] as String),
   );
+
+  List<_HorarioAula> _horariosAulaFromJson(dynamic raw) {
+    if (raw is! List) return const [];
+
+    return raw
+        .whereType<Map>()
+        .map((item) {
+          final map = Map<String, dynamic>.from(item);
+          final diaSemana = map['diaSemana']?.toString().trim();
+          final inicio = map['inicio']?.toString().trim();
+          final fim = map['fim']?.toString().trim();
+
+          if (diaSemana == null || diaSemana.isEmpty || inicio == null || inicio.isEmpty || fim == null || fim.isEmpty) {
+            return null;
+          }
+
+          return _HorarioAula(
+            diaSemana: diaSemana,
+            inicio: inicio,
+            fim: fim,
+            disciplina: map['disciplina']?.toString().trim(),
+            cargaHoraria: map['cargaHoraria']?.toString().trim(),
+            turma: map['turma']?.toString().trim(),
+            modalidade: map['modalidade']?.toString().trim(),
+          );
+        })
+        .whereType<_HorarioAula>()
+        .toList(growable: false);
+  }
 
   List<_Docente> _docentesVisiveis(UserRole role, {String? emailUsuario}) {
     if (role == UserRole.professor) {
@@ -247,6 +287,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     final cargaMaximaController = TextEditingController();
     String disponibilidadeSelecionada = 'Disponível';
     final List<String> disciplinas = [];
+    final List<_HorarioAula> horarios = [];
 
     showModalBottomSheet(
       context: context,
@@ -268,70 +309,84 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
-              TextField(
-                controller: nomeController,
-                decoration: const InputDecoration(
-                  labelText: 'Nome Completo',
-                  hintText: 'Digite o nome do docente',
-                ),
-              ),
               const SizedBox(height: 16),
-              TextField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'Email de acesso',
-                  hintText: 'docente@univ.br',
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: departamentoController,
-                decoration: const InputDecoration(
-                  labelText: 'Departamento',
-                  hintText: 'Digite o departamento',
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: cargaMaximaController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Carga Horária Máxima (horas)',
-                  hintText: 'Ex: 20',
-                ),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: disponibilidadeSelecionada,
-                decoration: const InputDecoration(labelText: 'Disponibilidade'),
-                items: _statusDisponibilidade
-                    .map((d) => DropdownMenuItem(value: d, child: Text(d)))
-                    .toList(),
-                onChanged: (value) => setModalState(() => disponibilidadeSelecionada = value!),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Disciplinas',
-                style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  ...disciplinas.map((d) => Chip(
-                        label: Text(d),
-                        onDeleted: () => setModalState(() => disciplinas.remove(d)),
-                      )),
-                  ActionChip(
-                    label: const Text('Adicionar'),
-                    onPressed: () => _showAdicionarDisciplina(context, disciplinas, setModalState),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextField(
+                        controller: nomeController,
+                        decoration: const InputDecoration(labelText: 'Nome Completo', hintText: 'Digite o nome do docente'),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: const InputDecoration(labelText: 'Email de acesso', hintText: 'docente@univ.br'),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: departamentoController,
+                        decoration: const InputDecoration(labelText: 'Departamento', hintText: 'Digite o departamento'),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: cargaMaximaController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(labelText: 'Carga Horária Máxima (horas)', hintText: 'Ex: 20'),
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        initialValue: disponibilidadeSelecionada,
+                        decoration: const InputDecoration(labelText: 'Disponibilidade'),
+                        items: _statusDisponibilidade.map((d) => DropdownMenuItem(value: d, child: Text(d))).toList(),
+                        onChanged: (value) => setModalState(() => disponibilidadeSelecionada = value!),
+                      ),
+                      const SizedBox(height: 16),
+                      Text('Disciplinas', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          ...disciplinas.map((d) => Chip(
+                                label: Text(d),
+                                onDeleted: () => setModalState(() => disciplinas.remove(d)),
+                              )),
+                          ActionChip(
+                            label: const Text('Adicionar'),
+                            onPressed: () => _showAdicionarDisciplina(context, disciplinas, setModalState),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Horários de Aula', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
+                          TextButton.icon(
+                            icon: const Icon(Icons.add, size: 16),
+                            label: const Text('Adicionar'),
+                            onPressed: () => _showAdicionarHorario(context, horarios, setModalState),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      if (horarios.isEmpty)
+                        Text('Nenhum horário cadastrado', style: textTheme.bodySmall?.copyWith(color: SigadColors.muted))
+                      else
+                        ...horarios.map((h) => _HorarioTile(
+                              horario: h,
+                              textTheme: textTheme,
+                              onDelete: () => setModalState(() => horarios.remove(h)),
+                            )),
+                      const SizedBox(height: 16),
+                    ],
                   ),
-                ],
+                ),
               ),
-              const Spacer(),
+              const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
@@ -366,9 +421,10 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                               nome: nomeController.text.trim(),
                               userEmail: emailController.text.trim().isEmpty ? null : emailController.text.trim().toLowerCase(),
                               departamento: departamentoController.text.trim(),
-                              cargaHoraria: 0,
+                              cargaHoraria: horarios.length * 2,
                               cargaMaxima: cargaMaxima,
                               disciplinas: List<String>.from(disciplinas),
+                              horariosAula: List<_HorarioAula>.from(horarios),
                               disponibilidade: disponibilidadeSelecionada,
                               toneDisponibilidade: _toneDisponibilidade(disponibilidadeSelecionada),
                             ),
@@ -424,6 +480,103 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     );
   }
 
+  void _showAdicionarHorario(BuildContext context, List<_HorarioAula> horarios, StateSetter setModalState) {
+    String diaSelecionado = _diasSemana.first;
+    String modalidadeSelecionada = _modalidades.first;
+    final inicioController = TextEditingController();
+    final fimController = TextEditingController();
+    final disciplinaController = TextEditingController();
+    final cargaController = TextEditingController();
+    final turmaController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Adicionar Horário'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                DropdownButtonFormField<String>(
+                  value: diaSelecionado,
+                  decoration: const InputDecoration(labelText: 'Dia da Semana'),
+                  items: _diasSemana.map((d) => DropdownMenuItem(value: d, child: Text(d))).toList(),
+                  onChanged: (v) => setDialogState(() => diaSelecionado = v!),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: inicioController,
+                        decoration: const InputDecoration(labelText: 'Início', hintText: '08:00'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextField(
+                        controller: fimController,
+                        decoration: const InputDecoration(labelText: 'Fim', hintText: '09:40'),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: disciplinaController,
+                  decoration: const InputDecoration(labelText: 'Disciplina', hintText: 'Ex: Programação I'),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: cargaController,
+                  decoration: const InputDecoration(labelText: 'Carga Horária', hintText: 'Ex: 2h/sem · 80h'),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: turmaController,
+                  decoration: const InputDecoration(labelText: 'Turma', hintText: 'Ex: ES-2A'),
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  value: modalidadeSelecionada,
+                  decoration: const InputDecoration(labelText: 'Modalidade'),
+                  items: _modalidades.map((m) => DropdownMenuItem(value: m, child: Text(m))).toList(),
+                  onChanged: (v) => setDialogState(() => modalidadeSelecionada = v!),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                final inicio = inicioController.text.trim();
+                final fim = fimController.text.trim();
+                if (inicio.isEmpty || fim.isEmpty) return;
+                setModalState(() => horarios.add(_HorarioAula(
+                  diaSemana: diaSelecionado,
+                  inicio: inicio,
+                  fim: fim,
+                  disciplina: disciplinaController.text.trim().isEmpty ? null : disciplinaController.text.trim(),
+                  cargaHoraria: cargaController.text.trim().isEmpty ? null : cargaController.text.trim(),
+                  turma: turmaController.text.trim().isEmpty ? null : turmaController.text.trim(),
+                  modalidade: modalidadeSelecionada,
+                )));
+                Navigator.pop(context);
+              },
+              child: const Text('Adicionar'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showEditarDocente(BuildContext context, _Docente docente) {
     final textTheme = Theme.of(context).textTheme;
     final nomeController = TextEditingController(text: docente.nome);
@@ -432,6 +585,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     final cargaMaximaController = TextEditingController(text: docente.cargaMaxima.toString());
     String disponibilidadeSelecionada = docente.disponibilidade;
     final List<String> disciplinas = List<String>.from(docente.disciplinas);
+    final List<_HorarioAula> horarios = List<_HorarioAula>.from(docente.horariosAula);
 
     showModalBottomSheet(
       context: context,
@@ -453,70 +607,84 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
-              TextField(
-                controller: nomeController,
-                decoration: const InputDecoration(
-                  labelText: 'Nome Completo',
-                  hintText: 'Digite o nome do docente',
-                ),
-              ),
               const SizedBox(height: 16),
-              TextField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'Email de acesso',
-                  hintText: 'docente@univ.br',
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: departamentoController,
-                decoration: const InputDecoration(
-                  labelText: 'Departamento',
-                  hintText: 'Digite o departamento',
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: cargaMaximaController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Carga Horária Máxima (horas)',
-                  hintText: 'Ex: 20',
-                ),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: disponibilidadeSelecionada,
-                decoration: const InputDecoration(labelText: 'Disponibilidade'),
-                items: _statusDisponibilidade
-                    .map((d) => DropdownMenuItem(value: d, child: Text(d)))
-                    .toList(),
-                onChanged: (value) => setModalState(() => disponibilidadeSelecionada = value!),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Disciplinas',
-                style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  ...disciplinas.map((d) => Chip(
-                        label: Text(d),
-                        onDeleted: () => setModalState(() => disciplinas.remove(d)),
-                      )),
-                  ActionChip(
-                    label: const Text('Adicionar'),
-                    onPressed: () => _showAdicionarDisciplina(context, disciplinas, setModalState),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextField(
+                        controller: nomeController,
+                        decoration: const InputDecoration(labelText: 'Nome Completo', hintText: 'Digite o nome do docente'),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: const InputDecoration(labelText: 'Email de acesso', hintText: 'docente@univ.br'),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: departamentoController,
+                        decoration: const InputDecoration(labelText: 'Departamento', hintText: 'Digite o departamento'),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: cargaMaximaController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(labelText: 'Carga Horária Máxima (horas)', hintText: 'Ex: 20'),
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        initialValue: disponibilidadeSelecionada,
+                        decoration: const InputDecoration(labelText: 'Disponibilidade'),
+                        items: _statusDisponibilidade.map((d) => DropdownMenuItem(value: d, child: Text(d))).toList(),
+                        onChanged: (value) => setModalState(() => disponibilidadeSelecionada = value!),
+                      ),
+                      const SizedBox(height: 16),
+                      Text('Disciplinas', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          ...disciplinas.map((d) => Chip(
+                                label: Text(d),
+                                onDeleted: () => setModalState(() => disciplinas.remove(d)),
+                              )),
+                          ActionChip(
+                            label: const Text('Adicionar'),
+                            onPressed: () => _showAdicionarDisciplina(context, disciplinas, setModalState),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Horários de Aula', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
+                          TextButton.icon(
+                            icon: const Icon(Icons.add, size: 16),
+                            label: const Text('Adicionar'),
+                            onPressed: () => _showAdicionarHorario(context, horarios, setModalState),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      if (horarios.isEmpty)
+                        Text('Nenhum horário cadastrado', style: textTheme.bodySmall?.copyWith(color: SigadColors.muted))
+                      else
+                        ...horarios.map((h) => _HorarioTile(
+                              horario: h,
+                              textTheme: textTheme,
+                              onDelete: () => setModalState(() => horarios.remove(h)),
+                            )),
+                      const SizedBox(height: 16),
+                    ],
                   ),
-                ],
+                ),
               ),
-              const Spacer(),
+              const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
@@ -550,7 +718,9 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                               nome: nomeController.text.trim(),
                               userEmail: emailController.text.trim().isEmpty ? null : emailController.text.trim().toLowerCase(),
                               departamento: departamentoController.text.trim(),
+                              cargaHoraria: horarios.length * 2,
                               cargaMaxima: cargaMaxima,
+                              horariosAula: List<_HorarioAula>.from(horarios),
                               disciplinas: List<String>.from(disciplinas),
                               disponibilidade: disponibilidadeSelecionada,
                               toneDisponibilidade: _toneDisponibilidade(disponibilidadeSelecionada),
@@ -736,195 +906,184 @@ class _DocenteCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () => _showDetalhes(context),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: SigadColors.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: SigadColors.divider),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: SigadColors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: SigadColors.divider),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.06),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: SigadColors.brand,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Center(
-                    child: Text(
-                      docente.nome.split(' ').map((e) => e[0]).join('').substring(0, 2),
-                      style: textTheme.labelSmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: SigadColors.brand,
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        docente.nome,
-                        style: textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        docente.departamento,
-                        style: textTheme.bodySmall?.copyWith(
-                          color: SigadColors.muted,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: docente.toneDisponibilidade.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    docente.disponibilidade,
-                    style: textTheme.labelSmall?.copyWith(
-                      color: docente.toneDisponibilidade,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                if (canManage)
-                  PopupMenuButton<String>(
-                    onSelected: (value) => _onMenuItemSelected(context, value),
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        value: 'editar',
-                        child: Row(
-                          children: [
-                            Icon(Icons.edit, size: 18),
-                            SizedBox(width: 8),
-                            Text('Editar'),
-                          ],
-                        ),
-                      ),
-                      const PopupMenuItem(
-                        value: 'excluir',
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete, color: Colors.red, size: 18),
-                            SizedBox(width: 8),
-                            Text('Excluir', style: TextStyle(color: Colors.red)),
-                          ],
-                        ),
-                      ),
-                    ],
-                    icon: const Icon(Icons.more_vert, size: 18),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: LinearProgressIndicator(
-                value: docente.cargaHoraria / docente.cargaMaxima,
-                minHeight: 8,
-                backgroundColor: SigadColors.muted.withValues(alpha: 0.1),
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  percentualCarga >= 100 ? SigadColors.risk : SigadColors.success,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '${docente.cargaHoraria}h / ${docente.cargaMaxima}h',
-                  style: textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  '$percentualCarga%',
-                  style: textTheme.labelSmall?.copyWith(
-                    color: SigadColors.muted,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: docente.disciplinas
-                  .map((d) => Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: SigadColors.brand.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
+                      child: Center(
                         child: Text(
-                          d,
+                          docente.nome.split(' ').map((e) => e[0]).join('').substring(0, 2),
                           style: textTheme.labelSmall?.copyWith(
-                            color: SigadColors.brand,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
-                      ))
-                  .toList(),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            docente.nome,
+                            style: textTheme.labelLarge?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            docente.departamento,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: SigadColors.muted,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: docente.toneDisponibilidade.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        docente.disponibilidade,
+                        style: textTheme.labelSmall?.copyWith(
+                          color: docente.toneDisponibilidade,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    if (canManage)
+                      PopupMenuButton<String>(
+                        onSelected: (value) => _onMenuItemSelected(context, value),
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(
+                            value: 'editar',
+                            child: Row(
+                              children: [
+                                Icon(Icons.edit, size: 18),
+                                SizedBox(width: 8),
+                                Text('Editar'),
+                              ],
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 'excluir',
+                            child: Row(
+                              children: [
+                                Icon(Icons.delete, color: Colors.red, size: 18),
+                                SizedBox(width: 8),
+                                Text('Excluir', style: TextStyle(color: Colors.red)),
+                              ],
+                            ),
+                          ),
+                        ],
+                        icon: const Icon(Icons.more_vert, size: 18),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: LinearProgressIndicator(
+                    value: docente.cargaHoraria / docente.cargaMaxima,
+                    minHeight: 8,
+                    backgroundColor: SigadColors.muted.withValues(alpha: 0.1),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      percentualCarga >= 100 ? SigadColors.risk : SigadColors.success,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${docente.cargaHoraria}h / ${docente.cargaMaxima}h',
+                      style: textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      '$percentualCarga%',
+                      style: textTheme.labelSmall?.copyWith(
+                        color: SigadColors.muted,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: docente.disciplinas
+                      .map((d) => Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: SigadColors.brand.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              d,
+                              style: textTheme.labelSmall?.copyWith(
+                                color: SigadColors.brand,
+                              ),
+                            ),
+                          ))
+                      .toList(),
+                ),
+              ],
             ),
-            if (docente.horariosAula.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              Text(
-                'Dias e horários',
+          ),
+          if (docente.horariosAula.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              child: Text(
+                'Distribuição semanal',
                 style: textTheme.labelSmall?.copyWith(
                   color: SigadColors.muted,
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(height: 6),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: docente.horariosAula
-                    .map(
-                      (h) => Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: SigadColors.surfaceAlt,
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: SigadColors.divider),
-                        ),
-                        child: Text(
-                          '${h.diaSemana}: ${h.inicio} - ${h.fim}',
-                          style: textTheme.labelSmall?.copyWith(
-                            color: SigadColors.ink,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ],
+            ),
+            const SizedBox(height: 6),
+            _MapaSemanalHorarios(
+              horarios: docente.horariosAula,
+              compacto: true,
+            ),
           ],
-        ),
+        ],
       ),
     );
   }
@@ -1002,22 +1161,9 @@ class _DocenteCard extends StatelessWidget {
                   style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: docente.horariosAula
-                      .map(
-                        (h) => Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.schedule, size: 16, color: SigadColors.brand),
-                              const SizedBox(width: 8),
-                              Text('${h.diaSemana}: ${h.inicio} - ${h.fim}', style: textTheme.bodySmall),
-                            ],
-                          ),
-                        ),
-                      )
-                      .toList(),
+                _MapaSemanalHorarios(
+                  horarios: docente.horariosAula,
+                  compacto: false,
                 ),
               ],
               const SizedBox(height: 24),
@@ -1097,6 +1243,250 @@ class _DetailSection extends StatelessWidget {
   }
 }
 
+class _MapaSemanalHorarios extends StatelessWidget {
+  const _MapaSemanalHorarios({
+    required this.horarios,
+    required this.compacto,
+  });
+
+  final List<_HorarioAula> horarios;
+  final bool compacto;
+
+  static const List<String> _diasOrdem = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'];
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final horariosPorDia = _agruparPorDia();
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: SigadColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: SigadColors.divider),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final crossAxisCount = constraints.maxWidth >= 560 ? 5 : 3;
+          final spacing = 8.0;
+          final itemWidth = (constraints.maxWidth - ((crossAxisCount - 1) * spacing)) / crossAxisCount;
+
+          return Wrap(
+            spacing: spacing,
+            runSpacing: spacing,
+            children: _diasOrdem
+                .map(
+                  (dia) => SizedBox(
+                    width: itemWidth,
+                    child: _ColunaMapaSemanal(
+                      dia: dia,
+                      horarios: horariosPorDia[dia] ?? const [],
+                      compacto: compacto,
+                      textTheme: textTheme,
+                    ),
+                  ),
+                )
+                .toList(),
+          );
+        },
+      ),
+    );
+  }
+
+  Map<String, List<_HorarioAula>> _agruparPorDia() {
+    final agrupado = {
+      for (final dia in _diasOrdem) dia: <_HorarioAula>[],
+    };
+
+    for (final horario in horarios) {
+      final dia = _abreviarDia(horario.diaSemana);
+      if (dia == null) continue;
+      agrupado[dia]!.add(horario);
+    }
+
+    for (final dia in _diasOrdem) {
+      agrupado[dia]!.sort((a, b) => a.inicio.compareTo(b.inicio));
+    }
+
+    return agrupado;
+  }
+
+  String? _abreviarDia(String diaSemana) {
+    final d = diaSemana.trim().toLowerCase();
+    if (d.startsWith('seg')) return 'Seg';
+    if (d.startsWith('ter')) return 'Ter';
+    if (d.startsWith('qua')) return 'Qua';
+    if (d.startsWith('qui')) return 'Qui';
+    if (d.startsWith('sex')) return 'Sex';
+    return null;
+  }
+}
+
+class _ColunaMapaSemanal extends StatelessWidget {
+  const _ColunaMapaSemanal({
+    required this.dia,
+    required this.horarios,
+    required this.compacto,
+    required this.textTheme,
+  });
+
+  final String dia;
+  final List<_HorarioAula> horarios;
+  final bool compacto;
+  final TextTheme textTheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: SigadColors.surfaceAlt,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: SigadColors.divider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            decoration: BoxDecoration(
+              color: horarios.isNotEmpty ? SigadColors.brand.withValues(alpha: 0.08) : SigadColors.surface,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
+              ),
+            ),
+            child: Text(
+              dia,
+              textAlign: TextAlign.center,
+              style: textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: horarios.isNotEmpty ? SigadColors.brand : SigadColors.muted,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: horarios.isEmpty
+                ? Text(
+                    '-',
+                    textAlign: TextAlign.center,
+                    style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      ...horarios.map(
+                        (h) => Container(
+                          margin: const EdgeInsets.only(bottom: 6),
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: SigadColors.surface,
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: SigadColors.divider),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${h.inicio} – ${h.fim}',
+                                textAlign: TextAlign.center,
+                                style: textTheme.labelSmall?.copyWith(
+                                  color: SigadColors.brand,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              if (h.disciplina != null && h.disciplina!.isNotEmpty) ...[
+                                const SizedBox(height: 3),
+                                Text(
+                                  h.disciplina!,
+                                  style: textTheme.labelSmall?.copyWith(
+                                    color: SigadColors.ink,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
+                                ),
+                              ],
+                              if (h.turma != null && h.turma!.isNotEmpty) ...[
+                                const SizedBox(height: 2),
+                                Text(h.turma!, style: textTheme.labelSmall?.copyWith(color: SigadColors.muted), overflow: TextOverflow.ellipsis),
+                              ],
+                              if (h.cargaHoraria != null && h.cargaHoraria!.isNotEmpty) ...[
+                                const SizedBox(height: 2),
+                                Text(h.cargaHoraria!, style: textTheme.labelSmall?.copyWith(color: SigadColors.muted), overflow: TextOverflow.ellipsis),
+                              ],
+                              if (h.modalidade != null && h.modalidade!.isNotEmpty) ...[
+                                const SizedBox(height: 2),
+                                Text(h.modalidade!, style: textTheme.labelSmall?.copyWith(color: SigadColors.muted), overflow: TextOverflow.ellipsis),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HorarioTile extends StatelessWidget {
+  const _HorarioTile({required this.horario, required this.textTheme, required this.onDelete});
+  final _HorarioAula horario;
+  final TextTheme textTheme;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: SigadColors.surfaceAlt,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: SigadColors.divider),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${horario.diaSemana}  ${horario.inicio} – ${horario.fim}',
+                  style: textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: SigadColors.brand),
+                ),
+                if (horario.disciplina != null) ...[
+                  const SizedBox(height: 2),
+                  Text(horario.disciplina!, style: textTheme.bodySmall?.copyWith(color: SigadColors.ink)),
+                ],
+                if (horario.turma != null || horario.cargaHoraria != null || horario.modalidade != null) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    [horario.turma, horario.cargaHoraria, horario.modalidade].whereType<String>().join(' · '),
+                    style: textTheme.labelSmall?.copyWith(color: SigadColors.muted),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, size: 18),
+            color: SigadColors.risk,
+            onPressed: onDelete,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _Docente {
   const _Docente({
     required this.id,
@@ -1153,9 +1543,17 @@ class _HorarioAula {
     required this.diaSemana,
     required this.inicio,
     required this.fim,
+    this.disciplina,
+    this.cargaHoraria,
+    this.turma,
+    this.modalidade,
   });
 
   final String diaSemana;
   final String inicio;
   final String fim;
+  final String? disciplina;
+  final String? cargaHoraria;
+  final String? turma;
+  final String? modalidade;
 }
