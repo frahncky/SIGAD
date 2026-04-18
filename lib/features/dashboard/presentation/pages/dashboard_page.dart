@@ -266,8 +266,6 @@ class _ModuleCard extends StatelessWidget {
                     ),
                     child: Icon(item.icon, color: SigadColors.brand, size: 18),
                   ),
-                  const Spacer(),
-                  const Icon(Icons.arrow_outward_rounded, color: SigadColors.muted, size: 16),
                 ],
               ),
               const SizedBox(height: 8),

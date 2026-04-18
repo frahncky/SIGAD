@@ -813,46 +813,26 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     }
 
     final podeGerenciar = role == UserRole.coordenador || role == UserRole.chefeDepartamento;
-    final docentesVisiveis = _docentesVisiveis(
-      role,
-      emailUsuario: user?.email,
-    );
+    final emailNormalizado = (user?.email ?? '').trim().toLowerCase();
+    final docentesVisiveis = _docentesVisiveis(role, emailUsuario: user?.email);
+    final docentesOrdenados = podeGerenciar
+        ? [
+            ...docentesVisiveis.where((d) => (d.userEmail ?? '').trim().toLowerCase() == emailNormalizado),
+            ...docentesVisiveis.where((d) => (d.userEmail ?? '').trim().toLowerCase() != emailNormalizado),
+          ]
+        : docentesVisiveis;
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       body: Column(
         children: [
-          if (!podeGerenciar)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: SigadColors.surfaceAlt,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: SigadColors.divider),
-                ),
-                child: Text(
-                  'A visualização detalhada dos horários é exclusiva da coordenação e chefia, ao clicar no nome do docente.',
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: SigadColors.muted,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
           Expanded(
-            child: docentesVisiveis.isEmpty
+            child: docentesOrdenados.isEmpty
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.person_outline,
-                          size: 64,
-                          color: SigadColors.muted.withValues(alpha: 0.3),
-                        ),
+                        Icon(Icons.person_outline, size: 64, color: SigadColors.muted.withValues(alpha: 0.3)),
                         const SizedBox(height: 16),
                         Text(
                           podeGerenciar ? 'Nenhum docente encontrado' : 'Seu horário docente não foi encontrado',
@@ -862,16 +842,16 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                     ),
                   )
                 : ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    itemCount: docentesVisiveis.length,
-                    separatorBuilder: (context, i) => const SizedBox(height: 12),
-                    itemBuilder: (_, index) => _DocenteCard(
-                      docente: docentesVisiveis[index],
-                      canManage: podeGerenciar,
-                      onEditar: () => _showEditarDocente(context, docentesVisiveis[index]),
-                      onExcluir: () => _showConfirmarExclusao(context, docentesVisiveis[index]),
-                    ),
-                  ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              itemCount: docentesOrdenados.length,
+              separatorBuilder: (_, _) => const SizedBox(height: 12),
+              itemBuilder: (_, index) => _DocenteCard(
+                docente: docentesOrdenados[index],
+                canManage: podeGerenciar,
+                onEditar: () => _showEditarDocente(context, docentesOrdenados[index]),
+                onExcluir: () => _showConfirmarExclusao(context, docentesOrdenados[index]),
+              ),
+            ),
           ),
         ],
       ),
