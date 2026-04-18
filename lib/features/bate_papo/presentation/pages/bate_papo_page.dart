@@ -34,20 +34,32 @@ class _BatePapoPageState extends State<BatePapoPage> {
     }
 
     final chatProvider = context.watch<ChatProvider>();
-    final contacts = chatProvider.contactsFor(currentUser);
-    final conversations = _buildConversations(chatProvider, contacts, currentUser.email)
+    final allContacts = chatProvider.contactsFor(currentUser);
+    final allSummaries = _buildConversations(chatProvider, allContacts, currentUser.email);
+    // Only show conversations that have at least one message
+    final conversations = allSummaries
+        .where((item) => item.lastMessage != null)
         .where((item) => _matchesConversationSearch(item, _conversationSearch))
         .toList();
-    final selectedContact = _resolveSelectedContact(conversations.map((item) => item.contact).toList());
+    // Selected contact can be any contact (including one without messages)
+    final selectedContact = _resolveSelectedContact(allContacts);
 
-    if (contacts.isEmpty || selectedContact == null) {
-      if (_conversationSearch.trim().isNotEmpty) {
-        return const Center(child: Text('Nenhuma conversa encontrada para a busca.'));
-      }
+    if (allContacts.isEmpty) {
       return const Center(child: Text('Nenhum usuário disponível para conversa.'));
     }
 
-    final messages = chatProvider.messagesBetween(currentUser.email, selectedContact.email);
+    final messages = selectedContact == null
+        ? <ChatMessage>[]
+        : chatProvider.messagesBetween(currentUser.email, selectedContact.email);
+
+    void openNewConversation() {
+      _showNewConversationSheet(context, allContacts, (email) {
+        setState(() {
+          _selectedContactEmail = email;
+          _mobileConversationOpen = true;
+        });
+      });
+    }
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -59,31 +71,34 @@ class _BatePapoPageState extends State<BatePapoPage> {
                 width: 320,
                 child: _ConversationListPanel(
                   conversations: conversations,
-                  selectedContactEmail: selectedContact.email,
+                  selectedContactEmail: selectedContact?.email,
                   searchValue: _conversationSearch,
                   onSearchChanged: (value) => setState(() => _conversationSearch = value),
                   onSelect: (email) => setState(() => _selectedContactEmail = email),
+                  onNewConversation: openNewConversation,
                 ),
               ),
               const SizedBox(width: 14),
               Expanded(
-                child: _ChatPanel(
-                  currentUserEmail: currentUser.email,
-                  selectedContact: selectedContact,
-                  messages: messages,
-                  controller: _messageController,
-                  onSend: () => _sendMessage(currentUser, selectedContact.email),
-                  onBack: null,
-                ),
+                child: selectedContact == null
+                    ? _EmptyChatPlaceholder(onNewConversation: openNewConversation)
+                    : _ChatPanel(
+                        currentUserEmail: currentUser.email,
+                        selectedContact: selectedContact,
+                        messages: messages,
+                        controller: _messageController,
+                        onSend: () => _sendMessage(currentUser, selectedContact.email),
+                        onBack: null,
+                      ),
               ),
             ],
           );
         }
 
-        if (!_mobileConversationOpen) {
+        if (!_mobileConversationOpen || selectedContact == null) {
           return _ConversationListPanel(
             conversations: conversations,
-            selectedContactEmail: selectedContact.email,
+            selectedContactEmail: selectedContact?.email,
             searchValue: _conversationSearch,
             onSearchChanged: (value) => setState(() => _conversationSearch = value),
             onSelect: (email) {
@@ -92,6 +107,7 @@ class _BatePapoPageState extends State<BatePapoPage> {
                 _mobileConversationOpen = true;
               });
             },
+            onNewConversation: openNewConversation,
           );
         }
 
@@ -106,6 +122,28 @@ class _BatePapoPageState extends State<BatePapoPage> {
           },
         );
       },
+    );
+  }
+
+  void _showNewConversationSheet(
+    BuildContext context,
+    List<ChatContact> contacts,
+    ValueChanged<String> onSelect,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => _NewConversationSheet(
+        contacts: contacts,
+        onSelect: (email) {
+          Navigator.pop(context);
+          onSelect(email);
+        },
+      ),
     );
   }
 
@@ -146,19 +184,9 @@ class _BatePapoPageState extends State<BatePapoPage> {
         item.contact.role.displayName.toLowerCase().contains(search);
   }
 
-  ChatContact? _resolveSelectedContact(List<ChatContact> contacts) {
-    if (contacts.isEmpty) {
-      _selectedContactEmail = null;
-      return null;
-    }
-
-    final selected = contacts.where((item) => item.email == _selectedContactEmail).firstOrNull;
-    if (selected != null) {
-      return selected;
-    }
-
-    _selectedContactEmail = contacts.first.email;
-    return contacts.first;
+  ChatContact? _resolveSelectedContact(List<ChatContact> allContacts) {
+    if (allContacts.isEmpty) return null;
+    return allContacts.where((c) => c.email == _selectedContactEmail).firstOrNull;
   }
 
   void _sendMessage(currentUser, String recipientEmail) {
@@ -184,13 +212,15 @@ class _ConversationListPanel extends StatelessWidget {
     required this.searchValue,
     required this.onSearchChanged,
     required this.onSelect,
+    required this.onNewConversation,
   });
 
   final List<_ConversationSummary> conversations;
-  final String selectedContactEmail;
+  final String? selectedContactEmail;
   final String searchValue;
   final ValueChanged<String> onSearchChanged;
   final ValueChanged<String> onSelect;
+  final VoidCallback onNewConversation;
 
   @override
   Widget build(BuildContext context) {
@@ -203,15 +233,27 @@ class _ConversationListPanel extends StatelessWidget {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
+            padding: const EdgeInsets.fromLTRB(14, 12, 8, 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Conversas',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Conversas',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: onNewConversation,
+                      icon: const Icon(Icons.edit_outlined),
+                      tooltip: 'Nova conversa',
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 TextField(
                   onChanged: onSearchChanged,
                   decoration: InputDecoration(
@@ -233,27 +275,26 @@ class _ConversationListPanel extends StatelessWidget {
                 ? Center(
                     child: Padding(
                       padding: const EdgeInsets.all(24),
-                      child: Text(
-                        'Nenhuma conversa encontrada.',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.forum_outlined, size: 40, color: SigadColors.muted),
+                          const SizedBox(height: 12),
+                          Text(
+                            searchValue.trim().isNotEmpty
+                                ? 'Nenhuma conversa encontrada.'
+                                : 'Nenhuma conversa ainda.\nToque em ✏️ para iniciar.',
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
+                          ),
+                        ],
                       ),
                     ),
                   )
-                : ListView.separated(
-                    padding: const EdgeInsets.all(10),
-                    itemCount: conversations.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 6),
-                    itemBuilder: (context, index) {
-                      final conversation = conversations[index];
-                      final contact = conversation.contact;
-                      final selected = contact.email == selectedContactEmail;
-                      return _ConversationTile(
-                        conversation: conversation,
-                        selected: selected,
-                        onTap: () => onSelect(contact.email),
-                      );
-                    },
+                : _ConversationListView(
+                    conversations: conversations,
+                    selectedContactEmail: selectedContactEmail,
+                    onSelect: onSelect,
                   ),
           ),
         ],
@@ -277,10 +318,10 @@ class _ConversationTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final lastMessage = conversation.lastMessage;
-    final preview = lastMessage?.content ?? conversation.contact.role.displayName;
+    final hasMessages = lastMessage != null;
 
     return Material(
-      color: selected ? SigadColors.brand.withValues(alpha: 0.08) : Colors.transparent,
+      color: selected ? SigadColors.brand.withValues(alpha: 0.10) : Colors.transparent,
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
@@ -289,13 +330,32 @@ class _ConversationTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           child: Row(
             children: [
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: SigadColors.surfaceAlt,
-                child: Text(
-                  _initials(conversation.contact.name),
-                  style: const TextStyle(color: SigadColors.brandDark, fontWeight: FontWeight.w700),
-                ),
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  CircleAvatar(
+                    radius: 24,
+                    backgroundColor: SigadColors.surfaceAlt,
+                    child: Text(
+                      _initials(conversation.contact.name),
+                      style: const TextStyle(color: SigadColors.brandDark, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                  if (selected)
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: SigadColors.brand,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: SigadColors.surface, width: 2),
+                        ),
+                      ),
+                    ),
+                ],
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -309,23 +369,35 @@ class _ConversationTile extends StatelessWidget {
                             conversation.contact.name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+                            style: textTheme.labelLarge?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: selected ? SigadColors.brand : null,
+                            ),
                           ),
                         ),
-                        if (lastMessage != null)
+                        if (hasMessages)
                           Text(
                             _conversationTimeLabel(lastMessage.sentAt),
                             style: textTheme.labelSmall?.copyWith(color: SigadColors.muted),
                           ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
-                      preview,
+                      conversation.contact.role.displayName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                      style: textTheme.labelSmall?.copyWith(color: SigadColors.brand.withValues(alpha: 0.75)),
                     ),
+                    if (hasMessages) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        lastMessage.content,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -366,12 +438,23 @@ class _ChatPanel extends StatelessWidget {
         children: [
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: EdgeInsets.only(
+              left: onBack != null ? 4 : 16,
+              right: 16,
+              top: 10,
+              bottom: 10,
+            ),
             decoration: const BoxDecoration(
               border: Border(bottom: BorderSide(color: SigadColors.divider)),
             ),
             child: Row(
               children: [
+                if (onBack != null)
+                  IconButton(
+                    onPressed: onBack,
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+                    visualDensity: VisualDensity.compact,
+                  ),
                 CircleAvatar(
                   backgroundColor: SigadColors.surfaceAlt,
                   child: Text(
@@ -379,14 +462,6 @@ class _ChatPanel extends StatelessWidget {
                     style: const TextStyle(color: SigadColors.brandDark, fontWeight: FontWeight.w700),
                   ),
                 ),
-                if (onBack != null) ...[
-                  const SizedBox(width: 4),
-                  IconButton(
-                    onPressed: onBack,
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
-                    visualDensity: VisualDensity.compact,
-                  ),
-                ],
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(
@@ -491,6 +566,206 @@ class _ConversationSummary {
 
   ChatMessage? get lastMessage => messages.isEmpty ? null : messages.last;
 }
+
+// ─── Conversation list with sections ───────────────────────────────────────
+
+class _ConversationListView extends StatelessWidget {
+  const _ConversationListView({
+    required this.conversations,
+    required this.selectedContactEmail,
+    required this.onSelect,
+  });
+
+  final List<_ConversationSummary> conversations;
+  final String? selectedContactEmail;
+  final ValueChanged<String> onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    final items = conversations
+        .map<Widget>((c) => _ConversationTile(
+              conversation: c,
+              selected: c.contact.email == selectedContactEmail,
+              onTap: () => onSelect(c.contact.email),
+            ))
+        .toList();
+
+    return ListView.separated(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      itemCount: items.length,
+      separatorBuilder: (_, _) => const SizedBox(height: 4),
+      itemBuilder: (_, i) => items[i],
+    );
+  }
+}
+
+class _EmptyChatPlaceholder extends StatelessWidget {
+  const _EmptyChatPlaceholder({required this.onNewConversation});
+  final VoidCallback onNewConversation;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: SigadColors.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: SigadColors.divider),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.forum_outlined, size: 56, color: SigadColors.muted),
+            const SizedBox(height: 16),
+            Text(
+              'Selecione uma conversa\nou inicie uma nova',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
+            ),
+            const SizedBox(height: 20),
+            FilledButton.icon(
+              onPressed: onNewConversation,
+              icon: const Icon(Icons.edit_outlined),
+              label: const Text('Nova conversa'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NewConversationSheet extends StatefulWidget {
+  const _NewConversationSheet({
+    required this.contacts,
+    required this.onSelect,
+  });
+
+  final List<ChatContact> contacts;
+  final ValueChanged<String> onSelect;
+
+  @override
+  State<_NewConversationSheet> createState() => _NewConversationSheetState();
+}
+
+class _NewConversationSheetState extends State<_NewConversationSheet> {
+  final _searchController = TextEditingController();
+  String _query = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final filtered = widget.contacts.where((c) {
+      final q = _query.trim().toLowerCase();
+      if (q.isEmpty) return true;
+      return c.name.toLowerCase().contains(q) ||
+          c.email.toLowerCase().contains(q) ||
+          c.role.displayName.toLowerCase().contains(q);
+    }).toList()
+      ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.7,
+      minChildSize: 0.4,
+      maxChildSize: 0.95,
+      expand: false,
+      builder: (context, scrollController) {
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 14),
+                      decoration: BoxDecoration(
+                        color: SigadColors.divider,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  Text(
+                    'Nova conversa',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _searchController,
+                    autofocus: true,
+                    onChanged: (v) => setState(() => _query = v),
+                    decoration: InputDecoration(
+                      hintText: 'Buscar por nome, e-mail ou cargo',
+                      prefixIcon: const Icon(Icons.search_rounded),
+                      suffixIcon: _query.isNotEmpty
+                          ? IconButton(
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() => _query = '');
+                              },
+                              icon: const Icon(Icons.close_rounded),
+                            )
+                          : null,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Divider(height: 1),
+            Expanded(
+              child: filtered.isEmpty
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text(
+                          'Nenhum contato encontrado.',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
+                        ),
+                      ),
+                    )
+                  : ListView.builder(
+                      controller: scrollController,
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      itemCount: filtered.length,
+                      itemBuilder: (context, index) {
+                        final contact = filtered[index];
+                        return ListTile(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          leading: CircleAvatar(
+                            backgroundColor: SigadColors.surfaceAlt,
+                            child: Text(
+                              _initials(contact.name),
+                              style: const TextStyle(color: SigadColors.brandDark, fontWeight: FontWeight.w700),
+                            ),
+                          ),
+                          title: Text(contact.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                          subtitle: Text(
+                            contact.role.displayName,
+                            style: TextStyle(color: SigadColors.brand.withValues(alpha: 0.8), fontSize: 12),
+                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          onTap: () => widget.onSelect(contact.email),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+// ──────────────────────────────────────────────────────────────────────────
 
 String _initials(String name) {
   final parts = name.trim().split(' ').where((part) => part.isNotEmpty).toList();
