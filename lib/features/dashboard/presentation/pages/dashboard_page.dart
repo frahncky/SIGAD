@@ -15,7 +15,7 @@ class DashboardPage extends StatelessWidget {
     final userContext = context.watch<UserContextProvider>();
     final role = userContext.userRole;
     final profile = _RoleProfile.fromRole(role);
-    final userName = userContext.currentUser?.name ?? 'Usuario';
+    final userName = userContext.currentUser?.name ?? 'Usuário';
 
     final availableModules = kNavigationItems
         .where((item) => role == null || item.isAvailableFor(role))
@@ -107,7 +107,7 @@ class _HeroPanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Ola, $userName',
+            'Olá, $userName',
             style: textTheme.headlineSmall?.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.w700,
@@ -298,7 +298,7 @@ class _ModuleCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () => Navigator.of(context).pushNamed(item.route),
+        onTap: () => Navigator.of(context).pushReplacementNamed(item.route),
         child: Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
@@ -309,8 +309,22 @@ class _ModuleCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(item.icon, color: SigadColors.brand),
-              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: SigadColors.brand.withValues(alpha: 0.10),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(item.icon, color: SigadColors.brand),
+                  ),
+                  const Spacer(),
+                  const Icon(Icons.arrow_outward_rounded, color: SigadColors.muted, size: 18),
+                ],
+              ),
+              const SizedBox(height: 12),
               Text(
                 item.label,
                 style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
@@ -319,9 +333,9 @@ class _ModuleCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                item.subtitle ?? 'Abrir modulo',
+                item.subtitle ?? 'Abrir módulo',
                 style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-                maxLines: 1,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ],
@@ -442,12 +456,12 @@ class _RoleProfile {
       case UserRole.professor:
         return _RoleProfile(
           title: 'Perfil Professor',
-          subtitle: 'Acompanhe sua carga, aulas e demandas academicas.',
+          subtitle: 'Acompanhe sua carga, aulas e demandas acadêmicas.',
           tone: SigadColors.brand,
           metrics: const [
             _RoleMetric(label: 'Disciplinas', value: '5', icon: Icons.menu_book_outlined, tone: SigadColors.brand),
             _RoleMetric(label: 'Carga semanal', value: '32h', icon: Icons.schedule_outlined, tone: SigadColors.info),
-            _RoleMetric(label: 'Pendencias', value: '3', icon: Icons.pending_actions_outlined, tone: SigadColors.warning),
+            _RoleMetric(label: 'Pendências', value: '3', icon: Icons.pending_actions_outlined, tone: SigadColors.warning),
           ],
           priorities: const [
             _PriorityItem(label: 'Confirmar plano de aula da semana', icon: Icons.checklist_outlined, tone: SigadColors.info),
@@ -467,11 +481,11 @@ class _RoleProfile {
             _RoleMetric(label: 'Sprints em curso', value: '2', icon: Icons.flag_outlined, tone: SigadColors.brand),
           ],
           priorities: const [
-            _PriorityItem(label: 'Priorizar demandas criticas da semana', icon: Icons.priority_high_outlined, tone: SigadColors.risk),
-            _PriorityItem(label: 'Fechar distribuicao de carga docente', icon: Icons.balance_outlined, tone: SigadColors.info),
+            _PriorityItem(label: 'Priorizar demandas críticas da semana', icon: Icons.priority_high_outlined, tone: SigadColors.risk),
+            _PriorityItem(label: 'Fechar distribuição de carga docente', icon: Icons.balance_outlined, tone: SigadColors.info),
             _PriorityItem(label: 'Aprovar quadro kanban do curso', icon: Icons.view_kanban_outlined, tone: SigadColors.brand),
           ],
-          focus: const ['Demandas', 'Kanban', 'Relatorios'],
+          focus: const ['Demandas', 'Kanban', 'Relatórios'],
         );
       case UserRole.servidorAdministrativo:
         return _RoleProfile(
@@ -480,48 +494,48 @@ class _RoleProfile {
           tone: SigadColors.accent,
           metrics: const [
             _RoleMetric(label: 'Processos hoje', value: '18', icon: Icons.folder_open_outlined, tone: SigadColors.accent),
-            _RoleMetric(label: 'Solicitacoes', value: '11', icon: Icons.request_page_outlined, tone: SigadColors.info),
-            _RoleMetric(label: 'Concluidos', value: '9', icon: Icons.task_alt_outlined, tone: SigadColors.success),
+            _RoleMetric(label: 'Solicitações', value: '11', icon: Icons.request_page_outlined, tone: SigadColors.info),
+            _RoleMetric(label: 'Concluídos', value: '9', icon: Icons.task_alt_outlined, tone: SigadColors.success),
           ],
           priorities: const [
-            _PriorityItem(label: 'Conferir documentos de laboratorio', icon: Icons.description_outlined, tone: SigadColors.info),
+            _PriorityItem(label: 'Conferir documentos de laboratório', icon: Icons.description_outlined, tone: SigadColors.info),
             _PriorityItem(label: 'Atualizar status de protocolos', icon: Icons.swap_horiz_outlined, tone: SigadColors.accent),
-            _PriorityItem(label: 'Enviar relatorio diario para coordenacao', icon: Icons.send_outlined, tone: SigadColors.brand),
+            _PriorityItem(label: 'Enviar relatório diário para coordenação', icon: Icons.send_outlined, tone: SigadColors.brand),
           ],
-          focus: const ['Protocolos', 'Relatorios', 'Atendimento'],
+          focus: const ['Protocolos', 'Relatórios', 'Atendimento'],
         );
       case UserRole.chefeDepartamento:
         return _RoleProfile(
           title: 'Perfil Chefe de Departamento',
-          subtitle: 'Visao estrategica de governanca, desempenho e alocacao.',
+          subtitle: 'Visão estratégica de governança, desempenho e alocação.',
           tone: SigadColors.brandDark,
           metrics: const [
             _RoleMetric(label: 'Indicadores-chave', value: '12', icon: Icons.analytics_outlined, tone: SigadColors.brandDark),
-            _RoleMetric(label: 'Demandas criticas', value: '4', icon: Icons.warning_amber_outlined, tone: SigadColors.risk),
+            _RoleMetric(label: 'Demandas críticas', value: '4', icon: Icons.warning_amber_outlined, tone: SigadColors.risk),
             _RoleMetric(label: 'Cumprimento SLA', value: '92%', icon: Icons.av_timer_outlined, tone: SigadColors.success),
           ],
           priorities: const [
-            _PriorityItem(label: 'Validar plano de metas do mes', icon: Icons.track_changes_outlined, tone: SigadColors.brandDark),
-            _PriorityItem(label: 'Aprovar redistribuicao de equipe', icon: Icons.groups_outlined, tone: SigadColors.info),
+            _PriorityItem(label: 'Validar plano de metas do mês', icon: Icons.track_changes_outlined, tone: SigadColors.brandDark),
+            _PriorityItem(label: 'Aprovar redistribuição de equipe', icon: Icons.groups_outlined, tone: SigadColors.info),
             _PriorityItem(label: 'Revisar painel de desempenho institucional', icon: Icons.query_stats_outlined, tone: SigadColors.success),
           ],
-          focus: const ['Estrategia', 'Governanca', 'KPIs'],
+          focus: const ['Estratégia', 'Governança', 'KPIs'],
         );
       default:
         return _RoleProfile(
-          title: 'Visao geral do SIGAD',
+          title: 'Visão geral do SIGAD',
           subtitle: 'Selecione um perfil para ver atalhos e prioridades personalizadas.',
           tone: SigadColors.brand,
           metrics: const [
-            _RoleMetric(label: 'Modulos ativos', value: '6', icon: Icons.dashboard_outlined, tone: SigadColors.brand),
-            _RoleMetric(label: 'Usuarios online', value: '42', icon: Icons.groups_outlined, tone: SigadColors.info),
+            _RoleMetric(label: 'Módulos ativos', value: '6', icon: Icons.dashboard_outlined, tone: SigadColors.brand),
+            _RoleMetric(label: 'Usuários online', value: '42', icon: Icons.groups_outlined, tone: SigadColors.info),
             _RoleMetric(label: 'Demandas no sistema', value: '24', icon: Icons.inbox_outlined, tone: SigadColors.success),
           ],
           priorities: const [
             _PriorityItem(label: 'Realize login com um dos perfis', icon: Icons.login_outlined, tone: SigadColors.brand),
-            _PriorityItem(label: 'Explore os modulos disponiveis', icon: Icons.apps_outlined, tone: SigadColors.info),
+            _PriorityItem(label: 'Explore os módulos disponíveis', icon: Icons.apps_outlined, tone: SigadColors.info),
           ],
-          focus: const ['Planejamento', 'Fluxo', 'Transparencia'],
+          focus: const ['Planejamento', 'Fluxo', 'Transparência'],
         );
     }
   }

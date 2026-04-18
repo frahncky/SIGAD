@@ -19,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   late final TextEditingController _passwordController;
   UserRole? _selectedRole = UserRole.professor;
   bool _isLoading = false;
+  bool _obscurePassword = true;
 
   @override
   void initState() {
@@ -99,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Escolha seu papel para abrir uma experiencia focada em suas rotinas.',
+            'Escolha seu papel para abrir uma experiência focada em suas rotinas.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: SigadColors.muted,
                 ),
@@ -155,22 +156,48 @@ class _LoginPageState extends State<LoginPage> {
                 ),
           ),
           const SizedBox(height: 16),
-          TextField(
-            controller: _emailController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(
-              labelText: 'Email institucional',
-              hintText: 'nome@instituicao.edu.br',
-              prefixIcon: Icon(Icons.email_outlined),
-            ),
+          Text(
+            'Entre com seu email institucional ou use o acesso demo para abrir o app mais rápido.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
           ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _passwordController,
-            obscureText: true,
-            decoration: const InputDecoration(
-              labelText: 'Senha',
-              prefixIcon: Icon(Icons.lock_outline),
+          const SizedBox(height: 14),
+          AutofillGroup(
+            child: Column(
+              children: [
+                TextField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  autofillHints: const [AutofillHints.username, AutofillHints.email],
+                  autocorrect: false,
+                  decoration: const InputDecoration(
+                    labelText: 'Email institucional',
+                    hintText: 'nome@instituicao.edu.br',
+                    prefixIcon: Icon(Icons.email_outlined),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
+                  textInputAction: TextInputAction.done,
+                  autofillHints: const [AutofillHints.password],
+                  onSubmitted: (_) {
+                    if (!_isLoading) _handleLogin();
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Senha',
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      tooltip: _obscurePassword ? 'Mostrar senha' : 'Ocultar senha',
+                      icon: Icon(
+                        _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 18),
@@ -198,6 +225,27 @@ class _LoginPageState extends State<LoginPage> {
               label: const Text('Acesso demo do perfil selecionado'),
             ),
           ),
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: SigadColors.surfaceAlt,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.tips_and_updates_outlined, color: SigadColors.brand, size: 18),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'O perfil selecionado define os módulos e atalhos exibidos após a entrada.',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -210,9 +258,9 @@ class _LoginPageState extends State<LoginPage> {
       case UserRole.coordenador:
         return 'Coordenador: foco em demandas do curso, kanban e acompanhamento da equipe.';
       case UserRole.servidorAdministrativo:
-        return 'Servidor administrativo: foco em processos, protocolos e operacao diaria.';
+        return 'Servidor administrativo: foco em processos, protocolos e operação diária.';
       case UserRole.chefeDepartamento:
-        return 'Chefe de departamento: foco em indicadores, governanca e decisao estrategica.';
+        return 'Chefe de departamento: foco em indicadores, governança e decisão estratégica.';
     }
   }
 
@@ -282,7 +330,7 @@ class _LoginPageState extends State<LoginPage> {
   String _demoNameFor(UserRole role) {
     switch (role) {
       case UserRole.professor:
-        return 'Joao Silva';
+        return 'João Silva';
       case UserRole.coordenador:
         return 'Maria Santos';
       case UserRole.servidorAdministrativo:

@@ -37,7 +37,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     ),
     _ReservaLaboratorio(
       id: 'RES-102',
-      professor: 'Pee - Claudio Leao',
+      professor: 'PEE - Cláudio Leão',
       laboratorio: 'Lab Química 1',
       diaSemana: 'Ter',
       turno: _Turno.matutino,

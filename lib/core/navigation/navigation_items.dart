@@ -6,7 +6,7 @@ import '../models/user_role.dart';
 const List<NavigationItem> kNavigationItems = [
   NavigationItem(
     route: AppRoutes.dashboard,
-    label: 'Visao geral',
+    label: 'Visão geral',
     icon: Icons.dashboard_outlined,
   ),
   NavigationItem(
@@ -22,9 +22,9 @@ const List<NavigationItem> kNavigationItems = [
   ),
   NavigationItem(
     route: AppRoutes.aulasPraticas,
-    label: 'Aulas praticas',
+    label: 'Aulas práticas',
     icon: Icons.science_outlined,
-    subtitle: 'Controle de aulas praticas em laboratorios.',
+    subtitle: 'Controle de aulas práticas em laboratórios.',
     availableFor: {UserRole.professor, UserRole.coordenador, UserRole.chefeDepartamento},
   ),
   NavigationItem(
@@ -41,13 +41,13 @@ const List<NavigationItem> kNavigationItems = [
   ),
   NavigationItem(
     route: AppRoutes.relatorios,
-    label: 'Relatorios',
+    label: 'Relatórios',
     icon: Icons.insights_outlined,
     availableFor: {UserRole.coordenador, UserRole.servidorAdministrativo, UserRole.chefeDepartamento},
   ),
   NavigationItem(
     route: AppRoutes.configuracoes,
-    label: 'Configuracoes',
+    label: 'Configurações',
     icon: Icons.settings_outlined,
     availableFor: {UserRole.chefeDepartamento},
   ),

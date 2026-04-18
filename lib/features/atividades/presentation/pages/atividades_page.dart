@@ -9,6 +9,7 @@ class AtividadesPage extends StatefulWidget {
 }
 
 class _AtividadesPageState extends State<AtividadesPage> {
+  String _busca = '';
   String _filtro = 'Todas';
   static const List<String> _statusAtividade = [
     'Concluída',
@@ -83,9 +84,20 @@ class _AtividadesPageState extends State<AtividadesPage> {
   ];
 
   List<_Atividade> get _atividadesFiltradas {
-    if (_filtro == 'Todas') return _atividades;
-    return _atividades.where((a) => a.status == _filtro).toList();
+    return _atividades.where((a) {
+      final filtroMatch = _filtro == 'Todas' || a.status == _filtro;
+      final busca = _busca.trim().toLowerCase();
+      final buscaMatch = busca.isEmpty ||
+          a.titulo.toLowerCase().contains(busca) ||
+          a.descricao.toLowerCase().contains(busca) ||
+          a.responsavel.toLowerCase().contains(busca);
+      return filtroMatch && buscaMatch;
+    }).toList();
   }
+
+  int get _atividadesConcluidas => _atividades.where((a) => a.status == 'Concluída').length;
+
+  int get _atividadesPendentes => _atividades.where((a) => a.status == 'Pendente').length;
 
   Color _corStatus(String status) {
     switch (status) {
@@ -157,27 +169,47 @@ class _AtividadesPageState extends State<AtividadesPage> {
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  'Todas',
-                  'Concluída',
-                  'Em progresso',
-                  'Agendada',
-                  'Pendente'
-                ]
-                    .map((status) => Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: FilterChip(
-                            label: Text(status),
-                            selected: _filtro == status,
-                            onSelected: (selected) {
-                              setState(() => _filtro = selected ? status : 'Todas');
-                            },
-                          ),
-                        ))
-                    .toList(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _AtividadesSummaryBanner(
+                  totalAtividades: _atividades.length,
+                  atividadesConcluidas: _atividadesConcluidas,
+                  atividadesPendentes: _atividadesPendentes,
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  onChanged: (value) => setState(() => _busca = value),
+                  decoration: const InputDecoration(
+                    hintText: 'Buscar por título, descrição ou responsável',
+                    prefixIcon: Icon(Icons.search_outlined),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      'Todas',
+                      'Concluída',
+                      'Em progresso',
+                      'Agendada',
+                      'Pendente'
+                    ]
+                        .map((status) => Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: FilterChip(
+                                label: Text(status),
+                                selected: _filtro == status,
+                                onSelected: (selected) {
+                                  setState(() => _filtro = selected ? status : 'Todas');
+                                },
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                ),
+              ],
               ),
             ),
           ),
@@ -472,6 +504,83 @@ class _AtividadesPageState extends State<AtividadesPage> {
             child: const Text('Excluir', style: TextStyle(color: Colors.red)),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _AtividadesSummaryBanner extends StatelessWidget {
+  const _AtividadesSummaryBanner({
+    required this.totalAtividades,
+    required this.atividadesConcluidas,
+    required this.atividadesPendentes,
+  });
+
+  final int totalAtividades;
+  final int atividadesConcluidas;
+  final int atividadesPendentes;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: SigadColors.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: SigadColors.divider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Agenda operacional',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Filtre rapidamente o que está em andamento e acompanhe responsáveis.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              _AtividadesKpi(label: 'No total', value: '$totalAtividades'),
+              const SizedBox(width: 8),
+              _AtividadesKpi(label: 'Concluídas', value: '$atividadesConcluidas'),
+              const SizedBox(width: 8),
+              _AtividadesKpi(label: 'Pendentes', value: '$atividadesPendentes'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AtividadesKpi extends StatelessWidget {
+  const _AtividadesKpi({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: SigadColors.surfaceAlt,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted)),
+            const SizedBox(height: 4),
+            Text(value, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+          ],
+        ),
       ),
     );
   }

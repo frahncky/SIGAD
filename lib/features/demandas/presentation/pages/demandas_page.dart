@@ -9,6 +9,7 @@ class DemandasPage extends StatefulWidget {
 }
 
 class _DemandasPageState extends State<DemandasPage> {
+  String _busca = '';
   String _filtroStatus = 'Todas';
   String _filtroPrioridade = 'Todas';
   static const List<String> _statusDisponiveis = [
@@ -86,9 +87,18 @@ class _DemandasPageState extends State<DemandasPage> {
     return _demandas.where((d) {
       final statusMatch = _filtroStatus == 'Todas' || d.statusLabel == _filtroStatus;
       final prioridadeMatch = _filtroPrioridade == 'Todas' || d.prioridade == _filtroPrioridade;
-      return statusMatch && prioridadeMatch;
+      final busca = _busca.trim().toLowerCase();
+      final buscaMatch = busca.isEmpty ||
+          d.titulo.toLowerCase().contains(busca) ||
+          d.descricao.toLowerCase().contains(busca) ||
+          d.proprietario.toLowerCase().contains(busca);
+      return statusMatch && prioridadeMatch && buscaMatch;
     }).toList();
   }
+
+  int get _demandasAltaPrioridade => _demandas.where((d) => d.prioridade == 'Alta').length;
+
+  int get _demandasConcluidas => _demandas.where((d) => d.statusLabel == 'Concluído').length;
 
   Color _toneStatus(String status) {
     switch (status) {
@@ -166,6 +176,20 @@ class _DemandasPageState extends State<DemandasPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                _DemandasSummaryBanner(
+                  totalDemandas: _demandas.length,
+                  demandasAltaPrioridade: _demandasAltaPrioridade,
+                  demandasConcluidas: _demandasConcluidas,
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  onChanged: (value) => setState(() => _busca = value),
+                  decoration: const InputDecoration(
+                    hintText: 'Buscar por título, descrição ou responsável',
+                    prefixIcon: Icon(Icons.search_outlined),
+                  ),
+                ),
+                const SizedBox(height: 16),
                 Text(
                   'Filtrar por',
                   style: textTheme.labelLarge?.copyWith(
@@ -604,6 +628,83 @@ class _DemandasPageState extends State<DemandasPage> {
             child: const Text('Excluir', style: TextStyle(color: Colors.red)),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _DemandasSummaryBanner extends StatelessWidget {
+  const _DemandasSummaryBanner({
+    required this.totalDemandas,
+    required this.demandasAltaPrioridade,
+    required this.demandasConcluidas,
+  });
+
+  final int totalDemandas;
+  final int demandasAltaPrioridade;
+  final int demandasConcluidas;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: SigadColors.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: SigadColors.divider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Painel de demandas',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Acompanhe prioridades, responsáveis e prazos em um só lugar.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              _DemandasKpi(label: 'No total', value: '$totalDemandas'),
+              const SizedBox(width: 8),
+              _DemandasKpi(label: 'Alta prioridade', value: '$demandasAltaPrioridade'),
+              const SizedBox(width: 8),
+              _DemandasKpi(label: 'Concluídas', value: '$demandasConcluidas'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DemandasKpi extends StatelessWidget {
+  const _DemandasKpi({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: SigadColors.surfaceAlt,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted)),
+            const SizedBox(height: 4),
+            Text(value, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+          ],
+        ),
       ),
     );
   }

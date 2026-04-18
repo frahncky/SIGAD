@@ -9,6 +9,8 @@ class RelatoriosPage extends StatefulWidget {
 }
 
 class _RelatoriosPageState extends State<RelatoriosPage> {
+  String _busca = '';
+  String _filtroStatus = 'Todos';
   final List<_Relatorio> _relatorios = [
     _Relatorio(
       id: '#REL-001',
@@ -93,6 +95,18 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
     );
   }
 
+  List<_Relatorio> get _relatoriosFiltrados {
+    return _relatorios.where((relatorio) {
+      final filtroMatch = _filtroStatus == 'Todos' || relatorio.status == _filtroStatus;
+      final busca = _busca.trim().toLowerCase();
+      final buscaMatch = busca.isEmpty ||
+          relatorio.titulo.toLowerCase().contains(busca) ||
+          relatorio.descricao.toLowerCase().contains(busca) ||
+          relatorio.autor.toLowerCase().contains(busca);
+      return filtroMatch && buscaMatch;
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -104,6 +118,38 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         children: [
+          _RelatoriosSummaryBanner(
+            totalRelatorios: _relatorios.length,
+            publicados: _relatorios.where((r) => r.status == 'Publicado').length,
+            emRevisao: _relatorios.where((r) => r.status == 'Em revisão').length,
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            onChanged: (value) => setState(() => _busca = value),
+            decoration: const InputDecoration(
+              hintText: 'Buscar por título, descrição ou autor',
+              prefixIcon: Icon(Icons.search_outlined),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: ['Todos', 'Publicado', 'Em revisão', 'Agendado']
+                  .map(
+                    (status) => Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: FilterChip(
+                        label: Text(status),
+                        selected: _filtroStatus == status,
+                        onSelected: (_) => setState(() => _filtroStatus = status),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+          const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -117,7 +163,7 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    '${_relatorios.length} relatórios disponíveis para consulta',
+                    '${_relatoriosFiltrados.length} relatórios disponíveis para consulta',
                     style: textTheme.bodySmall?.copyWith(color: SigadColors.brand),
                   ),
                 ),
@@ -125,9 +171,9 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
             ),
           ),
           const SizedBox(height: 16),
-          ..._relatorios.asMap().entries.map(
+          ..._relatoriosFiltrados.asMap().entries.map(
                 (entry) => Padding(
-                  padding: EdgeInsets.only(bottom: entry.key < _relatorios.length - 1 ? 12 : 0),
+                  padding: EdgeInsets.only(bottom: entry.key < _relatoriosFiltrados.length - 1 ? 12 : 0),
                   child: _RelatorioCard(
                     relatorio: entry.value,
                     onBaixar: () => _baixarRelatorio(entry.value),
@@ -136,6 +182,83 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
                 ),
               ),
         ],
+      ),
+    );
+  }
+}
+
+class _RelatoriosSummaryBanner extends StatelessWidget {
+  const _RelatoriosSummaryBanner({
+    required this.totalRelatorios,
+    required this.publicados,
+    required this.emRevisao,
+  });
+
+  final int totalRelatorios;
+  final int publicados;
+  final int emRevisao;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: SigadColors.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: SigadColors.divider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Central de relatórios',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Busque documentos, acompanhe status editoriais e acesse os materiais mais rápido.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              _RelatoriosKpi(label: 'Disponíveis', value: '$totalRelatorios'),
+              const SizedBox(width: 8),
+              _RelatoriosKpi(label: 'Publicados', value: '$publicados'),
+              const SizedBox(width: 8),
+              _RelatoriosKpi(label: 'Em revisão', value: '$emRevisao'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RelatoriosKpi extends StatelessWidget {
+  const _RelatoriosKpi({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: SigadColors.surfaceAlt,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted)),
+            const SizedBox(height: 4),
+            Text(value, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+          ],
+        ),
       ),
     );
   }

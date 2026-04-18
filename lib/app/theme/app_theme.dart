@@ -28,6 +28,21 @@ abstract final class AppTheme {
         surfaceTintColor: SigadColors.surface,
         shadowColor: Colors.black12,
       ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: SigadColors.surface,
+        indicatorColor: SigadColors.brand.withValues(alpha: 0.14),
+        iconTheme: WidgetStateProperty.resolveWith(
+          (states) => IconThemeData(
+            color: states.contains(WidgetState.selected) ? SigadColors.brand : SigadColors.muted,
+          ),
+        ),
+        labelTextStyle: WidgetStateProperty.resolveWith(
+          (states) => textTheme.labelSmall?.copyWith(
+            fontWeight: states.contains(WidgetState.selected) ? FontWeight.w700 : FontWeight.w600,
+            color: states.contains(WidgetState.selected) ? SigadColors.brand : SigadColors.muted,
+          ),
+        ),
+      ),
       cardTheme: CardThemeData(
         color: SigadColors.surface,
         elevation: 2,
@@ -51,6 +66,19 @@ abstract final class AppTheme {
           borderSide: BorderSide.none,
         ),
         hintStyle: textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: SigadColors.ink,
+        contentTextStyle: textTheme.bodyMedium?.copyWith(color: Colors.white),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: SigadColors.surface,
+        surfaceTintColor: SigadColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
