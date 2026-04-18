@@ -188,6 +188,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                 Row(
                   children: [
                     Expanded(
+                      flex: 3,
                       child: _FiltroLabRow(
                         laboratorioSelecionado: _laboratorioSelecionadoValido,
                         laboratorios: _laboratorios,
@@ -196,6 +197,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                     ),
                     const SizedBox(width: 10),
                     Expanded(
+                      flex: 2,
                       child: _FiltroPeriodoRow(
                         mesSelecionado: _mesSelecionado,
                         meses: _meses,
