@@ -1,6 +1,10 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../core/models/user_role.dart';
 import '../../../../core/services/local_storage_service.dart';
+import '../../../../core/services/user_context_provider.dart';
 
 class CargaDocentePage extends StatefulWidget {
   const CargaDocentePage({super.key});
@@ -10,6 +14,12 @@ class CargaDocentePage extends StatefulWidget {
 }
 
 class _CargaDocentePageState extends State<CargaDocentePage> {
+  static const Set<UserRole> _allowedRoles = {
+    UserRole.professor,
+    UserRole.coordenador,
+    UserRole.chefeDepartamento,
+  };
+
   String _filtro = 'Todos';
   static const String _kKey = 'sigad_docentes';
   static const List<String> _statusDisponibilidade = [
@@ -22,6 +32,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     _Docente(
       id: '#DOC-001',
       nome: 'Profa. Dra. Maria Silva',
+      userEmail: 'maria.santos@univ.br',
       departamento: 'Engenharia de Software',
       cargaHoraria: 20,
       cargaMaxima: 20,
@@ -31,7 +42,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     ),
     _Docente(
       id: '#DOC-002',
-      nome: 'Prof. Dr. João Santos',
+      nome: 'Prof. Dr. João Silva',
+      userEmail: 'joao.silva@univ.br',
       departamento: 'Sistemas de Informação',
       cargaHoraria: 16,
       cargaMaxima: 20,
@@ -42,6 +54,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     _Docente(
       id: '#DOC-003',
       nome: 'Profa. Ana Costa',
+      userEmail: 'ana.pereira@univ.br',
       departamento: 'Engenharia de Software',
       cargaHoraria: 12,
       cargaMaxima: 20,
@@ -52,6 +65,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     _Docente(
       id: '#DOC-004',
       nome: 'Prof. Carlos Oliveira',
+      userEmail: 'carlos.oliveira@univ.br',
       departamento: 'Redes e Telecomunicações',
       cargaHoraria: 18,
       cargaMaxima: 20,
@@ -62,6 +76,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     _Docente(
       id: '#DOC-005',
       nome: 'Profa. Beatriz Mendes',
+      userEmail: 'beatriz.mendes@univ.br',
       departamento: 'Engenharia de Software',
       cargaHoraria: 14,
       cargaMaxima: 20,
@@ -94,6 +109,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   Map<String, dynamic> _docenteToJson(_Docente d) => {
     'id': d.id,
     'nome': d.nome,
+    if (d.userEmail != null) 'userEmail': d.userEmail,
     'departamento': d.departamento,
     'cargaHoraria': d.cargaHoraria,
     'cargaMaxima': d.cargaMaxima,
@@ -104,6 +120,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   _Docente _docenteFromJson(Map<String, dynamic> json) => _Docente(
     id: json['id'] as String,
     nome: json['nome'] as String,
+    userEmail: json['userEmail'] as String?,
     departamento: json['departamento'] as String,
     cargaHoraria: json['cargaHoraria'] as int,
     cargaMaxima: json['cargaMaxima'] as int,
@@ -113,6 +130,18 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   );
 
   List<_Docente> get _docentesFiltrados {
+    if (_filtro == 'Todos') return _docentes;
+    return _docentes.where((d) => d.disponibilidade == _filtro).toList();
+  }
+
+  List<_Docente> _docentesVisiveis(UserRole role, {String? emailUsuario}) {
+    if (role == UserRole.professor) {
+      final emailNormalizado = (emailUsuario ?? '').trim().toLowerCase();
+      return _docentes
+          .where((docente) => (docente.userEmail ?? '').trim().toLowerCase() == emailNormalizado)
+          .toList();
+    }
+
     if (_filtro == 'Todos') return _docentes;
     return _docentes.where((d) => d.disponibilidade == _filtro).toList();
   }
@@ -177,6 +206,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   void _showAdicionarDocente(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final nomeController = TextEditingController();
+    final emailController = TextEditingController();
     final departamentoController = TextEditingController();
     final cargaMaximaController = TextEditingController();
     String disponibilidadeSelecionada = 'Disponível';
@@ -208,6 +238,15 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                 decoration: const InputDecoration(
                   labelText: 'Nome Completo',
                   hintText: 'Digite o nome do docente',
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  labelText: 'Email de acesso',
+                  hintText: 'docente@univ.br',
                 ),
               ),
               const SizedBox(height: 16),
@@ -289,6 +328,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                             _Docente(
                               id: _gerarProximoIdDocente(),
                               nome: nomeController.text.trim(),
+                              userEmail: emailController.text.trim().isEmpty ? null : emailController.text.trim().toLowerCase(),
                               departamento: departamentoController.text.trim(),
                               cargaHoraria: 0,
                               cargaMaxima: cargaMaxima,
@@ -351,6 +391,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   void _showEditarDocente(BuildContext context, _Docente docente) {
     final textTheme = Theme.of(context).textTheme;
     final nomeController = TextEditingController(text: docente.nome);
+    final emailController = TextEditingController(text: docente.userEmail ?? '');
     final departamentoController = TextEditingController(text: docente.departamento);
     final cargaMaximaController = TextEditingController(text: docente.cargaMaxima.toString());
     String disponibilidadeSelecionada = docente.disponibilidade;
@@ -382,6 +423,15 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                 decoration: const InputDecoration(
                   labelText: 'Nome Completo',
                   hintText: 'Digite o nome do docente',
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  labelText: 'Email de acesso',
+                  hintText: 'docente@univ.br',
                 ),
               ),
               const SizedBox(height: 16),
@@ -462,6 +512,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                           if (index >= 0) {
                             _docentes[index] = docente.copyWith(
                               nome: nomeController.text.trim(),
+                              userEmail: emailController.text.trim().isEmpty ? null : emailController.text.trim().toLowerCase(),
                               departamento: departamentoController.text.trim(),
                               cargaMaxima: cargaMaxima,
                               disciplinas: List<String>.from(disciplinas),
@@ -516,7 +567,22 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
 
   @override
   Widget build(BuildContext context) {
+    final userContext = context.watch<UserContextProvider>();
+    final role = userContext.userRole;
+    final user = userContext.currentUser;
+    final hasAccess = role != null && _allowedRoles.contains(role);
+
+    if (!hasAccess) {
+      return const _AccessDenied();
+    }
+
+    final podeGerenciar = role == UserRole.coordenador || role == UserRole.chefeDepartamento;
+    final docentesVisiveis = _docentesVisiveis(
+      role,
+      emailUsuario: user?.email,
+    );
     final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Horários dos Docentes'),
@@ -524,33 +590,54 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  'Todos',
-                  'Disponível',
-                  'Parcialmente',
-                  'Indisponível'
-                ]
-                    .map((status) => Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: FilterChip(
-                            label: Text(status),
-                            selected: _filtro == status,
-                            onSelected: (selected) {
-                              setState(() => _filtro = selected ? status : 'Todos');
-                            },
-                          ),
-                        ))
-                    .toList(),
+          if (podeGerenciar)
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    'Todos',
+                    'Disponível',
+                    'Parcialmente',
+                    'Indisponível'
+                  ]
+                      .map((status) => Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: FilterChip(
+                              label: Text(status),
+                              selected: _filtro == status,
+                              onSelected: (selected) {
+                                setState(() => _filtro = selected ? status : 'Todos');
+                              },
+                            ),
+                          ))
+                      .toList(),
+                ),
               ),
             ),
-          ),
+          if (!podeGerenciar)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: SigadColors.surfaceAlt,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: SigadColors.divider),
+                ),
+                child: Text(
+                  'Você tem acesso somente ao seu próprio horário docente.',
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: SigadColors.muted,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
           Expanded(
-            child: _docentesFiltrados.isEmpty
+            child: docentesVisiveis.isEmpty
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -562,7 +649,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'Nenhum docente encontrado',
+                          podeGerenciar ? 'Nenhum docente encontrado' : 'Seu horário docente não foi encontrado',
                           style: textTheme.bodyLarge?.copyWith(color: SigadColors.muted),
                         ),
                       ],
@@ -570,22 +657,25 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                   )
                 : ListView.separated(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    itemCount: _docentesFiltrados.length,
+                    itemCount: docentesVisiveis.length,
                     separatorBuilder: (context, i) => const SizedBox(height: 12),
                     itemBuilder: (_, index) => _DocenteCard(
-                      docente: _docentesFiltrados[index],
-                      onEditar: () => _showEditarDocente(context, _docentesFiltrados[index]),
-                      onExcluir: () => _showConfirmarExclusao(context, _docentesFiltrados[index]),
+                      docente: docentesVisiveis[index],
+                      canManage: podeGerenciar,
+                      onEditar: () => _showEditarDocente(context, docentesVisiveis[index]),
+                      onExcluir: () => _showConfirmarExclusao(context, docentesVisiveis[index]),
                     ),
                   ),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAdicionarDocente(context),
-        backgroundColor: SigadColors.brand,
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: podeGerenciar
+          ? FloatingActionButton(
+              onPressed: () => _showAdicionarDocente(context),
+              backgroundColor: SigadColors.brand,
+              child: const Icon(Icons.add),
+            )
+          : null,
     );
   }
 }
@@ -593,11 +683,13 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
 class _DocenteCard extends StatelessWidget {
   const _DocenteCard({
     required this.docente,
+    required this.canManage,
     required this.onEditar,
     required this.onExcluir,
   });
 
   final _Docente docente;
+  final bool canManage;
   final VoidCallback onEditar;
   final VoidCallback onExcluir;
 
@@ -682,32 +774,33 @@ class _DocenteCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                PopupMenuButton<String>(
-                  onSelected: (value) => _onMenuItemSelected(context, value),
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 'editar',
-                      child: Row(
-                        children: [
-                          Icon(Icons.edit, size: 18),
-                          SizedBox(width: 8),
-                          Text('Editar'),
-                        ],
+                if (canManage)
+                  PopupMenuButton<String>(
+                    onSelected: (value) => _onMenuItemSelected(context, value),
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'editar',
+                        child: Row(
+                          children: [
+                            Icon(Icons.edit, size: 18),
+                            SizedBox(width: 8),
+                            Text('Editar'),
+                          ],
+                        ),
                       ),
-                    ),
-                    const PopupMenuItem(
-                      value: 'excluir',
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete, color: Colors.red, size: 18),
-                          SizedBox(width: 8),
-                          Text('Excluir', style: TextStyle(color: Colors.red)),
-                        ],
+                      const PopupMenuItem(
+                        value: 'excluir',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete, color: Colors.red, size: 18),
+                            SizedBox(width: 8),
+                            Text('Excluir', style: TextStyle(color: Colors.red)),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                  icon: const Icon(Icons.more_vert, size: 18),
-                ),
+                    ],
+                    icon: const Icon(Icons.more_vert, size: 18),
+                  ),
               ],
             ),
             const SizedBox(height: 16),
@@ -808,6 +901,7 @@ class _DocenteCard extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               _DetailSection(label: 'Departamento', value: docente.departamento),
+              if (docente.userEmail != null) _DetailSection(label: 'Email vinculado', value: docente.userEmail!),
               _DetailSection(label: 'Carga Horária', value: '${docente.cargaHoraria}h / ${docente.cargaMaxima}h ($percentualCarga%)'),
               _DetailSection(label: 'Disponibilidade', value: docente.disponibilidade),
               const SizedBox(height: 16),
@@ -847,6 +941,41 @@ class _DocenteCard extends StatelessWidget {
   }
 }
 
+class _AccessDenied extends StatelessWidget {
+  const _AccessDenied();
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.lock_outline,
+              size: 56,
+              color: SigadColors.muted.withValues(alpha: 0.5),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Acesso restrito',
+              style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Somente coordenação, chefia de departamento e o próprio docente podem acessar esta área.',
+              textAlign: TextAlign.center,
+              style: textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _DetailSection extends StatelessWidget {
   const _DetailSection({required this.label, required this.value});
 
@@ -877,6 +1006,7 @@ class _Docente {
   const _Docente({
     required this.id,
     required this.nome,
+    this.userEmail,
     required this.departamento,
     required this.cargaHoraria,
     required this.cargaMaxima,
@@ -887,6 +1017,7 @@ class _Docente {
 
   final String id;
   final String nome;
+  final String? userEmail;
   final String departamento;
   final int cargaHoraria;
   final int cargaMaxima;
@@ -896,6 +1027,7 @@ class _Docente {
 
   _Docente copyWith({
     String? nome,
+    String? userEmail,
     String? departamento,
     int? cargaHoraria,
     int? cargaMaxima,
@@ -906,6 +1038,7 @@ class _Docente {
     return _Docente(
       id: id,
       nome: nome ?? this.nome,
+      userEmail: userEmail ?? this.userEmail,
       departamento: departamento ?? this.departamento,
       cargaHoraria: cargaHoraria ?? this.cargaHoraria,
       cargaMaxima: cargaMaxima ?? this.cargaMaxima,

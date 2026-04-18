@@ -13,6 +13,7 @@ class _DemandasPageState extends State<DemandasPage> {
   String _busca = '';
   String _filtroStatus = 'Todas';
   String _filtroPrioridade = 'Todas';
+  String _ordemSelecionada = 'Prazo mais próximo';
   static const String _kKey = 'sigad_demandas';
   static const List<String> _statusDisponiveis = [
     'Novo',
@@ -22,6 +23,11 @@ class _DemandasPageState extends State<DemandasPage> {
     'Concluído',
   ];
   static const List<String> _prioridades = ['Alta', 'Média', 'Baixa'];
+  static const List<String> _opcoesOrdenacao = [
+    'Prazo mais próximo',
+    'Prioridade',
+    'Recém-criadas',
+  ];
   static const List<String> _proprietarios = [
     'Coordenação',
     'Secretaria Acadêmica',
@@ -143,6 +149,53 @@ class _DemandasPageState extends State<DemandasPage> {
 
   int get _demandasConcluidas => _demandas.where((d) => d.statusLabel == 'Concluído').length;
 
+  int get _filtrosAtivos {
+    var ativos = 0;
+    if (_filtroStatus != 'Todas') ativos++;
+    if (_filtroPrioridade != 'Todas') ativos++;
+    if (_busca.trim().isNotEmpty) ativos++;
+    return ativos;
+  }
+
+  List<_Demanda> get _demandasVisiveis {
+    final list = [..._demandasFiltradas];
+    switch (_ordemSelecionada) {
+      case 'Prioridade':
+        list.sort((a, b) {
+          final prioridade = _pesoPrioridade(a.prioridade).compareTo(_pesoPrioridade(b.prioridade));
+          if (prioridade != 0) return prioridade;
+          return _parsePrazo(a.prazo).compareTo(_parsePrazo(b.prazo));
+        });
+        break;
+      case 'Recém-criadas':
+        list.sort((a, b) => b.id.compareTo(a.id));
+        break;
+      default:
+        list.sort((a, b) => _parsePrazo(a.prazo).compareTo(_parsePrazo(b.prazo)));
+    }
+    return list;
+  }
+
+  DateTime _parsePrazo(String prazo) {
+    final parts = prazo.split('/');
+    if (parts.length != 3) return DateTime(2100);
+    final dia = int.tryParse(parts[0]) ?? 1;
+    final mes = int.tryParse(parts[1]) ?? 1;
+    final ano = int.tryParse(parts[2]) ?? 2100;
+    return DateTime(ano, mes, dia);
+  }
+
+  int _pesoPrioridade(String prioridade) {
+    switch (prioridade) {
+      case 'Alta':
+        return 0;
+      case 'Média':
+        return 1;
+      default:
+        return 2;
+    }
+  }
+
   Color _toneStatus(String status) {
     switch (status) {
       case 'Novo':
@@ -233,6 +286,54 @@ class _DemandasPageState extends State<DemandasPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: SigadColors.surfaceAlt,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        '${_demandasVisiveis.length} resultado(s)',
+                        style: textTheme.labelSmall?.copyWith(
+                          color: SigadColors.muted,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    if (_filtrosAtivos > 0)
+                      TextButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            _busca = '';
+                            _filtroStatus = 'Todas';
+                            _filtroPrioridade = 'Todas';
+                          });
+                        },
+                        icon: const Icon(Icons.restart_alt, size: 18),
+                        label: const Text('Limpar filtros'),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  initialValue: _ordemSelecionada,
+                  decoration: const InputDecoration(
+                    labelText: 'Ordenar por',
+                    prefixIcon: Icon(Icons.sort),
+                  ),
+                  items: _opcoesOrdenacao
+                      .map((ordem) => DropdownMenuItem(value: ordem, child: Text(ordem)))
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => _ordemSelecionada = value);
+                    }
+                  },
+                ),
+                const SizedBox(height: 16),
                 Text(
                   'Filtrar por',
                   style: textTheme.labelLarge?.copyWith(
@@ -281,7 +382,7 @@ class _DemandasPageState extends State<DemandasPage> {
             ),
           ),
           Expanded(
-            child: _demandasFiltradas.isEmpty
+            child: _demandasVisiveis.isEmpty
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -292,17 +393,31 @@ class _DemandasPageState extends State<DemandasPage> {
                           'Nenhuma demanda encontrada',
                           style: textTheme.bodyLarge?.copyWith(color: SigadColors.muted),
                         ),
+                        if (_filtrosAtivos > 0) ...[
+                          const SizedBox(height: 12),
+                          OutlinedButton.icon(
+                            onPressed: () {
+                              setState(() {
+                                _busca = '';
+                                _filtroStatus = 'Todas';
+                                _filtroPrioridade = 'Todas';
+                              });
+                            },
+                            icon: const Icon(Icons.restart_alt),
+                            label: const Text('Limpar filtros'),
+                          ),
+                        ],
                       ],
                     ),
                   )
                 : ListView.separated(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    itemCount: _demandasFiltradas.length,
+                    itemCount: _demandasVisiveis.length,
                     separatorBuilder: (context, i) => const SizedBox(height: 12),
                     itemBuilder: (_, index) => _DemandasCard(
-                      demanda: _demandasFiltradas[index],
-                      onEditar: () => _showEditarDemanda(context, _demandasFiltradas[index]),
-                      onExcluir: () => _showConfirmarExclusao(context, _demandasFiltradas[index]),
+                      demanda: _demandasVisiveis[index],
+                      onEditar: () => _showEditarDemanda(context, _demandasVisiveis[index]),
+                      onExcluir: () => _showConfirmarExclusao(context, _demandasVisiveis[index]),
                     ),
                   ),
           ),
