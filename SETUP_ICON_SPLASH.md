@@ -18,7 +18,7 @@ Este comando irá:
 - Gerar ícones para Android (varios tamanhos)
 - Gerar ícones para iOS
 - Gerar ícones para macOS, Windows, Linux e Web
-- Usar o arquivo `assets/images/app_icon.svg` como fonte
+- Usar o arquivo `assets/images/app_icon.png` como fonte
 
 ### 3. Gerar o splash screen nativo
 
@@ -53,7 +53,7 @@ Quando o app abre, será exibida uma **tela de splash animada** com:
 ```
 assets/
   images/
-    app_icon.svg          # Ícone base em SVG
+    app_icon.png          # Ícone base em PNG
 
 lib/
   features/
@@ -99,7 +99,7 @@ final _animationController = AnimationController(
 
 ### Mudar ícone do app
 
-Substitua `assets/images/app_icon.svg` por outro arquivo SVG e execute:
+Substitua `assets/images/app_icon.png` por outro arquivo PNG e execute:
 
 ```bash
 flutter pub run flutter_launcher_icons:main -f pubspec_launcher.yaml
@@ -109,7 +109,7 @@ flutter pub run flutter_launcher_icons:main -f pubspec_launcher.yaml
 
 Se os ícones não forem gerados:
 
-1. Verifique se o arquivo SVG existe em `assets/images/app_icon.svg`
+1. Verifique se o arquivo PNG existe em `assets/images/app_icon.png`
 2. Tente limpar o cache: `flutter clean`
 3. Reinstale as dependências: `flutter pub get`
 4. Tente novamente: `flutter pub run flutter_launcher_icons:main -f pubspec_launcher.yaml`
