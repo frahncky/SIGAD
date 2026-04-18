@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'routes/app_router.dart';
 import 'routes/app_routes.dart';
 import 'theme/app_theme.dart';
+import '../core/services/chat_provider.dart';
 import '../core/services/user_context_provider.dart';
 
 class SigadApp extends StatelessWidget {
@@ -10,8 +11,11 @@ class SigadApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => UserContextProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserContextProvider()),
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
+      ],
       child: Consumer<UserContextProvider>(
         builder: (context, userContext, _) {
           return MaterialApp(

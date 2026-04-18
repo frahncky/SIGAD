@@ -2,7 +2,7 @@
 
 Sistema Integrado de Gestão Acadêmica e Departamental desenvolvido em Flutter.
 
-O projeto oferece uma experiência responsiva para perfis institucionais (como coordenação, chefia e apoio administrativo), com módulos para demandas, quadro de tarefas, aulas práticas, carga docente, atividades, relatórios e configurações.
+O projeto oferece uma experiência responsiva para perfis institucionais (como coordenação, chefia e apoio administrativo), com módulos para bate-papo, demandas, quadro de tarefas, laboratórios, carga docente, atividades, relatórios e configurações.
 
 ## Tecnologias
 
@@ -62,6 +62,7 @@ flutter test
 - Autenticação inicial e seleção de perfil
 - Navegação responsiva com menu lateral/drawer
 - Dashboard por perfil
+- Bate-papo: conversas entre usuários por perfil
 - Demandas: criar, editar, excluir e filtrar
 - Quadro de Tarefas: criar, mover por drag-and-drop e excluir cards
 - Aulas práticas: gestão de slots e reservas por perfil
@@ -74,6 +75,7 @@ flutter test
 
 - `/login`
 - `/`
+- `/bate-papo`
 - `/demandas`
 - `/kanban`
 - `/aulas-praticas`

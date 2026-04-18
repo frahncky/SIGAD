@@ -11,6 +11,7 @@ O aplicativo SIGAD foi configurado com um sistema de múltiplos perfis de usuár
 - **Descrição**: Docente responsável por disciplinas e cargas horárias
 - **Acessos Permitidos**:
   - ✅ Dashboard (Visão Geral)
+  - ✅ Bate-papo
   - ✅ Quadro de Tarefas
   - ✅ Carga Docente
   - ✅ Atividades
@@ -23,6 +24,7 @@ O aplicativo SIGAD foi configurado com um sistema de múltiplos perfis de usuár
 - **Descrição**: Responsável pela coordenação e gestão do curso
 - **Acessos Permitidos**:
   - ✅ Dashboard (Visão Geral)
+  - ✅ Bate-papo
   - ✅ Demandas
   - ✅ Quadro de Tarefas
   - ✅ Carga Docente
@@ -35,6 +37,7 @@ O aplicativo SIGAD foi configurado com um sistema de múltiplos perfis de usuár
 - **Descrição**: Suporte administrativo e processamento de documentação
 - **Acessos Permitidos**:
   - ✅ Dashboard (Visão Geral)
+  - ✅ Bate-papo
   - ✅ Quadro de Tarefas
   - ✅ Atividades
   - ✅ Relatórios
@@ -47,6 +50,7 @@ O aplicativo SIGAD foi configurado com um sistema de múltiplos perfis de usuár
 - **Descrição**: Gestor geral do departamento com acesso total
 - **Acessos Permitidos**:
   - ✅ Dashboard (Visão Geral)
+  - ✅ Bate-papo
   - ✅ Demandas
   - ✅ Quadro de Tarefas
   - ✅ Carga Docente
@@ -57,6 +61,7 @@ O aplicativo SIGAD foi configurado com um sistema de múltiplos perfis de usuár
 ## Funcionalidades Gerais (Disponíveis para Todos)
 
 - **Dashboard**: Visão geral do sistema
+- **Bate-papo**: Conversa direta entre usuários do sistema
 - **Quadro de Tarefas**: Visualização de tarefas em quadro de fluxo
 - **Atividades**: Registro estruturado de entregas e eventos
 

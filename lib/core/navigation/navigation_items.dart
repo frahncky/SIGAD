@@ -10,6 +10,11 @@ const List<NavigationItem> kNavigationItems = [
     icon: Icons.dashboard_outlined,
   ),
   NavigationItem(
+    route: AppRoutes.batePapo,
+    label: 'Bate-papo',
+    icon: Icons.forum_outlined,
+  ),
+  NavigationItem(
     route: AppRoutes.demandas,
     label: 'Demandas',
     icon: Icons.assignment_outlined,

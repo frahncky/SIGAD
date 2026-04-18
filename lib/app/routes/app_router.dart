@@ -4,6 +4,7 @@ import '../../features/carga_docente/presentation/pages/carga_docente_page.dart'
 import '../../features/configuracoes/presentation/pages/configuracoes_page.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/demandas/presentation/pages/demandas_page.dart';
+import '../../features/bate_papo/presentation/pages/bate_papo_page.dart';
 import '../../features/home/presentation/pages/home_shell_page.dart';
 import '../../features/kanban/presentation/pages/kanban_page.dart';
 import '../../features/login/presentation/pages/login_page.dart';
@@ -23,6 +24,8 @@ abstract final class AppRouter {
         );
       case AppRoutes.dashboard:
         return _shell(routeName, const DashboardPage());
+      case AppRoutes.batePapo:
+        return _shell(routeName, const BatePapoPage());
       case AppRoutes.demandas:
         return _shell(routeName, const DemandasPage());
       case AppRoutes.kanban:
