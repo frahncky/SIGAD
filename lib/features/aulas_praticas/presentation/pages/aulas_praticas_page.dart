@@ -185,27 +185,35 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _FiltroLabRow(
-                  laboratorioSelecionado: _laboratorioSelecionadoValido,
-                  laboratorios: _laboratorios,
-                  onChanged: (value) => setState(() => _laboratorioSelecionado = value),
-                ),
-                const SizedBox(height: 10),
-                _FiltroPeriodoRow(
-                  mesSelecionado: _mesSelecionado,
-                  meses: _meses,
-                  onMesChanged: (value) {
-                    setState(() {
-                      _mesSelecionado = value;
-                      final maxDia = _diasNoMesSelecionado;
-                      if (_diaSelecionado > maxDia) {
-                        _diaSelecionado = maxDia;
-                      }
-                      if (_diaSelecionado < 1) {
-                        _diaSelecionado = 1;
-                      }
-                    });
-                  },
+                Row(
+                  children: [
+                    Expanded(
+                      child: _FiltroLabRow(
+                        laboratorioSelecionado: _laboratorioSelecionadoValido,
+                        laboratorios: _laboratorios,
+                        onChanged: (value) => setState(() => _laboratorioSelecionado = value),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _FiltroPeriodoRow(
+                        mesSelecionado: _mesSelecionado,
+                        meses: _meses,
+                        onMesChanged: (value) {
+                          setState(() {
+                            _mesSelecionado = value;
+                            final maxDia = _diasNoMesSelecionado;
+                            if (_diaSelecionado > maxDia) {
+                              _diaSelecionado = maxDia;
+                            }
+                            if (_diaSelecionado < 1) {
+                              _diaSelecionado = 1;
+                            }
+                          });
+                        },
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 10),
                 _SelecaoDiaMesRow(
@@ -215,9 +223,12 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                 ),
                 const SizedBox(height: 12),
                 _MapaSemanal(
+                  mesSelecionado: _mesSelecionado,
                   mesLabel: _nomeMes(_mesSelecionado),
                   semanaLabel: _descricaoSemana(_semanaSelecionada),
                   diaSelecionado: _diaSelecionado,
+                  diaSemanaSelecionado: _diaSemanaAbreviadoDoDiaSelecionado,
+                  diaSemanaSelecionadoCompleto: _diaSemanaCompletoDoDiaSelecionado,
                   reservas: _reservasDoLaboratorio,
                   podeEditar: podeEditar,
                   onTapCelula: (diaSemana, turno, periodo, reservaAtual) {
@@ -398,6 +409,50 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     return _meses[mes - 1];
   }
 
+  String get _diaSemanaAbreviadoDoDiaSelecionado {
+    final weekday = DateTime(DateTime.now().year, _mesSelecionado, _diaSelecionado).weekday;
+    switch (weekday) {
+      case DateTime.monday:
+        return 'Seg';
+      case DateTime.tuesday:
+        return 'Ter';
+      case DateTime.wednesday:
+        return 'Qua';
+      case DateTime.thursday:
+        return 'Qui';
+      case DateTime.friday:
+        return 'Sex';
+      case DateTime.saturday:
+        return 'Sáb';
+      case DateTime.sunday:
+        return 'Dom';
+      default:
+        return '-';
+    }
+  }
+
+  String get _diaSemanaCompletoDoDiaSelecionado {
+    final weekday = DateTime(DateTime.now().year, _mesSelecionado, _diaSelecionado).weekday;
+    switch (weekday) {
+      case DateTime.monday:
+        return 'segunda-feira';
+      case DateTime.tuesday:
+        return 'terça-feira';
+      case DateTime.wednesday:
+        return 'quarta-feira';
+      case DateTime.thursday:
+        return 'quinta-feira';
+      case DateTime.friday:
+        return 'sexta-feira';
+      case DateTime.saturday:
+        return 'sábado';
+      case DateTime.sunday:
+        return 'domingo';
+      default:
+        return 'dia inválido';
+    }
+  }
+
   String _descricaoSemana(int semana) {
     return '${semana}a semana';
   }
@@ -498,28 +553,34 @@ class _SelecaoDiaMesRow extends StatelessWidget {
 
 class _MapaSemanal extends StatelessWidget {
   const _MapaSemanal({
+    required this.mesSelecionado,
     required this.mesLabel,
     required this.semanaLabel,
     required this.diaSelecionado,
+    required this.diaSemanaSelecionado,
+    required this.diaSemanaSelecionadoCompleto,
     required this.reservas,
     required this.podeEditar,
     required this.onTapCelula,
   });
 
+  final int mesSelecionado;
   final String mesLabel;
   final String semanaLabel;
   final int diaSelecionado;
+  final String diaSemanaSelecionado;
+  final String diaSemanaSelecionadoCompleto;
   final List<_ReservaLaboratorio> reservas;
   final bool podeEditar;
   final Future<void> Function(String diaSemana, _Turno turno, int periodo, _ReservaLaboratorio? reservaAtual) onTapCelula;
 
   static const List<String> _diasAbreviados = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'];
-  static const List<String> _diasCompletos = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final linhas = _gerarLinhasGrade();
+    final diasDoMesDaSemana = _diasDoMesDaSemanaSelecionada();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -535,7 +596,7 @@ class _MapaSemanal extends StatelessWidget {
         ),
         const SizedBox(height: 2),
         Text(
-          'Dia selecionado: $diaSelecionado',
+          'Dia selecionado: $diaSelecionado ($diaSemanaSelecionado - $diaSemanaSelecionadoCompleto)',
           style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
         ),
         const SizedBox(height: 14),
@@ -543,7 +604,8 @@ class _MapaSemanal extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           child: _GradeSemanal(
             diasAbreviados: _diasAbreviados,
-            diasCompletos: _diasCompletos,
+            diasDoMes: diasDoMesDaSemana,
+            diaSemanaSelecionado: diaSemanaSelecionado,
             linhas: linhas,
             reservaPara: _reservaPara,
             podeEditar: podeEditar,
@@ -574,12 +636,19 @@ class _MapaSemanal extends StatelessWidget {
     }
     return null;
   }
+
+  List<int> _diasDoMesDaSemanaSelecionada() {
+    final dataSelecionada = DateTime(DateTime.now().year, mesSelecionado, diaSelecionado);
+    final inicioDaSemana = dataSelecionada.subtract(Duration(days: dataSelecionada.weekday - DateTime.monday));
+    return List<int>.generate(5, (index) => inicioDaSemana.add(Duration(days: index)).day);
+  }
 }
 
 class _GradeSemanal extends StatelessWidget {
   const _GradeSemanal({
     required this.diasAbreviados,
-    required this.diasCompletos,
+    required this.diasDoMes,
+    required this.diaSemanaSelecionado,
     required this.linhas,
     required this.reservaPara,
     required this.podeEditar,
@@ -587,7 +656,8 @@ class _GradeSemanal extends StatelessWidget {
   });
 
   final List<String> diasAbreviados;
-  final List<String> diasCompletos;
+  final List<int> diasDoMes;
+  final String diaSemanaSelecionado;
   final List<_HorarioGridRow> linhas;
   final _ReservaLaboratorio? Function(String diaSemana, _Turno turno, int periodo) reservaPara;
   final bool podeEditar;
@@ -615,12 +685,24 @@ class _GradeSemanal extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        diasCompletos[index],
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+                        diasAbreviados[index],
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: diasAbreviados[index] == diaSemanaSelecionado
+                              ? SigadColors.brand
+                              : null,
+                        ),
                       ),
                       Text(
-                        diasAbreviados[index],
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                        '${diasDoMes[index]}',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: diasAbreviados[index] == diaSemanaSelecionado
+                              ? SigadColors.brand
+                              : SigadColors.muted,
+                          fontWeight: diasAbreviados[index] == diaSemanaSelecionado
+                              ? FontWeight.w700
+                              : FontWeight.w400,
+                        ),
                       ),
                     ],
                   ),
