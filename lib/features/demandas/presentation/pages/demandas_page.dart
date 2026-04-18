@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../core/services/local_storage_service.dart';
 
 class DemandasPage extends StatefulWidget {
   const DemandasPage({super.key});
@@ -12,6 +13,7 @@ class _DemandasPageState extends State<DemandasPage> {
   String _busca = '';
   String _filtroStatus = 'Todas';
   String _filtroPrioridade = 'Todas';
+  static const String _kKey = 'sigad_demandas';
   static const List<String> _statusDisponiveis = [
     'Novo',
     'Em andamento',
@@ -82,6 +84,47 @@ class _DemandasPageState extends State<DemandasPage> {
       prazo: '10/04/2026',
     ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final list = await LocalStorageService.loadList(_kKey);
+    if (list.isEmpty) return;
+    setState(() {
+      _demandas
+        ..clear()
+        ..addAll(list.map(_demandaFromJson));
+    });
+  }
+
+  void _saveData() {
+    LocalStorageService.saveList(_kKey, _demandas.map(_demandaToJson).toList());
+  }
+
+  Map<String, dynamic> _demandaToJson(_Demanda d) => {
+    'id': d.id,
+    'titulo': d.titulo,
+    'descricao': d.descricao,
+    'prioridade': d.prioridade,
+    'statusLabel': d.statusLabel,
+    'proprietario': d.proprietario,
+    'prazo': d.prazo,
+  };
+
+  _Demanda _demandaFromJson(Map<String, dynamic> json) => _Demanda(
+    id: json['id'] as String,
+    titulo: json['titulo'] as String,
+    descricao: json['descricao'] as String,
+    prioridade: json['prioridade'] as String,
+    statusLabel: json['statusLabel'] as String,
+    statusTone: _toneStatus(json['statusLabel'] as String),
+    proprietario: json['proprietario'] as String,
+    prazo: json['prazo'] as String,
+  );
 
   List<_Demanda> get _demandasFiltradas {
     return _demandas.where((d) {
@@ -466,6 +509,7 @@ class _DemandasPageState extends State<DemandasPage> {
                             ),
                           );
                         });
+                        _saveData();
 
                         Navigator.pop(context);
                         _mostrarFeedback('Demanda criada com sucesso!');
@@ -590,6 +634,7 @@ class _DemandasPageState extends State<DemandasPage> {
                             );
                           }
                         });
+                        _saveData();
 
                         Navigator.pop(context);
                         _mostrarFeedback('Demanda atualizada com sucesso!');
@@ -622,6 +667,7 @@ class _DemandasPageState extends State<DemandasPage> {
               setState(() {
                 _demandas.removeWhere((item) => item.id == demanda.id);
               });
+              _saveData();
               Navigator.pop(context);
               _mostrarFeedback('Demanda excluída com sucesso!');
             },

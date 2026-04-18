@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../core/services/local_storage_service.dart';
 
 class CargaDocentePage extends StatefulWidget {
   const CargaDocentePage({super.key});
@@ -11,6 +12,7 @@ class CargaDocentePage extends StatefulWidget {
 class _CargaDocentePageState extends State<CargaDocentePage> {
   String _filtro = 'Todos';
   static const List<String> _statusDisponibilidade = [
+  static const String _kKey = 'sigad_docentes';
     'Disponível',
     'Parcialmente',
     'Indisponível',
@@ -68,6 +70,47 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       toneDisponibilidade: SigadColors.success,
     ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final list = await LocalStorageService.loadList(_kKey);
+    if (list.isEmpty) return;
+    setState(() {
+      _docentes
+        ..clear()
+        ..addAll(list.map(_docenteFromJson));
+    });
+  }
+
+  void _saveData() {
+    LocalStorageService.saveList(_kKey, _docentes.map(_docenteToJson).toList());
+  }
+
+  Map<String, dynamic> _docenteToJson(_Docente d) => {
+    'id': d.id,
+    'nome': d.nome,
+    'departamento': d.departamento,
+    'cargaHoraria': d.cargaHoraria,
+    'cargaMaxima': d.cargaMaxima,
+    'disciplinas': d.disciplinas,
+    'disponibilidade': d.disponibilidade,
+  };
+
+  _Docente _docenteFromJson(Map<String, dynamic> json) => _Docente(
+    id: json['id'] as String,
+    nome: json['nome'] as String,
+    departamento: json['departamento'] as String,
+    cargaHoraria: json['cargaHoraria'] as int,
+    cargaMaxima: json['cargaMaxima'] as int,
+    disciplinas: List<String>.from(json['disciplinas'] as List),
+    disponibilidade: json['disponibilidade'] as String,
+    toneDisponibilidade: _toneDisponibilidade(json['disponibilidade'] as String),
+  );
 
   List<_Docente> get _docentesFiltrados {
     if (_filtro == 'Todos') return _docentes;
@@ -255,6 +298,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                             ),
                           );
                         });
+                        _saveData();
 
                         Navigator.pop(context);
                         _mostrarFeedback('Docente adicionado com sucesso!');
@@ -426,6 +470,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                             );
                           }
                         });
+                        _saveData();
 
                         Navigator.pop(context);
                         _mostrarFeedback('Docente atualizado com sucesso!');
@@ -458,6 +503,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
               setState(() {
                 _docentes.removeWhere((item) => item.id == docente.id);
               });
+              _saveData();
               Navigator.pop(context);
               _mostrarFeedback('Docente excluído com sucesso!');
             },

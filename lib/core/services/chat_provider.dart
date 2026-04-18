@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/user.dart';
 import '../models/user_role.dart';
+import 'local_storage_service.dart';
 
 class ChatContact {
   const ChatContact({
@@ -33,7 +34,7 @@ class ChatMessage {
 
 class ChatProvider extends ChangeNotifier {
   ChatProvider() {
-    _seedMessages();
+    _loadData();
   }
 
   final List<ChatContact> _baseContacts = const [
@@ -110,6 +111,48 @@ class ChatProvider extends ChangeNotifier {
     final key = _conversationKey(sender.email, recipientEmail);
     _messagesByConversation.putIfAbsent(key, () => <ChatMessage>[]).add(message);
     notifyListeners();
+    _saveData();
+  }
+
+  static const String _kKey = 'sigad_chat_messages';
+
+  Future<void> _loadData() async {
+    final list = await LocalStorageService.loadList(_kKey);
+    if (list.isEmpty) {
+      _seedMessages();
+      return;
+    }
+    for (final json in list) {
+      final senderEmail = json['senderEmail'] as String;
+      final recipientEmail = json['recipientEmail'] as String;
+      final key = _conversationKey(senderEmail, recipientEmail);
+      _messagesByConversation.putIfAbsent(key, () => <ChatMessage>[]).add(
+        ChatMessage(
+          id: json['id'] as String,
+          senderEmail: senderEmail,
+          recipientEmail: recipientEmail,
+          content: json['content'] as String,
+          sentAt: DateTime.parse(json['sentAt'] as String),
+        ),
+      );
+    }
+    notifyListeners();
+  }
+
+  void _saveData() {
+    final allMessages = <Map<String, dynamic>>[];
+    for (final messages in _messagesByConversation.values) {
+      for (final msg in messages) {
+        allMessages.add({
+          'id': msg.id,
+          'senderEmail': msg.senderEmail,
+          'recipientEmail': msg.recipientEmail,
+          'content': msg.content,
+          'sentAt': msg.sentAt.toIso8601String(),
+        });
+      }
+    }
+    LocalStorageService.saveList(_kKey, allMessages);
   }
 
   void _seedMessages() {

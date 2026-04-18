@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../core/services/local_storage_service.dart';
 
 class RelatoriosPage extends StatefulWidget {
   const RelatoriosPage({super.key});
@@ -12,6 +13,7 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
   String _busca = '';
   String _filtroStatus = 'Todos';
   final List<_Relatorio> _relatorios = [
+  static const String _kKey = 'sigad_relatorios';
     _Relatorio(
       id: '#REL-001',
       titulo: 'Mapeamento de Demandas do Período',
@@ -64,6 +66,70 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
     ),
   ];
 
+    @override
+    void initState() {
+      super.initState();
+      _loadData();
+    }
+
+    Future<void> _loadData() async {
+      final list = await LocalStorageService.loadList(_kKey);
+      if (list.isEmpty) return;
+      setState(() {
+        _relatorios
+          ..clear()
+          ..addAll(list.map(_relatorioFromJson));
+      });
+    }
+
+    void _saveData() {
+      LocalStorageService.saveList(_kKey, _relatorios.map(_relatorioToJson).toList());
+    }
+
+    Map<String, dynamic> _relatorioToJson(_Relatorio r) => {
+      'id': r.id,
+      'titulo': r.titulo,
+      'descricao': r.descricao,
+      'tipo': r.tipo,
+      'data': r.data,
+      'autor': r.autor,
+      'status': r.status,
+      'downloads': r.downloads,
+      'compartilhamentos': r.compartilhamentos,
+      if (r.ultimaAcao != null) 'ultimaAcao': r.ultimaAcao,
+    };
+
+    _Relatorio _relatorioFromJson(Map<String, dynamic> json) {
+      final status = json['status'] as String;
+      final Color color;
+      switch (status) {
+        case 'Disponível':
+          color = SigadColors.success;
+          break;
+        case 'Em revisão':
+          color = SigadColors.warning;
+          break;
+        case 'Agendado':
+          color = SigadColors.info;
+          break;
+        default:
+          color = SigadColors.muted;
+      }
+      return _Relatorio(
+        id: json['id'] as String,
+        titulo: json['titulo'] as String,
+        descricao: json['descricao'] as String,
+        tipo: json['tipo'] as String,
+        data: json['data'] as String,
+        autor: json['autor'] as String,
+        status: status,
+        statusColor: color,
+        downloads: json['downloads'] as int? ?? 0,
+        compartilhamentos: json['compartilhamentos'] as int? ?? 0,
+        ultimaAcao: json['ultimaAcao'] as String?,
+      );
+    }
+
   void _atualizarRelatorio(_Relatorio relatorioAtualizado) {
     setState(() {
       final index = _relatorios.indexWhere((item) => item.id == relatorioAtualizado.id);
@@ -71,6 +137,7 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
         _relatorios[index] = relatorioAtualizado;
       }
     });
+    _saveData();
   }
 
   void _baixarRelatorio(_Relatorio relatorio) {

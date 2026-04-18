@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../core/services/local_storage_service.dart';
 
 class KanbanPage extends StatefulWidget {
   const KanbanPage({super.key});
@@ -17,6 +18,43 @@ class _KanbanPageState extends State<KanbanPage> {
     _Card(id: 5, titulo: 'Relatório de labs', coluna: 'Concluído', prioridade: 'Baixa'),
     _Card(id: 6, titulo: 'Planejar semestre', coluna: 'Backlog', prioridade: 'Alta'),
     _Card(id: 7, titulo: 'Revisar documentação', coluna: 'Em Progresso', prioridade: 'Média'),
+  ];
+
+  static const String _kKey = 'sigad_kanban';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final list = await LocalStorageService.loadList(_kKey);
+    if (list.isEmpty) return;
+    setState(() {
+      _cards
+        ..clear()
+        ..addAll(list.map(_cardFromJson));
+    });
+  }
+
+  void _saveData() {
+    LocalStorageService.saveList(_kKey, _cards.map(_cardToJson).toList());
+  }
+
+  Map<String, dynamic> _cardToJson(_Card c) => {
+    'id': c.id,
+    'titulo': c.titulo,
+    'coluna': c.coluna,
+    'prioridade': c.prioridade,
+  };
+
+  _Card _cardFromJson(Map<String, dynamic> json) => _Card(
+    id: json['id'] as int,
+    titulo: json['titulo'] as String,
+    coluna: json['coluna'] as String,
+    prioridade: json['prioridade'] as String,
+  );
   ];
 
   Map<String, List<_Card>> get _colunas {
@@ -71,6 +109,8 @@ class _KanbanPageState extends State<KanbanPage> {
         );
       }
     });
+    _saveData();
+    _saveData();
   }
 
   void _deleteCard(_Card card) {
@@ -143,6 +183,7 @@ class _KanbanPageState extends State<KanbanPage> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Card criado com sucesso!')),
                   );
+                  _saveData();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Informe o título do card')),

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../../core/services/local_storage_service.dart';
 
 class AulasPraticasPage extends StatefulWidget {
   const AulasPraticasPage({super.key});
@@ -87,6 +88,52 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   String _laboratorioSelecionado = _laboratorios.first;
   int _mesSelecionado = DateTime.now().month;
   int _diaSelecionado = DateTime.now().day;
+
+  static const String _kKey = 'sigad_reservas';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final list = await LocalStorageService.loadList(_kKey);
+    if (list.isEmpty) return;
+    setState(() {
+      _reservas
+        ..clear()
+        ..addAll(list.map(_reservaFromJson));
+    });
+  }
+
+  void _saveData() {
+    LocalStorageService.saveList(_kKey, _reservas.map(_reservaToJson).toList());
+  }
+
+  Map<String, dynamic> _reservaToJson(_ReservaLaboratorio r) => {
+    'id': r.id,
+    'professor': r.professor,
+    'laboratorio': r.laboratorio,
+    'mes': r.mes,
+    'semanaDoMes': r.semanaDoMes,
+    'diaSemana': r.diaSemana,
+    'turno': r.turno.name,
+    'periodo': r.periodo,
+    if (r.disciplina != null) 'disciplina': r.disciplina,
+  };
+
+  _ReservaLaboratorio _reservaFromJson(Map<String, dynamic> json) => _ReservaLaboratorio(
+    id: json['id'] as String,
+    professor: json['professor'] as String,
+    laboratorio: json['laboratorio'] as String,
+    mes: json['mes'] as int,
+    semanaDoMes: json['semanaDoMes'] as int,
+    diaSemana: json['diaSemana'] as String,
+    turno: _Turno.values.firstWhere((t) => t.name == json['turno']),
+    periodo: json['periodo'] as int,
+    disciplina: json['disciplina'] as String?,
+  );
 
   int get _semanaSelecionada => ((_diaSelecionado - 1) ~/ 7) + 1;
 
@@ -245,6 +292,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
             ),
           );
         });
+        _saveData();
 
         _showInfo('Horário reservado com sucesso.');
         return;
@@ -268,6 +316,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       setState(() {
         _reservas.removeWhere((reserva) => reserva.id == reservaAtual.id);
       });
+      _saveData();
 
       _showInfo('Reserva removida.');
     } catch (_) {

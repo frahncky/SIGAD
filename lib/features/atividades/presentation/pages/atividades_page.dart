@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../core/services/local_storage_service.dart';
 
 class AtividadesPage extends StatefulWidget {
   const AtividadesPage({super.key});
@@ -12,6 +13,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
   String _busca = '';
   String _filtro = 'Todas';
   static const List<String> _statusAtividade = [
+  static const String _kKey = 'sigad_atividades';
     'Concluída',
     'Em progresso',
     'Agendada',
@@ -82,6 +84,45 @@ class _AtividadesPageState extends State<AtividadesPage> {
       statusColor: SigadColors.accent,
     ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final list = await LocalStorageService.loadList(_kKey);
+    if (list.isEmpty) return;
+    setState(() {
+      _atividades
+        ..clear()
+        ..addAll(list.map(_atividadeFromJson));
+    });
+  }
+
+  void _saveData() {
+    LocalStorageService.saveList(_kKey, _atividades.map(_atividadeToJson).toList());
+  }
+
+  Map<String, dynamic> _atividadeToJson(_Atividade a) => {
+    'id': a.id,
+    'titulo': a.titulo,
+    'descricao': a.descricao,
+    'data': a.data,
+    'responsavel': a.responsavel,
+    'status': a.status,
+  };
+
+  _Atividade _atividadeFromJson(Map<String, dynamic> json) => _Atividade(
+    id: json['id'] as String,
+    titulo: json['titulo'] as String,
+    descricao: json['descricao'] as String,
+    data: json['data'] as String,
+    responsavel: json['responsavel'] as String,
+    status: json['status'] as String,
+    statusColor: _corStatus(json['status'] as String),
+  );
 
   List<_Atividade> get _atividadesFiltradas {
     return _atividades.where((a) {
@@ -352,6 +393,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                             ),
                           );
                         });
+                        _saveData();
 
                         Navigator.pop(context);
                         _mostrarFeedback('Atividade criada com sucesso!');
@@ -465,6 +507,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                             );
                           }
                         });
+                        _saveData();
 
                         Navigator.pop(context);
                         _mostrarFeedback('Atividade atualizada com sucesso!');
@@ -497,6 +540,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
               setState(() {
                 _atividades.removeWhere((item) => item.id == atividade.id);
               });
+              _saveData();
               Navigator.pop(context);
               _mostrarFeedback('Atividade excluída com sucesso!');
             },

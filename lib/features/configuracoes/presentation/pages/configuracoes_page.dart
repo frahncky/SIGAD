@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../core/services/local_storage_service.dart';
 
 class ConfiguracoesPage extends StatefulWidget {
   const ConfiguracoesPage({super.key});
@@ -25,6 +26,51 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
   int _problemasReportados = 0;
 
   String _dataAtual() {
+  static const String _kKey = 'sigad_configuracoes';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final data = await LocalStorageService.loadMap(_kKey);
+    if (data == null) return;
+    setState(() {
+      _notificacoesAtivas = data['notificacoesAtivas'] as bool? ?? _notificacoesAtivas;
+      _modoDark = data['modoDark'] as bool? ?? _modoDark;
+      _biometriaAtiva = data['biometriaAtiva'] as bool? ?? _biometriaAtiva;
+      _backupAutomaticoAtivo = data['backupAutomaticoAtivo'] as bool? ?? _backupAutomaticoAtivo;
+      _idioma = data['idioma'] as String? ?? _idioma;
+      _tamanhoFonte = data['tamanhoFonte'] as String? ?? _tamanhoFonte;
+      _nomePerfil = data['nomePerfil'] as String? ?? _nomePerfil;
+      _cargoPerfil = data['cargoPerfil'] as String? ?? _cargoPerfil;
+      _emailUsuario = data['emailUsuario'] as String? ?? _emailUsuario;
+      _ultimaAlteracaoSenha = data['ultimaAlteracaoSenha'] as String? ?? _ultimaAlteracaoSenha;
+      _proximoBackup = data['proximoBackup'] as String? ?? _proximoBackup;
+      _ultimoBackup = data['ultimoBackup'] as String? ?? _ultimoBackup;
+      _problemasReportados = data['problemasReportados'] as int? ?? _problemasReportados;
+    });
+  }
+
+  void _saveData() {
+    LocalStorageService.saveMap(_kKey, {
+      'notificacoesAtivas': _notificacoesAtivas,
+      'modoDark': _modoDark,
+      'biometriaAtiva': _biometriaAtiva,
+      'backupAutomaticoAtivo': _backupAutomaticoAtivo,
+      'idioma': _idioma,
+      'tamanhoFonte': _tamanhoFonte,
+      'nomePerfil': _nomePerfil,
+      'cargoPerfil': _cargoPerfil,
+      'emailUsuario': _emailUsuario,
+      'ultimaAlteracaoSenha': _ultimaAlteracaoSenha,
+      'proximoBackup': _proximoBackup,
+      'ultimoBackup': _ultimoBackup,
+      'problemasReportados': _problemasReportados,
+    });
+  }
     final agora = DateTime.now();
     final dia = agora.day.toString().padLeft(2, '0');
     final mes = agora.month.toString().padLeft(2, '0');
@@ -97,6 +143,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 value: _notificacoesAtivas,
                 onChanged: (value) {
                   setState(() => _notificacoesAtivas = value);
+                                  _saveData();
                 },
               ),
               _ConfigToggle(
@@ -106,6 +153,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 value: _modoDark,
                 onChanged: (value) {
                   setState(() => _modoDark = value);
+                                  _saveData();
                 },
               ),
               _ConfigToggle(
@@ -115,6 +163,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 value: _biometriaAtiva,
                 onChanged: (value) {
                   setState(() => _biometriaAtiva = value);
+                                  _saveData();
                 },
               ),
             ],
@@ -133,6 +182,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 ],
                 onChanged: (valor) {
                   setState(() => _idioma = valor);
+                                  _saveData();
                 },
               ),
               _ConfigDropdown(
@@ -146,6 +196,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 ],
                 onChanged: (valor) {
                   setState(() => _tamanhoFonte = valor);
+                                  _saveData();
                 },
               ),
             ],
@@ -315,6 +366,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                         _nomePerfil = nomeController.text.trim();
                         _cargoPerfil = cargoController.text.trim();
                       });
+                      _saveData();
 
                       Navigator.pop(context);
                       _mostrarFeedback('Perfil atualizado com sucesso!');
@@ -390,6 +442,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                       setState(() {
                         _emailUsuario = email;
                       });
+                      _saveData();
 
                       Navigator.pop(context);
                       _mostrarFeedback('Código de verificação enviado!');
@@ -492,6 +545,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                       setState(() {
                         _ultimaAlteracaoSenha = _dataAtual();
                       });
+                      _saveData();
 
                       Navigator.pop(context);
                       _mostrarFeedback('Senha alterada com sucesso!');
@@ -544,6 +598,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                     _backupAutomaticoAtivo = value;
                     _proximoBackup = value ? _dataFutura(1) : 'Desativado';
                   });
+                  _saveData();
                   setModalState(() {});
                 },
               ),
@@ -562,6 +617,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                           _ultimoBackup = _dataHoraAtual();
                           _proximoBackup = _backupAutomaticoAtivo ? _dataFutura(1) : 'Desativado';
                         });
+                        _saveData();
                         Navigator.pop(context);
                         _mostrarFeedback('Backup realizado com sucesso!');
                       },
@@ -830,6 +886,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                       setState(() {
                         _problemasReportados += 1;
                       });
+                      _saveData();
 
                       Navigator.pop(context);
                       _mostrarFeedback('Relatório enviado com sucesso!');
