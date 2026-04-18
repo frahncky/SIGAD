@@ -30,9 +30,11 @@ class DashboardPage extends StatelessWidget {
           children: [
             const _AmbientBackground(),
             SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                horizontal: isWide ? 8 : 10,
-                vertical: 24,
+              padding: EdgeInsets.fromLTRB(
+                isWide ? 8 : 10,
+                isWide ? 20 : 16,
+                isWide ? 8 : 10,
+                24,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,7 +89,71 @@ class _HeroPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final isWide = MediaQuery.of(context).size.width >= 1024;
+    final isWide = MediaQuery.of(context).size.width >= 1200;
+
+    final headerText = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Olá, $userName',
+          style: textTheme.headlineSmall?.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
+    );
+
+    final compactIndicators = Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 8,
+      runSpacing: 8,
+      children: profile.metrics
+          .take(3)
+          .toList()
+          .asMap()
+          .entries
+          .map(
+            (entry) {
+              final index = entry.key;
+              final metric = entry.value;
+              const labels = ['Indicadores', 'Demandas', 'SLA'];
+              final compactLabel = labels[index.clamp(0, labels.length - 1)];
+              return Container(
+              constraints: const BoxConstraints(minWidth: 94),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.16),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.24)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    metric.value,
+                    style: textTheme.titleMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    compactLabel,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: textTheme.labelSmall?.copyWith(
+                      color: Colors.white.withValues(alpha: 0.88),
+                    ),
+                  ),
+                ],
+              ),
+            );
+            },
+          )
+          .toList(),
+    );
+
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: isWide ? 34 : 24,
@@ -114,43 +180,11 @@ class _HeroPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Olá, $userName',
-            style: textTheme.headlineSmall?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            profile.title,
-            style: textTheme.titleMedium?.copyWith(
-              color: Colors.white.withValues(alpha: 0.95),
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: profile.focus
-                .map(
-                  (label) => Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.18),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      label,
-                      style: textTheme.labelSmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                )
-                .toList(),
+          headerText,
+          const SizedBox(height: 14),
+          Align(
+            alignment: Alignment.topCenter,
+            child: compactIndicators,
           ),
         ],
       ),
@@ -675,7 +709,7 @@ class _RoleProfile {
         );
       case UserRole.chefeDepartamento:
         return _RoleProfile(
-          title: 'Perfil Chefe de Departamento',
+          title: 'Chefe de Departamento',
           subtitle: 'Visão estratégica de governança, desempenho e alocação.',
           tone: SigadColors.brandDark,
           metrics: const [
