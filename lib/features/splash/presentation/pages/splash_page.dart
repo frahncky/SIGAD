@@ -85,13 +85,10 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                       ),
                     ),
                     child: Center(
-                      child: Text(
-                        'SIGAD',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 2,
-                            ),
+                      child: Icon(
+                        Icons.school_rounded,
+                        size: 52,
+                        color: Colors.white.withOpacity(0.9),
                       ),
                     ),
                   ),
