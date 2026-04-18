@@ -844,29 +844,29 @@ class _DocenteCardState extends State<_DocenteCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: SigadColors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: SigadColors.divider),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: podeVisualizarHorarios ? () => setState(() => _isExpanded = !_isExpanded) : null,
+        GestureDetector(
+          onTap: podeVisualizarHorarios ? () => setState(() => _isExpanded = !_isExpanded) : null,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: SigadColors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: SigadColors.divider),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.06),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -888,89 +888,86 @@ class _DocenteCardState extends State<_DocenteCard> {
                         ],
                       ),
                     ),
-                  ),
-                  if (podeVisualizarHorarios)
-                    GestureDetector(
-                      onTap: () => setState(() => _isExpanded = !_isExpanded),
-                      child: Icon(
+                    if (podeVisualizarHorarios)
+                      Icon(
                         _isExpanded ? Icons.expand_less : Icons.expand_more,
                         color: SigadColors.muted,
                       ),
-                    ),
-                  if (widget.canManage)
-                    PopupMenuButton<String>(
-                      onSelected: _onMenuItemSelected,
-                      itemBuilder: (context) => [
-                        const PopupMenuItem(
-                          value: 'editar',
-                          child: Row(
-                            children: [
-                              Icon(Icons.edit, size: 18),
-                              SizedBox(width: 8),
-                              Text('Editar'),
-                            ],
-                          ),
-                        ),
-                        const PopupMenuItem(
-                          value: 'excluir',
-                          child: Row(
-                            children: [
-                              Icon(Icons.delete, color: Colors.red, size: 18),
-                              SizedBox(width: 8),
-                              Text('Excluir', style: TextStyle(color: Colors.red)),
-                            ],
-                          ),
-                        ),
-                      ],
-                      icon: const Icon(Icons.more_vert, size: 18),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Carga horária: ${docente.cargaHoraria}h',
-                style: textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: docente.disciplinas
-                    .map((d) => Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: SigadColors.brand.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            d,
-                            style: textTheme.labelSmall?.copyWith(
-                              color: SigadColors.brand,
+                    if (widget.canManage)
+                      PopupMenuButton<String>(
+                        onSelected: _onMenuItemSelected,
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(
+                            value: 'editar',
+                            child: Row(
+                              children: [
+                                Icon(Icons.edit, size: 18),
+                                SizedBox(width: 8),
+                                Text('Editar'),
+                              ],
                             ),
                           ),
-                        ))
-                    .toList(),
-              ),
-              if (_isExpanded && podeVisualizarHorarios && docente.horariosAula.isNotEmpty) ...[
+                          const PopupMenuItem(
+                            value: 'excluir',
+                            child: Row(
+                              children: [
+                                Icon(Icons.delete, color: Colors.red, size: 18),
+                                SizedBox(width: 8),
+                                Text('Excluir', style: TextStyle(color: Colors.red)),
+                              ],
+                            ),
+                          ),
+                        ],
+                        icon: const Icon(Icons.more_vert, size: 18),
+                      ),
+                  ],
+                ),
                 const SizedBox(height: 16),
-                Divider(color: SigadColors.divider.withValues(alpha: 0.5)),
-                const SizedBox(height: 12),
                 Text(
-                  'Distribuição semanal',
-                  style: textTheme.labelSmall?.copyWith(
-                    color: SigadColors.muted,
-                    fontWeight: FontWeight.w700,
+                  'Carga horária: ${docente.cargaHoraria}h',
+                  style: textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 8),
-                _MapaSemanalHorarios(
-                  horarios: docente.horariosAula,
-                  compacto: true,
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: docente.disciplinas
+                      .map((d) => Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: SigadColors.brand.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              d,
+                              style: textTheme.labelSmall?.copyWith(
+                                color: SigadColors.brand,
+                              ),
+                            ),
+                          ))
+                      .toList(),
                 ),
+                if (_isExpanded && podeVisualizarHorarios && docente.horariosAula.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  Divider(color: SigadColors.divider.withValues(alpha: 0.5)),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Distribuição semanal',
+                    style: textTheme.labelSmall?.copyWith(
+                      color: SigadColors.muted,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _MapaSemanalHorarios(
+                    horarios: docente.horariosAula,
+                    compacto: true,
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ],
