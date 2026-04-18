@@ -20,17 +20,17 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   };
 
   static const List<String> _laboratorios = [
-    'Lab Quimica 1',
+    'Lab Química 1',
     'Lab Biologia 2',
-    'Lab Fisica 1',
-    'Lab Automacao',
+    'Lab Física 1',
+    'Lab Automação',
   ];
 
   final List<_ReservaLaboratorio> _reservas = [
     _ReservaLaboratorio(
       id: 'RES-101',
       professor: 'Ismael',
-      laboratorio: 'Lab Quimica 1',
+      laboratorio: 'Lab Química 1',
       diaSemana: 'Seg',
       turno: _Turno.matutino,
       periodo: 4,
@@ -38,7 +38,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     _ReservaLaboratorio(
       id: 'RES-102',
       professor: 'Pee - Claudio Leao',
-      laboratorio: 'Lab Quimica 1',
+      laboratorio: 'Lab Química 1',
       diaSemana: 'Ter',
       turno: _Turno.matutino,
       periodo: 4,
@@ -46,7 +46,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     _ReservaLaboratorio(
       id: 'RES-103',
       professor: 'Jean Mark',
-      laboratorio: 'Lab Quimica 1',
+      laboratorio: 'Lab Química 1',
       diaSemana: 'Sex',
       turno: _Turno.noturno,
       periodo: 1,
@@ -54,7 +54,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     _ReservaLaboratorio(
       id: 'RES-104',
       professor: 'Lima',
-      laboratorio: 'Lab Quimica 1',
+      laboratorio: 'Lab Química 1',
       diaSemana: 'Seg',
       turno: _Turno.vespertino,
       periodo: 3,
@@ -63,8 +63,15 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
   String _laboratorioSelecionado = _laboratorios.first;
 
+  String get _laboratorioSelecionadoValido {
+    if (_laboratorios.contains(_laboratorioSelecionado)) {
+      return _laboratorioSelecionado;
+    }
+    return _laboratorios.first;
+  }
+
   List<_ReservaLaboratorio> get _reservasDoLaboratorio {
-    return _reservas.where((reserva) => reserva.laboratorio == _laboratorioSelecionado).toList();
+    return _reservas.where((reserva) => reserva.laboratorio == _laboratorioSelecionadoValido).toList();
   }
 
   int get _totalSlotsSemana {
@@ -90,11 +97,11 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       return const _AccessDenied();
     }
 
-    final podeEditar = role == UserRole.professor;
+    final podeEditar = role == UserRole.chefeDepartamento;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Uso do laboratorio'),
+        title: const Text('Uso do laboratório'),
       ),
       body: Stack(
         children: [
@@ -111,15 +118,15 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                 ),
                 const SizedBox(height: 16),
                 _FiltroLabRow(
-                  laboratorioSelecionado: _laboratorioSelecionado,
+                  laboratorioSelecionado: _laboratorioSelecionadoValido,
                   laboratorios: _laboratorios,
                   onChanged: (value) => setState(() => _laboratorioSelecionado = value),
                 ),
                 const SizedBox(height: 10),
                 _HintBox(
                   text: podeEditar
-                      ? 'Toque em celula vazia para adicionar seu nome. Toque no seu proprio nome para excluir a reserva.'
-                      : 'Visualizacao para ${role.displayName}. Somente professor pode editar pela grade.',
+                      ? 'Edição disponível para o chefe do departamento.'
+                      : 'Visualização disponível para ${role.displayName}. A edição da grade é restrita ao chefe do departamento.',
                 ),
                 const SizedBox(height: 12),
                 _MapaSemanal(
@@ -152,8 +159,8 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     final user = userContext.currentUser;
     final role = userContext.userRole;
 
-    if (user == null || role != UserRole.professor) {
-      _showInfo('Somente professor pode alterar reservas pela grade.');
+    if (user == null || role != UserRole.chefeDepartamento) {
+      _showInfo('Somente o chefe do departamento pode alterar reservas pela grade.');
       return;
     }
 
@@ -161,7 +168,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       final confirmar = await _confirmarAcao(
         titulo: 'Confirmar reserva',
         mensagem:
-            'Reservar $_laboratorioSelecionado em ${_diaCompleto(diaSemana)}, ${turno.horarioDo(periodo)} no seu nome (${user.name})?',
+            'Reservar $_laboratorioSelecionadoValido em ${_diaCompleto(diaSemana)}, ${turno.horarioDo(periodo)} em nome de ${user.name}?',
         confirmarLabel: 'Reservar',
       );
 
@@ -169,14 +176,14 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
       final jaOcupado = _reservas.any(
         (reserva) =>
-            reserva.laboratorio == _laboratorioSelecionado &&
+            reserva.laboratorio == _laboratorioSelecionadoValido &&
             reserva.diaSemana == diaSemana &&
             reserva.turno == turno &&
             reserva.periodo == periodo,
       );
 
       if (jaOcupado) {
-        _showInfo('Este horario acabou de ser reservado por outro usuario.');
+        _showInfo('Este horário acabou de ser reservado por outro usuário.');
         return;
       }
 
@@ -185,7 +192,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
           _ReservaLaboratorio(
             id: 'RES-${DateTime.now().microsecondsSinceEpoch}',
             professor: user.name,
-            laboratorio: _laboratorioSelecionado,
+            laboratorio: _laboratorioSelecionadoValido,
             diaSemana: diaSemana,
             turno: turno,
             periodo: periodo,
@@ -193,22 +200,14 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         );
       });
 
-      _showInfo('Horario reservado com sucesso.');
-      return;
-    }
-
-    final professorAtual = reservaAtual.professor.trim().toLowerCase();
-    final professorLogado = user.name.trim().toLowerCase();
-
-    if (professorAtual != professorLogado) {
-      _showInfo('Horario ja ocupado por ${reservaAtual.professor}. Somente o proprio professor pode excluir.');
+      _showInfo('Horário reservado com sucesso.');
       return;
     }
 
     final confirmarExclusao = await _confirmarAcao(
       titulo: 'Excluir reserva',
       mensagem:
-          'Deseja remover sua reserva de ${_diaCompleto(diaSemana)}, ${turno.horarioDo(periodo)} no $_laboratorioSelecionado?',
+          'Deseja remover sua reserva de ${_diaCompleto(diaSemana)}, ${turno.horarioDo(periodo)} no $_laboratorioSelecionadoValido?',
       confirmarLabel: 'Excluir',
       isDelete: true,
     );
@@ -264,7 +263,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       case 'Seg':
         return 'segunda-feira';
       case 'Ter':
-        return 'terca-feira';
+        return 'terça-feira';
       case 'Qua':
         return 'quarta-feira';
       case 'Qui':
@@ -301,7 +300,7 @@ class _HeroInfo extends StatelessWidget {
         children: [
           _BadgeInfo(label: 'Slots/semana', value: '$totalSlots', tone: SigadColors.brand),
           const SizedBox(width: 10),
-          _BadgeInfo(label: 'Ocupados', value: '$ocupados', tone: SigadColors.warning),
+                _BadgeInfo(label: 'Ocupados', value: '$ocupados', tone: SigadColors.warning),
           const SizedBox(width: 10),
           _BadgeInfo(label: 'Livres', value: '$livres', tone: SigadColors.success),
         ],
@@ -366,7 +365,7 @@ class _FiltroLabRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
       initialValue: laboratorioSelecionado,
-      decoration: const InputDecoration(labelText: 'Laboratorio'),
+      decoration: const InputDecoration(labelText: 'Laboratório'),
       items: laboratorios.map((lab) => DropdownMenuItem(value: lab, child: Text(lab))).toList(),
       onChanged: (value) {
         if (value != null) onChanged(value);
@@ -393,7 +392,7 @@ class _HintBox extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.touch_app_outlined, size: 18, color: SigadColors.muted),
+          const Icon(Icons.info_outline, size: 18, color: SigadColors.muted),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -523,23 +522,21 @@ class _ColunaDay extends StatelessWidget {
             ),
           ),
           const Divider(height: 1),
-          Expanded(
-            child: Container(
-              constraints: const BoxConstraints(minHeight: 300),
-              child: ListView.separated(
-                padding: const EdgeInsets.all(12),
-                physics: const AlwaysScrollableScrollPhysics(),
-                itemCount: slots.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 10),
-                itemBuilder: (_, index) {
-                  final slot = slots[index];
-                  return _SlotCard(
-                    slot: slot,
-                    onTap: () => onTapCelula(slot.diaSemana, slot.turno, slot.periodo, slot.reserva),
-                    podeEditar: podeEditar,
-                  );
-                },
-              ),
+          SizedBox(
+            height: 300,
+            child: ListView.separated(
+              padding: const EdgeInsets.all(12),
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: slots.length,
+              separatorBuilder: (_, _) => const SizedBox(height: 10),
+              itemBuilder: (_, index) {
+                final slot = slots[index];
+                return _SlotCard(
+                  slot: slot,
+                  onTap: () => onTapCelula(slot.diaSemana, slot.turno, slot.periodo, slot.reserva),
+                  podeEditar: podeEditar,
+                );
+              },
             ),
           ),
         ],
@@ -637,7 +634,7 @@ class _SlotCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                podeEditar ? 'Toque para reservar' : 'Sem reserva',
+                podeEditar ? 'Disponível para reserva' : 'Sem reserva editável neste perfil',
                 style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
               ),
             ] else ...[
@@ -704,7 +701,7 @@ class _AccessDenied extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Este modulo esta disponivel para professor, coordenador e chefe do departamento.',
+              'Este módulo está disponível para professor, coordenador e chefe do departamento.',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
             ),
@@ -771,7 +768,7 @@ enum _Turno {
 
   String horarioDo(int periodo) {
     if (periodo < 1 || periodo > horarios.length) {
-      return 'Horario indefinido';
+      return 'Horário indefinido';
     }
     return horarios[periodo - 1];
   }
