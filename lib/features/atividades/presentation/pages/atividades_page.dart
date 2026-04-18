@@ -210,7 +210,6 @@ class _AtividadesPageState extends State<AtividadesPage> {
                   ),
                 ),
               ],
-              ),
             ),
           ),
           Expanded(

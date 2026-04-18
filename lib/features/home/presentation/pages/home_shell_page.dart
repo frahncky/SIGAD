@@ -94,6 +94,7 @@ class HomeShellPage extends StatelessWidget {
                       availableItems: availableItems,
                       userContext: userContext,
                       onSelected: (index) => _navigate(context, availableItems[index].route),
+                      onQuickAccess: () => _showQuickAccess(context, availableItems),
                       onLogout: () => _confirmLogout(context, userContext),
                     ),
                     Expanded(
@@ -277,6 +278,7 @@ class _SideNav extends StatelessWidget {
     required this.availableItems,
     required this.userContext,
     required this.onSelected,
+    required this.onQuickAccess,
     required this.onLogout,
   });
 
@@ -284,6 +286,7 @@ class _SideNav extends StatelessWidget {
   final List<NavigationItem> availableItems;
   final UserContextProvider userContext;
   final ValueChanged<int> onSelected;
+  final VoidCallback onQuickAccess;
   final VoidCallback onLogout;
 
   @override
@@ -313,7 +316,7 @@ class _SideNav extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: FilledButton.tonalIcon(
-              onPressed: () => _showQuickAccess(context, availableItems),
+              onPressed: onQuickAccess,
               icon: const Icon(Icons.search_outlined),
               label: const Text('Acesso rápido'),
             ),
