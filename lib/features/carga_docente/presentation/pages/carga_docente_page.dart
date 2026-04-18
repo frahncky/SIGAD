@@ -758,6 +758,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     }
 
     final podeGerenciar = role == UserRole.coordenador || role == UserRole.chefeDepartamento;
+    final podeVisualizarHorarios = podeGerenciar || role == UserRole.professor;
     final emailNormalizado = (user?.email ?? '').trim().toLowerCase();
     final docentesVisiveis = _docentesVisiveis(role, emailUsuario: user?.email);
     final docentesOrdenados = podeGerenciar
@@ -793,6 +794,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
               itemBuilder: (_, index) => _DocenteCard(
                 docente: docentesOrdenados[index],
                 canManage: podeGerenciar,
+                canViewSchedule: podeVisualizarHorarios,
                 onEditar: () => _showEditarDocente(context, docentesOrdenados[index]),
                 onExcluir: () => _showConfirmarExclusao(context, docentesOrdenados[index]),
               ),
@@ -815,12 +817,14 @@ class _DocenteCard extends StatefulWidget {
   const _DocenteCard({
     required this.docente,
     required this.canManage,
+    required this.canViewSchedule,
     required this.onEditar,
     required this.onExcluir,
   });
 
   final _Docente docente;
   final bool canManage;
+  final bool canViewSchedule;
   final VoidCallback onEditar;
   final VoidCallback onExcluir;
 
@@ -829,23 +833,16 @@ class _DocenteCard extends StatefulWidget {
 }
 
 class _DocenteCardState extends State<_DocenteCard> {
-  bool _horariosExpandidos = false;
-
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final docente = widget.docente;
-    final podeExpandirHorarios = widget.canManage && docente.horariosAula.isNotEmpty;
+    final podeVisualizarHorarios = widget.canViewSchedule && docente.horariosAula.isNotEmpty;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        InkWell(
-          onTap: podeExpandirHorarios
-              ? () => setState(() => _horariosExpandidos = !_horariosExpandidos)
-              : null,
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
+        Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: SigadColors.surface,
@@ -869,26 +866,14 @@ class _DocenteCardState extends State<_DocenteCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  docente.nome,
-                                  style: textTheme.labelLarge?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              if (podeExpandirHorarios)
-                                Icon(
-                                  _horariosExpandidos ? Icons.expand_less : Icons.expand_more,
-                                  size: 18,
-                                  color: SigadColors.brand,
-                                ),
-                            ],
+                        Text(
+                          docente.nome,
+                          style: textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                         const SizedBox(height: 4),
                         Text(
                           docente.departamento,
@@ -958,33 +943,27 @@ class _DocenteCardState extends State<_DocenteCard> {
             ],
           ),
         ),
-        ),
-        if (podeExpandirHorarios) ...[
+        if (podeVisualizarHorarios) ...[
           const SizedBox(height: 10),
-          AnimatedCrossFade(
-            duration: const Duration(milliseconds: 220),
-            firstChild: const SizedBox.shrink(),
-            secondChild: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2),
-                  child: Text(
-                    'Distribuição semanal',
-                    style: textTheme.labelSmall?.copyWith(
-                      color: SigadColors.muted,
-                      fontWeight: FontWeight.w700,
-                    ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: Text(
+                  'Distribuição semanal',
+                  style: textTheme.labelSmall?.copyWith(
+                    color: SigadColors.muted,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 6),
-                _MapaSemanalHorarios(
-                  horarios: docente.horariosAula,
-                  compacto: true,
-                ),
-              ],
-            ),
-            crossFadeState: _horariosExpandidos ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              ),
+              const SizedBox(height: 8),
+              _MapaSemanalHorarios(
+                horarios: docente.horariosAula,
+                compacto: true,
+              ),
+            ],
           ),
         ],
       ],
