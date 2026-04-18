@@ -145,10 +145,6 @@ class _DemandasPageState extends State<DemandasPage> {
     }).toList();
   }
 
-  int get _demandasAltaPrioridade => _demandas.where((d) => d.prioridade == 'Alta').length;
-
-  int get _demandasConcluidas => _demandas.where((d) => d.statusLabel == 'Concluído').length;
-
   int get _filtrosAtivos {
     var ativos = 0;
     if (_filtroStatus != 'Todas') ativos++;
@@ -271,12 +267,6 @@ class _DemandasPageState extends State<DemandasPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _DemandasSummaryBanner(
-                  totalDemandas: _demandas.length,
-                  demandasAltaPrioridade: _demandasAltaPrioridade,
-                  demandasConcluidas: _demandasConcluidas,
-                ),
-                const SizedBox(height: 16),
                 TextField(
                   onChanged: (value) => setState(() => _busca = value),
                   decoration: const InputDecoration(
@@ -284,7 +274,7 @@ class _DemandasPageState extends State<DemandasPage> {
                     prefixIcon: Icon(Icons.search_outlined),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 Row(
                   children: [
                     Container(
@@ -312,7 +302,7 @@ class _DemandasPageState extends State<DemandasPage> {
                           });
                         },
                         icon: const Icon(Icons.restart_alt, size: 18),
-                        label: const Text('Limpar filtros'),
+                        label: const Text('Limpar'),
                       ),
                   ],
                 ),
@@ -331,51 +321,6 @@ class _DemandasPageState extends State<DemandasPage> {
                       setState(() => _ordemSelecionada = value);
                     }
                   },
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Filtrar por',
-                  style: textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Wrap(
-                        spacing: 8,
-                        children: ['Todas', ..._statusDisponiveis]
-                            .map((status) => FilterChip(
-                              label: Text(status),
-                              selected: _filtroStatus == status,
-                              onSelected: (selected) {
-                                setState(() => _filtroStatus = selected ? status : 'Todas');
-                              },
-                            ))
-                            .toList(),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Wrap(
-                        spacing: 8,
-                        children: ['Todas', ..._prioridades]
-                            .map((prioridade) => FilterChip(
-                              label: Text(prioridade),
-                              selected: _filtroPrioridade == prioridade,
-                              onSelected: (selected) {
-                                setState(() => _filtroPrioridade = selected ? prioridade : 'Todas');
-                              },
-                            ))
-                            .toList(),
-                      ),
-                    ),
-                  ],
                 ),
               ],
             ),
@@ -788,78 +733,6 @@ class _DemandasPageState extends State<DemandasPage> {
             child: const Text('Excluir', style: TextStyle(color: Colors.red)),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _DemandasSummaryBanner extends StatelessWidget {
-  const _DemandasSummaryBanner({
-    required this.totalDemandas,
-    required this.demandasAltaPrioridade,
-    required this.demandasConcluidas,
-  });
-
-  final int totalDemandas;
-  final int demandasAltaPrioridade;
-  final int demandasConcluidas;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: SigadColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: SigadColors.divider),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Painel de demandas',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              _DemandasKpi(label: 'No total', value: '$totalDemandas'),
-              const SizedBox(width: 8),
-              _DemandasKpi(label: 'Alta prioridade', value: '$demandasAltaPrioridade'),
-              const SizedBox(width: 8),
-              _DemandasKpi(label: 'Concluídas', value: '$demandasConcluidas'),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DemandasKpi extends StatelessWidget {
-  const _DemandasKpi({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: SigadColors.surfaceAlt,
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted)),
-            const SizedBox(height: 4),
-            Text(value, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
-          ],
-        ),
       ),
     );
   }

@@ -835,9 +835,6 @@ class _DocenteCardState extends State<_DocenteCard> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final docente = widget.docente;
-    final cargaMaxima = docente.cargaMaxima;
-    final percentualCarga = cargaMaxima > 0 ? (docente.cargaHoraria / cargaMaxima * 100).round() : 0;
-    final progressoCarga = cargaMaxima > 0 ? (docente.cargaHoraria / cargaMaxima).clamp(0.0, 1.0).toDouble() : 0.0;
     final podeExpandirHorarios = widget.canManage && docente.horariosAula.isNotEmpty;
 
     return Column(
@@ -932,34 +929,11 @@ class _DocenteCardState extends State<_DocenteCard> {
                 ],
               ),
               const SizedBox(height: 16),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: LinearProgressIndicator(
-                  value: progressoCarga,
-                  minHeight: 8,
-                  backgroundColor: SigadColors.muted.withValues(alpha: 0.1),
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    percentualCarga >= 100 ? SigadColors.risk : SigadColors.success,
-                  ),
+              Text(
+                'Carga horária: ${docente.cargaHoraria}h',
+                style: textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w600,
                 ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '${docente.cargaHoraria}h / ${docente.cargaMaxima}h',
-                    style: textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    '$percentualCarga%',
-                    style: textTheme.labelSmall?.copyWith(
-                      color: SigadColors.muted,
-                    ),
-                  ),
-                ],
               ),
               const SizedBox(height: 12),
               Wrap(
