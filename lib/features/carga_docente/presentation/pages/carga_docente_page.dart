@@ -37,6 +37,11 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       cargaHoraria: 20,
       cargaMaxima: 20,
       disciplinas: ['Programação I', 'Programação II', 'Engenharia de Software'],
+      horariosAula: const [
+        _HorarioAula(diaSemana: 'Segunda', inicio: '08:00', fim: '09:40'),
+        _HorarioAula(diaSemana: 'Quarta', inicio: '10:00', fim: '11:40'),
+        _HorarioAula(diaSemana: 'Sexta', inicio: '19:00', fim: '20:40'),
+      ],
       disponibilidade: 'Indisponível',
       toneDisponibilidade: SigadColors.risk,
     ),
@@ -48,6 +53,10 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       cargaHoraria: 16,
       cargaMaxima: 20,
       disciplinas: ['Banco de Dados', 'Web Design'],
+      horariosAula: const [
+        _HorarioAula(diaSemana: 'Terça', inicio: '08:00', fim: '09:40'),
+        _HorarioAula(diaSemana: 'Quinta', inicio: '08:00', fim: '09:40'),
+      ],
       disponibilidade: 'Disponível',
       toneDisponibilidade: SigadColors.success,
     ),
@@ -59,6 +68,10 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       cargaHoraria: 12,
       cargaMaxima: 20,
       disciplinas: ['Computação Gráfica'],
+      horariosAula: const [
+        _HorarioAula(diaSemana: 'Segunda', inicio: '14:00', fim: '15:40'),
+        _HorarioAula(diaSemana: 'Quarta', inicio: '14:00', fim: '15:40'),
+      ],
       disponibilidade: 'Disponível',
       toneDisponibilidade: SigadColors.success,
     ),
@@ -70,6 +83,11 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       cargaHoraria: 18,
       cargaMaxima: 20,
       disciplinas: ['Redes I', 'Redes II', 'Segurança de Redes'],
+      horariosAula: const [
+        _HorarioAula(diaSemana: 'Terça', inicio: '19:00', fim: '20:40'),
+        _HorarioAula(diaSemana: 'Quinta', inicio: '19:00', fim: '20:40'),
+        _HorarioAula(diaSemana: 'Sexta', inicio: '21:00', fim: '22:40'),
+      ],
       disponibilidade: 'Parcialmente',
       toneDisponibilidade: SigadColors.warning,
     ),
@@ -81,6 +99,10 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       cargaHoraria: 14,
       cargaMaxima: 20,
       disciplinas: ['Qualidade de Software'],
+      horariosAula: const [
+        _HorarioAula(diaSemana: 'Terça', inicio: '10:00', fim: '11:40'),
+        _HorarioAula(diaSemana: 'Quinta', inicio: '10:00', fim: '11:40'),
+      ],
       disponibilidade: 'Disponível',
       toneDisponibilidade: SigadColors.success,
     ),
@@ -114,6 +136,15 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     'cargaHoraria': d.cargaHoraria,
     'cargaMaxima': d.cargaMaxima,
     'disciplinas': d.disciplinas,
+    'horariosAula': d.horariosAula
+        .map(
+          (h) => {
+            'diaSemana': h.diaSemana,
+            'inicio': h.inicio,
+            'fim': h.fim,
+          },
+        )
+        .toList(),
     'disponibilidade': d.disponibilidade,
   };
 
@@ -125,14 +156,19 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     cargaHoraria: json['cargaHoraria'] as int,
     cargaMaxima: json['cargaMaxima'] as int,
     disciplinas: List<String>.from(json['disciplinas'] as List),
+    horariosAula: (json['horariosAula'] as List?)
+            ?.map(
+              (item) => _HorarioAula(
+                diaSemana: item['diaSemana'] as String,
+                inicio: item['inicio'] as String,
+                fim: item['fim'] as String,
+              ),
+            )
+            .toList() ??
+        const [],
     disponibilidade: json['disponibilidade'] as String,
     toneDisponibilidade: _toneDisponibilidade(json['disponibilidade'] as String),
   );
-
-  List<_Docente> get _docentesFiltrados {
-    if (_filtro == 'Todos') return _docentes;
-    return _docentes.where((d) => d.disponibilidade == _filtro).toList();
-  }
 
   List<_Docente> _docentesVisiveis(UserRole role, {String? emailUsuario}) {
     if (role == UserRole.professor) {
@@ -853,6 +889,40 @@ class _DocenteCard extends StatelessWidget {
                       ))
                   .toList(),
             ),
+            if (docente.horariosAula.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Text(
+                'Dias e horários',
+                style: textTheme.labelSmall?.copyWith(
+                  color: SigadColors.muted,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: docente.horariosAula
+                    .map(
+                      (h) => Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: SigadColors.surfaceAlt,
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: SigadColors.divider),
+                        ),
+                        child: Text(
+                          '${h.diaSemana}: ${h.inicio} - ${h.fim}',
+                          style: textTheme.labelSmall?.copyWith(
+                            color: SigadColors.ink,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ],
           ],
         ),
       ),
@@ -925,6 +995,31 @@ class _DocenteCard extends StatelessWidget {
                         ))
                     .toList(),
               ),
+              if (docente.horariosAula.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                Text(
+                  'Dias e horários de aula',
+                  style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: docente.horariosAula
+                      .map(
+                        (h) => Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.schedule, size: 16, color: SigadColors.brand),
+                              const SizedBox(width: 8),
+                              Text('${h.diaSemana}: ${h.inicio} - ${h.fim}', style: textTheme.bodySmall),
+                            ],
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ],
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
@@ -1011,6 +1106,7 @@ class _Docente {
     required this.cargaHoraria,
     required this.cargaMaxima,
     required this.disciplinas,
+    this.horariosAula = const [],
     required this.disponibilidade,
     required this.toneDisponibilidade,
   });
@@ -1022,6 +1118,7 @@ class _Docente {
   final int cargaHoraria;
   final int cargaMaxima;
   final List<String> disciplinas;
+  final List<_HorarioAula> horariosAula;
   final String disponibilidade;
   final Color toneDisponibilidade;
 
@@ -1032,6 +1129,7 @@ class _Docente {
     int? cargaHoraria,
     int? cargaMaxima,
     List<String>? disciplinas,
+    List<_HorarioAula>? horariosAula,
     String? disponibilidade,
     Color? toneDisponibilidade,
   }) {
@@ -1043,8 +1141,21 @@ class _Docente {
       cargaHoraria: cargaHoraria ?? this.cargaHoraria,
       cargaMaxima: cargaMaxima ?? this.cargaMaxima,
       disciplinas: disciplinas ?? this.disciplinas,
+      horariosAula: horariosAula ?? this.horariosAula,
       disponibilidade: disponibilidade ?? this.disponibilidade,
       toneDisponibilidade: toneDisponibilidade ?? this.toneDisponibilidade,
     );
   }
+}
+
+class _HorarioAula {
+  const _HorarioAula({
+    required this.diaSemana,
+    required this.inicio,
+    required this.fim,
+  });
+
+  final String diaSemana;
+  final String inicio;
+  final String fim;
 }
