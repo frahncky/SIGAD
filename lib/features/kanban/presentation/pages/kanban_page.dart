@@ -31,7 +31,7 @@ class _KanbanPageState extends State<KanbanPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kanban'),
+        title: const Text('Quadro de Tarefas'),
         elevation: 0,
         actions: [
           IconButton(

@@ -17,12 +17,12 @@ const List<NavigationItem> kNavigationItems = [
   ),
   NavigationItem(
     route: AppRoutes.kanban,
-    label: 'Kanban',
+    label: 'Quadro de Tarefas',
     icon: Icons.view_kanban_outlined,
   ),
   NavigationItem(
     route: AppRoutes.aulasPraticas,
-    label: 'Aulas práticas',
+    label: 'Laboratórios',
     icon: Icons.science_outlined,
     availableFor: {UserRole.professor, UserRole.coordenador, UserRole.chefeDepartamento},
   ),

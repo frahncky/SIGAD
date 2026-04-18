@@ -476,9 +476,9 @@ class _RoleProfile {
           priorities: const [
             _PriorityItem(label: 'Priorizar demandas críticas da semana', icon: Icons.priority_high_outlined, tone: SigadColors.risk),
             _PriorityItem(label: 'Fechar distribuição de carga docente', icon: Icons.balance_outlined, tone: SigadColors.info),
-            _PriorityItem(label: 'Aprovar quadro kanban do curso', icon: Icons.view_kanban_outlined, tone: SigadColors.brand),
+            _PriorityItem(label: 'Aprovar quadro de tarefas do curso', icon: Icons.view_kanban_outlined, tone: SigadColors.brand),
           ],
-          focus: const ['Demandas', 'Kanban', 'Relatórios'],
+          focus: const ['Demandas', 'Quadro de Tarefas', 'Relatórios'],
         );
       case UserRole.servidorAdministrativo:
         return _RoleProfile(

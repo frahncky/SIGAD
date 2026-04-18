@@ -182,7 +182,7 @@ class HomeShellPage extends StatelessWidget {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: Icon(Icons.calendar_today_outlined),
-              title: Text('Aula prática agendada para amanhã'),
+              title: Text('Reserva de laboratório para amanhã'),
               subtitle: Text('Laboratório 03, turno matutino'),
             ),
           ],

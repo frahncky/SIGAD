@@ -101,7 +101,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Uso do laboratório'),
+        title: const Text('Laboratórios'),
       ),
       body: Stack(
         children: [
