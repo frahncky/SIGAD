@@ -133,10 +133,22 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   Future<void> _loadData() async {
     final list = await LocalStorageService.loadList(_kKey);
     if (list.isEmpty) return;
+
+    final carregados = <_Docente>[];
+    for (final item in list) {
+      try {
+        carregados.add(_docenteFromJson(Map<String, dynamic>.from(item)));
+      } catch (_) {
+        // Ignora entradas inválidas para evitar crash ao abrir a tela.
+      }
+    }
+
+    if (carregados.isEmpty) return;
+
     setState(() {
       _docentes
         ..clear()
-        ..addAll(list.map(_docenteFromJson));
+        ..addAll(carregados);
     });
   }
 
@@ -168,18 +180,38 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     'disponibilidade': d.disponibilidade,
   };
 
-  _Docente _docenteFromJson(Map<String, dynamic> json) => _Docente(
-    id: json['id'] as String,
-    nome: json['nome'] as String,
-    userEmail: json['userEmail'] as String?,
-    departamento: json['departamento'] as String,
-    cargaHoraria: json['cargaHoraria'] as int,
-    cargaMaxima: json['cargaMaxima'] as int,
-    disciplinas: List<String>.from(json['disciplinas'] as List),
-    horariosAula: _horariosAulaFromJson(json['horariosAula']),
-    disponibilidade: json['disponibilidade'] as String,
-    toneDisponibilidade: _toneDisponibilidade(json['disponibilidade'] as String),
-  );
+  _Docente _docenteFromJson(Map<String, dynamic> json) {
+    final disponibilidadeRaw = json['disponibilidade']?.toString().trim();
+    final disponibilidade = _statusDisponibilidade.contains(disponibilidadeRaw) ? disponibilidadeRaw! : 'Disponível';
+
+    return _Docente(
+      id: json['id']?.toString().trim().isNotEmpty == true ? json['id']!.toString().trim() : _gerarProximoIdDocente(),
+      nome: json['nome']?.toString().trim().isNotEmpty == true ? json['nome']!.toString().trim() : 'Docente sem nome',
+      userEmail: json['userEmail']?.toString().trim().isEmpty == true ? null : json['userEmail']?.toString().trim().toLowerCase(),
+      departamento: json['departamento']?.toString().trim().isNotEmpty == true ? json['departamento']!.toString().trim() : 'Não informado',
+      cargaHoraria: _toInt(json['cargaHoraria']),
+      cargaMaxima: _toInt(json['cargaMaxima'], defaultValue: 20, minValue: 0),
+      disciplinas: _disciplinasFromJson(json['disciplinas']),
+      horariosAula: _horariosAulaFromJson(json['horariosAula']),
+      disponibilidade: disponibilidade,
+      toneDisponibilidade: _toneDisponibilidade(disponibilidade),
+    );
+  }
+
+  int _toInt(dynamic raw, {int defaultValue = 0, int minValue = 0}) {
+    final parsed = int.tryParse(raw?.toString() ?? '');
+    if (parsed == null) return defaultValue;
+    return parsed < minValue ? minValue : parsed;
+  }
+
+  List<String> _disciplinasFromJson(dynamic raw) {
+    if (raw is! List) return const [];
+
+    return raw
+        .map((item) => item?.toString().trim() ?? '')
+        .where((item) => item.isNotEmpty)
+        .toList(growable: false);
+  }
 
   List<_HorarioAula> _horariosAulaFromJson(dynamic raw) {
     if (raw is! List) return const [];
@@ -500,7 +532,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 DropdownButtonFormField<String>(
-                  value: diaSelecionado,
+                  initialValue: diaSelecionado,
                   decoration: const InputDecoration(labelText: 'Dia da Semana'),
                   items: _diasSemana.map((d) => DropdownMenuItem(value: d, child: Text(d))).toList(),
                   onChanged: (v) => setDialogState(() => diaSelecionado = v!),
@@ -540,7 +572,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  value: modalidadeSelecionada,
+                  initialValue: modalidadeSelecionada,
                   decoration: const InputDecoration(labelText: 'Modalidade'),
                   items: _modalidades.map((m) => DropdownMenuItem(value: m, child: Text(m))).toList(),
                   onChanged: (v) => setDialogState(() => modalidadeSelecionada = v!),
@@ -910,13 +942,21 @@ class _DocenteCardState extends State<_DocenteCard> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final docente = widget.docente;
-    final percentualCarga = (docente.cargaHoraria / docente.cargaMaxima * 100).toInt();
+    final cargaMaxima = docente.cargaMaxima;
+    final percentualCarga = cargaMaxima > 0 ? (docente.cargaHoraria / cargaMaxima * 100).round() : 0;
+    final progressoCarga = cargaMaxima > 0 ? (docente.cargaHoraria / cargaMaxima).clamp(0.0, 1.0).toDouble() : 0.0;
+    final iniciais = _iniciaisDocente(docente.nome);
     final podeExpandirHorarios = widget.canManage && docente.horariosAula.isNotEmpty;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
+        InkWell(
+          onTap: podeExpandirHorarios
+              ? () => setState(() => _horariosExpandidos = !_horariosExpandidos)
+              : null,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: SigadColors.surface,
@@ -945,7 +985,7 @@ class _DocenteCardState extends State<_DocenteCard> {
                     ),
                     child: Center(
                       child: Text(
-                        docente.nome.split(' ').map((e) => e[0]).join('').substring(0, 2),
+                        iniciais,
                         style: textTheme.labelSmall?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
@@ -958,20 +998,13 @@ class _DocenteCardState extends State<_DocenteCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        InkWell(
-                          onTap: podeExpandirHorarios
-                              ? () => setState(() => _horariosExpandidos = !_horariosExpandidos)
-                              : null,
-                          child: Row(
+                        Row(
                             children: [
                               Expanded(
                                 child: Text(
                                   docente.nome,
                                   style: textTheme.labelLarge?.copyWith(
                                     fontWeight: FontWeight.w700,
-                                    color: podeExpandirHorarios ? SigadColors.brand : null,
-                                    decoration: podeExpandirHorarios ? TextDecoration.underline : TextDecoration.none,
-                                    decorationColor: podeExpandirHorarios ? SigadColors.brand : null,
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -985,7 +1018,6 @@ class _DocenteCardState extends State<_DocenteCard> {
                                 ),
                             ],
                           ),
-                        ),
                         const SizedBox(height: 4),
                         Text(
                           docente.departamento,
@@ -1043,7 +1075,7 @@ class _DocenteCardState extends State<_DocenteCard> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: LinearProgressIndicator(
-                  value: docente.cargaHoraria / docente.cargaMaxima,
+                  value: progressoCarga,
                   minHeight: 8,
                   backgroundColor: SigadColors.muted.withValues(alpha: 0.1),
                   valueColor: AlwaysStoppedAnimation<Color>(
@@ -1092,6 +1124,7 @@ class _DocenteCardState extends State<_DocenteCard> {
             ],
           ),
         ),
+        ),
         if (podeExpandirHorarios) ...[
           const SizedBox(height: 10),
           AnimatedCrossFade(
@@ -1134,6 +1167,22 @@ class _DocenteCardState extends State<_DocenteCard> {
         break;
     }
   }
+
+  String _iniciaisDocente(String nome) {
+    final partes = nome.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+    if (partes.isEmpty) return '??';
+
+    final buffer = StringBuffer();
+    for (final parte in partes) {
+      buffer.write(parte[0]);
+      if (buffer.length >= 2) break;
+    }
+
+    final iniciais = buffer.toString().toUpperCase();
+    if (iniciais.isEmpty) return '??';
+    if (iniciais.length == 1) return '$iniciais$iniciais';
+    return iniciais.substring(0, 2);
+  }
 }
 
 class _AccessDenied extends StatelessWidget {
@@ -1171,32 +1220,6 @@ class _AccessDenied extends StatelessWidget {
   }
 }
 
-class _DetailSection extends StatelessWidget {
-  const _DetailSection({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: textTheme.labelSmall?.copyWith(color: SigadColors.muted, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 4),
-          Text(value, style: textTheme.bodyMedium),
-        ],
-      ),
-    );
-  }
-}
-
 class _MapaSemanalHorarios extends StatelessWidget {
   const _MapaSemanalHorarios({
     required this.horarios,
@@ -1225,7 +1248,8 @@ class _MapaSemanalHorarios extends StatelessWidget {
         builder: (context, constraints) {
           final crossAxisCount = constraints.maxWidth >= 560 ? 5 : 3;
           final spacing = 8.0;
-          final itemWidth = (constraints.maxWidth - ((crossAxisCount - 1) * spacing)) / crossAxisCount;
+          final availableWidth = constraints.maxWidth - ((crossAxisCount - 1) * spacing);
+          final itemWidth = availableWidth > 0 ? availableWidth / crossAxisCount : 80.0;
 
           return Wrap(
             spacing: spacing,
