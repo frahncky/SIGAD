@@ -21,12 +21,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   };
 
   static const String _kKey = 'sigad_docentes';
-  static const List<String> _statusDisponibilidade = [
-    'Disponível',
-    'Parcialmente',
-    'Indisponível',
-  ];
-
   static const List<String> _diasSemana = [
     'Segunda',
     'Terça',
@@ -57,8 +51,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
         _HorarioAula(diaSemana: 'Quarta', inicio: '10:00', fim: '11:40', disciplina: 'Programação II', cargaHoraria: '2h/sem · 80h', turma: 'SI-2B', modalidade: 'Concomitante'),
         _HorarioAula(diaSemana: 'Sexta', inicio: '19:00', fim: '20:40', disciplina: 'Engenharia de Software', cargaHoraria: '4h/sem · 120h', turma: 'SI-3A', modalidade: 'Superior'),
       ],
-      disponibilidade: 'Indisponível',
-      toneDisponibilidade: SigadColors.risk,
     ),
     _Docente(
       id: '#DOC-002',
@@ -72,8 +64,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
         _HorarioAula(diaSemana: 'Terça', inicio: '08:00', fim: '09:40', disciplina: 'Banco de Dados', cargaHoraria: '4h/sem · 120h', turma: 'SI-3A', modalidade: 'Subsequente'),
         _HorarioAula(diaSemana: 'Quinta', inicio: '08:00', fim: '09:40', disciplina: 'Web Design', cargaHoraria: '2h/sem · 60h', turma: 'SI-2A', modalidade: 'EJA'),
       ],
-      disponibilidade: 'Disponível',
-      toneDisponibilidade: SigadColors.success,
     ),
     _Docente(
       id: '#DOC-003',
@@ -87,8 +77,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
         _HorarioAula(diaSemana: 'Segunda', inicio: '14:00', fim: '15:40', disciplina: 'Computação Gráfica', cargaHoraria: '2h/sem · 60h', turma: 'ES-3B', modalidade: 'Integral'),
         _HorarioAula(diaSemana: 'Quarta', inicio: '14:00', fim: '15:40', disciplina: 'Computação Gráfica', cargaHoraria: '2h/sem · 60h', turma: 'ES-3B', modalidade: 'Integral'),
       ],
-      disponibilidade: 'Disponível',
-      toneDisponibilidade: SigadColors.success,
     ),
     _Docente(
       id: '#DOC-004',
@@ -103,8 +91,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
         _HorarioAula(diaSemana: 'Quinta', inicio: '19:00', fim: '20:40', disciplina: 'Redes II', cargaHoraria: '2h/sem · 80h', turma: 'RT-3A', modalidade: 'Concomitante'),
         _HorarioAula(diaSemana: 'Sexta', inicio: '21:00', fim: '22:40', disciplina: 'Segurança de Redes', cargaHoraria: '4h/sem · 120h', turma: 'RT-4A', modalidade: 'Superior'),
       ],
-      disponibilidade: 'Parcialmente',
-      toneDisponibilidade: SigadColors.warning,
     ),
     _Docente(
       id: '#DOC-005',
@@ -118,8 +104,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
         _HorarioAula(diaSemana: 'Terça', inicio: '10:00', fim: '11:40', disciplina: 'Qualidade de Software', cargaHoraria: '2h/sem · 60h', turma: 'ES-4A', modalidade: 'EJA'),
         _HorarioAula(diaSemana: 'Quinta', inicio: '10:00', fim: '11:40', disciplina: 'Qualidade de Software', cargaHoraria: '2h/sem · 60h', turma: 'ES-4B', modalidade: 'Integral'),
       ],
-      disponibilidade: 'Disponível',
-      toneDisponibilidade: SigadColors.success,
     ),
   ];
 
@@ -176,13 +160,9 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
           },
         )
         .toList(),
-    'disponibilidade': d.disponibilidade,
   };
 
   _Docente _docenteFromJson(Map<String, dynamic> json) {
-    final disponibilidadeRaw = json['disponibilidade']?.toString().trim();
-    final disponibilidade = _statusDisponibilidade.contains(disponibilidadeRaw) ? disponibilidadeRaw! : 'Disponível';
-
     return _Docente(
       id: json['id']?.toString().trim().isNotEmpty == true ? json['id']!.toString().trim() : _gerarProximoIdDocente(),
       nome: json['nome']?.toString().trim().isNotEmpty == true ? json['nome']!.toString().trim() : 'Docente sem nome',
@@ -192,8 +172,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       cargaMaxima: _toInt(json['cargaMaxima'], defaultValue: 20, minValue: 0),
       disciplinas: _disciplinasFromJson(json['disciplinas']),
       horariosAula: _horariosAulaFromJson(json['horariosAula']),
-      disponibilidade: disponibilidade,
-      toneDisponibilidade: _toneDisponibilidade(disponibilidade),
     );
   }
 
@@ -252,19 +230,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     return _docentes;
   }
 
-  Color _toneDisponibilidade(String disponibilidade) {
-    switch (disponibilidade) {
-      case 'Disponível':
-        return SigadColors.success;
-      case 'Parcialmente':
-        return SigadColors.warning;
-      case 'Indisponível':
-        return SigadColors.risk;
-      default:
-        return SigadColors.muted;
-    }
-  }
-
   String _gerarProximoIdDocente() {
     var maiorId = 0;
 
@@ -315,7 +280,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     final emailController = TextEditingController();
     final departamentoController = TextEditingController();
     final cargaMaximaController = TextEditingController();
-    String disponibilidadeSelecionada = 'Disponível';
     final List<String> disciplinas = [];
     final List<_HorarioAula> horarios = [];
 
@@ -365,13 +329,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                         controller: cargaMaximaController,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(labelText: 'Carga Horária Máxima (horas)', hintText: 'Ex: 20'),
-                      ),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<String>(
-                        initialValue: disponibilidadeSelecionada,
-                        decoration: const InputDecoration(labelText: 'Disponibilidade'),
-                        items: _statusDisponibilidade.map((d) => DropdownMenuItem(value: d, child: Text(d))).toList(),
-                        onChanged: (value) => setModalState(() => disponibilidadeSelecionada = value!),
                       ),
                       const SizedBox(height: 16),
                       Text('Disciplinas', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
@@ -455,8 +412,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                               cargaMaxima: cargaMaxima,
                               disciplinas: List<String>.from(disciplinas),
                               horariosAula: List<_HorarioAula>.from(horarios),
-                              disponibilidade: disponibilidadeSelecionada,
-                              toneDisponibilidade: _toneDisponibilidade(disponibilidadeSelecionada),
                             ),
                           );
                         });
@@ -613,7 +568,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     final emailController = TextEditingController(text: docente.userEmail ?? '');
     final departamentoController = TextEditingController(text: docente.departamento);
     final cargaMaximaController = TextEditingController(text: docente.cargaMaxima.toString());
-    String disponibilidadeSelecionada = docente.disponibilidade;
     final List<String> disciplinas = List<String>.from(docente.disciplinas);
     final List<_HorarioAula> horarios = List<_HorarioAula>.from(docente.horariosAula);
 
@@ -663,13 +617,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                         controller: cargaMaximaController,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(labelText: 'Carga Horária Máxima (horas)', hintText: 'Ex: 20'),
-                      ),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<String>(
-                        initialValue: disponibilidadeSelecionada,
-                        decoration: const InputDecoration(labelText: 'Disponibilidade'),
-                        items: _statusDisponibilidade.map((d) => DropdownMenuItem(value: d, child: Text(d))).toList(),
-                        onChanged: (value) => setModalState(() => disponibilidadeSelecionada = value!),
                       ),
                       const SizedBox(height: 16),
                       Text('Disciplinas', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
@@ -752,8 +699,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                               cargaMaxima: cargaMaxima,
                               horariosAula: List<_HorarioAula>.from(horarios),
                               disciplinas: List<String>.from(disciplinas),
-                              disponibilidade: disponibilidadeSelecionada,
-                              toneDisponibilidade: _toneDisponibilidade(disponibilidadeSelecionada),
                             );
                           }
                         });
@@ -893,7 +838,6 @@ class _DocenteCardState extends State<_DocenteCard> {
     final cargaMaxima = docente.cargaMaxima;
     final percentualCarga = cargaMaxima > 0 ? (docente.cargaHoraria / cargaMaxima * 100).round() : 0;
     final progressoCarga = cargaMaxima > 0 ? (docente.cargaHoraria / cargaMaxima).clamp(0.0, 1.0).toDouble() : 0.0;
-    final iniciais = _iniciaisDocente(docente.nome);
     final podeExpandirHorarios = widget.canManage && docente.horariosAula.isNotEmpty;
 
     return Column(
@@ -924,24 +868,6 @@ class _DocenteCardState extends State<_DocenteCard> {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: SigadColors.brand,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Center(
-                      child: Text(
-                        iniciais,
-                        style: textTheme.labelSmall?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -974,20 +900,6 @@ class _DocenteCardState extends State<_DocenteCard> {
                           ),
                         ),
                       ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: docente.toneDisponibilidade.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      docente.disponibilidade,
-                      style: textTheme.labelSmall?.copyWith(
-                        color: docente.toneDisponibilidade,
-                        fontWeight: FontWeight.w600,
-                      ),
                     ),
                   ),
                   if (widget.canManage)
@@ -1114,22 +1026,6 @@ class _DocenteCardState extends State<_DocenteCard> {
         widget.onExcluir();
         break;
     }
-  }
-
-  String _iniciaisDocente(String nome) {
-    final partes = nome.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
-    if (partes.isEmpty) return '??';
-
-    final buffer = StringBuffer();
-    for (final parte in partes) {
-      buffer.write(parte[0]);
-      if (buffer.length >= 2) break;
-    }
-
-    final iniciais = buffer.toString().toUpperCase();
-    if (iniciais.isEmpty) return '??';
-    if (iniciais.length == 1) return '$iniciais$iniciais';
-    return iniciais.substring(0, 2);
   }
 }
 
@@ -1423,8 +1319,6 @@ class _Docente {
     required this.cargaMaxima,
     required this.disciplinas,
     this.horariosAula = const [],
-    required this.disponibilidade,
-    required this.toneDisponibilidade,
   });
 
   final String id;
@@ -1435,8 +1329,6 @@ class _Docente {
   final int cargaMaxima;
   final List<String> disciplinas;
   final List<_HorarioAula> horariosAula;
-  final String disponibilidade;
-  final Color toneDisponibilidade;
 
   _Docente copyWith({
     String? nome,
@@ -1446,8 +1338,6 @@ class _Docente {
     int? cargaMaxima,
     List<String>? disciplinas,
     List<_HorarioAula>? horariosAula,
-    String? disponibilidade,
-    Color? toneDisponibilidade,
   }) {
     return _Docente(
       id: id,
@@ -1458,8 +1348,6 @@ class _Docente {
       cargaMaxima: cargaMaxima ?? this.cargaMaxima,
       disciplinas: disciplinas ?? this.disciplinas,
       horariosAula: horariosAula ?? this.horariosAula,
-      disponibilidade: disponibilidade ?? this.disponibilidade,
-      toneDisponibilidade: toneDisponibilidade ?? this.toneDisponibilidade,
     );
   }
 }
