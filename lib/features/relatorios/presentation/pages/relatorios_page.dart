@@ -215,11 +215,6 @@ class _RelatoriosSummaryBanner extends StatelessWidget {
             'Central de relatórios',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
-          const SizedBox(height: 6),
-          Text(
-            'Busque documentos, acompanhe status editoriais e acesse os materiais mais rápido.',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-          ),
           const SizedBox(height: 14),
           Row(
             children: [

@@ -661,11 +661,6 @@ class _DemandasSummaryBanner extends StatelessWidget {
             'Painel de demandas',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
-          const SizedBox(height: 6),
-          Text(
-            'Acompanhe prioridades, responsáveis e prazos em um só lugar.',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-          ),
           const SizedBox(height: 14),
           Row(
             children: [

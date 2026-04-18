@@ -215,11 +215,6 @@ class HomeShellPage extends StatelessWidget {
                     'Acesso rápido',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Encontre um módulo pelo nome ou pela descrição.',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-                  ),
                   const SizedBox(height: 16),
                   TextField(
                     autofocus: true,

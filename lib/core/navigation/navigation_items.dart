@@ -24,7 +24,6 @@ const List<NavigationItem> kNavigationItems = [
     route: AppRoutes.aulasPraticas,
     label: 'Aulas práticas',
     icon: Icons.science_outlined,
-    subtitle: 'Controle de aulas práticas em laboratórios.',
     availableFor: {UserRole.professor, UserRole.coordenador, UserRole.chefeDepartamento},
   ),
   NavigationItem(
@@ -37,7 +36,6 @@ const List<NavigationItem> kNavigationItems = [
     route: AppRoutes.atividades,
     label: 'Atividades',
     icon: Icons.fact_check_outlined,
-    subtitle: 'Registro estruturado de entregas e eventos.',
   ),
   NavigationItem(
     route: AppRoutes.relatorios,

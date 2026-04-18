@@ -536,11 +536,6 @@ class _AtividadesSummaryBanner extends StatelessWidget {
             'Agenda operacional',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
-          const SizedBox(height: 6),
-          Text(
-            'Filtre rapidamente o que está em andamento e acompanhe responsáveis.',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-          ),
           const SizedBox(height: 14),
           Row(
             children: [

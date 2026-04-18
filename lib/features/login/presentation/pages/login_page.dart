@@ -98,13 +98,6 @@ class _LoginPageState extends State<LoginPage> {
                   fontWeight: FontWeight.w700,
                 ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Escolha seu papel para abrir uma experiência focada em suas rotinas.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: SigadColors.muted,
-                ),
-          ),
           const SizedBox(height: 14),
           Wrap(
             spacing: 10,
@@ -118,20 +111,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 )
                 .toList(),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: SigadColors.surfaceAlt,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              _selectedRole == null
-                  ? 'Selecione um perfil para continuar.'
-                  : _roleDescription(_selectedRole!),
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
           ),
         ],
       ),
@@ -156,11 +135,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
           ),
           const SizedBox(height: 16),
-          Text(
-            'Entre com seu email institucional ou use o acesso demo para abrir o app mais rápido.',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-          ),
-          const SizedBox(height: 14),
           AutofillGroup(
             child: Column(
               children: [
@@ -225,43 +199,9 @@ class _LoginPageState extends State<LoginPage> {
               label: const Text('Acesso demo do perfil selecionado'),
             ),
           ),
-          const SizedBox(height: 12),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: SigadColors.surfaceAlt,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.tips_and_updates_outlined, color: SigadColors.brand, size: 18),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'O perfil selecionado define os módulos e atalhos exibidos após a entrada.',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
-  }
-
-  String _roleDescription(UserRole role) {
-    switch (role) {
-      case UserRole.professor:
-        return 'Professor: foco em aulas, carga docente e atividades da turma.';
-      case UserRole.coordenador:
-        return 'Coordenador: foco em demandas do curso, kanban e acompanhamento da equipe.';
-      case UserRole.servidorAdministrativo:
-        return 'Servidor administrativo: foco em processos, protocolos e operação diária.';
-      case UserRole.chefeDepartamento:
-        return 'Chefe de departamento: foco em indicadores, governança e decisão estratégica.';
-    }
   }
 
   Future<void> _handleLogin() async {

@@ -121,13 +121,6 @@ class _HeroPanel extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            profile.subtitle,
-            style: textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withValues(alpha: 0.90),
-            ),
-          ),
           const SizedBox(height: 16),
           Wrap(
             spacing: 8,
