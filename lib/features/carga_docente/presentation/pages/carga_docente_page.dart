@@ -834,7 +834,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                   border: Border.all(color: SigadColors.divider),
                 ),
                 child: Text(
-                  'Você tem acesso somente ao seu próprio horário docente.',
+                  'A visualização detalhada dos horários é exclusiva da coordenação e chefia, ao clicar no nome do docente.',
                   style: textTheme.bodyMedium?.copyWith(
                     color: SigadColors.muted,
                     fontWeight: FontWeight.w600,
@@ -886,7 +886,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   }
 }
 
-class _DocenteCard extends StatelessWidget {
+class _DocenteCard extends StatefulWidget {
   const _DocenteCard({
     required this.docente,
     required this.canManage,
@@ -900,285 +900,239 @@ class _DocenteCard extends StatelessWidget {
   final VoidCallback onExcluir;
 
   @override
+  State<_DocenteCard> createState() => _DocenteCardState();
+}
+
+class _DocenteCardState extends State<_DocenteCard> {
+  bool _horariosExpandidos = false;
+
+  @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final docente = widget.docente;
     final percentualCarga = (docente.cargaHoraria / docente.cargaMaxima * 100).toInt();
+    final podeExpandirHorarios = widget.canManage && docente.horariosAula.isNotEmpty;
 
-    return GestureDetector(
-      onTap: () => _showDetalhes(context),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: SigadColors.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: SigadColors.divider),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: SigadColors.brand,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Center(
-                        child: Text(
-                          docente.nome.split(' ').map((e) => e[0]).join('').substring(0, 2),
-                          style: textTheme.labelSmall?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            docente.nome,
-                            style: textTheme.labelLarge?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            docente.departamento,
-                            style: textTheme.bodySmall?.copyWith(
-                              color: SigadColors.muted,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: docente.toneDisponibilidade.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        docente.disponibilidade,
-                        style: textTheme.labelSmall?.copyWith(
-                          color: docente.toneDisponibilidade,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    if (canManage)
-                      PopupMenuButton<String>(
-                        onSelected: (value) => _onMenuItemSelected(context, value),
-                        itemBuilder: (context) => [
-                          const PopupMenuItem(
-                            value: 'editar',
-                            child: Row(
-                              children: [
-                                Icon(Icons.edit, size: 18),
-                                SizedBox(width: 8),
-                                Text('Editar'),
-                              ],
-                            ),
-                          ),
-                          const PopupMenuItem(
-                            value: 'excluir',
-                            child: Row(
-                              children: [
-                                Icon(Icons.delete, color: Colors.red, size: 18),
-                                SizedBox(width: 8),
-                                Text('Excluir', style: TextStyle(color: Colors.red)),
-                              ],
-                            ),
-                          ),
-                        ],
-                        icon: const Icon(Icons.more_vert, size: 18),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: LinearProgressIndicator(
-                    value: docente.cargaHoraria / docente.cargaMaxima,
-                    minHeight: 8,
-                    backgroundColor: SigadColors.muted.withValues(alpha: 0.1),
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      percentualCarga >= 100 ? SigadColors.risk : SigadColors.success,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '${docente.cargaHoraria}h / ${docente.cargaMaxima}h',
-                      style: textTheme.bodySmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      '$percentualCarga%',
-                      style: textTheme.labelSmall?.copyWith(
-                        color: SigadColors.muted,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: docente.disciplinas
-                      .map((d) => Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: SigadColors.brand.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              d,
-                              style: textTheme.labelSmall?.copyWith(
-                                color: SigadColors.brand,
-                              ),
-                            ),
-                          ))
-                      .toList(),
-                ),
-              ],
-            ),
-          ),
-          if (docente.horariosAula.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 2),
-              child: Text(
-                'Distribuição semanal',
-                style: textTheme.labelSmall?.copyWith(
-                  color: SigadColors.muted,
-                  fontWeight: FontWeight.w700,
-                ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: SigadColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: SigadColors.divider),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
               ),
-            ),
-            const SizedBox(height: 6),
-            _MapaSemanalHorarios(
-              horarios: docente.horariosAula,
-              compacto: true,
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  void _onMenuItemSelected(BuildContext context, String value) {
-    switch (value) {
-      case 'editar':
-        onEditar();
-        break;
-      case 'excluir':
-        onExcluir();
-        break;
-    }
-  }
-
-  void _showDetalhes(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final percentualCarga = (docente.cargaHoraria / docente.cargaMaxima * 100).toInt();
-
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(24),
+            ],
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: SigadColors.brand,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Text(
+                        docente.nome.split(' ').map((e) => e[0]).join('').substring(0, 2),
+                        style: textTheme.labelSmall?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          onTap: podeExpandirHorarios
+                              ? () => setState(() => _horariosExpandidos = !_horariosExpandidos)
+                              : null,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  docente.nome,
+                                  style: textTheme.labelLarge?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: podeExpandirHorarios ? SigadColors.brand : null,
+                                    decoration: podeExpandirHorarios ? TextDecoration.underline : TextDecoration.none,
+                                    decorationColor: podeExpandirHorarios ? SigadColors.brand : null,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              if (podeExpandirHorarios)
+                                Icon(
+                                  _horariosExpandidos ? Icons.expand_less : Icons.expand_more,
+                                  size: 18,
+                                  color: SigadColors.brand,
+                                ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          docente.departamento,
+                          style: textTheme.bodySmall?.copyWith(
+                            color: SigadColors.muted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: docente.toneDisponibilidade.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      docente.disponibilidade,
+                      style: textTheme.labelSmall?.copyWith(
+                        color: docente.toneDisponibilidade,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  if (widget.canManage)
+                    PopupMenuButton<String>(
+                      onSelected: _onMenuItemSelected,
+                      itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: 'editar',
+                          child: Row(
+                            children: [
+                              Icon(Icons.edit, size: 18),
+                              SizedBox(width: 8),
+                              Text('Editar'),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: 'excluir',
+                          child: Row(
+                            children: [
+                              Icon(Icons.delete, color: Colors.red, size: 18),
+                              SizedBox(width: 8),
+                              Text('Excluir', style: TextStyle(color: Colors.red)),
+                            ],
+                          ),
+                        ),
+                      ],
+                      icon: const Icon(Icons.more_vert, size: 18),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: LinearProgressIndicator(
+                  value: docente.cargaHoraria / docente.cargaMaxima,
+                  minHeight: 8,
+                  backgroundColor: SigadColors.muted.withValues(alpha: 0.1),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    percentualCarga >= 100 ? SigadColors.risk : SigadColors.success,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(docente.id, style: textTheme.labelSmall?.copyWith(color: SigadColors.muted)),
-                      const SizedBox(height: 8),
-                      Text(docente.nome, style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                    ],
+                  Text(
+                    '${docente.cargaHoraria}h / ${docente.cargaMaxima}h',
+                    style: textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
+                  Text(
+                    '$percentualCarga%',
+                    style: textTheme.labelSmall?.copyWith(
+                      color: SigadColors.muted,
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
-              _DetailSection(label: 'Departamento', value: docente.departamento),
-              if (docente.userEmail != null) _DetailSection(label: 'Email vinculado', value: docente.userEmail!),
-              _DetailSection(label: 'Carga Horária', value: '${docente.cargaHoraria}h / ${docente.cargaMaxima}h ($percentualCarga%)'),
-              _DetailSection(label: 'Disponibilidade', value: docente.disponibilidade),
-              const SizedBox(height: 16),
-              Text(
-                'Disciplinas',
-                style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 8),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
                 children: docente.disciplinas
-                    .map((d) => Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Row(
-                            children: [
-                              Icon(Icons.check_circle, size: 16, color: SigadColors.success),
-                              const SizedBox(width: 8),
-                              Text(d, style: textTheme.bodySmall),
-                            ],
+                    .map((d) => Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: SigadColors.brand.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            d,
+                            style: textTheme.labelSmall?.copyWith(
+                              color: SigadColors.brand,
+                            ),
                           ),
                         ))
                     .toList(),
               ),
-              if (docente.horariosAula.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                Text(
-                  'Dias e horários de aula',
-                  style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 8),
-                _MapaSemanalHorarios(
-                  horarios: docente.horariosAula,
-                  compacto: false,
-                ),
-              ],
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Fechar'),
-                ),
-              ),
             ],
           ),
         ),
-      ),
+        if (podeExpandirHorarios) ...[
+          const SizedBox(height: 10),
+          AnimatedCrossFade(
+            duration: const Duration(milliseconds: 220),
+            firstChild: const SizedBox.shrink(),
+            secondChild: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  child: Text(
+                    'Distribuição semanal',
+                    style: textTheme.labelSmall?.copyWith(
+                      color: SigadColors.muted,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                _MapaSemanalHorarios(
+                  horarios: docente.horariosAula,
+                  compacto: true,
+                ),
+              ],
+            ),
+            crossFadeState: _horariosExpandidos ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+          ),
+        ],
+      ],
     );
+  }
+
+  void _onMenuItemSelected(String value) {
+    switch (value) {
+      case 'editar':
+        widget.onEditar();
+        break;
+      case 'excluir':
+        widget.onExcluir();
+        break;
+    }
   }
 }
 
