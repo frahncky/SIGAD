@@ -15,7 +15,10 @@ class LocalStorageService {
     final raw = prefs.getString(key);
     if (raw == null) return [];
     final decoded = jsonDecode(raw) as List<dynamic>;
-    return decoded.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+    return decoded
+        .whereType<Map>()
+        .map((item) => Map<String, dynamic>.from(item))
+        .toList(growable: false);
   }
 
   /// Salva um mapa serializado em JSON.

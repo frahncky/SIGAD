@@ -2,11 +2,13 @@
 import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
+import '../../data/docente_repository.dart';
+import '../../domain/docente_form_service.dart';
+import '../../domain/docente_models.dart';
 import '../../domain/docente_visibility_service.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
-import '../../../../core/services/local_storage_service.dart';
 import '../../../../core/services/user_context_provider.dart';
 
 class CargaDocentePage extends StatefulWidget {
@@ -23,7 +25,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     UserRole.chefeDepartamento,
   };
 
-  static const String _kKey = 'sigad_docentes';
   static const List<String> _diasSemana = [
     'Segunda',
     'Terça',
@@ -40,8 +41,10 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     'Superior',
   ];
 
-  final List<_Docente> _docentes = [
-    _Docente(
+  final DocenteRepository _docenteRepository = DocenteRepository();
+
+  final List<Docente> _docentes = [
+    Docente(
       id: '#DOC-001',
       nome: 'Profa. Dra. Maria Silva',
       userId: 'user_email_maria.santos@univ.br',
@@ -51,12 +54,12 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       cargaMaxima: 20,
       disciplinas: ['Programação I', 'Programação II', 'Engenharia de Software'],
       horariosAula: const [
-        _HorarioAula(diaSemana: 'Segunda', inicio: '08:00', fim: '09:40', disciplina: 'Programação I', cargaHoraria: '2h/sem · 80h', turma: 'SI-2A', modalidade: 'Integral'),
-        _HorarioAula(diaSemana: 'Quarta', inicio: '10:00', fim: '11:40', disciplina: 'Programação II', cargaHoraria: '2h/sem · 80h', turma: 'SI-2B', modalidade: 'Concomitante'),
-        _HorarioAula(diaSemana: 'Sexta', inicio: '19:00', fim: '20:40', disciplina: 'Engenharia de Software', cargaHoraria: '4h/sem · 120h', turma: 'SI-3A', modalidade: 'Superior'),
+        HorarioAula(diaSemana: 'Segunda', inicio: '08:00', fim: '09:40', disciplina: 'Programação I', cargaHoraria: '2h/sem · 80h', turma: 'SI-2A', modalidade: 'Integral'),
+        HorarioAula(diaSemana: 'Quarta', inicio: '10:00', fim: '11:40', disciplina: 'Programação II', cargaHoraria: '2h/sem · 80h', turma: 'SI-2B', modalidade: 'Concomitante'),
+        HorarioAula(diaSemana: 'Sexta', inicio: '19:00', fim: '20:40', disciplina: 'Engenharia de Software', cargaHoraria: '4h/sem · 120h', turma: 'SI-3A', modalidade: 'Superior'),
       ],
     ),
-    _Docente(
+    Docente(
       id: '#DOC-002',
       nome: 'Prof. Dr. João Silva',
       userId: 'user_email_joao.silva@univ.br',
@@ -66,11 +69,11 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       cargaMaxima: 20,
       disciplinas: ['Banco de Dados', 'Web Design'],
       horariosAula: const [
-        _HorarioAula(diaSemana: 'Terça', inicio: '08:00', fim: '09:40', disciplina: 'Banco de Dados', cargaHoraria: '4h/sem · 120h', turma: 'SI-3A', modalidade: 'Subsequente'),
-        _HorarioAula(diaSemana: 'Quinta', inicio: '08:00', fim: '09:40', disciplina: 'Web Design', cargaHoraria: '2h/sem · 60h', turma: 'SI-2A', modalidade: 'EJA'),
+        HorarioAula(diaSemana: 'Terça', inicio: '08:00', fim: '09:40', disciplina: 'Banco de Dados', cargaHoraria: '4h/sem · 120h', turma: 'SI-3A', modalidade: 'Subsequente'),
+        HorarioAula(diaSemana: 'Quinta', inicio: '08:00', fim: '09:40', disciplina: 'Web Design', cargaHoraria: '2h/sem · 60h', turma: 'SI-2A', modalidade: 'EJA'),
       ],
     ),
-    _Docente(
+    Docente(
       id: '#DOC-003',
       nome: 'Profa. Ana Costa',
       userId: 'user_email_ana.pereira@univ.br',
@@ -80,11 +83,11 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       cargaMaxima: 20,
       disciplinas: ['Computação Gráfica'],
       horariosAula: const [
-        _HorarioAula(diaSemana: 'Segunda', inicio: '14:00', fim: '15:40', disciplina: 'Computação Gráfica', cargaHoraria: '2h/sem · 60h', turma: 'ES-3B', modalidade: 'Integral'),
-        _HorarioAula(diaSemana: 'Quarta', inicio: '14:00', fim: '15:40', disciplina: 'Computação Gráfica', cargaHoraria: '2h/sem · 60h', turma: 'ES-3B', modalidade: 'Integral'),
+        HorarioAula(diaSemana: 'Segunda', inicio: '14:00', fim: '15:40', disciplina: 'Computação Gráfica', cargaHoraria: '2h/sem · 60h', turma: 'ES-3B', modalidade: 'Integral'),
+        HorarioAula(diaSemana: 'Quarta', inicio: '14:00', fim: '15:40', disciplina: 'Computação Gráfica', cargaHoraria: '2h/sem · 60h', turma: 'ES-3B', modalidade: 'Integral'),
       ],
     ),
-    _Docente(
+    Docente(
       id: '#DOC-004',
       nome: 'Prof. Carlos Oliveira',
       userId: 'user_email_carlos.oliveira@univ.br',
@@ -94,12 +97,12 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       cargaMaxima: 20,
       disciplinas: ['Redes I', 'Redes II', 'Segurança de Redes'],
       horariosAula: const [
-        _HorarioAula(diaSemana: 'Terça', inicio: '19:00', fim: '20:40', disciplina: 'Redes I', cargaHoraria: '2h/sem · 60h', turma: 'RT-2A', modalidade: 'Subsequente'),
-        _HorarioAula(diaSemana: 'Quinta', inicio: '19:00', fim: '20:40', disciplina: 'Redes II', cargaHoraria: '2h/sem · 80h', turma: 'RT-3A', modalidade: 'Concomitante'),
-        _HorarioAula(diaSemana: 'Sexta', inicio: '21:00', fim: '22:40', disciplina: 'Segurança de Redes', cargaHoraria: '4h/sem · 120h', turma: 'RT-4A', modalidade: 'Superior'),
+        HorarioAula(diaSemana: 'Terça', inicio: '19:00', fim: '20:40', disciplina: 'Redes I', cargaHoraria: '2h/sem · 60h', turma: 'RT-2A', modalidade: 'Subsequente'),
+        HorarioAula(diaSemana: 'Quinta', inicio: '19:00', fim: '20:40', disciplina: 'Redes II', cargaHoraria: '2h/sem · 80h', turma: 'RT-3A', modalidade: 'Concomitante'),
+        HorarioAula(diaSemana: 'Sexta', inicio: '21:00', fim: '22:40', disciplina: 'Segurança de Redes', cargaHoraria: '4h/sem · 120h', turma: 'RT-4A', modalidade: 'Superior'),
       ],
     ),
-    _Docente(
+    Docente(
       id: '#DOC-005',
       nome: 'Profa. Beatriz Mendes',
       userId: 'user_email_beatriz.mendes@univ.br',
@@ -109,8 +112,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       cargaMaxima: 20,
       disciplinas: ['Qualidade de Software'],
       horariosAula: const [
-        _HorarioAula(diaSemana: 'Terça', inicio: '10:00', fim: '11:40', disciplina: 'Qualidade de Software', cargaHoraria: '2h/sem · 60h', turma: 'ES-4A', modalidade: 'EJA'),
-        _HorarioAula(diaSemana: 'Quinta', inicio: '10:00', fim: '11:40', disciplina: 'Qualidade de Software', cargaHoraria: '2h/sem · 60h', turma: 'ES-4B', modalidade: 'Integral'),
+        HorarioAula(diaSemana: 'Terça', inicio: '10:00', fim: '11:40', disciplina: 'Qualidade de Software', cargaHoraria: '2h/sem · 60h', turma: 'ES-4A', modalidade: 'EJA'),
+        HorarioAula(diaSemana: 'Quinta', inicio: '10:00', fim: '11:40', disciplina: 'Qualidade de Software', cargaHoraria: '2h/sem · 60h', turma: 'ES-4B', modalidade: 'Integral'),
       ],
     ),
   ];
@@ -122,18 +125,9 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   }
 
   Future<void> _loadData() async {
-    final list = await LocalStorageService.loadList(_kKey);
-    if (list.isEmpty) return;
-
-    final carregados = <_Docente>[];
-    for (final item in list) {
-      try {
-        carregados.add(_docenteFromJson(Map<String, dynamic>.from(item)));
-      } catch (_) {
-        // Ignora entradas inválidas para evitar crash ao abrir a tela.
-      }
-    }
-
+    final carregados = await _docenteRepository.loadDocentes(
+      generateFallbackId: _gerarProximoIdDocente,
+    );
     if (carregados.isEmpty) return;
 
     setState(() {
@@ -144,109 +138,15 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   }
 
   void _saveData() {
-    LocalStorageService.saveList(_kKey, _docentes.map(_docenteToJson).toList());
+    _docenteRepository.saveDocentes(_docentes);
   }
 
-  Map<String, dynamic> _docenteToJson(_Docente d) => {
-    'id': d.id,
-    'nome': d.nome,
-    if (d.userId != null) 'userId': d.userId,
-    if (d.userEmail != null) 'userEmail': d.userEmail,
-    'departamento': d.departamento,
-    'cargaHoraria': d.cargaHoraria,
-    'cargaMaxima': d.cargaMaxima,
-    'disciplinas': d.disciplinas,
-    'horariosAula': d.horariosAula
-        .map(
-          (h) => {
-            'diaSemana': h.diaSemana,
-            'inicio': h.inicio,
-            'fim': h.fim,
-            if (h.disciplina != null) 'disciplina': h.disciplina,
-            if (h.cargaHoraria != null) 'cargaHoraria': h.cargaHoraria,
-            if (h.turma != null) 'turma': h.turma,
-            if (h.modalidade != null) 'modalidade': h.modalidade,
-          },
-        )
-        .toList(),
-  };
-
-  _Docente _docenteFromJson(Map<String, dynamic> json) {
-    return _Docente(
-      id: json['id']?.toString().trim().isNotEmpty == true ? json['id']!.toString().trim() : _gerarProximoIdDocente(),
-      nome: json['nome']?.toString().trim().isNotEmpty == true ? json['nome']!.toString().trim() : 'Docente sem nome',
-      userId: _normalizeNullable(json['userId']),
-      userEmail: json['userEmail']?.toString().trim().isEmpty == true ? null : json['userEmail']?.toString().trim().toLowerCase(),
-      departamento: json['departamento']?.toString().trim().isNotEmpty == true ? json['departamento']!.toString().trim() : 'Não informado',
-      cargaHoraria: _toInt(json['cargaHoraria']),
-      cargaMaxima: _toInt(json['cargaMaxima'], defaultValue: 20, minValue: 0),
-      disciplinas: _disciplinasFromJson(json['disciplinas']),
-      horariosAula: _horariosAulaFromJson(json['horariosAula']),
-    );
-  }
-
-  String? _normalizeNullable(dynamic raw) {
-    final value = raw?.toString().trim();
-    if (value == null || value.isEmpty) return null;
-    return value;
-  }
-
-  String? _buildUserIdFromEmail(String? email) {
-    final normalized = email?.trim().toLowerCase();
-    if (normalized == null || normalized.isEmpty) return null;
-    return 'user_email_$normalized';
-  }
-
-  int _toInt(dynamic raw, {int defaultValue = 0, int minValue = 0}) {
-    final parsed = int.tryParse(raw?.toString() ?? '');
-    if (parsed == null) return defaultValue;
-    return parsed < minValue ? minValue : parsed;
-  }
-
-  List<String> _disciplinasFromJson(dynamic raw) {
-    if (raw is! List) return const [];
-
-    return raw
-        .map((item) => item?.toString().trim() ?? '')
-        .where((item) => item.isNotEmpty)
-        .toList(growable: false);
-  }
-
-  List<_HorarioAula> _horariosAulaFromJson(dynamic raw) {
-    if (raw is! List) return const [];
-
-    return raw
-        .whereType<Map>()
-        .map((item) {
-          final map = Map<String, dynamic>.from(item);
-          final diaSemana = map['diaSemana']?.toString().trim();
-          final inicio = map['inicio']?.toString().trim();
-          final fim = map['fim']?.toString().trim();
-
-          if (diaSemana == null || diaSemana.isEmpty || inicio == null || inicio.isEmpty || fim == null || fim.isEmpty) {
-            return null;
-          }
-
-          return _HorarioAula(
-            diaSemana: diaSemana,
-            inicio: inicio,
-            fim: fim,
-            disciplina: map['disciplina']?.toString().trim(),
-            cargaHoraria: map['cargaHoraria']?.toString().trim(),
-            turma: map['turma']?.toString().trim(),
-            modalidade: map['modalidade']?.toString().trim(),
-          );
-        })
-        .whereType<_HorarioAula>()
-        .toList(growable: false);
-  }
-
-  List<_Docente> _docentesVisiveis(
+  List<Docente> _docentesVisiveis(
     UserRole role, {
     String? currentUserId,
     String? emailUsuario,
   }) {
-    return DocenteVisibilityService.filterDocentesForRole<_Docente>(
+    return DocenteVisibilityService.filterDocentesForRole<Docente>(
       role: role,
       docentes: _docentes,
       currentUserId: currentUserId,
@@ -270,32 +170,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     return '#DOC-${proximoId.toString().padLeft(3, '0')}';
   }
 
-  String? _validarDocente({
-    required String nome,
-    required String departamento,
-    required String cargaMaxima,
-    required List<String> disciplinas,
-  }) {
-    if (nome.trim().isEmpty) {
-      return 'Informe o nome do docente';
-    }
-
-    if (departamento.trim().isEmpty) {
-      return 'Informe o departamento';
-    }
-
-    final carga = int.tryParse(cargaMaxima.trim());
-    if (carga == null || carga <= 0) {
-      return 'Informe uma carga horária máxima válida';
-    }
-
-    if (disciplinas.isEmpty) {
-      return 'Adicione pelo menos uma disciplina';
-    }
-
-    return null;
-  }
-
   void _mostrarFeedback(String mensagem) {
     AppFeedbackService.info(context, mensagem);
   }
@@ -307,7 +181,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     final departamentoController = TextEditingController();
     final cargaMaximaController = TextEditingController();
     final List<String> disciplinas = [];
-    final List<_HorarioAula> horarios = [];
+    final List<HorarioAula> horarios = [];
 
     showModalBottomSheet(
       context: context,
@@ -412,7 +286,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        final erro = _validarDocente(
+                        final erro = DocenteFormService.validateDocente(
                           nome: nomeController.text,
                           departamento: departamentoController.text,
                           cargaMaxima: cargaMaximaController.text,
@@ -424,21 +298,17 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                           return;
                         }
 
-                        final cargaMaxima = int.parse(cargaMaximaController.text.trim());
-
                         setState(() {
                           _docentes.insert(
                             0,
-                            _Docente(
+                            DocenteFormService.createDocente(
                               id: _gerarProximoIdDocente(),
                               nome: nomeController.text.trim(),
-                              userId: _buildUserIdFromEmail(emailController.text),
-                              userEmail: emailController.text.trim().isEmpty ? null : emailController.text.trim().toLowerCase(),
+                              email: emailController.text,
                               departamento: departamentoController.text.trim(),
-                              cargaHoraria: horarios.length * 2,
-                              cargaMaxima: cargaMaxima,
-                              disciplinas: List<String>.from(disciplinas),
-                              horariosAula: List<_HorarioAula>.from(horarios),
+                              cargaMaxima: cargaMaximaController.text,
+                              disciplinas: disciplinas,
+                              horarios: horarios,
                             ),
                           );
                         });
@@ -485,12 +355,12 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
           TextButton(
             onPressed: () {
               final disciplina = disciplinaController.text.trim();
-              if (disciplina.isEmpty) {
-                _mostrarFeedback('Informe o nome da disciplina.');
-                return;
-              }
-              if (disciplinas.contains(disciplina)) {
-                _mostrarFeedback('Disciplina já adicionada.');
+              final erro = DocenteFormService.validateDisciplina(
+                disciplina: disciplina,
+                disciplinasExistentes: disciplinas,
+              );
+              if (erro != null) {
+                _mostrarFeedback(erro);
                 return;
               }
               setState(() => disciplinas.add(disciplina));
@@ -503,7 +373,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     );
   }
 
-  void _showAdicionarHorario(BuildContext context, List<_HorarioAula> horarios, StateSetter setModalState) {
+  void _showAdicionarHorario(BuildContext context, List<HorarioAula> horarios, StateSetter setModalState) {
     String diaSelecionado = _diasSemana.first;
     String modalidadeSelecionada = _modalidades.first;
     final inicioController = TextEditingController();
@@ -580,24 +450,22 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
               onPressed: () {
                 final inicio = inicioController.text.trim();
                 final fim = fimController.text.trim();
-                if (inicio.isEmpty || fim.isEmpty) {
-                  _mostrarFeedback('Informe horário de início e fim.');
+                final erro = DocenteFormService.validateHorario(
+                  inicio: inicio,
+                  fim: fim,
+                );
+                if (erro != null) {
+                  _mostrarFeedback(erro);
                   return;
                 }
 
-                final horarioRegex = RegExp(r'^([01]\d|2[0-3]):[0-5]\d$');
-                if (!horarioRegex.hasMatch(inicio) || !horarioRegex.hasMatch(fim)) {
-                  _mostrarFeedback('Use o formato HH:MM para os horários.');
-                  return;
-                }
-
-                setModalState(() => horarios.add(_HorarioAula(
+                setModalState(() => horarios.add(DocenteFormService.createHorario(
                   diaSemana: diaSelecionado,
                   inicio: inicio,
                   fim: fim,
-                  disciplina: disciplinaController.text.trim().isEmpty ? null : disciplinaController.text.trim(),
-                  cargaHoraria: cargaController.text.trim().isEmpty ? null : cargaController.text.trim(),
-                  turma: turmaController.text.trim().isEmpty ? null : turmaController.text.trim(),
+                  disciplina: disciplinaController.text,
+                  cargaHoraria: cargaController.text,
+                  turma: turmaController.text,
                   modalidade: modalidadeSelecionada,
                 )));
                 AppEventLogger.action('carga_docente_add_horario', details: {
@@ -615,14 +483,14 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     );
   }
 
-  void _showEditarDocente(BuildContext context, _Docente docente) {
+  void _showEditarDocente(BuildContext context, Docente docente) {
     final textTheme = Theme.of(context).textTheme;
     final nomeController = TextEditingController(text: docente.nome);
     final emailController = TextEditingController(text: docente.userEmail ?? '');
     final departamentoController = TextEditingController(text: docente.departamento);
     final cargaMaximaController = TextEditingController(text: docente.cargaMaxima.toString());
     final List<String> disciplinas = List<String>.from(docente.disciplinas);
-    final List<_HorarioAula> horarios = List<_HorarioAula>.from(docente.horariosAula);
+    final List<HorarioAula> horarios = List<HorarioAula>.from(docente.horariosAula);
 
     showModalBottomSheet(
       context: context,
@@ -727,7 +595,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        final erro = _validarDocente(
+                        final erro = DocenteFormService.validateDocente(
                           nome: nomeController.text,
                           departamento: departamentoController.text,
                           cargaMaxima: cargaMaximaController.text,
@@ -739,20 +607,17 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                           return;
                         }
 
-                        final cargaMaxima = int.parse(cargaMaximaController.text.trim());
-
                         setState(() {
                           final index = _docentes.indexWhere((item) => item.id == docente.id);
                           if (index >= 0) {
-                            _docentes[index] = docente.copyWith(
+                            _docentes[index] = DocenteFormService.updateDocente(
+                              docente: docente,
                               nome: nomeController.text.trim(),
-                              userId: _buildUserIdFromEmail(emailController.text),
-                              userEmail: emailController.text.trim().isEmpty ? null : emailController.text.trim().toLowerCase(),
+                              email: emailController.text,
                               departamento: departamentoController.text.trim(),
-                              cargaHoraria: horarios.length * 2,
-                              cargaMaxima: cargaMaxima,
-                              horariosAula: List<_HorarioAula>.from(horarios),
-                              disciplinas: List<String>.from(disciplinas),
+                              cargaMaxima: cargaMaximaController.text,
+                              horarios: horarios,
+                              disciplinas: disciplinas,
                             );
                           }
                         });
@@ -778,7 +643,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     );
   }
 
-  void _showConfirmarExclusao(BuildContext context, _Docente docente) {
+  void _showConfirmarExclusao(BuildContext context, Docente docente) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -889,7 +754,7 @@ class _DocenteCard extends StatefulWidget {
     required this.onExcluir,
   });
 
-  final _Docente docente;
+  final Docente docente;
   final bool canManage;
   final bool canViewSchedule;
   final VoidCallback onEditar;
@@ -1099,7 +964,7 @@ class _MapaSemanalHorarios extends StatelessWidget {
     required this.compacto,
   });
 
-  final List<_HorarioAula> horarios;
+  final List<HorarioAula> horarios;
   final bool compacto;
 
   static const List<String> _diasOrdem = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'];
@@ -1146,9 +1011,9 @@ class _MapaSemanalHorarios extends StatelessWidget {
     );
   }
 
-  Map<String, List<_HorarioAula>> _agruparPorDia() {
+  Map<String, List<HorarioAula>> _agruparPorDia() {
     final agrupado = {
-      for (final dia in _diasOrdem) dia: <_HorarioAula>[],
+      for (final dia in _diasOrdem) dia: <HorarioAula>[],
     };
 
     for (final horario in horarios) {
@@ -1184,7 +1049,7 @@ class _ColunaMapaSemanal extends StatelessWidget {
   });
 
   final String dia;
-  final List<_HorarioAula> horarios;
+  final List<HorarioAula> horarios;
   final bool compacto;
   final TextTheme textTheme;
 
@@ -1287,7 +1152,7 @@ class _ColunaMapaSemanal extends StatelessWidget {
 
 class _HorarioTile extends StatelessWidget {
   const _HorarioTile({required this.horario, required this.textTheme, required this.onDelete});
-  final _HorarioAula horario;
+  final HorarioAula horario;
   final TextTheme textTheme;
   final VoidCallback onDelete;
 
@@ -1338,69 +1203,3 @@ class _HorarioTile extends StatelessWidget {
   }
 }
 
-class _Docente {
-  const _Docente({
-    required this.id,
-    required this.nome,
-    this.userId,
-    this.userEmail,
-    required this.departamento,
-    required this.cargaHoraria,
-    required this.cargaMaxima,
-    required this.disciplinas,
-    this.horariosAula = const [],
-  });
-
-  final String id;
-  final String nome;
-  final String? userId;
-  final String? userEmail;
-  final String departamento;
-  final int cargaHoraria;
-  final int cargaMaxima;
-  final List<String> disciplinas;
-  final List<_HorarioAula> horariosAula;
-
-  _Docente copyWith({
-    String? nome,
-    String? userId,
-    String? userEmail,
-    String? departamento,
-    int? cargaHoraria,
-    int? cargaMaxima,
-    List<String>? disciplinas,
-    List<_HorarioAula>? horariosAula,
-  }) {
-    return _Docente(
-      id: id,
-      nome: nome ?? this.nome,
-      userId: userId ?? this.userId,
-      userEmail: userEmail ?? this.userEmail,
-      departamento: departamento ?? this.departamento,
-      cargaHoraria: cargaHoraria ?? this.cargaHoraria,
-      cargaMaxima: cargaMaxima ?? this.cargaMaxima,
-      disciplinas: disciplinas ?? this.disciplinas,
-      horariosAula: horariosAula ?? this.horariosAula,
-    );
-  }
-}
-
-class _HorarioAula {
-  const _HorarioAula({
-    required this.diaSemana,
-    required this.inicio,
-    required this.fim,
-    this.disciplina,
-    this.cargaHoraria,
-    this.turma,
-    this.modalidade,
-  });
-
-  final String diaSemana;
-  final String inicio;
-  final String fim;
-  final String? disciplina;
-  final String? cargaHoraria;
-  final String? turma;
-  final String? modalidade;
-}
