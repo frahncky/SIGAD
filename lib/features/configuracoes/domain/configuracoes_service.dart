@@ -40,6 +40,67 @@ abstract final class ConfiguracoesService {
     return data.copyWith(agendaCompromissos: compromissos);
   }
 
+  static ConfiguracoesData atualizarStatusConvite({
+    required ConfiguracoesData data,
+    required String compromissoId,
+    required StatusConviteAgenda status,
+  }) {
+    final atualizados = data.agendaCompromissos
+        .map(
+          (item) => item.id == compromissoId ? item.copyWith(statusConvite: status) : item,
+        )
+        .toList(growable: false);
+
+    return data.copyWith(agendaCompromissos: atualizados);
+  }
+
+  static List<CompromissoAgenda> filtrarAgendaPorPeriodo({
+    required List<CompromissoAgenda> compromissos,
+    required DateTime agora,
+    required String periodo,
+  }) {
+    if (periodo == 'Todos') return compromissos;
+
+    return compromissos.where((item) {
+      final inicio = DateTime.tryParse(item.inicioIso);
+      if (inicio == null) return false;
+
+      if (periodo == 'Hoje') {
+        return inicio.year == agora.year && inicio.month == agora.month && inicio.day == agora.day;
+      }
+
+      if (periodo == 'Semana') {
+        final monday = agora.subtract(Duration(days: agora.weekday - DateTime.monday));
+        final sunday = monday.add(const Duration(days: 6));
+        final dayOnly = DateTime(inicio.year, inicio.month, inicio.day);
+        final mondayOnly = DateTime(monday.year, monday.month, monday.day);
+        final sundayOnly = DateTime(sunday.year, sunday.month, sunday.day);
+        return !dayOnly.isBefore(mondayOnly) && !dayOnly.isAfter(sundayOnly);
+      }
+
+      return true;
+    }).toList(growable: false);
+  }
+
+  static List<CompromissoAgenda> lembretesPendentesProfessor({
+    required ConfiguracoesData data,
+    required String userId,
+    required DateTime agora,
+  }) {
+    if (!data.notificacoesAtivas || !data.notificarAntesDaDisciplina) return const [];
+
+    return data.agendaCompromissos.where((item) {
+      if (item.destinatarioUserId.isNotEmpty && item.destinatarioUserId != userId) return false;
+      if (item.statusConvite == StatusConviteAgenda.recusado) return false;
+
+      final inicio = DateTime.tryParse(item.inicioIso);
+      if (inicio == null) return false;
+
+      final diff = inicio.difference(agora).inMinutes;
+      return diff >= 0 && diff <= data.antecedenciaNotificacaoMinutos;
+    }).toList(growable: false);
+  }
+
   static String dataAtual() {
     final agora = DateTime.now();
     final dia = agora.day.toString().padLeft(2, '0');

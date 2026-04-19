@@ -35,6 +35,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
   String _ultimoBackup = ConfiguracoesService.defaultData().ultimoBackup;
   int _problemasReportados = ConfiguracoesService.defaultData().problemasReportados;
   List<CompromissoAgenda> _agendaCompromissos = ConfiguracoesService.defaultData().agendaCompromissos;
+  String _filtroAgendaPeriodo = 'Todos';
 
   final ConfiguracoesRepository _configuracoesRepository = ConfiguracoesRepository();
 
@@ -109,8 +110,13 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
     final topFlows = health.eventsByFlow.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
     final compromissosUsuario = _agendaCompromissos
-      .where((item) => item.destinatarioUserId.isEmpty || item.destinatarioUserId == userId)
-      .toList(growable: false);
+        .where((item) => item.destinatarioUserId.isEmpty || item.destinatarioUserId == userId)
+        .toList(growable: false);
+    final compromissosFiltrados = ConfiguracoesService.filtrarAgendaPorPeriodo(
+      compromissos: compromissosUsuario,
+      agora: DateTime.now(),
+      periodo: _filtroAgendaPeriodo,
+    );
 
     return Scaffold(
       body: ListView(
@@ -245,15 +251,27 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               _ConfigItem(
                 icon: Icons.event_note_outlined,
                 titulo: 'Convites recebidos',
-                subtitulo: compromissosUsuario.isEmpty
+                subtitulo: compromissosFiltrados.isEmpty
                     ? 'Nenhum convite na agenda'
-                    : '${compromissosUsuario.length} compromisso(s) agendado(s)',
+                    : '${compromissosFiltrados.length} compromisso(s) no período',
                 onTap: () => _mostrarFeedback('Agenda sincronizada'),
               ),
-              ...compromissosUsuario.take(5).map(
+              Wrap(
+                spacing: 8,
+                children: ['Todos', 'Hoje', 'Semana']
+                    .map(
+                      (periodo) => ChoiceChip(
+                        label: Text(periodo),
+                        selected: _filtroAgendaPeriodo == periodo,
+                        onSelected: (_) => setState(() => _filtroAgendaPeriodo = periodo),
+                      ),
+                    )
+                    .toList(growable: false),
+              ),
+              ...compromissosFiltrados.take(5).map(
                     (compromisso) => _ConfigItem(
                       icon: Icons.event_available_outlined,
-                      titulo: compromisso.titulo,
+                      titulo: '${compromisso.titulo} · ${_statusLabel(compromisso.statusConvite)}',
                       subtitulo: '${compromisso.inicio} · ${compromisso.local}',
                       onTap: () => _showDetalhesCompromisso(context, compromisso),
                     ),
@@ -373,17 +391,87 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
             _DetailSection(label: 'Origem', value: compromisso.origem),
             _DetailSection(label: 'Descrição', value: compromisso.descricao),
             const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Fechar'),
+            if (compromisso.statusConvite == StatusConviteAgenda.pendente)
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        _atualizarStatusCompromisso(compromisso.id, StatusConviteAgenda.recusado);
+                        Navigator.pop(context);
+                        _mostrarFeedback('Convite recusado.');
+                      },
+                      child: const Text('Recusar'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _atualizarStatusCompromisso(compromisso.id, StatusConviteAgenda.aceito);
+                        Navigator.pop(context);
+                        _mostrarFeedback('Convite aceito e mantido na agenda.');
+                      },
+                      child: const Text('Aceitar'),
+                    ),
+                  ),
+                ],
+              )
+            else
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Fechar'),
+                ),
               ),
-            ),
           ],
         ),
       ),
     );
+  }
+
+  void _atualizarStatusCompromisso(String compromissoId, StatusConviteAgenda status) {
+    final dataAtual = ConfiguracoesData(
+      notificacoesAtivas: _notificacoesAtivas,
+      notificarAntesDaDisciplina: _notificarAntesDaDisciplina,
+      antecedenciaNotificacaoMinutos: _antecedenciaNotificacaoMinutos,
+      modoDark: _modoDark,
+      biometriaAtiva: _biometriaAtiva,
+      backupAutomaticoAtivo: _backupAutomaticoAtivo,
+      idioma: _idioma,
+      tamanhoFonte: _tamanhoFonte,
+      nomePerfil: _nomePerfil,
+      cargoPerfil: _cargoPerfil,
+      emailUsuario: _emailUsuario,
+      ultimaAlteracaoSenha: _ultimaAlteracaoSenha,
+      proximoBackup: _proximoBackup,
+      ultimoBackup: _ultimoBackup,
+      problemasReportados: _problemasReportados,
+      agendaCompromissos: _agendaCompromissos,
+    );
+
+    final atualizado = ConfiguracoesService.atualizarStatusConvite(
+      data: dataAtual,
+      compromissoId: compromissoId,
+      status: status,
+    );
+
+    setState(() {
+      _agendaCompromissos = atualizado.agendaCompromissos;
+    });
+    _saveData();
+  }
+
+  String _statusLabel(StatusConviteAgenda status) {
+    switch (status) {
+      case StatusConviteAgenda.pendente:
+        return 'Pendente';
+      case StatusConviteAgenda.aceito:
+        return 'Aceito';
+      case StatusConviteAgenda.recusado:
+        return 'Recusado';
+    }
   }
 
   void _showAlerta(BuildContext context, String titulo) {

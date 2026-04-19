@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -117,5 +119,57 @@ void main() {
 
     expect(find.text('Lembrete da próxima disciplina'), findsOneWidget);
     expect(find.text('Antecedência do lembrete'), findsOneWidget);
+  });
+
+  testWidgets('professor visualiza convite recebido na agenda', (tester) async {
+    SharedPreferences.setMockInitialValues({
+      'sigad_configuracoes': jsonEncode({
+        'agendaCompromissos': [
+          {
+            'id': 'conv1',
+            'titulo': 'Reunião de coordenação',
+            'descricao': 'Planejamento semanal',
+            'inicio': 'Hoje, 16:30',
+            'inicioIso': DateTime.now().add(const Duration(minutes: 20)).toIso8601String(),
+            'local': 'Sala A',
+            'origem': 'Convite de reunião',
+            'destinatarioUserId': 'cfg-prof-2',
+            'statusConvite': 'pendente',
+          }
+        ],
+      }),
+    });
+
+    final userContext = UserContextProvider();
+    await userContext.login(
+      User(
+        id: 'cfg-prof-2',
+        name: 'Professor Convite',
+        email: 'profconvite@sigad.dev',
+        role: UserRole.professor,
+        createdAt: DateTime(2026, 1, 1),
+      ),
+    );
+
+    await tester.pumpWidget(
+      ChangeNotifierProvider<UserContextProvider>.value(
+        value: userContext,
+        child: MaterialApp(
+          theme: AppTheme.light(),
+          home: const ConfiguracoesPage(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(
+      find.text('Agenda de compromissos'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('1 compromisso(s) no período'), findsOneWidget);
+    expect(find.textContaining('Reunião de coordenação'), findsOneWidget);
   });
 }

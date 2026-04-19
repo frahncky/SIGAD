@@ -1,41 +1,84 @@
+enum StatusConviteAgenda { pendente, aceito, recusado }
+
 class CompromissoAgenda {
   const CompromissoAgenda({
     required this.id,
     required this.titulo,
     required this.descricao,
     required this.inicio,
+    required this.inicioIso,
     required this.local,
     required this.origem,
     required this.destinatarioUserId,
+    this.statusConvite = StatusConviteAgenda.pendente,
   });
 
   final String id;
   final String titulo;
   final String descricao;
   final String inicio;
+  final String inicioIso;
   final String local;
   final String origem;
   final String destinatarioUserId;
+  final StatusConviteAgenda statusConvite;
+
+  CompromissoAgenda copyWith({
+    String? id,
+    String? titulo,
+    String? descricao,
+    String? inicio,
+    String? inicioIso,
+    String? local,
+    String? origem,
+    String? destinatarioUserId,
+    StatusConviteAgenda? statusConvite,
+  }) {
+    return CompromissoAgenda(
+      id: id ?? this.id,
+      titulo: titulo ?? this.titulo,
+      descricao: descricao ?? this.descricao,
+      inicio: inicio ?? this.inicio,
+      inicioIso: inicioIso ?? this.inicioIso,
+      local: local ?? this.local,
+      origem: origem ?? this.origem,
+      destinatarioUserId: destinatarioUserId ?? this.destinatarioUserId,
+      statusConvite: statusConvite ?? this.statusConvite,
+    );
+  }
 
   Map<String, dynamic> toMap() => {
         'id': id,
         'titulo': titulo,
         'descricao': descricao,
         'inicio': inicio,
+        'inicioIso': inicioIso,
         'local': local,
         'origem': origem,
         'destinatarioUserId': destinatarioUserId,
+        'statusConvite': statusConvite.name,
       };
 
   factory CompromissoAgenda.fromMap(Map<String, dynamic> data) {
+    final statusRaw = data['statusConvite'] as String?;
+    StatusConviteAgenda? parsedStatus;
+    for (final item in StatusConviteAgenda.values) {
+      if (item.name == statusRaw) {
+        parsedStatus = item;
+        break;
+      }
+    }
+
     return CompromissoAgenda(
       id: data['id'] as String,
       titulo: data['titulo'] as String,
       descricao: data['descricao'] as String,
       inicio: data['inicio'] as String,
+      inicioIso: data['inicioIso'] as String? ?? DateTime.now().toIso8601String(),
       local: data['local'] as String,
       origem: data['origem'] as String,
       destinatarioUserId: data['destinatarioUserId'] as String? ?? '',
+      statusConvite: parsedStatus ?? StatusConviteAgenda.pendente,
     );
   }
 }

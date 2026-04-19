@@ -7,7 +7,10 @@ import '../../../../core/navigation/navigation_items.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/chat_provider.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../configuracoes/data/configuracoes_repository.dart';
 import '../../../configuracoes/domain/agenda_convites_service.dart';
+import '../../../configuracoes/domain/configuracoes_models.dart';
+import '../../../configuracoes/domain/configuracoes_service.dart';
 import '../../../../shared/widgets/brand_title.dart';
 
 class HomeShellPage extends StatelessWidget {
@@ -177,55 +180,86 @@ class HomeShellPage extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Notificações', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-            const SizedBox(height: 16),
-            const ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.assignment_late_outlined),
-              title: Text('2 demandas aguardam revisão'),
-              subtitle: Text('Atualizado há 5 minutos'),
+      builder: (context) => FutureBuilder<ConfiguracoesData?>(
+        future: ConfiguracoesRepository().load(),
+        builder: (context, snapshot) {
+          final config = snapshot.data;
+          final lembretes = (user == null || config == null)
+              ? const []
+              : ConfiguracoesService.lembretesPendentesProfessor(
+                  data: config,
+                  userId: user.id,
+                  agora: DateTime.now(),
+                );
+
+          return Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Notificações', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                const SizedBox(height: 16),
+                const ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.assignment_late_outlined),
+                  title: Text('2 demandas aguardam revisão'),
+                  subtitle: Text('Atualizado há 5 minutos'),
+                ),
+                const ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.calendar_today_outlined),
+                  title: Text('Reserva de laboratório para amanhã'),
+                  subtitle: Text('Laboratório 03, turno matutino'),
+                ),
+                ...lembretes.map(
+                  (lembrete) {
+                    final inicio = DateTime.tryParse(lembrete.inicioIso);
+                    final minutos = inicio == null ? 0 : inicio.difference(DateTime.now()).inMinutes;
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.alarm_on_outlined),
+                      title: Text('Lembrete: ${lembrete.titulo}'),
+                      subtitle: Text(
+                        minutos <= 0
+                            ? 'Inicia agora · ${lembrete.local}'
+                            : 'Inicia em $minutos min · ${lembrete.local}',
+                      ),
+                    );
+                  },
+                ),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.event_outlined),
+                  title: const Text('Convite: reunião pedagógica'),
+                  subtitle: const Text('Hoje, 16:30 · Sala de reuniões do bloco A'),
+                  trailing: FilledButton.tonal(
+                    onPressed: user == null
+                        ? null
+                        : () async {
+                            await AgendaConvitesService.registrarConviteRecebido(
+                              destinatarioUserId: user.id,
+                              titulo: 'Reunião pedagógica',
+                              descricao: 'Discussão de planejamento de aulas e atividades integradas.',
+                              inicio: 'Hoje, 16:30',
+                              inicioDateTime: DateTime.now().add(const Duration(minutes: 40)),
+                              local: 'Sala de reuniões do bloco A',
+                              origem: 'Convite de reunião',
+                            );
+                            if (!context.mounted) return;
+                            Navigator.pop(context);
+                            AppFeedbackService.success(
+                              context,
+                              'Convite adicionado na sua agenda de compromissos.',
+                            );
+                          },
+                    child: const Text('Adicionar'),
+                  ),
+                ),
+              ],
             ),
-            const ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.calendar_today_outlined),
-              title: Text('Reserva de laboratório para amanhã'),
-              subtitle: Text('Laboratório 03, turno matutino'),
-            ),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.event_outlined),
-              title: const Text('Convite: reunião pedagógica'),
-              subtitle: const Text('Hoje, 16:30 · Sala de reuniões do bloco A'),
-              trailing: FilledButton.tonal(
-                onPressed: user == null
-                    ? null
-                    : () async {
-                        await AgendaConvitesService.registrarConviteRecebido(
-                          destinatarioUserId: user.id,
-                          titulo: 'Reunião pedagógica',
-                          descricao: 'Discussão de planejamento de aulas e atividades integradas.',
-                          inicio: 'Hoje, 16:30',
-                          local: 'Sala de reuniões do bloco A',
-                          origem: 'Convite de reunião',
-                        );
-                        if (!context.mounted) return;
-                        Navigator.pop(context);
-                        AppFeedbackService.success(
-                          context,
-                          'Convite adicionado na sua agenda de compromissos.',
-                        );
-                      },
-                child: const Text('Adicionar'),
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
