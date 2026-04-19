@@ -5,8 +5,10 @@ import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/models/navigation_item.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/navigation/navigation_items.dart';
-import '../../../../core/services/local_storage_service.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../demandas/data/demanda_repository.dart';
+import '../../../kanban/data/kanban_repository.dart';
+import '../../domain/dashboard_priorities_service.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -343,8 +345,8 @@ class _DynamicPriorityList extends StatefulWidget {
 }
 
 class _DynamicPriorityListState extends State<_DynamicPriorityList> {
-  static const String _demandasKey = 'sigad_demandas';
-  static const String _kanbanKey = 'sigad_kanban';
+  final DemandaRepository _demandaRepository = DemandaRepository();
+  final KanbanRepository _kanbanRepository = KanbanRepository();
   late Future<List<_PriorityItem>> _futureItems;
 
   @override
@@ -354,12 +356,12 @@ class _DynamicPriorityListState extends State<_DynamicPriorityList> {
   }
 
   Future<List<_PriorityItem>> _buildDynamicItems() async {
-    final demandas = await LocalStorageService.loadList(_demandasKey);
-    final kanban = await LocalStorageService.loadList(_kanbanKey);
+    final demandas = await _demandaRepository.loadDemandas();
+    final kanban = await _kanbanRepository.loadCards();
 
     final items = <_PriorityItem>[];
 
-    final demandasAtrasadas = _countDemandasAtrasadas(demandas);
+    final demandasAtrasadas = DashboardPrioritiesService.countDemandasAtrasadas(demandas);
     if (demandasAtrasadas > 0) {
       items.add(
         _PriorityItem(
@@ -370,7 +372,7 @@ class _DynamicPriorityListState extends State<_DynamicPriorityList> {
       );
     }
 
-    final demandasAltasAbertas = _countDemandasAltasAbertas(demandas);
+    final demandasAltasAbertas = DashboardPrioritiesService.countDemandasAltasAbertas(demandas);
     if (demandasAltasAbertas > 0) {
       items.add(
         _PriorityItem(
@@ -381,7 +383,7 @@ class _DynamicPriorityListState extends State<_DynamicPriorityList> {
       );
     }
 
-    final cardsEmRevisao = _countKanbanByColumn(kanban, 'Em Revisão');
+    final cardsEmRevisao = DashboardPrioritiesService.countKanbanByColumn(kanban, 'Em Revisão');
     if (cardsEmRevisao > 0) {
       items.add(
         _PriorityItem(
@@ -392,7 +394,7 @@ class _DynamicPriorityListState extends State<_DynamicPriorityList> {
       );
     }
 
-    final cardsBacklogAlto = _countKanbanBacklogHigh(kanban);
+    final cardsBacklogAlto = DashboardPrioritiesService.countKanbanBacklogHigh(kanban);
     if (cardsBacklogAlto > 0) {
       items.add(
         _PriorityItem(
@@ -408,70 +410,6 @@ class _DynamicPriorityListState extends State<_DynamicPriorityList> {
     }
 
     return items.take(3).toList();
-  }
-
-  int _countDemandasAtrasadas(List<dynamic> demandas) {
-    final now = DateTime.now();
-    var total = 0;
-    for (final item in demandas) {
-      if (item is! Map<String, dynamic>) continue;
-      final status = (item['statusLabel'] as String? ?? '').toLowerCase();
-      if (status == 'concluído' || status == 'concluido') continue;
-      final prazo = _parseDate(item['prazo'] as String?);
-      if (prazo != null && prazo.isBefore(DateTime(now.year, now.month, now.day))) {
-        total++;
-      }
-    }
-    return total;
-  }
-
-  int _countDemandasAltasAbertas(List<dynamic> demandas) {
-    var total = 0;
-    for (final item in demandas) {
-      if (item is! Map<String, dynamic>) continue;
-      final prioridade = (item['prioridade'] as String? ?? '').toLowerCase();
-      final status = (item['statusLabel'] as String? ?? '').toLowerCase();
-      if (prioridade == 'alta' && status != 'concluído' && status != 'concluido') {
-        total++;
-      }
-    }
-    return total;
-  }
-
-  int _countKanbanByColumn(List<dynamic> cards, String column) {
-    var total = 0;
-    for (final item in cards) {
-      if (item is! Map<String, dynamic>) continue;
-      final coluna = (item['coluna'] as String? ?? '').toLowerCase();
-      if (coluna == column.toLowerCase()) {
-        total++;
-      }
-    }
-    return total;
-  }
-
-  int _countKanbanBacklogHigh(List<dynamic> cards) {
-    var total = 0;
-    for (final item in cards) {
-      if (item is! Map<String, dynamic>) continue;
-      final coluna = (item['coluna'] as String? ?? '').toLowerCase();
-      final prioridade = (item['prioridade'] as String? ?? '').toLowerCase();
-      if (coluna == 'backlog' && prioridade == 'alta') {
-        total++;
-      }
-    }
-    return total;
-  }
-
-  DateTime? _parseDate(String? raw) {
-    if (raw == null || raw.trim().isEmpty) return null;
-    final parts = raw.split('/');
-    if (parts.length != 3) return null;
-    final day = int.tryParse(parts[0]);
-    final month = int.tryParse(parts[1]);
-    final year = int.tryParse(parts[2]);
-    if (day == null || month == null || year == null) return null;
-    return DateTime(year, month, day);
   }
 
   @override
