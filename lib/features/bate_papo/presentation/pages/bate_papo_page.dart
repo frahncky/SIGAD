@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../core/models/user.dart';
 import '../../../../core/services/chat_provider.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../../data/bate_papo_repository.dart';
@@ -64,7 +65,7 @@ class _BatePapoPageState extends State<BatePapoPage> {
 
     final messages = selectedContact == null
         ? <ChatMessage>[]
-      : repository.messagesBetween(currentUser.email, selectedContact.email);
+        : repository.messagesBetween(currentUser.email, selectedContact.email);
 
     void scheduleMarkRead(String contactEmail) {
       final key = '${currentUser.email}|$contactEmail';
@@ -74,10 +75,10 @@ class _BatePapoPageState extends State<BatePapoPage> {
       _lastScheduledReadKey = key;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        context.read<ChatProvider>().markConversationAsRead(
-              userEmail: currentUser.email,
-              contactEmail: contactEmail,
-            );
+        repository.markConversationAsRead(
+          userEmail: currentUser.email,
+          contactEmail: contactEmail,
+        );
       });
     }
 
@@ -186,7 +187,7 @@ class _BatePapoPageState extends State<BatePapoPage> {
     return allContacts.where((c) => c.email == _selectedContactEmail).firstOrNull;
   }
 
-  void _sendMessage(BatePapoRepository repository, currentUser, String recipientEmail) {
+  void _sendMessage(BatePapoRepository repository, User currentUser, String recipientEmail) {
     final content = _messageController.text.trim();
     if (content.isEmpty) {
       return;
