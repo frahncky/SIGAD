@@ -758,7 +758,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     }
 
     final podeGerenciar = role == UserRole.coordenador || role == UserRole.chefeDepartamento;
-    final podeVisualizarHorarios = podeGerenciar;
+    final podeVisualizarHorarios = role == UserRole.professor || podeGerenciar;
     final emailNormalizado = (user?.email ?? '').trim().toLowerCase();
     final docentesVisiveis = _docentesVisiveis(role, emailUsuario: user?.email);
     final docentesOrdenados = podeGerenciar
