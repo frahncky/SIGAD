@@ -1,7 +1,10 @@
 ﻿import 'package:flutter/material.dart';
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
-import '../../../../core/services/local_storage_service.dart';
+import '../../../../core/services/app_feedback_service.dart';
+import '../../data/configuracoes_repository.dart';
+import '../../domain/configuracoes_models.dart';
+import '../../domain/configuracoes_service.dart';
 
 class ConfiguracoesPage extends StatefulWidget {
   const ConfiguracoesPage({super.key});
@@ -11,21 +14,21 @@ class ConfiguracoesPage extends StatefulWidget {
 }
 
 class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
-  bool _notificacoesAtivas = true;
-  bool _modoDark = false;
-  bool _biometriaAtiva = false;
-  bool _backupAutomaticoAtivo = true;
-  String _idioma = 'Português (Brasil)';
-  String _tamanhoFonte = 'Médio';
-  String _nomePerfil = 'João Silva';
-  String _cargoPerfil = 'Coordenador Acadêmico';
-  String _emailUsuario = 'joao.silva@universidade.edu.br';
-  String _ultimaAlteracaoSenha = '20/02/2026';
-  String _proximoBackup = '25/04/2026';
-  String _ultimoBackup = '20/04/2026 às 14:30';
-  int _problemasReportados = 0;
+  bool _notificacoesAtivas = ConfiguracoesService.defaultData().notificacoesAtivas;
+  bool _modoDark = ConfiguracoesService.defaultData().modoDark;
+  bool _biometriaAtiva = ConfiguracoesService.defaultData().biometriaAtiva;
+  bool _backupAutomaticoAtivo = ConfiguracoesService.defaultData().backupAutomaticoAtivo;
+  String _idioma = ConfiguracoesService.defaultData().idioma;
+  String _tamanhoFonte = ConfiguracoesService.defaultData().tamanhoFonte;
+  String _nomePerfil = ConfiguracoesService.defaultData().nomePerfil;
+  String _cargoPerfil = ConfiguracoesService.defaultData().cargoPerfil;
+  String _emailUsuario = ConfiguracoesService.defaultData().emailUsuario;
+  String _ultimaAlteracaoSenha = ConfiguracoesService.defaultData().ultimaAlteracaoSenha;
+  String _proximoBackup = ConfiguracoesService.defaultData().proximoBackup;
+  String _ultimoBackup = ConfiguracoesService.defaultData().ultimoBackup;
+  int _problemasReportados = ConfiguracoesService.defaultData().problemasReportados;
 
-  static const String _kKey = 'sigad_configuracoes';
+  final ConfiguracoesRepository _configuracoesRepository = ConfiguracoesRepository();
 
   @override
   void initState() {
@@ -34,71 +37,47 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
   }
 
   Future<void> _loadData() async {
-    final data = await LocalStorageService.loadMap(_kKey);
+    final data = await _configuracoesRepository.load();
     if (data == null) return;
     setState(() {
-      _notificacoesAtivas = data['notificacoesAtivas'] as bool? ?? _notificacoesAtivas;
-      _modoDark = data['modoDark'] as bool? ?? _modoDark;
-      _biometriaAtiva = data['biometriaAtiva'] as bool? ?? _biometriaAtiva;
-      _backupAutomaticoAtivo = data['backupAutomaticoAtivo'] as bool? ?? _backupAutomaticoAtivo;
-      _idioma = data['idioma'] as String? ?? _idioma;
-      _tamanhoFonte = data['tamanhoFonte'] as String? ?? _tamanhoFonte;
-      _nomePerfil = data['nomePerfil'] as String? ?? _nomePerfil;
-      _cargoPerfil = data['cargoPerfil'] as String? ?? _cargoPerfil;
-      _emailUsuario = data['emailUsuario'] as String? ?? _emailUsuario;
-      _ultimaAlteracaoSenha = data['ultimaAlteracaoSenha'] as String? ?? _ultimaAlteracaoSenha;
-      _proximoBackup = data['proximoBackup'] as String? ?? _proximoBackup;
-      _ultimoBackup = data['ultimoBackup'] as String? ?? _ultimoBackup;
-      _problemasReportados = data['problemasReportados'] as int? ?? _problemasReportados;
+      _notificacoesAtivas = data.notificacoesAtivas;
+      _modoDark = data.modoDark;
+      _biometriaAtiva = data.biometriaAtiva;
+      _backupAutomaticoAtivo = data.backupAutomaticoAtivo;
+      _idioma = data.idioma;
+      _tamanhoFonte = data.tamanhoFonte;
+      _nomePerfil = data.nomePerfil;
+      _cargoPerfil = data.cargoPerfil;
+      _emailUsuario = data.emailUsuario;
+      _ultimaAlteracaoSenha = data.ultimaAlteracaoSenha;
+      _proximoBackup = data.proximoBackup;
+      _ultimoBackup = data.ultimoBackup;
+      _problemasReportados = data.problemasReportados;
     });
   }
 
   void _saveData() {
-    LocalStorageService.saveMap(_kKey, {
-      'notificacoesAtivas': _notificacoesAtivas,
-      'modoDark': _modoDark,
-      'biometriaAtiva': _biometriaAtiva,
-      'backupAutomaticoAtivo': _backupAutomaticoAtivo,
-      'idioma': _idioma,
-      'tamanhoFonte': _tamanhoFonte,
-      'nomePerfil': _nomePerfil,
-      'cargoPerfil': _cargoPerfil,
-      'emailUsuario': _emailUsuario,
-      'ultimaAlteracaoSenha': _ultimaAlteracaoSenha,
-      'proximoBackup': _proximoBackup,
-      'ultimoBackup': _ultimoBackup,
-      'problemasReportados': _problemasReportados,
-    });
-  }
-
-  String _dataAtual() {
-    final agora = DateTime.now();
-    final dia = agora.day.toString().padLeft(2, '0');
-    final mes = agora.month.toString().padLeft(2, '0');
-    final ano = agora.year.toString();
-    return '$dia/$mes/$ano';
-  }
-
-  String _dataHoraAtual() {
-    final agora = DateTime.now();
-    final dia = agora.day.toString().padLeft(2, '0');
-    final mes = agora.month.toString().padLeft(2, '0');
-    final ano = agora.year.toString();
-    final hora = agora.hour.toString().padLeft(2, '0');
-    final minuto = agora.minute.toString().padLeft(2, '0');
-    return '$dia/$mes/$ano às $hora:$minuto';
-  }
-
-  String _dataFutura(int dias) {
-    final data = DateTime.now().add(Duration(days: dias));
-    final dia = data.day.toString().padLeft(2, '0');
-    final mes = data.month.toString().padLeft(2, '0');
-    final ano = data.year.toString();
-    return '$dia/$mes/$ano';
+    _configuracoesRepository.save(
+      ConfiguracoesData(
+        notificacoesAtivas: _notificacoesAtivas,
+        modoDark: _modoDark,
+        biometriaAtiva: _biometriaAtiva,
+        backupAutomaticoAtivo: _backupAutomaticoAtivo,
+        idioma: _idioma,
+        tamanhoFonte: _tamanhoFonte,
+        nomePerfil: _nomePerfil,
+        cargoPerfil: _cargoPerfil,
+        emailUsuario: _emailUsuario,
+        ultimaAlteracaoSenha: _ultimaAlteracaoSenha,
+        proximoBackup: _proximoBackup,
+        ultimoBackup: _ultimoBackup,
+        problemasReportados: _problemasReportados,
+      ),
+    );
   }
 
   void _mostrarFeedback(String mensagem) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensagem)));
+    AppFeedbackService.info(context, mensagem);
   }
 
   @override
@@ -354,10 +333,14 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      if (nomeController.text.trim().isEmpty || cargoController.text.trim().isEmpty) {
-                        _mostrarFeedback('Preencha nome e cargo');
+                        final erro = ConfiguracoesService.validarPerfil(
+                          nome: nomeController.text,
+                          cargo: cargoController.text,
+                        );
+                        if (erro != null) {
+                          _mostrarFeedback(erro);
                         return;
-                      }
+                        }
 
                       setState(() {
                         _nomePerfil = nomeController.text.trim();
@@ -430,11 +413,11 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                   child: ElevatedButton(
                     onPressed: () {
                       final email = emailController.text.trim();
-                      final emailValido = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email);
-                      if (!emailValido) {
-                        _mostrarFeedback('Informe um email válido');
+                        final erro = ConfiguracoesService.validarEmail(email);
+                        if (erro != null) {
+                          _mostrarFeedback(erro);
                         return;
-                      }
+                        }
 
                       setState(() {
                         _emailUsuario = email;
@@ -524,23 +507,18 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                       final novaSenha = novaSenhaController.text.trim();
                       final confirmarSenha = confirmarSenhaController.text.trim();
 
-                      if (senhaAtual.isEmpty) {
-                        _mostrarFeedback('Informe a senha atual');
-                        return;
-                      }
-
-                      if (novaSenha.length < 6) {
-                        _mostrarFeedback('A nova senha deve ter ao menos 6 caracteres');
-                        return;
-                      }
-
-                      if (novaSenha != confirmarSenha) {
-                        _mostrarFeedback('A confirmação da senha não confere');
-                        return;
-                      }
+                        final erro = ConfiguracoesService.validarAlteracaoSenha(
+                          senhaAtual: senhaAtual,
+                          novaSenha: novaSenha,
+                          confirmarSenha: confirmarSenha,
+                        );
+                        if (erro != null) {
+                          _mostrarFeedback(erro);
+                          return;
+                        }
 
                       setState(() {
-                        _ultimaAlteracaoSenha = _dataAtual();
+                          _ultimaAlteracaoSenha = ConfiguracoesService.dataAtual();
                       });
                       _saveData();
 
@@ -593,7 +571,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 onChanged: (value) {
                   setState(() {
                     _backupAutomaticoAtivo = value;
-                    _proximoBackup = value ? _dataFutura(1) : 'Desativado';
+                    _proximoBackup = value ? ConfiguracoesService.dataFutura(1) : 'Desativado';
                   });
                   _saveData();
                   setModalState(() {});
@@ -611,8 +589,8 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                     child: OutlinedButton(
                       onPressed: () {
                         setState(() {
-                          _ultimoBackup = _dataHoraAtual();
-                          _proximoBackup = _backupAutomaticoAtivo ? _dataFutura(1) : 'Desativado';
+                          _ultimoBackup = ConfiguracoesService.dataHoraAtual();
+                          _proximoBackup = _backupAutomaticoAtivo ? ConfiguracoesService.dataFutura(1) : 'Desativado';
                         });
                         _saveData();
                         Navigator.pop(context);
@@ -875,10 +853,14 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      if (tituloController.text.trim().isEmpty || descricaoController.text.trim().isEmpty) {
-                        _mostrarFeedback('Preencha título e descrição');
+                        final erro = ConfiguracoesService.validarRelatoProblema(
+                          titulo: tituloController.text,
+                          descricao: descricaoController.text,
+                        );
+                        if (erro != null) {
+                          _mostrarFeedback(erro);
                         return;
-                      }
+                        }
 
                       setState(() {
                         _problemasReportados += 1;
