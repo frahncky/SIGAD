@@ -208,7 +208,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               ),
             ],
           ),
-          if (role == UserRole.professor)
+          if (_isDocenteComLembrete(role))
             _ConfigSection(
               titulo: 'Disciplinas e lembretes',
               children: [
@@ -472,6 +472,12 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
       case StatusConviteAgenda.recusado:
         return 'Recusado';
     }
+  }
+
+  bool _isDocenteComLembrete(UserRole? role) {
+    return role == UserRole.professor ||
+        role == UserRole.coordenador ||
+        role == UserRole.chefeDepartamento;
   }
 
   void _showAlerta(BuildContext context, String titulo) {
