@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
+import '../../data/reserva_repository.dart';
+import '../../domain/reserva_models.dart';
+import '../../domain/reserva_service.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
-import '../../../../core/services/local_storage_service.dart';
 
 class AulasPraticasPage extends StatefulWidget {
   const AulasPraticasPage({super.key});
@@ -16,12 +18,6 @@ class AulasPraticasPage extends StatefulWidget {
 }
 
 class _AulasPraticasPageState extends State<AulasPraticasPage> {
-  static const Set<UserRole> _allowedRoles = {
-    UserRole.professor,
-    UserRole.coordenador,
-    UserRole.chefeDepartamento,
-  };
-
   static const List<String> _laboratorios = [
     'Lab Química 1',
     'Lab Biologia 2',
@@ -44,54 +40,13 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     'Dezembro',
   ];
 
-  final List<_ReservaLaboratorio> _reservas = [
-    _ReservaLaboratorio(
-      id: 'RES-101',
-      professor: 'Ismael',
-      laboratorio: 'Lab Química 1',
-      mes: DateTime.now().month,
-      semanaDoMes: 2,
-      diaSemana: 'Seg',
-      turno: _Turno.matutino,
-      periodo: 4,
-    ),
-    _ReservaLaboratorio(
-      id: 'RES-102',
-      professor: 'PEE - Cláudio Leão',
-      laboratorio: 'Lab Química 1',
-      mes: DateTime.now().month,
-      semanaDoMes: 2,
-      diaSemana: 'Ter',
-      turno: _Turno.matutino,
-      periodo: 4,
-    ),
-    _ReservaLaboratorio(
-      id: 'RES-103',
-      professor: 'Jean Mark',
-      laboratorio: 'Lab Química 1',
-      mes: DateTime.now().month,
-      semanaDoMes: 3,
-      diaSemana: 'Sex',
-      turno: _Turno.noturno,
-      periodo: 1,
-    ),
-    _ReservaLaboratorio(
-      id: 'RES-104',
-      professor: 'Lima',
-      laboratorio: 'Lab Química 1',
-      mes: DateTime.now().month,
-      semanaDoMes: 3,
-      diaSemana: 'Seg',
-      turno: _Turno.vespertino,
-      periodo: 3,
-    ),
-  ];
+  final ReservaRepository _reservaRepository = ReservaRepository();
+  final List<ReservaLaboratorio> _reservas =
+      ReservaService.defaultReservas(DateTime.now().month);
 
   String _laboratorioSelecionado = _laboratorios.first;
   int _mesSelecionado = DateTime.now().month;
   int _diaSelecionado = DateTime.now().day;
-
-  static const String _kKey = 'sigad_reservas';
 
   @override
   void initState() {
@@ -100,42 +55,18 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   }
 
   Future<void> _loadData() async {
-    final list = await LocalStorageService.loadList(_kKey);
+    final list = await _reservaRepository.loadReservas();
     if (list.isEmpty) return;
     setState(() {
       _reservas
         ..clear()
-        ..addAll(list.map(_reservaFromJson));
+        ..addAll(list);
     });
   }
 
   void _saveData() {
-    LocalStorageService.saveList(_kKey, _reservas.map(_reservaToJson).toList());
+    _reservaRepository.saveReservas(_reservas);
   }
-
-  Map<String, dynamic> _reservaToJson(_ReservaLaboratorio r) => {
-    'id': r.id,
-    'professor': r.professor,
-    'laboratorio': r.laboratorio,
-    'mes': r.mes,
-    'semanaDoMes': r.semanaDoMes,
-    'diaSemana': r.diaSemana,
-    'turno': r.turno.name,
-    'periodo': r.periodo,
-    if (r.disciplina != null) 'disciplina': r.disciplina,
-  };
-
-  _ReservaLaboratorio _reservaFromJson(Map<String, dynamic> json) => _ReservaLaboratorio(
-    id: json['id'] as String,
-    professor: json['professor'] as String,
-    laboratorio: json['laboratorio'] as String,
-    mes: json['mes'] as int,
-    semanaDoMes: json['semanaDoMes'] as int,
-    diaSemana: json['diaSemana'] as String,
-    turno: _Turno.values.firstWhere((t) => t.name == json['turno']),
-    periodo: json['periodo'] as int,
-    disciplina: json['disciplina'] as String?,
-  );
 
   int get _semanaSelecionada => ((_diaSelecionado - 1) ~/ 7) + 1;
 
@@ -146,16 +77,13 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     return _laboratorios.first;
   }
 
-  List<_ReservaLaboratorio> get _reservasDoLaboratorio {
-    return _reservas
-        .where(
-          (reserva) =>
-              reserva.laboratorio == _laboratorioSelecionadoValido &&
-              reserva.mes == _mesSelecionado &&
-              reserva.semanaDoMes == _semanaSelecionada,
-        )
-        .toList();
-  }
+  List<ReservaLaboratorio> get _reservasDoLaboratorio =>
+      ReservaService.reservasDoLaboratorio(
+        reservas: _reservas,
+        laboratorio: _laboratorioSelecionadoValido,
+        mes: _mesSelecionado,
+        semanaDoMes: _semanaSelecionada,
+      );
 
   int get _diasNoMesSelecionado {
     final now = DateTime.now();
@@ -166,14 +94,13 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   Widget build(BuildContext context) {
     final userContext = context.watch<UserContextProvider>();
     final role = userContext.userRole;
-    final hasAccess = role != null && _allowedRoles.contains(role);
+    final hasAccess = ReservaService.canAccess(role);
 
     if (!hasAccess) {
       return const _AccessDenied();
     }
 
-    final podeEditar =
-      role == UserRole.professor || role == UserRole.coordenador || role == UserRole.chefeDepartamento;
+    final podeEditar = ReservaService.canEdit(role);
 
     return Scaffold(
       body: Stack(
@@ -225,8 +152,8 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                 const SizedBox(height: 12),
                 _MapaSemanal(
                   mesSelecionado: _mesSelecionado,
-                  mesLabel: _nomeMes(_mesSelecionado),
-                  semanaLabel: _descricaoSemana(_semanaSelecionada),
+                  mesLabel: ReservaService.nomeMes(_mesSelecionado, _meses),
+                  semanaLabel: ReservaService.descricaoSemana(_semanaSelecionada),
                   diaSelecionado: _diaSelecionado,
                   diaSemanaSelecionado: _diaSemanaAbreviadoDoDiaSelecionado,
                   diaSemanaSelecionadoCompleto: _diaSemanaCompletoDoDiaSelecionado,
@@ -251,37 +178,37 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
   Future<void> _onTapCelula({
     required String diaSemana,
-    required _Turno turno,
+    required Turno turno,
     required int periodo,
-    required _ReservaLaboratorio? reservaAtual,
+    required ReservaLaboratorio? reservaAtual,
   }) async {
     try {
       final userContext = context.read<UserContextProvider>();
       final user = userContext.currentUser;
       final role = userContext.userRole;
 
-      if (user == null || (role != UserRole.chefeDepartamento && role != UserRole.coordenador && role != UserRole.professor)) {
+      if (!ReservaService.canChangeReservation(user: user, role: role)) {
         _showInfo('Somente perfis docentes podem alterar reservas pela grade.');
         return;
       }
 
       if (reservaAtual == null) {
         String? disciplina;
-        if (role == UserRole.professor || role == UserRole.coordenador || role == UserRole.chefeDepartamento) {
+        if (ReservaService.canEdit(role)) {
           disciplina = await _solicitarDisciplinaProfessor();
           if (disciplina == null) {
             return;
           }
         }
 
-        final jaOcupado = _reservas.any(
-          (reserva) =>
-              reserva.laboratorio == _laboratorioSelecionadoValido &&
-              reserva.mes == _mesSelecionado &&
-              reserva.semanaDoMes == _semanaSelecionada &&
-              reserva.diaSemana == diaSemana &&
-              reserva.turno == turno &&
-              reserva.periodo == periodo,
+        final jaOcupado = ReservaService.isSlotOccupied(
+          reservas: _reservas,
+          laboratorio: _laboratorioSelecionadoValido,
+          mes: _mesSelecionado,
+          semanaDoMes: _semanaSelecionada,
+          diaSemana: diaSemana,
+          turno: turno,
+          periodo: periodo,
         );
 
         if (jaOcupado) {
@@ -291,8 +218,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
         setState(() {
           _reservas.add(
-            _ReservaLaboratorio(
-              id: 'RES-${DateTime.now().microsecondsSinceEpoch}',
+            ReservaService.createReserva(
               professor: user.name,
               laboratorio: _laboratorioSelecionadoValido,
               mes: _mesSelecionado,
@@ -318,7 +244,11 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         return;
       }
 
-      if (role != UserRole.chefeDepartamento && reservaAtual.professor != user.name) {
+      if (!ReservaService.canRemoveReservation(
+        role: role,
+        currentUserName: user.name,
+        reserva: reservaAtual,
+      )) {
         _showInfo('Você só pode remover as próprias reservas.');
         return;
       }
@@ -326,7 +256,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       final confirmarExclusao = await _confirmarAcao(
         titulo: 'Excluir reserva',
         mensagem:
-            'Deseja remover sua reserva de ${_diaCompleto(diaSemana)}, ${turno.horarioDo(periodo)}, ${_descricaoSemana(_semanaSelecionada)} de ${_nomeMes(_mesSelecionado)} no $_laboratorioSelecionadoValido?',
+          'Deseja remover sua reserva de ${ReservaService.diaCompleto(diaSemana)}, ${turno.horarioDo(periodo)}, ${ReservaService.descricaoSemana(_semanaSelecionada)} de ${ReservaService.nomeMes(_mesSelecionado, _meses)} no $_laboratorioSelecionadoValido?',
         confirmarLabel: 'Excluir',
         isDelete: true,
       );
@@ -391,7 +321,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       builder: (_) => const _DialogDisciplinaReserva(),
     );
 
-    if (result == null || result.trim().isEmpty) {
+    if (ReservaService.validateDisciplina(result) != null) {
       return null;
     }
 
@@ -406,30 +336,6 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   void _showError(String message) {
     if (!mounted) return;
     AppFeedbackService.error(context, message);
-  }
-
-  String _diaCompleto(String diaSemana) {
-    switch (diaSemana) {
-      case 'Seg':
-        return 'segunda-feira';
-      case 'Ter':
-        return 'terça-feira';
-      case 'Qua':
-        return 'quarta-feira';
-      case 'Qui':
-        return 'quinta-feira';
-      case 'Sex':
-        return 'sexta-feira';
-      default:
-        return diaSemana;
-    }
-  }
-
-  String _nomeMes(int mes) {
-    if (mes < 1 || mes > _meses.length) {
-      return 'Mês inválido';
-    }
-    return _meses[mes - 1];
   }
 
   String get _diaSemanaAbreviadoDoDiaSelecionado {
@@ -476,9 +382,6 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     }
   }
 
-  String _descricaoSemana(int semana) {
-    return '${semana}a semana';
-  }
 }
 
 class _FiltroLabRow extends StatelessWidget {
@@ -593,9 +496,9 @@ class _MapaSemanal extends StatelessWidget {
   final int diaSelecionado;
   final String diaSemanaSelecionado;
   final String diaSemanaSelecionadoCompleto;
-  final List<_ReservaLaboratorio> reservas;
+  final List<ReservaLaboratorio> reservas;
   final bool podeEditar;
-  final Future<void> Function(String diaSemana, _Turno turno, int periodo, _ReservaLaboratorio? reservaAtual) onTapCelula;
+  final Future<void> Function(String diaSemana, Turno turno, int periodo, ReservaLaboratorio? reservaAtual) onTapCelula;
 
   static const List<String> _diasAbreviados = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'];
 
@@ -639,26 +542,17 @@ class _MapaSemanal extends StatelessWidget {
     );
   }
 
-  List<_HorarioGridRow> _gerarLinhasGrade() {
-    return [
-      for (final turno in _Turno.values)
-        for (var periodo = 1; periodo <= turno.horarios.length; periodo++)
-          _HorarioGridRow(
-            turno: turno,
-            periodo: periodo,
-            horario: turno.horarioDo(periodo),
-          ),
-    ];
+  List<HorarioGridRow> _gerarLinhasGrade() {
+    return ReservaService.gerarLinhasGrade();
   }
 
-  _ReservaLaboratorio? _reservaPara(String diaSemana, _Turno turno, int periodo) {
-    for (final reserva in reservas) {
-      if (reserva.diaSemana == diaSemana && reserva.turno == turno && reserva.periodo == periodo) {
-        return reserva;
-      }
-    }
-    return null;
-  }
+  ReservaLaboratorio? _reservaPara(String diaSemana, Turno turno, int periodo) =>
+      ReservaService.reservaPara(
+        reservas: reservas,
+        diaSemana: diaSemana,
+        turno: turno,
+        periodo: periodo,
+      );
 
   List<int> _diasDoMesDaSemanaSelecionada() {
     final dataSelecionada = DateTime(DateTime.now().year, mesSelecionado, diaSelecionado);
@@ -681,10 +575,10 @@ class _GradeSemanal extends StatelessWidget {
   final List<String> diasAbreviados;
   final List<int> diasDoMes;
   final String diaSemanaSelecionado;
-  final List<_HorarioGridRow> linhas;
-  final _ReservaLaboratorio? Function(String diaSemana, _Turno turno, int periodo) reservaPara;
+  final List<HorarioGridRow> linhas;
+  final ReservaLaboratorio? Function(String diaSemana, Turno turno, int periodo) reservaPara;
   final bool podeEditar;
-  final Future<void> Function(String diaSemana, _Turno turno, int periodo, _ReservaLaboratorio? reservaAtual) onTapCelula;
+  final Future<void> Function(String diaSemana, Turno turno, int periodo, ReservaLaboratorio? reservaAtual) onTapCelula;
 
   static const double _dayColumnWidth = 156;
   static const double _rowHeight = 72;
@@ -769,7 +663,7 @@ class _TurnoDividerRow extends StatelessWidget {
   });
 
   final double width;
-  final _Turno turno;
+  final Turno turno;
 
   @override
   Widget build(BuildContext context) {
@@ -843,12 +737,12 @@ class _GradeReservaCell extends StatelessWidget {
   final double width;
   final double height;
   final String horario;
-  final _Turno turno;
+  final Turno turno;
   final int periodo;
   final String diaSemana;
-  final _ReservaLaboratorio? reserva;
+  final ReservaLaboratorio? reserva;
   final bool podeEditar;
-  final Future<void> Function(String diaSemana, _Turno turno, int periodo, _ReservaLaboratorio? reservaAtual) onTapCelula;
+  final Future<void> Function(String diaSemana, Turno turno, int periodo, ReservaLaboratorio? reservaAtual) onTapCelula;
 
   @override
   Widget build(BuildContext context) {
@@ -970,18 +864,6 @@ class _GradeReservaCell extends StatelessWidget {
   }
 }
 
-class _HorarioGridRow {
-  const _HorarioGridRow({
-    required this.turno,
-    required this.periodo,
-    required this.horario,
-  });
-
-  final _Turno turno;
-  final int periodo;
-  final String horario;
-}
-
 class _DialogDisciplinaReserva extends StatefulWidget {
   const _DialogDisciplinaReserva();
 
@@ -1097,86 +979,3 @@ class _AmbientBackground extends StatelessWidget {
   }
 }
 
-class _ReservaLaboratorio {
-  const _ReservaLaboratorio({
-    required this.id,
-    required this.professor,
-    required this.laboratorio,
-    required this.mes,
-    required this.semanaDoMes,
-    required this.diaSemana,
-    required this.turno,
-    required this.periodo,
-    this.disciplina,
-  });
-
-  final String id;
-  final String professor;
-  final String laboratorio;
-  final int mes;
-  final int semanaDoMes;
-  final String diaSemana;
-  final _Turno turno;
-  final int periodo;
-  final String? disciplina;
-}
-
-enum _Turno {
-  matutino('Matutino'),
-  vespertino('Tarde'),
-  noturno('Noite');
-
-  const _Turno(this.label);
-  final String label;
-
-  String get shortLabel {
-    switch (this) {
-      case _Turno.matutino:
-        return 'M';
-      case _Turno.vespertino:
-        return 'T';
-      case _Turno.noturno:
-        return 'N';
-    }
-  }
-
-  Color get chipBackground {
-    switch (this) {
-      case _Turno.matutino:
-        return SigadColors.successSoft.withValues(alpha: 0.85);
-      case _Turno.vespertino:
-        return SigadColors.accentSoft.withValues(alpha: 0.85);
-      case _Turno.noturno:
-        return SigadColors.surfaceAlt;
-    }
-  }
-
-  Color get chipTextColor {
-    switch (this) {
-      case _Turno.matutino:
-        return SigadColors.success;
-      case _Turno.vespertino:
-        return SigadColors.warning;
-      case _Turno.noturno:
-        return SigadColors.brandDark;
-    }
-  }
-
-  List<String> get horarios {
-    switch (this) {
-      case _Turno.matutino:
-        return const ['07:15-08:05', '08:05-08:55', '08:55-09:45', '09:45-10:35', '10:50-11:40', '11:40-12:30'];
-      case _Turno.vespertino:
-        return const ['13:10-14:00', '14:00-14:50', '14:50-15:40', '15:55-16:45', '16:45-17:35', '17:35-18:25'];
-      case _Turno.noturno:
-        return const ['18:30-19:20', '19:20-20:10', '20:30-21:15', '21:15-22:00', '22:00-22:45'];
-    }
-  }
-
-  String horarioDo(int periodo) {
-    if (periodo < 1 || periodo > horarios.length) {
-      return 'Horário indefinido';
-    }
-    return horarios[periodo - 1];
-  }
-}

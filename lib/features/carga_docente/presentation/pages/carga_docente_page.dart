@@ -6,6 +6,7 @@ import '../../data/docente_repository.dart';
 import '../../domain/docente_form_service.dart';
 import '../../domain/docente_models.dart';
 import '../../domain/docente_visibility_service.dart';
+import '../controllers/docente_form_controller.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
@@ -175,19 +176,51 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   }
 
   void _showAdicionarDocente(BuildContext context) {
+    final controller = DocenteFormController.createNew();
+
+    _showDocenteFormSheet(
+      context: context,
+      title: 'Novo Docente',
+      confirmLabel: 'Adicionar',
+      controller: controller,
+      onSubmit: () {
+        final erro = controller.validate();
+        if (erro != null) {
+          _mostrarFeedback(erro);
+          return false;
+        }
+
+        setState(() {
+          _docentes.insert(0, controller.buildNewDocente(_gerarProximoIdDocente()));
+        });
+        _saveData();
+        AppEventLogger.action('carga_docente_add_docente', details: {
+          'nome': controller.nomeController.text.trim(),
+          'qtdDisciplinas': controller.disciplinas.length,
+          'qtdHorarios': controller.horarios.length,
+        });
+        _mostrarFeedback('Docente adicionado com sucesso!');
+        return true;
+      },
+    );
+  }
+
+  void _showDocenteFormSheet({
+    required BuildContext context,
+    required String title,
+    required String confirmLabel,
+    required DocenteFormController controller,
+    required bool Function() onSubmit,
+  }) {
     final textTheme = Theme.of(context).textTheme;
-    final nomeController = TextEditingController();
-    final emailController = TextEditingController();
-    final departamentoController = TextEditingController();
-    final cargaMaximaController = TextEditingController();
-    final List<String> disciplinas = [];
-    final List<HorarioAula> horarios = [];
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) => Container(
+        builder: (context, setModalState) => PopScope(
+          onPopInvokedWithResult: (_, __) => controller.dispose(),
+          child: Container(
           padding: const EdgeInsets.all(24),
           height: MediaQuery.of(context).size.height * 0.9,
           child: Column(
@@ -196,7 +229,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Novo Docente', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                  Text(title, style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: const Icon(Icons.close),
@@ -210,23 +243,23 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TextField(
-                        controller: nomeController,
+                        controller: controller.nomeController,
                         decoration: const InputDecoration(labelText: 'Nome Completo', hintText: 'Digite o nome do docente'),
                       ),
                       const SizedBox(height: 16),
                       TextField(
-                        controller: emailController,
+                        controller: controller.emailController,
                         keyboardType: TextInputType.emailAddress,
                         decoration: const InputDecoration(labelText: 'Email de acesso', hintText: 'docente@univ.br'),
                       ),
                       const SizedBox(height: 16),
                       TextField(
-                        controller: departamentoController,
+                        controller: controller.departamentoController,
                         decoration: const InputDecoration(labelText: 'Departamento', hintText: 'Digite o departamento'),
                       ),
                       const SizedBox(height: 16),
                       TextField(
-                        controller: cargaMaximaController,
+                        controller: controller.cargaMaximaController,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(labelText: 'Carga Horária Máxima (horas)', hintText: 'Ex: 20'),
                       ),
@@ -237,13 +270,13 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                         spacing: 8,
                         runSpacing: 8,
                         children: [
-                          ...disciplinas.map((d) => Chip(
+                          ...controller.disciplinas.map((d) => Chip(
                                 label: Text(d),
-                                onDeleted: () => setModalState(() => disciplinas.remove(d)),
+                                onDeleted: () => setModalState(() => controller.removeDisciplina(d)),
                               )),
                           ActionChip(
                             label: const Text('Adicionar'),
-                            onPressed: () => _showAdicionarDisciplina(context, disciplinas, setModalState),
+                            onPressed: () => _showAdicionarDisciplina(context, controller, setModalState),
                           ),
                         ],
                       ),
@@ -255,18 +288,18 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                           TextButton.icon(
                             icon: const Icon(Icons.add, size: 16),
                             label: const Text('Adicionar'),
-                            onPressed: () => _showAdicionarHorario(context, horarios, setModalState),
+                            onPressed: () => _showAdicionarHorario(context, controller, setModalState),
                           ),
                         ],
                       ),
                       const SizedBox(height: 8),
-                      if (horarios.isEmpty)
+                      if (controller.horarios.isEmpty)
                         Text('Nenhum horário cadastrado', style: textTheme.bodySmall?.copyWith(color: SigadColors.muted))
                       else
-                        ...horarios.map((h) => _HorarioTile(
+                        ...controller.horarios.map((h) => _HorarioTile(
                               horario: h,
                               textTheme: textTheme,
-                              onDelete: () => setModalState(() => horarios.remove(h)),
+                              onDelete: () => setModalState(() => controller.removeHorario(h)),
                             )),
                       const SizedBox(height: 16),
                     ],
@@ -286,43 +319,11 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        final erro = DocenteFormService.validateDocente(
-                          nome: nomeController.text,
-                          departamento: departamentoController.text,
-                          cargaMaxima: cargaMaximaController.text,
-                          disciplinas: disciplinas,
-                        );
-
-                        if (erro != null) {
-                          _mostrarFeedback(erro);
-                          return;
+                        if (onSubmit()) {
+                          Navigator.pop(context);
                         }
-
-                        setState(() {
-                          _docentes.insert(
-                            0,
-                            DocenteFormService.createDocente(
-                              id: _gerarProximoIdDocente(),
-                              nome: nomeController.text.trim(),
-                              email: emailController.text,
-                              departamento: departamentoController.text.trim(),
-                              cargaMaxima: cargaMaximaController.text,
-                              disciplinas: disciplinas,
-                              horarios: horarios,
-                            ),
-                          );
-                        });
-                        _saveData();
-                        AppEventLogger.action('carga_docente_add_docente', details: {
-                          'nome': nomeController.text.trim(),
-                          'qtdDisciplinas': disciplinas.length,
-                          'qtdHorarios': horarios.length,
-                        });
-
-                        Navigator.pop(context);
-                        _mostrarFeedback('Docente adicionado com sucesso!');
                       },
-                      child: const Text('Adicionar'),
+                      child: Text(confirmLabel),
                     ),
                   ),
                 ],
@@ -330,11 +331,12 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
             ],
           ),
         ),
+        ),
       ),
     );
   }
 
-  void _showAdicionarDisciplina(BuildContext context, List<String> disciplinas, StateSetter setState) {
+  void _showAdicionarDisciplina(BuildContext context, DocenteFormController controller, StateSetter setState) {
     final disciplinaController = TextEditingController();
     showDialog(
       context: context,
@@ -355,15 +357,12 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
           TextButton(
             onPressed: () {
               final disciplina = disciplinaController.text.trim();
-              final erro = DocenteFormService.validateDisciplina(
-                disciplina: disciplina,
-                disciplinasExistentes: disciplinas,
-              );
+              final erro = controller.validateDisciplina(disciplina);
               if (erro != null) {
                 _mostrarFeedback(erro);
                 return;
               }
-              setState(() => disciplinas.add(disciplina));
+              setState(() => controller.addDisciplina(disciplina));
               Navigator.pop(context);
             },
             child: const Text('Adicionar'),
@@ -373,7 +372,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     );
   }
 
-  void _showAdicionarHorario(BuildContext context, List<HorarioAula> horarios, StateSetter setModalState) {
+  void _showAdicionarHorario(BuildContext context, DocenteFormController controller, StateSetter setModalState) {
     String diaSelecionado = _diasSemana.first;
     String modalidadeSelecionada = _modalidades.first;
     final inicioController = TextEditingController();
@@ -450,16 +449,13 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
               onPressed: () {
                 final inicio = inicioController.text.trim();
                 final fim = fimController.text.trim();
-                final erro = DocenteFormService.validateHorario(
-                  inicio: inicio,
-                  fim: fim,
-                );
+                final erro = controller.validateHorario(inicio: inicio, fim: fim);
                 if (erro != null) {
                   _mostrarFeedback(erro);
                   return;
                 }
 
-                setModalState(() => horarios.add(DocenteFormService.createHorario(
+                setModalState(() => controller.addHorario(controller.createHorario(
                   diaSemana: diaSelecionado,
                   inicio: inicio,
                   fim: fim,
@@ -484,162 +480,35 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   }
 
   void _showEditarDocente(BuildContext context, Docente docente) {
-    final textTheme = Theme.of(context).textTheme;
-    final nomeController = TextEditingController(text: docente.nome);
-    final emailController = TextEditingController(text: docente.userEmail ?? '');
-    final departamentoController = TextEditingController(text: docente.departamento);
-    final cargaMaximaController = TextEditingController(text: docente.cargaMaxima.toString());
-    final List<String> disciplinas = List<String>.from(docente.disciplinas);
-    final List<HorarioAula> horarios = List<HorarioAula>.from(docente.horariosAula);
+    final controller = DocenteFormController.fromDocente(docente);
 
-    showModalBottomSheet(
+    _showDocenteFormSheet(
       context: context,
-      isScrollControlled: true,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) => Container(
-          padding: const EdgeInsets.all(24),
-          height: MediaQuery.of(context).size.height * 0.9,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Editar Docente', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextField(
-                        controller: nomeController,
-                        decoration: const InputDecoration(labelText: 'Nome Completo', hintText: 'Digite o nome do docente'),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(labelText: 'Email de acesso', hintText: 'docente@univ.br'),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: departamentoController,
-                        decoration: const InputDecoration(labelText: 'Departamento', hintText: 'Digite o departamento'),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: cargaMaximaController,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(labelText: 'Carga Horária Máxima (horas)', hintText: 'Ex: 20'),
-                      ),
-                      const SizedBox(height: 16),
-                      Text('Disciplinas', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          ...disciplinas.map((d) => Chip(
-                                label: Text(d),
-                                onDeleted: () => setModalState(() => disciplinas.remove(d)),
-                              )),
-                          ActionChip(
-                            label: const Text('Adicionar'),
-                            onPressed: () => _showAdicionarDisciplina(context, disciplinas, setModalState),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Horários de Aula', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
-                          TextButton.icon(
-                            icon: const Icon(Icons.add, size: 16),
-                            label: const Text('Adicionar'),
-                            onPressed: () => _showAdicionarHorario(context, horarios, setModalState),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      if (horarios.isEmpty)
-                        Text('Nenhum horário cadastrado', style: textTheme.bodySmall?.copyWith(color: SigadColors.muted))
-                      else
-                        ...horarios.map((h) => _HorarioTile(
-                              horario: h,
-                              textTheme: textTheme,
-                              onDelete: () => setModalState(() => horarios.remove(h)),
-                            )),
-                      const SizedBox(height: 16),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancelar'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        final erro = DocenteFormService.validateDocente(
-                          nome: nomeController.text,
-                          departamento: departamentoController.text,
-                          cargaMaxima: cargaMaximaController.text,
-                          disciplinas: disciplinas,
-                        );
+      title: 'Editar Docente',
+      confirmLabel: 'Salvar',
+      controller: controller,
+      onSubmit: () {
+        final erro = controller.validate();
+        if (erro != null) {
+          _mostrarFeedback(erro);
+          return false;
+        }
 
-                        if (erro != null) {
-                          _mostrarFeedback(erro);
-                          return;
-                        }
-
-                        setState(() {
-                          final index = _docentes.indexWhere((item) => item.id == docente.id);
-                          if (index >= 0) {
-                            _docentes[index] = DocenteFormService.updateDocente(
-                              docente: docente,
-                              nome: nomeController.text.trim(),
-                              email: emailController.text,
-                              departamento: departamentoController.text.trim(),
-                              cargaMaxima: cargaMaximaController.text,
-                              horarios: horarios,
-                              disciplinas: disciplinas,
-                            );
-                          }
-                        });
-                        _saveData();
-                        AppEventLogger.action('carga_docente_edit_docente', details: {
-                          'docenteId': docente.id,
-                          'nome': nomeController.text.trim(),
-                          'qtdHorarios': horarios.length,
-                        });
-
-                        Navigator.pop(context);
-                        _mostrarFeedback('Docente atualizado com sucesso!');
-                      },
-                      child: const Text('Salvar'),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
+        setState(() {
+          final index = _docentes.indexWhere((item) => item.id == docente.id);
+          if (index >= 0) {
+            _docentes[index] = controller.buildUpdatedDocente(docente);
+          }
+        });
+        _saveData();
+        AppEventLogger.action('carga_docente_edit_docente', details: {
+          'docenteId': docente.id,
+          'nome': controller.nomeController.text.trim(),
+          'qtdHorarios': controller.horarios.length,
+        });
+        _mostrarFeedback('Docente atualizado com sucesso!');
+        return true;
+      },
     );
   }
 
