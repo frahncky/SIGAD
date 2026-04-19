@@ -55,7 +55,11 @@ class _LoginPageState extends State<LoginPage> {
                           return Row(
                             children: [
                               Expanded(child: _buildIntro()),
-                              const SizedBox(width: 20),
+                              Container(
+                                width: 1,
+                                margin: const EdgeInsets.symmetric(horizontal: 20),
+                                color: SigadColors.divider,
+                              ),
                               Expanded(child: _buildForm(context)),
                             ],
                           );
@@ -63,7 +67,10 @@ class _LoginPageState extends State<LoginPage> {
                         return Column(
                           children: [
                             _buildIntro(),
-                            const SizedBox(height: 18),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 18),
+                              child: Divider(height: 1, color: SigadColors.divider),
+                            ),
                             _buildForm(context),
                           ],
                         );
@@ -80,127 +87,111 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildIntro() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: SigadColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: SigadColors.divider),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const BrandTitle(),
-          const SizedBox(height: 18),
-          Text(
-            'Acesso por perfil',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const BrandTitle(),
+        const SizedBox(height: 18),
+        Text(
+          'Acesso por perfil',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+        ),
+        const SizedBox(height: 14),
+        Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: UserRole.values
+              .map(
+                (role) => _RolePill(
+                  role: role,
+                  selected: _selectedRole == role,
+                  onTap: () => setState(() => _selectedRole = role),
                 ),
-          ),
-          const SizedBox(height: 14),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: UserRole.values
-                .map(
-                  (role) => _RolePill(
-                    role: role,
-                    selected: _selectedRole == role,
-                    onTap: () => setState(() => _selectedRole = role),
-                  ),
-                )
-                .toList(),
-          ),
-        ],
-      ),
+              )
+              .toList(),
+        ),
+      ],
     );
   }
 
   Widget _buildForm(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: SigadColors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: SigadColors.divider),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Entrar no SIGAD',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Entrar no SIGAD',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+        ),
+        const SizedBox(height: 16),
+        AutofillGroup(
+          child: Column(
+            children: [
+              TextField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
+                autofillHints: const [AutofillHints.username, AutofillHints.email],
+                autocorrect: false,
+                decoration: const InputDecoration(
+                  labelText: 'Email institucional',
+                  hintText: 'nome@instituicao.edu.br',
+                  prefixIcon: Icon(Icons.email_outlined),
                 ),
-          ),
-          const SizedBox(height: 16),
-          AutofillGroup(
-            child: Column(
-              children: [
-                TextField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
-                  autofillHints: const [AutofillHints.username, AutofillHints.email],
-                  autocorrect: false,
-                  decoration: const InputDecoration(
-                    labelText: 'Email institucional',
-                    hintText: 'nome@instituicao.edu.br',
-                    prefixIcon: Icon(Icons.email_outlined),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  textInputAction: TextInputAction.done,
-                  autofillHints: const [AutofillHints.password],
-                  onSubmitted: (_) {
-                    if (!_isLoading) _handleLogin();
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Senha',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                      tooltip: _obscurePassword ? 'Mostrar senha' : 'Ocultar senha',
-                      icon: Icon(
-                        _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                      ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _passwordController,
+                obscureText: _obscurePassword,
+                textInputAction: TextInputAction.done,
+                autofillHints: const [AutofillHints.password],
+                onSubmitted: (_) {
+                  if (!_isLoading) _handleLogin();
+                },
+                decoration: InputDecoration(
+                  labelText: 'Senha',
+                  prefixIcon: const Icon(Icons.lock_outline),
+                  suffixIcon: IconButton(
+                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                    tooltip: _obscurePassword ? 'Mostrar senha' : 'Ocultar senha',
+                    icon: Icon(
+                      _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          const SizedBox(height: 18),
-          SizedBox(
-            width: double.infinity,
-            height: 46,
-            child: FilledButton(
-              onPressed: _isLoading ? null : _handleLogin,
-              child: _isLoading
-                  ? const SizedBox(
-                      width: 22,
-                      height: 22,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Entrar'),
-            ),
+        ),
+        const SizedBox(height: 18),
+        SizedBox(
+          width: double.infinity,
+          height: 46,
+          child: FilledButton(
+            onPressed: _isLoading ? null : _handleLogin,
+            child: _isLoading
+                ? const SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Entrar'),
           ),
-          const SizedBox(height: 10),
-          SizedBox(
-            width: double.infinity,
-            height: 46,
-            child: OutlinedButton.icon(
-              onPressed: _isLoading ? null : _handleDemoLogin,
-              icon: const Icon(Icons.bolt_outlined),
-              label: const Text('Acesso demo do perfil selecionado'),
-            ),
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          width: double.infinity,
+          height: 46,
+          child: OutlinedButton.icon(
+            onPressed: _isLoading ? null : _handleDemoLogin,
+            icon: const Icon(Icons.bolt_outlined),
+            label: const Text('Acesso demo do perfil selecionado'),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
