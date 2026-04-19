@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/models/user_role.dart';
+import '../../../../core/services/app_event_logger.dart';
+import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/local_storage_service.dart';
 import '../../../../core/services/user_context_provider.dart';
 
@@ -271,7 +273,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   }
 
   void _mostrarFeedback(String mensagem) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensagem)));
+    AppFeedbackService.info(context, mensagem);
   }
 
   void _showAdicionarDocente(BuildContext context) {
@@ -416,6 +418,11 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                           );
                         });
                         _saveData();
+                        AppEventLogger.action('carga_docente_add_docente', details: {
+                          'nome': nomeController.text.trim(),
+                          'qtdDisciplinas': disciplinas.length,
+                          'qtdHorarios': horarios.length,
+                        });
 
                         Navigator.pop(context);
                         _mostrarFeedback('Docente adicionado com sucesso!');
@@ -453,9 +460,15 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
           TextButton(
             onPressed: () {
               final disciplina = disciplinaController.text.trim();
-              if (disciplina.isNotEmpty && !disciplinas.contains(disciplina)) {
-                setState(() => disciplinas.add(disciplina));
+              if (disciplina.isEmpty) {
+                _mostrarFeedback('Informe o nome da disciplina.');
+                return;
               }
+              if (disciplinas.contains(disciplina)) {
+                _mostrarFeedback('Disciplina já adicionada.');
+                return;
+              }
+              setState(() => disciplinas.add(disciplina));
               Navigator.pop(context);
             },
             child: const Text('Adicionar'),
@@ -542,7 +555,17 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
               onPressed: () {
                 final inicio = inicioController.text.trim();
                 final fim = fimController.text.trim();
-                if (inicio.isEmpty || fim.isEmpty) return;
+                if (inicio.isEmpty || fim.isEmpty) {
+                  _mostrarFeedback('Informe horário de início e fim.');
+                  return;
+                }
+
+                final horarioRegex = RegExp(r'^([01]\d|2[0-3]):[0-5]\d$');
+                if (!horarioRegex.hasMatch(inicio) || !horarioRegex.hasMatch(fim)) {
+                  _mostrarFeedback('Use o formato HH:MM para os horários.');
+                  return;
+                }
+
                 setModalState(() => horarios.add(_HorarioAula(
                   diaSemana: diaSelecionado,
                   inicio: inicio,
@@ -552,6 +575,11 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                   turma: turmaController.text.trim().isEmpty ? null : turmaController.text.trim(),
                   modalidade: modalidadeSelecionada,
                 )));
+                AppEventLogger.action('carga_docente_add_horario', details: {
+                  'diaSemana': diaSelecionado,
+                  'inicio': inicio,
+                  'fim': fim,
+                });
                 Navigator.pop(context);
               },
               child: const Text('Adicionar'),
@@ -703,6 +731,11 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                           }
                         });
                         _saveData();
+                        AppEventLogger.action('carga_docente_edit_docente', details: {
+                          'docenteId': docente.id,
+                          'nome': nomeController.text.trim(),
+                          'qtdHorarios': horarios.length,
+                        });
 
                         Navigator.pop(context);
                         _mostrarFeedback('Docente atualizado com sucesso!');
@@ -736,6 +769,10 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                 _docentes.removeWhere((item) => item.id == docente.id);
               });
               _saveData();
+              AppEventLogger.action('carga_docente_remove_docente', details: {
+                'docenteId': docente.id,
+                'nome': docente.nome,
+              });
               Navigator.pop(context);
               _mostrarFeedback('Docente excluído com sucesso!');
             },
@@ -844,129 +881,134 @@ class _DocenteCardState extends State<_DocenteCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        GestureDetector(
-          onTap: podeVisualizarHorarios ? () => setState(() => _isExpanded = !_isExpanded) : null,
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: SigadColors.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: SigadColors.divider),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            docente.nome,
-                            style: textTheme.labelLarge?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            docente.departamento,
-                            style: textTheme.bodySmall?.copyWith(
-                              color: SigadColors.muted,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (podeVisualizarHorarios)
-                      Icon(
-                        _isExpanded ? Icons.expand_less : Icons.expand_more,
-                        color: SigadColors.muted,
-                      ),
-                    if (widget.canManage)
-                      PopupMenuButton<String>(
-                        onSelected: _onMenuItemSelected,
-                        itemBuilder: (context) => [
-                          const PopupMenuItem(
-                            value: 'editar',
-                            child: Row(
-                              children: [
-                                Icon(Icons.edit, size: 18),
-                                SizedBox(width: 8),
-                                Text('Editar'),
-                              ],
-                            ),
-                          ),
-                          const PopupMenuItem(
-                            value: 'excluir',
-                            child: Row(
-                              children: [
-                                Icon(Icons.delete, color: Colors.red, size: 18),
-                                SizedBox(width: 8),
-                                Text('Excluir', style: TextStyle(color: Colors.red)),
-                              ],
-                            ),
-                          ),
-                        ],
-                        icon: const Icon(Icons.more_vert, size: 18),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Carga horária: ${docente.cargaHoraria}h',
-                  style: textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: docente.disciplinas
-                      .map((d) => Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: SigadColors.brand.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              d,
-                              style: textTheme.labelSmall?.copyWith(
-                                color: SigadColors.brand,
-                              ),
-                            ),
-                          ))
-                      .toList(),
-                ),
-                if (_isExpanded && podeVisualizarHorarios && docente.horariosAula.isNotEmpty) ...[
-                  const SizedBox(height: 16),
-                  Divider(color: SigadColors.divider.withValues(alpha: 0.5)),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Distribuição semanal',
-                    style: textTheme.labelSmall?.copyWith(
-                      color: SigadColors.muted,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  _MapaSemanalHorarios(
-                    horarios: docente.horariosAula,
-                    compacto: true,
+        Semantics(
+          button: podeVisualizarHorarios,
+          label: 'Docente ${docente.nome}. Carga horária ${docente.cargaHoraria} horas.',
+          hint: podeVisualizarHorarios ? 'Toque para expandir distribuição semanal.' : null,
+          child: GestureDetector(
+            onTap: podeVisualizarHorarios ? () => setState(() => _isExpanded = !_isExpanded) : null,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: SigadColors.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: SigadColors.divider),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
                   ),
                 ],
-              ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              docente.nome,
+                              style: textTheme.labelLarge?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              docente.departamento,
+                              style: textTheme.bodySmall?.copyWith(
+                                color: SigadColors.muted,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (podeVisualizarHorarios)
+                        Icon(
+                          _isExpanded ? Icons.expand_less : Icons.expand_more,
+                          color: SigadColors.muted,
+                        ),
+                      if (widget.canManage)
+                        PopupMenuButton<String>(
+                          onSelected: _onMenuItemSelected,
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(
+                              value: 'editar',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.edit, size: 18),
+                                  SizedBox(width: 8),
+                                  Text('Editar'),
+                                ],
+                              ),
+                            ),
+                            const PopupMenuItem(
+                              value: 'excluir',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.delete, color: Colors.red, size: 18),
+                                  SizedBox(width: 8),
+                                  Text('Excluir', style: TextStyle(color: Colors.red)),
+                                ],
+                              ),
+                            ),
+                          ],
+                          icon: const Icon(Icons.more_vert, size: 18),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Carga horária: ${docente.cargaHoraria}h',
+                    style: textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: docente.disciplinas
+                        .map((d) => Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: SigadColors.brand.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                d,
+                                style: textTheme.labelSmall?.copyWith(
+                                  color: SigadColors.brand,
+                                ),
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                  if (_isExpanded && podeVisualizarHorarios && docente.horariosAula.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    Divider(color: SigadColors.divider.withValues(alpha: 0.5)),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Distribuição semanal',
+                      style: textTheme.labelSmall?.copyWith(
+                        color: SigadColors.muted,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    _MapaSemanalHorarios(
+                      horarios: docente.horariosAula,
+                      compacto: true,
+                    ),
+                  ],
+                ],
+              ),
             ),
           ),
         ),

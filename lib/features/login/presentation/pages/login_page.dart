@@ -4,6 +4,8 @@ import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/models/user.dart';
 import '../../../../core/models/user_role.dart';
+import '../../../../core/services/app_event_logger.dart';
+import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../../../../shared/widgets/brand_title.dart';
 
@@ -134,6 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
+                enableSuggestions: false,
                 autofillHints: const [AutofillHints.username, AutofillHints.email],
                 autocorrect: false,
                 decoration: const InputDecoration(
@@ -196,15 +199,34 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleLogin() async {
-    if (_emailController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {
-      _showSnackBar('Preencha email e senha.');
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      _showWarning('Preencha email e senha.');
+      return;
+    }
+
+    final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+    if (!emailRegex.hasMatch(email)) {
+      _showWarning('Informe um email válido.');
+      return;
+    }
+
+    if (password.length < 4) {
+      _showWarning('A senha deve ter pelo menos 4 caracteres.');
       return;
     }
 
     if (_selectedRole == null) {
-      _showSnackBar('Selecione um perfil.');
+      _showWarning('Selecione um perfil.');
       return;
     }
+
+    AppEventLogger.action('login_attempt', details: {
+      'email': email,
+      'role': _selectedRole!.name,
+    });
 
     setState(() => _isLoading = true);
 
@@ -213,8 +235,8 @@ class _LoginPageState extends State<LoginPage> {
 
       final user = User(
         id: 'user_${DateTime.now().millisecondsSinceEpoch}',
-        name: _emailController.text.trim().split('@').first,
-        email: _emailController.text.trim(),
+        name: email.split('@').first,
+        email: email,
         role: _selectedRole!,
         createdAt: DateTime.now(),
         lastLogin: DateTime.now(),
@@ -222,8 +244,16 @@ class _LoginPageState extends State<LoginPage> {
 
       if (!mounted) return;
       await context.read<UserContextProvider>().login(user);
+      AppEventLogger.action('login_success', details: {
+        'userId': user.id,
+        'role': user.role.name,
+      });
       if (!mounted) return;
       Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
+    } catch (error, stackTrace) {
+      AppEventLogger.error('login_error', error, stackTrace: stackTrace);
+      if (!mounted) return;
+      _showError('Não foi possível entrar. Tente novamente.');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -231,9 +261,13 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _handleDemoLogin() async {
     if (_selectedRole == null) {
-      _showSnackBar('Selecione um perfil para usar demo.');
+      _showWarning('Selecione um perfil para usar demo.');
       return;
     }
+
+    AppEventLogger.action('demo_login_attempt', details: {
+      'role': _selectedRole!.name,
+    });
 
     setState(() => _isLoading = true);
     try {
@@ -251,8 +285,16 @@ class _LoginPageState extends State<LoginPage> {
 
       if (!mounted) return;
       await context.read<UserContextProvider>().login(user);
+      AppEventLogger.action('demo_login_success', details: {
+        'userId': user.id,
+        'role': user.role.name,
+      });
       if (!mounted) return;
       Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
+    } catch (error, stackTrace) {
+      AppEventLogger.error('demo_login_error', error, stackTrace: stackTrace);
+      if (!mounted) return;
+      _showError('Não foi possível entrar com acesso demo.');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -284,8 +326,12 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  void _showWarning(String message) {
+    AppFeedbackService.warning(context, message);
+  }
+
+  void _showError(String message) {
+    AppFeedbackService.error(context, message);
   }
 }
 
@@ -302,24 +348,29 @@ class _RolePill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-        decoration: BoxDecoration(
-          color: selected ? SigadColors.brand.withValues(alpha: 0.14) : SigadColors.surfaceAlt,
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(
-            color: selected ? SigadColors.brand : SigadColors.divider,
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: 'Perfil ${role.displayName}',
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+          decoration: BoxDecoration(
+            color: selected ? SigadColors.brand.withValues(alpha: 0.14) : SigadColors.surfaceAlt,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+              color: selected ? SigadColors.brand : SigadColors.divider,
+            ),
           ),
-        ),
-        child: Text(
-          role.displayName,
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-                color: selected ? SigadColors.brand : SigadColors.ink,
-              ),
+          child: Text(
+            role.displayName,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                  color: selected ? SigadColors.brand : SigadColors.ink,
+                ),
+          ),
         ),
       ),
     );

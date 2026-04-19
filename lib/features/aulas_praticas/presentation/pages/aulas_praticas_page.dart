@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/models/user_role.dart';
+import '../../../../core/services/app_event_logger.dart';
+import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../../../../core/services/local_storage_service.dart';
 
@@ -304,6 +306,14 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         });
         _saveData();
 
+        AppEventLogger.action('reserva_create', details: {
+          'laboratorio': _laboratorioSelecionadoValido,
+          'diaSemana': diaSemana,
+          'turno': turno.name,
+          'periodo': periodo,
+          'professor': user.name,
+        });
+
         _showInfo('Horário reservado com sucesso.');
         return;
       }
@@ -328,9 +338,18 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       });
       _saveData();
 
+      AppEventLogger.action('reserva_remove', details: {
+        'reservaId': reservaAtual.id,
+        'laboratorio': reservaAtual.laboratorio,
+        'diaSemana': reservaAtual.diaSemana,
+        'turno': reservaAtual.turno.name,
+        'periodo': reservaAtual.periodo,
+      });
+
       _showInfo('Reserva removida.');
-    } catch (_) {
-      _showInfo('Não foi possível concluir a operação. Tente novamente.');
+    } catch (error, stackTrace) {
+      AppEventLogger.error('reserva_error', error, stackTrace: stackTrace);
+      _showError('Não foi possível concluir a operação. Tente novamente.');
     }
   }
 
@@ -381,7 +400,12 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
   void _showInfo(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    AppFeedbackService.info(context, message);
+  }
+
+  void _showError(String message) {
+    if (!mounted) return;
+    AppFeedbackService.error(context, message);
   }
 
   String _diaCompleto(String diaSemana) {
@@ -831,9 +855,14 @@ class _GradeReservaCell extends StatelessWidget {
     final livre = reserva == null;
     final tone = livre ? SigadColors.success : SigadColors.warning;
     final background = livre ? SigadColors.successSoft.withValues(alpha: 0.55) : SigadColors.accentSoft.withValues(alpha: 0.70);
-    return InkWell(
-      onTap: podeEditar ? () => onTapCelula(diaSemana, turno, periodo, reserva) : null,
-      child: Container(
+    return Semantics(
+      button: podeEditar,
+      label: 'Célula $diaSemana, ${turno.label}, período $periodo, horário $horario.',
+      value: livre ? 'Livre' : 'Reservado por ${reserva!.professor}',
+      hint: podeEditar ? 'Toque para reservar ou remover reserva.' : null,
+      child: InkWell(
+        onTap: podeEditar ? () => onTapCelula(diaSemana, turno, periodo, reserva) : null,
+        child: Container(
         width: width,
         height: height,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
@@ -935,6 +964,7 @@ class _GradeReservaCell extends StatelessWidget {
             ],
           ],
         ),
+      ),
       ),
     );
   }
