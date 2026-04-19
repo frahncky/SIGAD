@@ -4,8 +4,10 @@ import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/models/navigation_item.dart';
 import '../../../../core/navigation/navigation_items.dart';
+import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/chat_provider.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../configuracoes/domain/agenda_convites_service.dart';
 import '../../../../shared/widgets/brand_title.dart';
 
 class HomeShellPage extends StatelessWidget {
@@ -170,6 +172,8 @@ class HomeShellPage extends StatelessWidget {
   }
 
   void _showNotifications(BuildContext context) {
+    final user = context.read<UserContextProvider>().currentUser;
+
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
@@ -178,20 +182,47 @@ class HomeShellPage extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text('Notificações', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-            SizedBox(height: 16),
-            ListTile(
+          children: [
+            const Text('Notificações', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 16),
+            const ListTile(
               contentPadding: EdgeInsets.zero,
               leading: Icon(Icons.assignment_late_outlined),
               title: Text('2 demandas aguardam revisão'),
               subtitle: Text('Atualizado há 5 minutos'),
             ),
-            ListTile(
+            const ListTile(
               contentPadding: EdgeInsets.zero,
               leading: Icon(Icons.calendar_today_outlined),
               title: Text('Reserva de laboratório para amanhã'),
               subtitle: Text('Laboratório 03, turno matutino'),
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.event_outlined),
+              title: const Text('Convite: reunião pedagógica'),
+              subtitle: const Text('Hoje, 16:30 · Sala de reuniões do bloco A'),
+              trailing: FilledButton.tonal(
+                onPressed: user == null
+                    ? null
+                    : () async {
+                        await AgendaConvitesService.registrarConviteRecebido(
+                          destinatarioUserId: user.id,
+                          titulo: 'Reunião pedagógica',
+                          descricao: 'Discussão de planejamento de aulas e atividades integradas.',
+                          inicio: 'Hoje, 16:30',
+                          local: 'Sala de reuniões do bloco A',
+                          origem: 'Convite de reunião',
+                        );
+                        if (!context.mounted) return;
+                        Navigator.pop(context);
+                        AppFeedbackService.success(
+                          context,
+                          'Convite adicionado na sua agenda de compromissos.',
+                        );
+                      },
+                child: const Text('Adicionar'),
+              ),
             ),
           ],
         ),

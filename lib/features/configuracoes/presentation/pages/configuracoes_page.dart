@@ -5,6 +5,7 @@ import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/security/authorization_policy.dart';
 import '../../../../core/services/app_health_service.dart';
 import '../../../../core/services/app_feedback_service.dart';
+import '../../../../core/models/user_role.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../../data/configuracoes_repository.dart';
 import '../../domain/configuracoes_models.dart';
@@ -19,6 +20,8 @@ class ConfiguracoesPage extends StatefulWidget {
 
 class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
   bool _notificacoesAtivas = ConfiguracoesService.defaultData().notificacoesAtivas;
+  bool _notificarAntesDaDisciplina = ConfiguracoesService.defaultData().notificarAntesDaDisciplina;
+  int _antecedenciaNotificacaoMinutos = ConfiguracoesService.defaultData().antecedenciaNotificacaoMinutos;
   bool _modoDark = ConfiguracoesService.defaultData().modoDark;
   bool _biometriaAtiva = ConfiguracoesService.defaultData().biometriaAtiva;
   bool _backupAutomaticoAtivo = ConfiguracoesService.defaultData().backupAutomaticoAtivo;
@@ -31,6 +34,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
   String _proximoBackup = ConfiguracoesService.defaultData().proximoBackup;
   String _ultimoBackup = ConfiguracoesService.defaultData().ultimoBackup;
   int _problemasReportados = ConfiguracoesService.defaultData().problemasReportados;
+  List<CompromissoAgenda> _agendaCompromissos = ConfiguracoesService.defaultData().agendaCompromissos;
 
   final ConfiguracoesRepository _configuracoesRepository = ConfiguracoesRepository();
 
@@ -45,6 +49,8 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
     if (data == null) return;
     setState(() {
       _notificacoesAtivas = data.notificacoesAtivas;
+      _notificarAntesDaDisciplina = data.notificarAntesDaDisciplina;
+      _antecedenciaNotificacaoMinutos = data.antecedenciaNotificacaoMinutos;
       _modoDark = data.modoDark;
       _biometriaAtiva = data.biometriaAtiva;
       _backupAutomaticoAtivo = data.backupAutomaticoAtivo;
@@ -57,6 +63,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
       _proximoBackup = data.proximoBackup;
       _ultimoBackup = data.ultimoBackup;
       _problemasReportados = data.problemasReportados;
+      _agendaCompromissos = data.agendaCompromissos;
     });
   }
 
@@ -64,6 +71,8 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
     _configuracoesRepository.save(
       ConfiguracoesData(
         notificacoesAtivas: _notificacoesAtivas,
+        notificarAntesDaDisciplina: _notificarAntesDaDisciplina,
+        antecedenciaNotificacaoMinutos: _antecedenciaNotificacaoMinutos,
         modoDark: _modoDark,
         biometriaAtiva: _biometriaAtiva,
         backupAutomaticoAtivo: _backupAutomaticoAtivo,
@@ -76,6 +85,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
         proximoBackup: _proximoBackup,
         ultimoBackup: _ultimoBackup,
         problemasReportados: _problemasReportados,
+        agendaCompromissos: _agendaCompromissos,
       ),
     );
   }
@@ -87,47 +97,53 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
   @override
   Widget build(BuildContext context) {
     final role = context.watch<UserContextProvider>().userRole;
-    if (!AuthorizationPolicy.canManageConfiguracoes(role)) {
+    if (!AuthorizationPolicy.canAccessConfiguracoes(role)) {
       return const _ConfiguracoesAccessDenied();
     }
+    final canManage = AuthorizationPolicy.canManageConfiguracoes(role);
+    final userId = context.watch<UserContextProvider>().currentUser?.id ?? '';
 
     final health = AppHealthService.snapshot();
     final topErrors = health.errorsByFeature.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
     final topFlows = health.eventsByFlow.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
+    final compromissosUsuario = _agendaCompromissos
+      .where((item) => item.destinatarioUserId.isEmpty || item.destinatarioUserId == userId)
+      .toList(growable: false);
 
     return Scaffold(
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 16),
         children: [
-          _ConfigSection(
-            titulo: 'Saúde Operacional',
-            children: [
-              _ConfigItem(
-                icon: Icons.monitor_heart_outlined,
-                titulo: 'Resumo da execução',
-                subtitulo: 'Ações: ${health.totalActions} | Erros: ${health.totalErrors}',
-                onTap: () => _mostrarFeedback('Saúde operacional atualizada'),
-              ),
-              _ConfigItem(
-                icon: Icons.warning_amber_outlined,
-                titulo: 'Erros por feature',
-                subtitulo: topErrors.isEmpty
-                    ? 'Sem erros registrados na sessão'
-                    : topErrors.take(3).map((e) => '${e.key}: ${e.value}').join(' | '),
-                onTap: () => _mostrarFeedback('Painel de erros por feature atualizado'),
-              ),
-              _ConfigItem(
-                icon: Icons.route_outlined,
-                titulo: 'Fluxos mais acionados',
-                subtitulo: topFlows.isEmpty
-                    ? 'Sem fluxos registrados na sessão'
-                    : topFlows.take(3).map((e) => '${e.key}: ${e.value}').join(' | '),
-                onTap: () => _mostrarFeedback('Painel de fluxos atualizado'),
-              ),
-            ],
-          ),
+          if (canManage)
+            _ConfigSection(
+              titulo: 'Saúde Operacional',
+              children: [
+                _ConfigItem(
+                  icon: Icons.monitor_heart_outlined,
+                  titulo: 'Resumo da execução',
+                  subtitulo: 'Ações: ${health.totalActions} | Erros: ${health.totalErrors}',
+                  onTap: () => _mostrarFeedback('Saúde operacional atualizada'),
+                ),
+                _ConfigItem(
+                  icon: Icons.warning_amber_outlined,
+                  titulo: 'Erros por feature',
+                  subtitulo: topErrors.isEmpty
+                      ? 'Sem erros registrados na sessão'
+                      : topErrors.take(3).map((e) => '${e.key}: ${e.value}').join(' | '),
+                  onTap: () => _mostrarFeedback('Painel de erros por feature atualizado'),
+                ),
+                _ConfigItem(
+                  icon: Icons.route_outlined,
+                  titulo: 'Fluxos mais acionados',
+                  subtitulo: topFlows.isEmpty
+                      ? 'Sem fluxos registrados na sessão'
+                      : topFlows.take(3).map((e) => '${e.key}: ${e.value}').join(' | '),
+                  onTap: () => _mostrarFeedback('Painel de fluxos atualizado'),
+                ),
+              ],
+            ),
           _ConfigSection(
             titulo: 'Conta',
             children: [
@@ -184,6 +200,64 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                                   _saveData();
                 },
               ),
+            ],
+          ),
+          if (role == UserRole.professor)
+            _ConfigSection(
+              titulo: 'Disciplinas e lembretes',
+              children: [
+                _ConfigToggle(
+                  icon: Icons.schedule,
+                  titulo: 'Lembrete da próxima disciplina',
+                  subtitulo: _notificarAntesDaDisciplina
+                      ? 'Notificar $_antecedenciaNotificacaoMinutos min antes do início'
+                      : 'Lembrete desativado',
+                  value: _notificarAntesDaDisciplina,
+                  onChanged: (value) {
+                    setState(() => _notificarAntesDaDisciplina = value);
+                    _saveData();
+                  },
+                ),
+                if (_notificarAntesDaDisciplina)
+                  _ConfigDropdown(
+                    icon: Icons.timer_outlined,
+                    titulo: 'Antecedência do lembrete',
+                    valor: '$_antecedenciaNotificacaoMinutos min',
+                    opcoes: ConfiguracoesService.opcoesAntecedenciaMinutos
+                        .map((item) => '$item min')
+                        .toList(growable: false),
+                    onChanged: (valor) {
+                      final minutos = int.parse(valor.replaceAll(' min', ''));
+                      final erro = ConfiguracoesService.validarAntecedenciaDisciplina(minutos);
+                      if (erro != null) {
+                        _mostrarFeedback(erro);
+                        return;
+                      }
+                      setState(() => _antecedenciaNotificacaoMinutos = minutos);
+                      _saveData();
+                    },
+                  ),
+              ],
+            ),
+          _ConfigSection(
+            titulo: 'Agenda de compromissos',
+            children: [
+              _ConfigItem(
+                icon: Icons.event_note_outlined,
+                titulo: 'Convites recebidos',
+                subtitulo: compromissosUsuario.isEmpty
+                    ? 'Nenhum convite na agenda'
+                    : '${compromissosUsuario.length} compromisso(s) agendado(s)',
+                onTap: () => _mostrarFeedback('Agenda sincronizada'),
+              ),
+              ...compromissosUsuario.take(5).map(
+                    (compromisso) => _ConfigItem(
+                      icon: Icons.event_available_outlined,
+                      titulo: compromisso.titulo,
+                      subtitulo: '${compromisso.inicio} · ${compromisso.local}',
+                      onTap: () => _showDetalhesCompromisso(context, compromisso),
+                    ),
+                  ),
             ],
           ),
           _ConfigSection(
@@ -275,6 +349,39 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showDetalhesCompromisso(BuildContext context, CompromissoAgenda compromisso) {
+    final textTheme = Theme.of(context).textTheme;
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              compromisso.titulo,
+              style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 12),
+            _DetailSection(label: 'Início', value: compromisso.inicio),
+            _DetailSection(label: 'Local', value: compromisso.local),
+            _DetailSection(label: 'Origem', value: compromisso.origem),
+            _DetailSection(label: 'Descrição', value: compromisso.descricao),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Fechar'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -968,7 +1075,7 @@ class _ConfiguracoesAccessDenied extends StatelessWidget {
             const Icon(Icons.lock_outline, size: 56),
             const SizedBox(height: 12),
             Text(
-              'Apenas chefia de departamento pode acessar configurações.',
+              'Faça login para acessar configurações.',
               style: Theme.of(context).textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),

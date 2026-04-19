@@ -14,4 +14,8 @@ abstract final class AuthorizationPolicy {
   static bool canManageConfiguracoes(UserRole? role) {
     return role == UserRole.chefeDepartamento;
   }
+
+  static bool canAccessConfiguracoes(UserRole? role) {
+    return role != null;
+  }
 }

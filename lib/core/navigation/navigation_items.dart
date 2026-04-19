@@ -52,6 +52,11 @@ const List<NavigationItem> kNavigationItems = [
     route: AppRoutes.configuracoes,
     label: 'Configurações',
     icon: Icons.settings_outlined,
-    availableFor: {UserRole.chefeDepartamento},
+    availableFor: {
+      UserRole.professor,
+      UserRole.coordenador,
+      UserRole.servidorAdministrativo,
+      UserRole.chefeDepartamento,
+    },
   ),
 ];

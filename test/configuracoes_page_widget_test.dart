@@ -84,4 +84,38 @@ void main() {
 
     expect(find.text('Informe um email válido'), findsOneWidget);
   });
+
+  testWidgets('professor vê configuração de lembrete de disciplina', (tester) async {
+    final userContext = UserContextProvider();
+    await userContext.login(
+      User(
+        id: 'cfg-prof-1',
+        name: 'Professor Teste',
+        email: 'professor@sigad.dev',
+        role: UserRole.professor,
+        createdAt: DateTime(2026, 1, 1),
+      ),
+    );
+
+    await tester.pumpWidget(
+      ChangeNotifierProvider<UserContextProvider>.value(
+        value: userContext,
+        child: MaterialApp(
+          theme: AppTheme.light(),
+          home: const ConfiguracoesPage(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(
+      find.text('Lembrete da próxima disciplina'),
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Lembrete da próxima disciplina'), findsOneWidget);
+    expect(find.text('Antecedência do lembrete'), findsOneWidget);
+  });
 }

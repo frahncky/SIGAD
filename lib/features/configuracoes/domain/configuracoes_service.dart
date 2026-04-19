@@ -1,9 +1,13 @@
 import 'configuracoes_models.dart';
 
 abstract final class ConfiguracoesService {
+  static const List<int> opcoesAntecedenciaMinutos = [5, 10, 15, 20, 30, 45, 60];
+
   static ConfiguracoesData defaultData() {
     return const ConfiguracoesData(
       notificacoesAtivas: true,
+      notificarAntesDaDisciplina: true,
+      antecedenciaNotificacaoMinutos: 15,
       modoDark: false,
       biometriaAtiva: false,
       backupAutomaticoAtivo: true,
@@ -16,7 +20,24 @@ abstract final class ConfiguracoesService {
       proximoBackup: '25/04/2026',
       ultimoBackup: '20/04/2026 às 14:30',
       problemasReportados: 0,
+      agendaCompromissos: [],
     );
+  }
+
+  static String? validarAntecedenciaDisciplina(int minutos) {
+    if (!opcoesAntecedenciaMinutos.contains(minutos)) {
+      return 'Selecione uma antecedência válida';
+    }
+    return null;
+  }
+
+  static ConfiguracoesData adicionarConviteNaAgenda({
+    required ConfiguracoesData data,
+    required CompromissoAgenda convite,
+  }) {
+    final compromissos = List<CompromissoAgenda>.from(data.agendaCompromissos)..add(convite);
+
+    return data.copyWith(agendaCompromissos: compromissos);
   }
 
   static String dataAtual() {
