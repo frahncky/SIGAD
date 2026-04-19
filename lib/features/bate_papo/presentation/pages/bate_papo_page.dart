@@ -4,6 +4,9 @@ import 'package:provider/provider.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/services/chat_provider.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../data/bate_papo_repository.dart';
+import '../../domain/bate_papo_service.dart';
+import '../../domain/conversation_summary.dart';
 
 class BatePapoPage extends StatefulWidget {
   const BatePapoPage({super.key});
@@ -35,12 +38,22 @@ class _BatePapoPageState extends State<BatePapoPage> {
     }
 
     final chatProvider = context.watch<ChatProvider>();
-    final allContacts = chatProvider.contactsFor(currentUser);
-    final allSummaries = _buildConversations(chatProvider, allContacts, currentUser.email);
+    final repository = BatePapoRepository(chatProvider);
+    final allContacts = repository.contactsFor(currentUser);
+    final allSummaries = BatePapoService.buildConversations(
+      allContacts
+          .map(
+            (contact) => ConversationSummary(
+              contact: contact,
+              messages: repository.messagesBetween(currentUser.email, contact.email),
+            ),
+          )
+          .toList(),
+    );
     // Only show conversations that have at least one message
     final conversations = allSummaries
         .where((item) => item.lastMessage != null)
-        .where((item) => _matchesConversationSearch(item, _conversationSearch))
+        .where((item) => BatePapoService.matchesConversationSearch(item, _conversationSearch))
         .toList();
     // Selected contact can be any contact (including one without messages)
     final selectedContact = _resolveSelectedContact(allContacts);
@@ -51,7 +64,7 @@ class _BatePapoPageState extends State<BatePapoPage> {
 
     final messages = selectedContact == null
         ? <ChatMessage>[]
-        : chatProvider.messagesBetween(currentUser.email, selectedContact.email);
+      : repository.messagesBetween(currentUser.email, selectedContact.email);
 
     void scheduleMarkRead(String contactEmail) {
       final key = '${currentUser.email}|$contactEmail';
@@ -106,7 +119,7 @@ class _BatePapoPageState extends State<BatePapoPage> {
                         selectedContact: selectedContact,
                         messages: messages,
                         controller: _messageController,
-                        onSend: () => _sendMessage(currentUser, selectedContact.email),
+                        onSend: () => _sendMessage(repository, currentUser, selectedContact.email),
                         onBack: null,
                       ),
               ),
@@ -137,7 +150,7 @@ class _BatePapoPageState extends State<BatePapoPage> {
           selectedContact: selectedContact,
           messages: messages,
           controller: _messageController,
-          onSend: () => _sendMessage(currentUser, selectedContact.email),
+          onSend: () => _sendMessage(repository, currentUser, selectedContact.email),
           onBack: () {
             setState(() => _mobileConversationOpen = false);
           },
@@ -168,59 +181,22 @@ class _BatePapoPageState extends State<BatePapoPage> {
     );
   }
 
-  List<_ConversationSummary> _buildConversations(
-    ChatProvider chatProvider,
-    List<ChatContact> contacts,
-    String currentUserEmail,
-  ) {
-    final items = contacts
-        .map(
-          (contact) => _ConversationSummary(
-            contact: contact,
-            messages: chatProvider.messagesBetween(currentUserEmail, contact.email),
-          ),
-        )
-        .toList();
-
-    items.sort((a, b) {
-      final lastA = a.lastMessage?.sentAt;
-      final lastB = b.lastMessage?.sentAt;
-      if (lastA != null && lastB != null) {
-        return lastB.compareTo(lastA);
-      }
-      if (lastA != null) return -1;
-      if (lastB != null) return 1;
-      return a.contact.name.toLowerCase().compareTo(b.contact.name.toLowerCase());
-    });
-
-    return items;
-  }
-
-  bool _matchesConversationSearch(_ConversationSummary item, String query) {
-    final search = query.trim().toLowerCase();
-    if (search.isEmpty) return true;
-
-    return item.contact.name.toLowerCase().contains(search) ||
-        item.contact.email.toLowerCase().contains(search) ||
-        item.contact.role.displayName.toLowerCase().contains(search);
-  }
-
   ChatContact? _resolveSelectedContact(List<ChatContact> allContacts) {
     if (allContacts.isEmpty) return null;
     return allContacts.where((c) => c.email == _selectedContactEmail).firstOrNull;
   }
 
-  void _sendMessage(currentUser, String recipientEmail) {
+  void _sendMessage(BatePapoRepository repository, currentUser, String recipientEmail) {
     final content = _messageController.text.trim();
     if (content.isEmpty) {
       return;
     }
 
-    context.read<ChatProvider>().sendMessage(
-          sender: currentUser,
-          recipientEmail: recipientEmail,
-          content: content,
-        );
+    repository.sendMessage(
+      sender: currentUser,
+      recipientEmail: recipientEmail,
+      content: content,
+    );
 
     _messageController.clear();
   }
@@ -236,7 +212,7 @@ class _ConversationListPanel extends StatelessWidget {
     required this.onNewConversation,
   });
 
-  final List<_ConversationSummary> conversations;
+  final List<ConversationSummary> conversations;
   final String? selectedContactEmail;
   final String searchValue;
   final ValueChanged<String> onSearchChanged;
@@ -331,7 +307,7 @@ class _ConversationTile extends StatelessWidget {
     required this.onTap,
   });
 
-  final _ConversationSummary conversation;
+  final ConversationSummary conversation;
   final bool selected;
   final VoidCallback onTap;
 
@@ -576,18 +552,6 @@ class _ChatPanel extends StatelessWidget {
   }
 }
 
-class _ConversationSummary {
-  const _ConversationSummary({
-    required this.contact,
-    required this.messages,
-  });
-
-  final ChatContact contact;
-  final List<ChatMessage> messages;
-
-  ChatMessage? get lastMessage => messages.isEmpty ? null : messages.last;
-}
-
 // ─── Conversation list with sections ───────────────────────────────────────
 
 class _ConversationListView extends StatelessWidget {
@@ -597,7 +561,7 @@ class _ConversationListView extends StatelessWidget {
     required this.onSelect,
   });
 
-  final List<_ConversationSummary> conversations;
+  final List<ConversationSummary> conversations;
   final String? selectedContactEmail;
   final ValueChanged<String> onSelect;
 

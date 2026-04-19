@@ -9,6 +9,7 @@ import '../../../../core/services/user_context_provider.dart';
 import '../../../demandas/data/demanda_repository.dart';
 import '../../../kanban/data/kanban_repository.dart';
 import '../../domain/dashboard_priorities_service.dart';
+import '../../domain/dashboard_role_profile.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -17,7 +18,7 @@ class DashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final userContext = context.watch<UserContextProvider>();
     final role = userContext.userRole;
-    final profile = _RoleProfile.fromRole(role);
+    final profile = RoleProfile.fromRole(role);
     final userName = userContext.currentUser?.name ?? 'Usuário';
 
     final availableModules = kNavigationItems
@@ -68,7 +69,7 @@ class _HeroPanel extends StatelessWidget {
     required this.userName,
   });
 
-  final _RoleProfile profile;
+  final RoleProfile profile;
   final String userName;
 
   @override
@@ -297,7 +298,7 @@ class _ModuleCard extends StatelessWidget {
 class _PriorityList extends StatelessWidget {
   const _PriorityList({required this.items});
 
-  final List<_PriorityItem> items;
+  final List<PriorityItem> items;
 
   @override
   Widget build(BuildContext context) {
@@ -338,7 +339,7 @@ class _DynamicPriorityList extends StatefulWidget {
   });
 
   final UserRole? role;
-  final List<_PriorityItem> fallbackItems;
+  final List<PriorityItem> fallbackItems;
 
   @override
   State<_DynamicPriorityList> createState() => _DynamicPriorityListState();
@@ -347,7 +348,7 @@ class _DynamicPriorityList extends StatefulWidget {
 class _DynamicPriorityListState extends State<_DynamicPriorityList> {
   final DemandaRepository _demandaRepository = DemandaRepository();
   final KanbanRepository _kanbanRepository = KanbanRepository();
-  late Future<List<_PriorityItem>> _futureItems;
+  late Future<List<PriorityItem>> _futureItems;
 
   @override
   void initState() {
@@ -355,16 +356,16 @@ class _DynamicPriorityListState extends State<_DynamicPriorityList> {
     _futureItems = _buildDynamicItems();
   }
 
-  Future<List<_PriorityItem>> _buildDynamicItems() async {
+  Future<List<PriorityItem>> _buildDynamicItems() async {
     final demandas = await _demandaRepository.loadDemandas();
     final kanban = await _kanbanRepository.loadCards();
 
-    final items = <_PriorityItem>[];
+    final items = <PriorityItem>[];
 
     final demandasAtrasadas = DashboardPrioritiesService.countDemandasAtrasadas(demandas);
     if (demandasAtrasadas > 0) {
       items.add(
-        _PriorityItem(
+        PriorityItem(
           label: 'Resolver $demandasAtrasadas demanda(s) em atraso',
           icon: Icons.warning_amber_outlined,
           tone: SigadColors.risk,
@@ -375,7 +376,7 @@ class _DynamicPriorityListState extends State<_DynamicPriorityList> {
     final demandasAltasAbertas = DashboardPrioritiesService.countDemandasAltasAbertas(demandas);
     if (demandasAltasAbertas > 0) {
       items.add(
-        _PriorityItem(
+        PriorityItem(
           label: 'Tratar $demandasAltasAbertas demanda(s) de alta prioridade',
           icon: Icons.priority_high_outlined,
           tone: SigadColors.warning,
@@ -386,7 +387,7 @@ class _DynamicPriorityListState extends State<_DynamicPriorityList> {
     final cardsEmRevisao = DashboardPrioritiesService.countKanbanByColumn(kanban, 'Em Revisão');
     if (cardsEmRevisao > 0) {
       items.add(
-        _PriorityItem(
+        PriorityItem(
           label: 'Validar $cardsEmRevisao card(s) em revisão no Kanban',
           icon: Icons.rate_review_outlined,
           tone: SigadColors.info,
@@ -397,7 +398,7 @@ class _DynamicPriorityListState extends State<_DynamicPriorityList> {
     final cardsBacklogAlto = DashboardPrioritiesService.countKanbanBacklogHigh(kanban);
     if (cardsBacklogAlto > 0) {
       items.add(
-        _PriorityItem(
+        PriorityItem(
           label: 'Priorizar $cardsBacklogAlto card(s) críticos do backlog',
           icon: Icons.view_kanban_outlined,
           tone: SigadColors.brand,
@@ -414,7 +415,7 @@ class _DynamicPriorityListState extends State<_DynamicPriorityList> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<_PriorityItem>>(
+    return FutureBuilder<List<PriorityItem>>(
       future: _futureItems,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -456,135 +457,3 @@ class _AmbientBackground extends StatelessWidget {
   }
 }
 
-class _RoleMetric {
-  const _RoleMetric({
-    required this.label,
-    required this.value,
-    required this.icon,
-    required this.tone,
-  });
-
-  final String label;
-  final String value;
-  final IconData icon;
-  final Color tone;
-}
-
-class _PriorityItem {
-  const _PriorityItem({
-    required this.label,
-    required this.icon,
-    required this.tone,
-  });
-
-  final String label;
-  final IconData icon;
-  final Color tone;
-}
-
-class _RoleProfile {
-  const _RoleProfile({
-    required this.title,
-    required this.subtitle,
-    required this.tone,
-    required this.metrics,
-    required this.priorities,
-    required this.focus,
-  });
-
-  final String title;
-  final String subtitle;
-  final Color tone;
-  final List<_RoleMetric> metrics;
-  final List<_PriorityItem> priorities;
-  final List<String> focus;
-
-  static _RoleProfile fromRole(UserRole? role) {
-    switch (role) {
-      case UserRole.professor:
-        return _RoleProfile(
-          title: 'Perfil Professor',
-          subtitle: 'Acompanhe sua carga, aulas e demandas acadêmicas.',
-          tone: SigadColors.brand,
-          metrics: const [
-            _RoleMetric(label: 'Disciplinas', value: '5', icon: Icons.menu_book_outlined, tone: SigadColors.brand),
-            _RoleMetric(label: 'Carga semanal', value: '32h', icon: Icons.schedule_outlined, tone: SigadColors.info),
-            _RoleMetric(label: 'Pendências', value: '3', icon: Icons.pending_actions_outlined, tone: SigadColors.warning),
-          ],
-          priorities: const [
-            _PriorityItem(label: 'Confirmar plano de aula da semana', icon: Icons.checklist_outlined, tone: SigadColors.info),
-            _PriorityItem(label: 'Atualizar registro de atividades', icon: Icons.fact_check_outlined, tone: SigadColors.brand),
-            _PriorityItem(label: 'Validar horas complementares', icon: Icons.timer_outlined, tone: SigadColors.warning),
-          ],
-          focus: const ['Aulas', 'Carga', 'Atividades'],
-        );
-      case UserRole.coordenador:
-        return _RoleProfile(
-          title: 'Perfil Coordenador',
-          subtitle: 'Gerencie demandas do curso e distribua responsabilidades.',
-          tone: SigadColors.info,
-          metrics: const [
-            _RoleMetric(label: 'Demandas abertas', value: '24', icon: Icons.assignment_outlined, tone: SigadColors.info),
-            _RoleMetric(label: 'Docentes ativos', value: '38', icon: Icons.school_outlined, tone: SigadColors.success),
-            _RoleMetric(label: 'Sprints em curso', value: '2', icon: Icons.flag_outlined, tone: SigadColors.brand),
-          ],
-          priorities: const [
-            _PriorityItem(label: 'Priorizar demandas críticas da semana', icon: Icons.priority_high_outlined, tone: SigadColors.risk),
-            _PriorityItem(label: 'Fechar horários dos docentes', icon: Icons.balance_outlined, tone: SigadColors.info),
-            _PriorityItem(label: 'Aprovar tarefas do curso', icon: Icons.view_kanban_outlined, tone: SigadColors.brand),
-          ],
-          focus: const ['Demandas', 'Tarefas', 'Relatórios'],
-        );
-      case UserRole.servidorAdministrativo:
-        return _RoleProfile(
-          title: 'Perfil Servidor Administrativo',
-          subtitle: 'Mantenha processos operacionais e fluxos documentais em dia.',
-          tone: SigadColors.accent,
-          metrics: const [
-            _RoleMetric(label: 'Processos hoje', value: '18', icon: Icons.folder_open_outlined, tone: SigadColors.accent),
-            _RoleMetric(label: 'Solicitações', value: '11', icon: Icons.request_page_outlined, tone: SigadColors.info),
-            _RoleMetric(label: 'Concluídos', value: '9', icon: Icons.task_alt_outlined, tone: SigadColors.success),
-          ],
-          priorities: const [
-            _PriorityItem(label: 'Conferir documentos de laboratório', icon: Icons.description_outlined, tone: SigadColors.info),
-            _PriorityItem(label: 'Atualizar status de protocolos', icon: Icons.swap_horiz_outlined, tone: SigadColors.accent),
-            _PriorityItem(label: 'Enviar relatório diário para coordenação', icon: Icons.send_outlined, tone: SigadColors.brand),
-          ],
-          focus: const ['Protocolos', 'Relatórios', 'Atendimento'],
-        );
-      case UserRole.chefeDepartamento:
-        return _RoleProfile(
-          title: 'Chefe de Departamento',
-          subtitle: 'Visão estratégica de governança, desempenho e alocação.',
-          tone: SigadColors.brandDark,
-          metrics: const [
-            _RoleMetric(label: 'Indicadores-chave', value: '12', icon: Icons.analytics_outlined, tone: SigadColors.brandDark),
-            _RoleMetric(label: 'Demandas críticas', value: '4', icon: Icons.warning_amber_outlined, tone: SigadColors.risk),
-            _RoleMetric(label: 'Cumprimento SLA', value: '92%', icon: Icons.av_timer_outlined, tone: SigadColors.success),
-          ],
-          priorities: const [
-            _PriorityItem(label: 'Validar plano de metas do mês', icon: Icons.track_changes_outlined, tone: SigadColors.brandDark),
-            _PriorityItem(label: 'Aprovar redistribuição de equipe', icon: Icons.groups_outlined, tone: SigadColors.info),
-            _PriorityItem(label: 'Revisar painel de desempenho institucional', icon: Icons.query_stats_outlined, tone: SigadColors.success),
-          ],
-          focus: const ['Estratégia', 'Governança', 'KPIs'],
-        );
-      default:
-        return _RoleProfile(
-          title: 'Visão geral do SIGAD',
-          subtitle: 'Selecione um perfil para ver atalhos e prioridades personalizadas.',
-          tone: SigadColors.brand,
-          metrics: const [
-            _RoleMetric(label: 'Módulos ativos', value: '6', icon: Icons.dashboard_outlined, tone: SigadColors.brand),
-            _RoleMetric(label: 'Usuários online', value: '42', icon: Icons.groups_outlined, tone: SigadColors.info),
-            _RoleMetric(label: 'Demandas no sistema', value: '24', icon: Icons.inbox_outlined, tone: SigadColors.success),
-          ],
-          priorities: const [
-            _PriorityItem(label: 'Realize login com um dos perfis', icon: Icons.login_outlined, tone: SigadColors.brand),
-            _PriorityItem(label: 'Explore os módulos disponíveis', icon: Icons.apps_outlined, tone: SigadColors.info),
-          ],
-          focus: const ['Planejamento', 'Fluxo', 'Transparência'],
-        );
-    }
-  }
-}

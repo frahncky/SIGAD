@@ -7,14 +7,14 @@ abstract final class ConfiguracoesService {
       modoDark: false,
       biometriaAtiva: false,
       backupAutomaticoAtivo: true,
-      idioma: 'Portugues (Brasil)',
-      tamanhoFonte: 'Medio',
-      nomePerfil: 'Joao Silva',
-      cargoPerfil: 'Coordenador Academico',
+      idioma: 'Português (Brasil)',
+      tamanhoFonte: 'Médio',
+      nomePerfil: 'João Silva',
+      cargoPerfil: 'Coordenador Acadêmico',
       emailUsuario: 'joao.silva@universidade.edu.br',
       ultimaAlteracaoSenha: '20/02/2026',
       proximoBackup: '25/04/2026',
-      ultimoBackup: '20/04/2026 as 14:30',
+      ultimoBackup: '20/04/2026 às 14:30',
       problemasReportados: 0,
     );
   }
@@ -34,7 +34,7 @@ abstract final class ConfiguracoesService {
     final ano = agora.year.toString();
     final hora = agora.hour.toString().padLeft(2, '0');
     final minuto = agora.minute.toString().padLeft(2, '0');
-    return '$dia/$mes/$ano as $hora:$minuto';
+    return '$dia/$mes/$ano às $hora:$minuto';
   }
 
   static String dataFutura(int dias) {
@@ -68,7 +68,7 @@ abstract final class ConfiguracoesService {
     final emailValido = hasAt && !hasEspaco && dominioValido;
 
     if (!emailValido) {
-      return 'Informe um email valido';
+      return 'Informe um email válido';
     }
     return null;
   }
@@ -87,7 +87,7 @@ abstract final class ConfiguracoesService {
     }
 
     if (novaSenha.trim() != confirmarSenha.trim()) {
-      return 'A confirmacao da senha nao confere';
+      return 'A confirmação da senha não confere';
     }
 
     return null;
@@ -98,7 +98,7 @@ abstract final class ConfiguracoesService {
     required String descricao,
   }) {
     if (titulo.trim().isEmpty || descricao.trim().isEmpty) {
-      return 'Preencha titulo e descricao';
+      return 'Preencha título e descrição';
     }
     return null;
   }

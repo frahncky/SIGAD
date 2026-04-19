@@ -11,7 +11,7 @@ void main() {
 
       expect(
         ConfiguracoesService.validarEmail('email-invalido'),
-        'Informe um email valido',
+        'Informe um email válido',
       );
 
       expect(
@@ -31,7 +31,7 @@ void main() {
 
       expect(data.split('/'), hasLength(3));
       expect(dataFutura.split('/'), hasLength(3));
-      expect(ConfiguracoesService.dataHoraAtual().contains(' as '), isTrue);
+      expect(ConfiguracoesService.dataHoraAtual().contains(' às '), isTrue);
     });
   });
 }
