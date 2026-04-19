@@ -4,8 +4,8 @@
 Preparar o SIGAD para evolucao de produto com foco em integracao, observabilidade e confiabilidade operacional.
 
 ## Pilar 1 - Integracao e Contratos
-- [ ] Definir contratos de API por feature (demandas, kanban, relatorios, atividades)
-- [ ] Criar camada de client HTTP desacoplada no core
+- [x] Definir contratos de API por feature (demandas, kanban, relatorios, atividades)
+- [x] Criar camada de client HTTP desacoplada no core
 - [ ] Introduzir adaptadores de repositorio para alternar local/remoto por configuracao
 - [ ] Padronizar DTOs e mapeamentos entre domain e data
 
@@ -46,3 +46,8 @@ Preparar o SIGAD para evolucao de produto com foco em integracao, observabilidad
 3. Resiliencia e estados de falha
 4. Observabilidade
 5. CI e gate de qualidade
+
+## Progresso atual
+- Camada HTTP base criada em `lib/core/network/` com request/response/error/client.
+- Contratos de API com DTO e mapeamento criados para atividades, demandas, kanban e relatorios.
+- Validado com `flutter analyze` e testes em `test/core/http_package_client_test.dart` e `test/contracts/api_contracts_test.dart`.
