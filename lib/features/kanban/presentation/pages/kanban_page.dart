@@ -1,6 +1,9 @@
 ﻿import 'package:flutter/material.dart';
 import '../../../../app/theme/sigad_colors.dart';
-import '../../../../core/services/local_storage_service.dart';
+import '../../../../core/services/app_feedback_service.dart';
+import '../../data/kanban_repository.dart';
+import '../../domain/kanban_models.dart';
+import '../../domain/kanban_service.dart';
 
 class KanbanPage extends StatefulWidget {
   const KanbanPage({super.key});
@@ -10,17 +13,8 @@ class KanbanPage extends StatefulWidget {
 }
 
 class _KanbanPageState extends State<KanbanPage> {
-  final List<_Card> _cards = [
-    _Card(id: 1, titulo: 'Revisão de inventário', coluna: 'Backlog', prioridade: 'Alta'),
-    _Card(id: 2, titulo: 'Mapear demandas', coluna: 'Em Progresso', prioridade: 'Alta'),
-    _Card(id: 3, titulo: 'Padronizar formulários', coluna: 'Em Revisão', prioridade: 'Média'),
-    _Card(id: 4, titulo: 'Auditoria de estágio', coluna: 'Em Revisão', prioridade: 'Média'),
-    _Card(id: 5, titulo: 'Relatório de labs', coluna: 'Concluído', prioridade: 'Baixa'),
-    _Card(id: 6, titulo: 'Planejar semestre', coluna: 'Backlog', prioridade: 'Alta'),
-    _Card(id: 7, titulo: 'Revisar documentação', coluna: 'Em Progresso', prioridade: 'Média'),
-  ];
-
-  static const String _kKey = 'sigad_kanban';
+  final KanbanRepository _kanbanRepository = KanbanRepository();
+  final List<KanbanCardModel> _cards = KanbanService.defaultCards();
 
   @override
   void initState() {
@@ -29,40 +23,20 @@ class _KanbanPageState extends State<KanbanPage> {
   }
 
   Future<void> _loadData() async {
-    final list = await LocalStorageService.loadList(_kKey);
+    final list = await _kanbanRepository.loadCards();
     if (list.isEmpty) return;
     setState(() {
       _cards
         ..clear()
-        ..addAll(list.map(_cardFromJson));
+        ..addAll(list);
     });
   }
 
   void _saveData() {
-    LocalStorageService.saveList(_kKey, _cards.map(_cardToJson).toList());
+    _kanbanRepository.saveCards(_cards);
   }
 
-  Map<String, dynamic> _cardToJson(_Card c) => {
-    'id': c.id,
-    'titulo': c.titulo,
-    'coluna': c.coluna,
-    'prioridade': c.prioridade,
-  };
-
-  _Card _cardFromJson(Map<String, dynamic> json) => _Card(
-    id: json['id'] as int,
-    titulo: json['titulo'] as String,
-    coluna: json['coluna'] as String,
-    prioridade: json['prioridade'] as String,
-  );
-
-  Map<String, List<_Card>> get _colunas {
-    const colunaNames = ['Backlog', 'Em Progresso', 'Em Revisão', 'Concluído'];
-    return {
-      for (var coluna in colunaNames)
-        coluna: _cards.where((card) => card.coluna == coluna).toList(),
-    };
-  }
+  Map<String, List<KanbanCardModel>> get _colunas => KanbanService.buildColunas(_cards);
 
   @override
   Widget build(BuildContext context) {
@@ -95,28 +69,22 @@ class _KanbanPageState extends State<KanbanPage> {
     );
   }
 
-  void _moveCard(_Card card, String novaColuna) {
+  void _moveCard(KanbanCardModel card, String novaColuna) {
     setState(() {
       final index = _cards.indexWhere((c) => c.id == card.id);
       if (index != -1) {
-        _cards[index] = _Card(
-          id: card.id,
-          titulo: card.titulo,
-          coluna: novaColuna,
-          prioridade: card.prioridade,
-        );
+        _cards[index] = KanbanService.moverCard(card, novaColuna);
       }
     });
     _saveData();
   }
 
-  void _deleteCard(_Card card) {
+  void _deleteCard(KanbanCardModel card) {
     setState(() {
       _cards.removeWhere((c) => c.id == card.id);
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Card "${card.titulo}" removido')),
-    );
+    AppFeedbackService.info(context, 'Card "${card.titulo}" removido');
+    _saveData();
   }
 
   void _showCriarCard(BuildContext context) {
@@ -143,7 +111,7 @@ class _KanbanPageState extends State<KanbanPage> {
               DropdownButtonFormField<String>(
                 initialValue: prioridadeSelecionada,
                 decoration: const InputDecoration(labelText: 'Prioridade'),
-                items: ['Baixa', 'Média', 'Alta']
+                items: KanbanService.prioridades
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                     .toList(),
                 onChanged: (value) => setModalState(() => prioridadeSelecionada = value!),
@@ -152,7 +120,7 @@ class _KanbanPageState extends State<KanbanPage> {
               DropdownButtonFormField<String>(
                 initialValue: colunaSelecionada,
                 decoration: const InputDecoration(labelText: 'Coluna'),
-                items: ['Backlog', 'Em Progresso', 'Em Revisão', 'Concluído']
+                items: KanbanService.colunas
                     .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                     .toList(),
                 onChanged: (value) => setModalState(() => colunaSelecionada = value!),
@@ -166,10 +134,11 @@ class _KanbanPageState extends State<KanbanPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                if (tituloController.text.trim().isNotEmpty) {
+                final erro = KanbanService.validateTitulo(tituloController.text);
+                if (erro == null) {
                   setState(() {
-                    final newId = _cards.isEmpty ? 1 : _cards.map((c) => c.id).reduce((a, b) => a > b ? a : b) + 1;
-                    _cards.add(_Card(
+                    final newId = KanbanService.nextId(_cards);
+                    _cards.add(KanbanCardModel(
                       id: newId,
                       titulo: tituloController.text.trim(),
                       coluna: colunaSelecionada,
@@ -177,14 +146,10 @@ class _KanbanPageState extends State<KanbanPage> {
                     ));
                   });
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Card criado com sucesso!')),
-                  );
+                  AppFeedbackService.success(context, 'Card criado com sucesso!');
                   _saveData();
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Informe o título do card')),
-                  );
+                  AppFeedbackService.warning(context, erro);
                 }
               },
               child: const Text('Criar'),
@@ -205,9 +170,9 @@ class _KanbanColuna extends StatelessWidget {
   });
 
   final String titulo;
-  final List<_Card> cards;
-  final Function(_Card, String) onCardMoved;
-  final Function(_Card) onCardDeleted;
+  final List<KanbanCardModel> cards;
+  final Function(KanbanCardModel, String) onCardMoved;
+  final Function(KanbanCardModel) onCardDeleted;
 
   @override
   Widget build(BuildContext context) {
@@ -250,7 +215,7 @@ class _KanbanColuna extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: DragTarget<_Card>(
+            child: DragTarget<KanbanCardModel>(
               onAcceptWithDetails: (details) {
                 onCardMoved(details.data, titulo);
               },
@@ -296,13 +261,13 @@ class _KanbanCard extends StatelessWidget {
     required this.onDeleted,
   });
 
-  final _Card card;
-  final Function(_Card) onDeleted;
+  final KanbanCardModel card;
+  final Function(KanbanCardModel) onDeleted;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return Draggable<_Card>(
+    return Draggable<KanbanCardModel>(
       data: card,
       feedback: Material(
         elevation: 8,
@@ -410,14 +375,7 @@ class _KanbanCard extends StatelessWidget {
   }
 
   Color _getPrioridadeColor(String prioridade) {
-    switch (prioridade) {
-      case 'Alta':
-        return SigadColors.risk;
-      case 'Média':
-        return SigadColors.warning;
-      default:
-        return SigadColors.success;
-    }
+    return KanbanService.prioridadeColor(prioridade);
   }
 
   void _showDetalhes(BuildContext context) {
@@ -469,18 +427,4 @@ class _KanbanCard extends StatelessWidget {
       ),
     );
   }
-}
-
-class _Card {
-  const _Card({
-    required this.id,
-    required this.titulo,
-    required this.coluna,
-    required this.prioridade,
-  });
-
-  final int id;
-  final String titulo;
-  final String coluna;
-  final String prioridade;
 }

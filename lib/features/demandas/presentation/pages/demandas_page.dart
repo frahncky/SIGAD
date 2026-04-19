@@ -1,6 +1,9 @@
 ﻿import 'package:flutter/material.dart';
 import '../../../../app/theme/sigad_colors.dart';
-import '../../../../core/services/local_storage_service.dart';
+import '../../../../core/services/app_feedback_service.dart';
+import '../../data/demanda_repository.dart';
+import '../../domain/demanda_models.dart';
+import '../../domain/demandas_service.dart';
 
 class DemandasPage extends StatefulWidget {
   const DemandasPage({super.key});
@@ -14,82 +17,8 @@ class _DemandasPageState extends State<DemandasPage> {
   String _filtroStatus = 'Todas';
   String _filtroPrioridade = 'Todas';
   String _ordemSelecionada = 'Prazo mais próximo';
-  static const String _kKey = 'sigad_demandas';
-  static const List<String> _statusDisponiveis = [
-    'Novo',
-    'Em andamento',
-    'Aguardando',
-    'Revisão',
-    'Concluído',
-  ];
-  static const List<String> _prioridades = ['Alta', 'Média', 'Baixa'];
-  static const List<String> _opcoesOrdenacao = [
-    'Prazo mais próximo',
-    'Prioridade',
-    'Recém-criadas',
-  ];
-  static const List<String> _proprietarios = [
-    'Coordenação',
-    'Secretaria Acadêmica',
-    'Lab. Biologia',
-    'TI',
-    'RH',
-    'Gestão',
-    'Comissão de Estágio',
-  ];
-
-  final List<_Demanda> _demandas = [
-    _Demanda(
-      id: '#DEM-001',
-      titulo: 'Revisar inventário de microscópios',
-      descricao: 'Auditoria completa do laboratório de biologia',
-      prioridade: 'Alta',
-      statusLabel: 'Em andamento',
-      statusTone: SigadColors.info,
-      proprietario: 'Lab. Biologia',
-      prazo: '15/04/2026',
-    ),
-    _Demanda(
-      id: '#DEM-002',
-      titulo: 'Mapear demandas semestre 2026.1',
-      descricao: 'Levantamento de todas as solicitações do período',
-      prioridade: 'Alta',
-      statusLabel: 'Novo',
-      statusTone: SigadColors.brand,
-      proprietario: 'Coordenação',
-      prazo: '20/04/2026',
-    ),
-    _Demanda(
-      id: '#DEM-003',
-      titulo: 'Padronizar formulários de requisição',
-      descricao: 'Unificar templates em uso no departamento',
-      prioridade: 'Média',
-      statusLabel: 'Aguardando',
-      statusTone: SigadColors.warning,
-      proprietario: 'Secretaria Acadêmica',
-      prazo: '30/04/2026',
-    ),
-    _Demanda(
-      id: '#DEM-004',
-      titulo: 'Auditoria de processos de estágio',
-      descricao: 'Validação de fluxos e documentação',
-      prioridade: 'Média',
-      statusLabel: 'Revisão',
-      statusTone: SigadColors.accent,
-      proprietario: 'Comissão de Estágio',
-      prazo: '25/04/2026',
-    ),
-    _Demanda(
-      id: '#DEM-005',
-      titulo: 'Relatório de uso dos laboratórios',
-      descricao: 'Análise de utilização de espaços e equipamentos',
-      prioridade: 'Baixa',
-      statusLabel: 'Concluído',
-      statusTone: SigadColors.success,
-      proprietario: 'Gestão',
-      prazo: '10/04/2026',
-    ),
-  ];
+  final DemandaRepository _demandaRepository = DemandaRepository();
+  final List<Demanda> _demandas = DemandasService.defaultDemandas();
 
   @override
   void initState() {
@@ -98,153 +27,39 @@ class _DemandasPageState extends State<DemandasPage> {
   }
 
   Future<void> _loadData() async {
-    final list = await LocalStorageService.loadList(_kKey);
+    final list = await _demandaRepository.loadDemandas();
     if (list.isEmpty) return;
     setState(() {
       _demandas
         ..clear()
-        ..addAll(list.map(_demandaFromJson));
+        ..addAll(list);
     });
   }
 
   void _saveData() {
-    LocalStorageService.saveList(_kKey, _demandas.map(_demandaToJson).toList());
+    _demandaRepository.saveDemandas(_demandas);
   }
 
-  Map<String, dynamic> _demandaToJson(_Demanda d) => {
-    'id': d.id,
-    'titulo': d.titulo,
-    'descricao': d.descricao,
-    'prioridade': d.prioridade,
-    'statusLabel': d.statusLabel,
-    'proprietario': d.proprietario,
-    'prazo': d.prazo,
-  };
-
-  _Demanda _demandaFromJson(Map<String, dynamic> json) => _Demanda(
-    id: json['id'] as String,
-    titulo: json['titulo'] as String,
-    descricao: json['descricao'] as String,
-    prioridade: json['prioridade'] as String,
-    statusLabel: json['statusLabel'] as String,
-    statusTone: _toneStatus(json['statusLabel'] as String),
-    proprietario: json['proprietario'] as String,
-    prazo: json['prazo'] as String,
-  );
-
-  List<_Demanda> get _demandasFiltradas {
-    return _demandas.where((d) {
-      final statusMatch = _filtroStatus == 'Todas' || d.statusLabel == _filtroStatus;
-      final prioridadeMatch = _filtroPrioridade == 'Todas' || d.prioridade == _filtroPrioridade;
-      final busca = _busca.trim().toLowerCase();
-      final buscaMatch = busca.isEmpty ||
-          d.titulo.toLowerCase().contains(busca) ||
-          d.descricao.toLowerCase().contains(busca) ||
-          d.proprietario.toLowerCase().contains(busca);
-      return statusMatch && prioridadeMatch && buscaMatch;
-    }).toList();
-  }
+  List<Demanda> get _demandasFiltradas => DemandasService.filtrarDemandas(
+        demandas: _demandas,
+        busca: _busca,
+        filtroStatus: _filtroStatus,
+        filtroPrioridade: _filtroPrioridade,
+      );
 
   int get _filtrosAtivos {
-    var ativos = 0;
-    if (_filtroStatus != 'Todas') ativos++;
-    if (_filtroPrioridade != 'Todas') ativos++;
-    if (_busca.trim().isNotEmpty) ativos++;
-    return ativos;
+    return DemandasService.countFiltrosAtivos(
+      filtroStatus: _filtroStatus,
+      filtroPrioridade: _filtroPrioridade,
+      busca: _busca,
+    );
   }
 
-  List<_Demanda> get _demandasVisiveis {
-    final list = [..._demandasFiltradas];
-    switch (_ordemSelecionada) {
-      case 'Prioridade':
-        list.sort((a, b) {
-          final prioridade = _pesoPrioridade(a.prioridade).compareTo(_pesoPrioridade(b.prioridade));
-          if (prioridade != 0) return prioridade;
-          return _parsePrazo(a.prazo).compareTo(_parsePrazo(b.prazo));
-        });
-        break;
-      case 'Recém-criadas':
-        list.sort((a, b) => b.id.compareTo(a.id));
-        break;
-      default:
-        list.sort((a, b) => _parsePrazo(a.prazo).compareTo(_parsePrazo(b.prazo)));
-    }
-    return list;
-  }
-
-  DateTime _parsePrazo(String prazo) {
-    final parts = prazo.split('/');
-    if (parts.length != 3) return DateTime(2100);
-    final dia = int.tryParse(parts[0]) ?? 1;
-    final mes = int.tryParse(parts[1]) ?? 1;
-    final ano = int.tryParse(parts[2]) ?? 2100;
-    return DateTime(ano, mes, dia);
-  }
-
-  int _pesoPrioridade(String prioridade) {
-    switch (prioridade) {
-      case 'Alta':
-        return 0;
-      case 'Média':
-        return 1;
-      default:
-        return 2;
-    }
-  }
-
-  Color _toneStatus(String status) {
-    switch (status) {
-      case 'Novo':
-        return SigadColors.brand;
-      case 'Em andamento':
-        return SigadColors.info;
-      case 'Aguardando':
-        return SigadColors.warning;
-      case 'Revisão':
-        return SigadColors.accent;
-      case 'Concluído':
-        return SigadColors.success;
-      default:
-        return SigadColors.muted;
-    }
-  }
-
-  String _gerarProximoIdDemanda() {
-    var maiorId = 0;
-
-    for (final demanda in _demandas) {
-      final numero = int.tryParse(demanda.id.replaceAll(RegExp(r'[^0-9]'), ''));
-      if (numero != null && numero > maiorId) {
-        maiorId = numero;
-      }
-    }
-
-    final proximoId = maiorId + 1;
-    return '#DEM-${proximoId.toString().padLeft(3, '0')}';
-  }
-
-  String _dataAtual() {
-    final agora = DateTime.now();
-    final dia = agora.day.toString().padLeft(2, '0');
-    final mes = agora.month.toString().padLeft(2, '0');
-    final ano = agora.year.toString();
-    return '$dia/$mes/$ano';
-  }
-
-  String? _validarDemanda({required String titulo, required String descricao}) {
-    if (titulo.trim().isEmpty) {
-      return 'Informe o título da demanda';
-    }
-
-    if (descricao.trim().isEmpty) {
-      return 'Informe a descrição da demanda';
-    }
-
-    return null;
-  }
+  List<Demanda> get _demandasVisiveis =>
+      DemandasService.ordenarDemandas(_demandasFiltradas, _ordemSelecionada);
 
   void _mostrarFeedback(String mensagem) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensagem)));
+    AppFeedbackService.info(context, mensagem);
   }
 
   @override
@@ -313,7 +128,7 @@ class _DemandasPageState extends State<DemandasPage> {
                     labelText: 'Ordenar por',
                     prefixIcon: Icon(Icons.sort),
                   ),
-                  items: _opcoesOrdenacao
+                  items: DemandasService.opcoesOrdenacao
                       .map((ordem) => DropdownMenuItem(value: ordem, child: Text(ordem)))
                       .toList(),
                   onChanged: (value) {
@@ -402,7 +217,7 @@ class _DemandasPageState extends State<DemandasPage> {
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
-                children: ['Todas', ..._statusDisponiveis]
+                children: ['Todas', ...DemandasService.statusDisponiveis]
                     .map((status) => FilterChip(
                       label: Text(status),
                       selected: _filtroStatus == status,
@@ -417,7 +232,7 @@ class _DemandasPageState extends State<DemandasPage> {
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
-                children: ['Todas', ..._prioridades]
+                children: ['Todas', ...DemandasService.prioridades]
                     .map((prioridade) => FilterChip(
                       label: Text(prioridade),
                       selected: _filtroPrioridade == prioridade,
@@ -507,7 +322,7 @@ class _DemandasPageState extends State<DemandasPage> {
               DropdownButtonFormField<String>(
                 initialValue: prioridadeSelecionada,
                 decoration: const InputDecoration(labelText: 'Prioridade'),
-                items: _prioridades
+                items: DemandasService.prioridades
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                     .toList(),
                 onChanged: (value) => setModalState(() => prioridadeSelecionada = value!),
@@ -516,7 +331,7 @@ class _DemandasPageState extends State<DemandasPage> {
               DropdownButtonFormField<String>(
                 initialValue: proprietarioSelecionado,
                 decoration: const InputDecoration(labelText: 'Proprietário'),
-                items: _proprietarios
+                items: DemandasService.proprietarios
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                     .toList(),
                 onChanged: (value) => setModalState(() => proprietarioSelecionado = value!),
@@ -525,7 +340,7 @@ class _DemandasPageState extends State<DemandasPage> {
               DropdownButtonFormField<String>(
                 initialValue: statusSelecionado,
                 decoration: const InputDecoration(labelText: 'Status inicial'),
-                items: _statusDisponiveis
+                items: DemandasService.statusDisponiveis
                     .map((status) => DropdownMenuItem(value: status, child: Text(status)))
                     .toList(),
                 onChanged: (value) => setModalState(() => statusSelecionado = value!),
@@ -543,7 +358,7 @@ class _DemandasPageState extends State<DemandasPage> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        final erro = _validarDemanda(
+                        final erro = DemandasService.validarDemanda(
                           titulo: tituloController.text,
                           descricao: descricaoController.text,
                         );
@@ -556,15 +371,14 @@ class _DemandasPageState extends State<DemandasPage> {
                         setState(() {
                           _demandas.insert(
                             0,
-                            _Demanda(
-                              id: _gerarProximoIdDemanda(),
+                            Demanda(
+                              id: DemandasService.gerarProximoIdDemanda(_demandas),
                               titulo: tituloController.text.trim(),
                               descricao: descricaoController.text.trim(),
                               prioridade: prioridadeSelecionada,
                               statusLabel: statusSelecionado,
-                              statusTone: _toneStatus(statusSelecionado),
                               proprietario: proprietarioSelecionado,
-                              prazo: _dataAtual(),
+                              prazo: DemandasService.dataAtual(),
                             ),
                           );
                         });
@@ -585,7 +399,7 @@ class _DemandasPageState extends State<DemandasPage> {
     );
   }
 
-  void _showEditarDemanda(BuildContext context, _Demanda demanda) {
+  void _showEditarDemanda(BuildContext context, Demanda demanda) {
     final textTheme = Theme.of(context).textTheme;
     final tituloController = TextEditingController(text: demanda.titulo);
     final descricaoController = TextEditingController(text: demanda.descricao);
@@ -634,7 +448,7 @@ class _DemandasPageState extends State<DemandasPage> {
               DropdownButtonFormField<String>(
                 initialValue: prioridadeSelecionada,
                 decoration: const InputDecoration(labelText: 'Prioridade'),
-                items: _prioridades
+                items: DemandasService.prioridades
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                     .toList(),
                 onChanged: (value) => setModalState(() => prioridadeSelecionada = value!),
@@ -643,7 +457,7 @@ class _DemandasPageState extends State<DemandasPage> {
               DropdownButtonFormField<String>(
                 initialValue: proprietarioSelecionado,
                 decoration: const InputDecoration(labelText: 'Proprietário'),
-                items: _proprietarios
+                items: DemandasService.proprietarios
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                     .toList(),
                 onChanged: (value) => setModalState(() => proprietarioSelecionado = value!),
@@ -652,7 +466,7 @@ class _DemandasPageState extends State<DemandasPage> {
               DropdownButtonFormField<String>(
                 initialValue: statusSelecionado,
                 decoration: const InputDecoration(labelText: 'Status'),
-                items: _statusDisponiveis
+                items: DemandasService.statusDisponiveis
                     .map((status) => DropdownMenuItem(value: status, child: Text(status)))
                     .toList(),
                 onChanged: (value) => setModalState(() => statusSelecionado = value!),
@@ -670,7 +484,7 @@ class _DemandasPageState extends State<DemandasPage> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        final erro = _validarDemanda(
+                        final erro = DemandasService.validarDemanda(
                           titulo: tituloController.text,
                           descricao: descricaoController.text,
                         );
@@ -688,7 +502,6 @@ class _DemandasPageState extends State<DemandasPage> {
                               descricao: descricaoController.text.trim(),
                               prioridade: prioridadeSelecionada,
                               statusLabel: statusSelecionado,
-                              statusTone: _toneStatus(statusSelecionado),
                               proprietario: proprietarioSelecionado,
                             );
                           }
@@ -710,7 +523,7 @@ class _DemandasPageState extends State<DemandasPage> {
     );
   }
 
-  void _showConfirmarExclusao(BuildContext context, _Demanda demanda) {
+  void _showConfirmarExclusao(BuildContext context, Demanda demanda) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -745,7 +558,7 @@ class _DemandasCard extends StatelessWidget {
     required this.onExcluir,
   });
 
-  final _Demanda demanda;
+  final Demanda demanda;
   final VoidCallback onEditar;
   final VoidCallback onExcluir;
 
@@ -869,13 +682,14 @@ class _DemandasCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: demanda.statusTone.withValues(alpha: 0.12),
+                    color: DemandasService.toneStatus(demanda.statusLabel)
+                        .withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     demanda.statusLabel,
                     style: textTheme.labelSmall?.copyWith(
-                      color: demanda.statusTone,
+                      color: DemandasService.toneStatus(demanda.statusLabel),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -902,17 +716,10 @@ class _DemandasCard extends StatelessWidget {
   }
 
   Color _getPrioridadeColor(String prioridade) {
-    switch (prioridade) {
-      case 'Alta':
-        return SigadColors.risk;
-      case 'Média':
-        return SigadColors.warning;
-      default:
-        return SigadColors.success;
-    }
+    return DemandasService.tonePrioridade(prioridade);
   }
 
-  void _onMenuItemSelected(BuildContext context, String value, _Demanda demanda) {
+  void _onMenuItemSelected(BuildContext context, String value, Demanda demanda) {
     switch (value) {
       case 'editar':
         onEditar();
@@ -993,45 +800,3 @@ class _DetailRow extends StatelessWidget {
   }
 }
 
-class _Demanda {
-  const _Demanda({
-    required this.id,
-    required this.titulo,
-    required this.descricao,
-    required this.prioridade,
-    required this.statusLabel,
-    required this.statusTone,
-    required this.proprietario,
-    required this.prazo,
-  });
-
-  final String id;
-  final String titulo;
-  final String descricao;
-  final String prioridade;
-  final String statusLabel;
-  final Color statusTone;
-  final String proprietario;
-  final String prazo;
-
-  _Demanda copyWith({
-    String? titulo,
-    String? descricao,
-    String? prioridade,
-    String? statusLabel,
-    Color? statusTone,
-    String? proprietario,
-    String? prazo,
-  }) {
-    return _Demanda(
-      id: id,
-      titulo: titulo ?? this.titulo,
-      descricao: descricao ?? this.descricao,
-      prioridade: prioridade ?? this.prioridade,
-      statusLabel: statusLabel ?? this.statusLabel,
-      statusTone: statusTone ?? this.statusTone,
-      proprietario: proprietario ?? this.proprietario,
-      prazo: prazo ?? this.prazo,
-    );
-  }
-}

@@ -1,6 +1,9 @@
 ﻿import 'package:flutter/material.dart';
 import '../../../../app/theme/sigad_colors.dart';
-import '../../../../core/services/local_storage_service.dart';
+import '../../../../core/services/app_feedback_service.dart';
+import '../../data/relatorio_repository.dart';
+import '../../domain/relatorio_models.dart';
+import '../../domain/relatorios_service.dart';
 
 class RelatoriosPage extends StatefulWidget {
   const RelatoriosPage({super.key});
@@ -12,59 +15,8 @@ class RelatoriosPage extends StatefulWidget {
 class _RelatoriosPageState extends State<RelatoriosPage> {
   String _busca = '';
   String _filtroStatus = 'Todos';
-  static const String _kKey = 'sigad_relatorios';
-  final List<_Relatorio> _relatorios = [
-    _Relatorio(
-      id: '#REL-001',
-      titulo: 'Mapeamento de Demandas do Período',
-      descricao: 'Análise consolidada de todas as solicitações recebidas no semestre 2026.1',
-      tipo: 'Análise Geral',
-      data: '15/04/2026',
-      autor: 'Coordenação Acadêmica',
-      status: 'Publicado',
-      statusColor: SigadColors.success,
-    ),
-    _Relatorio(
-      id: '#REL-002',
-      titulo: 'Distribuição de Carga Horária Docente',
-      descricao: 'Relatório detalhado sobre equilíbrio de carga entre docentes',
-      tipo: 'Recursos Humanos',
-      data: '12/04/2026',
-      autor: 'Departamento de RH',
-      status: 'Publicado',
-      statusColor: SigadColors.success,
-    ),
-    _Relatorio(
-      id: '#REL-003',
-      titulo: 'Indicadores de Desempenho - Q1 2026',
-      descricao: 'Métricas de performance e KPIs do primeiro trimestre',
-      tipo: 'Desempenho',
-      data: '10/04/2026',
-      autor: 'Gestão',
-      status: 'Publicado',
-      statusColor: SigadColors.success,
-    ),
-    _Relatorio(
-      id: '#REL-004',
-      titulo: 'Análise de Utilização de Laboratórios',
-      descricao: 'Levantamento sobre uso de espaços e equipamentos',
-      tipo: 'Infraestrutura',
-      data: '18/04/2026',
-      autor: 'Coordenação de Laboratórios',
-      status: 'Em revisão',
-      statusColor: SigadColors.warning,
-    ),
-    _Relatorio(
-      id: '#REL-005',
-      titulo: 'Conformidade com Normas ISO',
-      descricao: 'Avaliação de conformidade dos processos com normas internacionais',
-      tipo: 'Conformidade',
-      data: '20/04/2026',
-      autor: 'Auditoria Interna',
-      status: 'Agendado',
-      statusColor: SigadColors.info,
-    ),
-  ];
+  final RelatorioRepository _relatorioRepository = RelatorioRepository();
+  final List<Relatorio> _relatorios = RelatoriosService.defaultRelatorios();
 
     @override
     void initState() {
@@ -73,64 +25,20 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
     }
 
     Future<void> _loadData() async {
-      final list = await LocalStorageService.loadList(_kKey);
+      final list = await _relatorioRepository.loadRelatorios();
       if (list.isEmpty) return;
       setState(() {
         _relatorios
           ..clear()
-          ..addAll(list.map(_relatorioFromJson));
+          ..addAll(list);
       });
     }
 
     void _saveData() {
-      LocalStorageService.saveList(_kKey, _relatorios.map(_relatorioToJson).toList());
+      _relatorioRepository.saveRelatorios(_relatorios);
     }
 
-    Map<String, dynamic> _relatorioToJson(_Relatorio r) => {
-      'id': r.id,
-      'titulo': r.titulo,
-      'descricao': r.descricao,
-      'tipo': r.tipo,
-      'data': r.data,
-      'autor': r.autor,
-      'status': r.status,
-      'downloads': r.downloads,
-      'compartilhamentos': r.compartilhamentos,
-      if (r.ultimaAcao != null) 'ultimaAcao': r.ultimaAcao,
-    };
-
-    _Relatorio _relatorioFromJson(Map<String, dynamic> json) {
-      final status = json['status'] as String;
-      final Color color;
-      switch (status) {
-        case 'Disponível':
-          color = SigadColors.success;
-          break;
-        case 'Em revisão':
-          color = SigadColors.warning;
-          break;
-        case 'Agendado':
-          color = SigadColors.info;
-          break;
-        default:
-          color = SigadColors.muted;
-      }
-      return _Relatorio(
-        id: json['id'] as String,
-        titulo: json['titulo'] as String,
-        descricao: json['descricao'] as String,
-        tipo: json['tipo'] as String,
-        data: json['data'] as String,
-        autor: json['autor'] as String,
-        status: status,
-        statusColor: color,
-        downloads: json['downloads'] as int? ?? 0,
-        compartilhamentos: json['compartilhamentos'] as int? ?? 0,
-        ultimaAcao: json['ultimaAcao'] as String?,
-      );
-    }
-
-  void _atualizarRelatorio(_Relatorio relatorioAtualizado) {
+  void _atualizarRelatorio(Relatorio relatorioAtualizado) {
     setState(() {
       final index = _relatorios.indexWhere((item) => item.id == relatorioAtualizado.id);
       if (index >= 0) {
@@ -140,39 +48,23 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
     _saveData();
   }
 
-  void _baixarRelatorio(_Relatorio relatorio) {
-    final atualizado = relatorio.copyWith(
-      downloads: relatorio.downloads + 1,
-      ultimaAcao: 'PDF baixado agora',
-    );
+  void _baixarRelatorio(Relatorio relatorio) {
+    final atualizado = RelatoriosService.registrarDownload(relatorio);
     _atualizarRelatorio(atualizado);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Relatório baixado: ${relatorio.titulo}')),
-    );
+    AppFeedbackService.success(context, 'Relatório baixado: ${relatorio.titulo}');
   }
 
-  void _compartilharRelatorio(_Relatorio relatorio) {
-    final atualizado = relatorio.copyWith(
-      compartilhamentos: relatorio.compartilhamentos + 1,
-      ultimaAcao: 'Compartilhado agora',
-    );
+  void _compartilharRelatorio(Relatorio relatorio) {
+    final atualizado = RelatoriosService.registrarCompartilhamento(relatorio);
     _atualizarRelatorio(atualizado);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Link de compartilhamento gerado para ${relatorio.titulo}')),
-    );
+    AppFeedbackService.info(context, 'Link de compartilhamento gerado para ${relatorio.titulo}');
   }
 
-  List<_Relatorio> get _relatoriosFiltrados {
-    return _relatorios.where((relatorio) {
-      final filtroMatch = _filtroStatus == 'Todos' || relatorio.status == _filtroStatus;
-      final busca = _busca.trim().toLowerCase();
-      final buscaMatch = busca.isEmpty ||
-          relatorio.titulo.toLowerCase().contains(busca) ||
-          relatorio.descricao.toLowerCase().contains(busca) ||
-          relatorio.autor.toLowerCase().contains(busca);
-      return filtroMatch && buscaMatch;
-    }).toList();
-  }
+  List<Relatorio> get _relatoriosFiltrados => RelatoriosService.filtrarRelatorios(
+        relatorios: _relatorios,
+        busca: _busca,
+        filtroStatus: _filtroStatus,
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +90,7 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-              children: ['Todos', 'Publicado', 'Em revisão', 'Agendado']
+                children: RelatoriosService.statusDisponiveis
                   .map(
                     (status) => Padding(
                       padding: const EdgeInsets.only(right: 8),
@@ -329,7 +221,7 @@ class _RelatorioCard extends StatelessWidget {
     required this.onCompartilhar,
   });
 
-  final _Relatorio relatorio;
+  final Relatorio relatorio;
   final VoidCallback onBaixar;
   final VoidCallback onCompartilhar;
 
@@ -428,13 +320,13 @@ class _RelatorioCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: relatorio.statusColor.withValues(alpha: 0.12),
+                    color: RelatoriosService.statusColor(relatorio.status).withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     relatorio.status,
                     style: textTheme.labelSmall?.copyWith(
-                      color: relatorio.statusColor,
+                      color: RelatoriosService.statusColor(relatorio.status),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -643,57 +535,3 @@ class _DetailSection extends StatelessWidget {
   }
 }
 
-class _Relatorio {
-  const _Relatorio({
-    required this.id,
-    required this.titulo,
-    required this.descricao,
-    required this.tipo,
-    required this.data,
-    required this.autor,
-    required this.status,
-    required this.statusColor,
-    this.downloads = 0,
-    this.compartilhamentos = 0,
-    this.ultimaAcao,
-  });
-
-  final String id;
-  final String titulo;
-  final String descricao;
-  final String tipo;
-  final String data;
-  final String autor;
-  final String status;
-  final Color statusColor;
-  final int downloads;
-  final int compartilhamentos;
-  final String? ultimaAcao;
-
-  _Relatorio copyWith({
-    String? titulo,
-    String? descricao,
-    String? tipo,
-    String? data,
-    String? autor,
-    String? status,
-    Color? statusColor,
-    int? downloads,
-    int? compartilhamentos,
-    String? ultimaAcao,
-  }) {
-    return _Relatorio(
-      id: id,
-      titulo: titulo ?? this.titulo,
-      descricao: descricao ?? this.descricao,
-      tipo: tipo ?? this.tipo,
-      data: data ?? this.data,
-      autor: autor ?? this.autor,
-      status: status ?? this.status,
-      statusColor: statusColor ?? this.statusColor,
-      downloads: downloads ?? this.downloads,
-      compartilhamentos: compartilhamentos ?? this.compartilhamentos,
-      ultimaAcao: ultimaAcao ?? this.ultimaAcao,
-    );
-  }
-}

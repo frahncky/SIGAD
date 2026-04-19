@@ -39,7 +39,7 @@ void main() {
     final userContext = UserContextProvider();
     await userContext.login(
       User(
-        id: 'u1',
+        id: 'user_email_joao.silva@univ.br',
         name: 'João',
         email: 'joao.silva@univ.br',
         role: UserRole.professor,
@@ -91,15 +91,24 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    final livresAntes = find.text('Livre').evaluate().length;
+
     await tester.tap(find.text('Livre').first);
     await tester.pumpAndSettle();
 
     expect(find.text('Disciplina da reserva'), findsOneWidget);
 
-    await tester.enterText(find.byType(TextField).last, 'Disciplina Teste');
-    await tester.tap(find.text('Reservar'));
+    final campoDisciplina = find.descendant(
+      of: find.byType(AlertDialog),
+      matching: find.byType(TextField),
+    );
+    await tester.enterText(campoDisciplina, 'Disciplina Teste');
+    await tester.pump();
+    await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
 
-    expect(find.text('Horário reservado com sucesso.'), findsOneWidget);
+    expect(find.text('Disciplina da reserva'), findsNothing);
+    final livresDepois = find.text('Livre').evaluate().length;
+    expect(livresDepois, lessThan(livresAntes));
   });
 }

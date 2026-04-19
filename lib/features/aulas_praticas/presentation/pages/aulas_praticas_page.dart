@@ -187,10 +187,11 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       final user = userContext.currentUser;
       final role = userContext.userRole;
 
-      if (!ReservaService.canChangeReservation(user: user, role: role)) {
+      if (user == null || !ReservaService.canChangeReservation(user: user, role: role)) {
         _showInfo('Somente perfis docentes podem alterar reservas pela grade.');
         return;
       }
+      final currentUser = user;
 
       if (reservaAtual == null) {
         String? disciplina;
@@ -219,7 +220,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         setState(() {
           _reservas.add(
             ReservaService.createReserva(
-              professor: user.name,
+              professor: currentUser.name,
               laboratorio: _laboratorioSelecionadoValido,
               mes: _mesSelecionado,
               semanaDoMes: _semanaSelecionada,
@@ -237,7 +238,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
           'diaSemana': diaSemana,
           'turno': turno.name,
           'periodo': periodo,
-          'professor': user.name,
+          'professor': currentUser.name,
         });
 
         _showInfo('Horário reservado com sucesso.');
@@ -246,7 +247,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
       if (!ReservaService.canRemoveReservation(
         role: role,
-        currentUserName: user.name,
+        currentUserName: currentUser.name,
         reserva: reservaAtual,
       )) {
         _showInfo('Você só pode remover as próprias reservas.');
@@ -321,6 +322,9 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       builder: (_) => const _DialogDisciplinaReserva(),
     );
 
+    if (result == null) {
+      return null;
+    }
     if (ReservaService.validateDisciplina(result) != null) {
       return null;
     }
