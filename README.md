@@ -2,7 +2,7 @@
 
 Sistema Integrado de Gestão Acadêmica e Departamental desenvolvido em Flutter.
 
-O projeto oferece uma experiência responsiva para perfis institucionais (como coordenação, chefia e apoio administrativo), com módulos para bate-papo, demandas, quadro de tarefas, laboratórios, horários dos docentes, atividades, relatórios e configurações.
+O projeto oferece uma experiência responsiva para perfis institucionais (como coordenação, chefia e apoio administrativo), com módulos para bate-papo, demandas, quadro de tarefas, laboratórios, docente, atividades, relatórios e configurações.
 
 ## Tecnologias
 
@@ -106,7 +106,7 @@ Arquitetura e operação detalhadas:
 - Demandas: criar, editar, excluir e filtrar
 - Quadro de Tarefas: criar, mover por drag-and-drop e excluir cards
 - Aulas práticas: gestão de slots e reservas por perfil
-- Horários dos Docentes: criar, editar, excluir e filtrar docentes
+- Docente: criar, editar, excluir e filtrar docentes
 - Atividades: criar, editar, excluir e filtrar atividades
 - Relatórios: visualização, download e compartilhamento com rastreio local
 - Configurações: perfil, email, senha, backup, preferências e reporte de problema
