@@ -1,6 +1,6 @@
 # Configuração de Ícone e Splash Screen do SIGAD
 
-## Passos para Gerar Ícones e Splash Screen
+## Passos para Gerar Ícone do App
 
 ### 1. Instalar as dependências de desenvolvimento
 
@@ -20,19 +20,7 @@ Este comando irá:
 - Gerar ícones para macOS, Windows, Linux e Web
 - Usar o arquivo `assets/images/app_icon.png` como fonte
 
-### 3. Gerar o splash screen nativo
-
-```bash
-flutter pub run flutter_native_splash:create
-```
-
-Este comando irá:
-- Criar o splash screen nativo para Android
-- Criar o splash screen nativo para iOS
-- Criar o splash screen para Web, macOS, Windows e Linux
-- Usar as configurações definidas em `pubspec_native_splash.yaml`
-
-### 4. Executar o app
+### 3. Executar o app
 
 ```bash
 flutter run
@@ -40,7 +28,7 @@ flutter run
 
 ## Efeito ao Abrir o App
 
-Quando o app abre, será exibida uma **tela de splash animada** com:
+Quando o app abre, será exibida apenas a **tela de splash animada em Flutter** com:
 
 - ✨ **Gradiente azul/roxo** como fundo
 - 🔵 **Ícone circular** com o texto "SIGAD"
@@ -68,9 +56,8 @@ app/
     app_router.dart       # Adicionado case para splash route
   app.dart                # Modificado initialRoute para splash
 
-pubspec.yaml              # Adicionadas dependências dev
+pubspec.yaml              # Dependências do projeto
 pubspec_launcher.yaml     # Configuração do flutter_launcher_icons
-pubspec_native_splash.yaml # Configuração do flutter_native_splash
 ```
 
 ## Customizações
@@ -114,9 +101,9 @@ Se os ícones não forem gerados:
 3. Reinstale as dependências: `flutter pub get`
 4. Tente novamente: `flutter pub run flutter_launcher_icons:main -f pubspec_launcher.yaml`
 
-Se o splash screen não aparecer:
+Se a splash animada não aparecer:
 
 1. Verifique se o Flutter foi atualizado: `flutter upgrade`
 2. Limpe o build: `flutter clean`
-3. Execute: `flutter pub run flutter_native_splash:create`
+3. Execute: `flutter pub get`
 4. Teste em um dispositivo real ou emulador

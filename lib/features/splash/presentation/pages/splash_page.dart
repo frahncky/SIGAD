@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../../app/routes/app_routes.dart';
 import '../../../../core/services/user_context_provider.dart';
+
+const _splashBackgroundColor = Color(0xFF08453C);
+const _splashForegroundColor = Colors.white;
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -14,27 +18,40 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
+  late Animation<double> _iconScaleAnimation;
 
   @override
   void initState() {
     super.initState();
-    
+
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 900),
       vsync: this,
     );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.22, 1.0, curve: Curves.easeOut),
+      ),
     );
 
     _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.22, 1.0, curve: Curves.easeOutCubic),
+      ),
+    );
+
+    _iconScaleAnimation = Tween<double>(begin: 0.88, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.15, 0.8, curve: Curves.easeOutBack),
+      ),
     );
 
     _animationController.forward();
 
-    // Navigate after animation completes
     Future.delayed(const Duration(milliseconds: 2500), () {
       if (mounted) {
         final userContext = context.read<UserContextProvider>();
@@ -52,79 +69,94 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF0C6B5E), // Brand color - verde-teal
-              Color(0xFF08453C), // Brand dark
-            ],
-          ),
-        ),
-        child: Center(
-          child: ScaleTransition(
-            scale: _scaleAnimation,
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Logo/Icon with scale animation
-                  Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.1),
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.3),
-                        width: 2,
-                      ),
-                    ),
-                    child: Center(
-                      child: Icon(
-                        Icons.school_rounded,
-                        size: 52,
-                        color: Colors.white.withOpacity(0.9),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-                  // Loading indicator
-                  SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Colors.white.withOpacity(0.7),
-                      ),
-                      strokeWidth: 2,
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  // App name
-                  Text(
-                    'SIGAD',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+    final titleStyle = Theme.of(context).textTheme.headlineSmall?.copyWith(
+          color: _splashForegroundColor.withValues(alpha: 0.9),
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.6,
+        );
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarBrightness: Brightness.dark,
+        statusBarIconBrightness: Brightness.light,
+      ),
+      child: Scaffold(
+        backgroundColor: _splashBackgroundColor,
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: ColoredBox(color: _splashBackgroundColor),
+            ),
+            Center(
+              child: Text('SIGAD', style: titleStyle),
+            ),
+            Center(
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: ScaleTransition(
+                  scale: _iconScaleAnimation,
+                  child: Transform.translate(
+                    offset: const Offset(0, -106),
+                    child: Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _splashForegroundColor.withValues(alpha: 0.1),
+                        border: Border.all(
+                          color: _splashForegroundColor.withValues(alpha: 0.3),
+                          width: 2,
                         ),
-                  ),
-                  const SizedBox(height: 8),
-                  // Subtitle
-                  Text(
-                    'Carregando...',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.white.withOpacity(0.8),
+                      ),
+                      child: Center(
+                        child: Icon(
+                          Icons.school_rounded,
+                          size: 52,
+                          color: _splashForegroundColor.withValues(alpha: 0.9),
                         ),
+                      ),
+                    ),
                   ),
-                ],
+                ),
               ),
             ),
-          ),
+            Center(
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: ScaleTransition(
+                  scale: _scaleAnimation,
+                  child: Transform.translate(
+                    offset: const Offset(0, 62),
+                    child: SizedBox(
+                      width: 46,
+                      height: 46,
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          _splashForegroundColor.withValues(alpha: 0.72),
+                        ),
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Center(
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: Transform.translate(
+                  offset: const Offset(0, 112),
+                  child: Text(
+                    'Carregando...',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: _splashForegroundColor.withValues(alpha: 0.8),
+                        ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
