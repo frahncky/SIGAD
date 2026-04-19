@@ -1,6 +1,9 @@
 ﻿import 'package:flutter/material.dart';
 import '../../../../app/theme/sigad_colors.dart';
-import '../../../../core/services/local_storage_service.dart';
+import '../../../../core/services/app_feedback_service.dart';
+import '../../data/atividade_repository.dart';
+import '../../domain/atividade_models.dart';
+import '../../domain/atividades_service.dart';
 
 class AtividadesPage extends StatefulWidget {
   const AtividadesPage({super.key});
@@ -12,78 +15,8 @@ class AtividadesPage extends StatefulWidget {
 class _AtividadesPageState extends State<AtividadesPage> {
   String _busca = '';
   String _filtro = 'Todas';
-  static const String _kKey = 'sigad_atividades';
-  static const List<String> _statusAtividade = [
-    'Concluída',
-    'Em progresso',
-    'Agendada',
-    'Pendente',
-  ];
-  static const List<String> _responsaveis = [
-    'Coordenação',
-    'Gestão',
-    'TI',
-    'RH',
-    'Auditoria',
-    'Comunicação',
-  ];
-
-  final List<_Atividade> _atividades = [
-    _Atividade(
-      id: '#ATv-001',
-      titulo: 'Entrega de levantamento de demandas',
-      descricao: 'Documento consolidado com todas as solicitações do período',
-      data: '15/04/2026 - 10:30',
-      responsavel: 'Coordenação',
-      status: 'Concluída',
-      statusColor: SigadColors.success,
-    ),
-    _Atividade(
-      id: '#ATv-002',
-      titulo: 'Reunião de validação de requisitos',
-      descricao: 'Apresentação dos requisitos para stakeholders',
-      data: '18/04/2026 - 14:00',
-      responsavel: 'Gestão',
-      status: 'Concluída',
-      statusColor: SigadColors.success,
-    ),
-    _Atividade(
-      id: '#ATv-003',
-      titulo: 'Implementação de sistema de priorização',
-      descricao: 'Desenvolvimento da matriz de priorização',
-      data: '22/04/2026 - 09:00',
-      responsavel: 'TI',
-      status: 'Em progresso',
-      statusColor: SigadColors.info,
-    ),
-    _Atividade(
-      id: '#ATv-004',
-      titulo: 'Treinamento de usuários',
-      descricao: 'Capacitação de 150 usuários no novo sistema',
-      data: '28/04/2026 - 08:00',
-      responsavel: 'RH',
-      status: 'Agendada',
-      statusColor: SigadColors.warning,
-    ),
-    _Atividade(
-      id: '#ATv-005',
-      titulo: 'Auditoria de conformidade',
-      descricao: 'Verificação de conformidade com normas ISO',
-      data: '05/05/2026 - 13:00',
-      responsavel: 'Auditoria',
-      status: 'Agendada',
-      statusColor: SigadColors.warning,
-    ),
-    _Atividade(
-      id: '#ATv-006',
-      titulo: 'Publicação de resultados',
-      descricao: 'Divulgação dos resultados para a comunidade acadêmica',
-      data: '10/05/2026',
-      responsavel: 'Comunicação',
-      status: 'Pendente',
-      statusColor: SigadColors.accent,
-    ),
-  ];
+  final AtividadeRepository _atividadeRepository = AtividadeRepository();
+  final List<Atividade> _atividades = AtividadesService.defaultAtividades();
 
   @override
   void initState() {
@@ -92,110 +25,31 @@ class _AtividadesPageState extends State<AtividadesPage> {
   }
 
   Future<void> _loadData() async {
-    final list = await LocalStorageService.loadList(_kKey);
+    final list = await _atividadeRepository.loadAtividades();
     if (list.isEmpty) return;
     setState(() {
       _atividades
         ..clear()
-        ..addAll(list.map(_atividadeFromJson));
+        ..addAll(list);
     });
   }
 
   void _saveData() {
-    LocalStorageService.saveList(_kKey, _atividades.map(_atividadeToJson).toList());
+    _atividadeRepository.saveAtividades(_atividades);
   }
 
-  Map<String, dynamic> _atividadeToJson(_Atividade a) => {
-    'id': a.id,
-    'titulo': a.titulo,
-    'descricao': a.descricao,
-    'data': a.data,
-    'responsavel': a.responsavel,
-    'status': a.status,
-  };
-
-  _Atividade _atividadeFromJson(Map<String, dynamic> json) => _Atividade(
-    id: json['id'] as String,
-    titulo: json['titulo'] as String,
-    descricao: json['descricao'] as String,
-    data: json['data'] as String,
-    responsavel: json['responsavel'] as String,
-    status: json['status'] as String,
-    statusColor: _corStatus(json['status'] as String),
+  List<Atividade> get _atividadesFiltradas => AtividadesService.filtrarAtividades(
+    atividades: _atividades,
+    busca: _busca,
+    filtro: _filtro,
   );
 
-  List<_Atividade> get _atividadesFiltradas {
-    return _atividades.where((a) {
-      final filtroMatch = _filtro == 'Todas' || a.status == _filtro;
-      final busca = _busca.trim().toLowerCase();
-      final buscaMatch = busca.isEmpty ||
-          a.titulo.toLowerCase().contains(busca) ||
-          a.descricao.toLowerCase().contains(busca) ||
-          a.responsavel.toLowerCase().contains(busca);
-      return filtroMatch && buscaMatch;
-    }).toList();
-  }
+  int get _atividadesConcluidas => AtividadesService.countConcluidas(_atividades);
 
-  int get _atividadesConcluidas => _atividades.where((a) => a.status == 'Concluída').length;
-
-  int get _atividadesPendentes => _atividades.where((a) => a.status == 'Pendente').length;
-
-  Color _corStatus(String status) {
-    switch (status) {
-      case 'Concluída':
-        return SigadColors.success;
-      case 'Em progresso':
-        return SigadColors.info;
-      case 'Agendada':
-        return SigadColors.warning;
-      case 'Pendente':
-        return SigadColors.accent;
-      default:
-        return SigadColors.muted;
-    }
-  }
-
-  String _gerarProximoIdAtividade() {
-    var maiorId = 0;
-
-    for (final atividade in _atividades) {
-      final numero = int.tryParse(atividade.id.replaceAll(RegExp(r'[^0-9]'), ''));
-      if (numero != null && numero > maiorId) {
-        maiorId = numero;
-      }
-    }
-
-    final proximoId = maiorId + 1;
-    return '#ATV-${proximoId.toString().padLeft(3, '0')}';
-  }
-
-  String _dataPadraoNovaAtividade() {
-    final agora = DateTime.now();
-    final dia = agora.day.toString().padLeft(2, '0');
-    final mes = agora.month.toString().padLeft(2, '0');
-    final ano = agora.year.toString();
-    final hora = agora.hour.toString().padLeft(2, '0');
-    final minuto = agora.minute.toString().padLeft(2, '0');
-    return '$dia/$mes/$ano - $hora:$minuto';
-  }
-
-  String? _validarAtividade({
-    required String titulo,
-    required String descricao,
-  }) {
-    if (titulo.trim().isEmpty) {
-      return 'Informe o título da atividade';
-    }
-
-    if (descricao.trim().isEmpty) {
-      return 'Informe a descrição da atividade';
-    }
-
-    return null;
-  }
+  int get _atividadesPendentes => AtividadesService.countPendentes(_atividades);
 
   void _mostrarFeedback(String mensagem) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensagem)));
+    AppFeedbackService.info(context, mensagem);
   }
 
   @override
@@ -228,10 +82,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                   child: Row(
                     children: [
                       'Todas',
-                      'Concluída',
-                      'Em progresso',
-                      'Agendada',
-                      'Pendente'
+                      ...AtividadesService.statusAtividade,
                     ]
                         .map((status) => Padding(
                               padding: const EdgeInsets.only(right: 8),
@@ -338,7 +189,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
               DropdownButtonFormField<String>(
                 initialValue: responsavelSelecionado,
                 decoration: const InputDecoration(labelText: 'Responsável'),
-                items: _responsaveis
+                items: AtividadesService.responsaveis
                     .map((r) => DropdownMenuItem(value: r, child: Text(r)))
                     .toList(),
                 onChanged: (value) => setModalState(() => responsavelSelecionado = value!),
@@ -347,7 +198,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
               DropdownButtonFormField<String>(
                 initialValue: statusSelecionado,
                 decoration: const InputDecoration(labelText: 'Status inicial'),
-                items: _statusAtividade
+                items: AtividadesService.statusAtividade
                     .map((status) => DropdownMenuItem(value: status, child: Text(status)))
                     .toList(),
                 onChanged: (value) => setModalState(() => statusSelecionado = value!),
@@ -365,7 +216,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        final erro = _validarAtividade(
+                        final erro = AtividadesService.validarAtividade(
                           titulo: tituloController.text,
                           descricao: descricaoController.text,
                         );
@@ -378,14 +229,13 @@ class _AtividadesPageState extends State<AtividadesPage> {
                         setState(() {
                           _atividades.insert(
                             0,
-                            _Atividade(
-                              id: _gerarProximoIdAtividade(),
+                            Atividade(
+                              id: AtividadesService.gerarProximoIdAtividade(_atividades),
                               titulo: tituloController.text.trim(),
                               descricao: descricaoController.text.trim(),
-                              data: _dataPadraoNovaAtividade(),
+                              data: AtividadesService.dataPadraoNovaAtividade(),
                               responsavel: responsavelSelecionado,
                               status: statusSelecionado,
-                              statusColor: _corStatus(statusSelecionado),
                             ),
                           );
                         });
@@ -406,7 +256,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
     );
   }
 
-  void _showEditarAtividade(BuildContext context, _Atividade atividade) {
+  void _showEditarAtividade(BuildContext context, Atividade atividade) {
     final textTheme = Theme.of(context).textTheme;
     final tituloController = TextEditingController(text: atividade.titulo);
     final descricaoController = TextEditingController(text: atividade.descricao);
@@ -454,7 +304,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
               DropdownButtonFormField<String>(
                 initialValue: responsavelSelecionado,
                 decoration: const InputDecoration(labelText: 'Responsável'),
-                items: _responsaveis
+                items: AtividadesService.responsaveis
                     .map((r) => DropdownMenuItem(value: r, child: Text(r)))
                     .toList(),
                 onChanged: (value) => setModalState(() => responsavelSelecionado = value!),
@@ -463,7 +313,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
               DropdownButtonFormField<String>(
                 initialValue: statusSelecionado,
                 decoration: const InputDecoration(labelText: 'Status'),
-                items: _statusAtividade
+                items: AtividadesService.statusAtividade
                     .map((status) => DropdownMenuItem(value: status, child: Text(status)))
                     .toList(),
                 onChanged: (value) => setModalState(() => statusSelecionado = value!),
@@ -481,7 +331,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        final erro = _validarAtividade(
+                        final erro = AtividadesService.validarAtividade(
                           titulo: tituloController.text,
                           descricao: descricaoController.text,
                         );
@@ -499,7 +349,6 @@ class _AtividadesPageState extends State<AtividadesPage> {
                               descricao: descricaoController.text.trim(),
                               responsavel: responsavelSelecionado,
                               status: statusSelecionado,
-                              statusColor: _corStatus(statusSelecionado),
                             );
                           }
                         });
@@ -520,7 +369,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
     );
   }
 
-  void _showConfirmarExclusao(BuildContext context, _Atividade atividade) {
+  void _showConfirmarExclusao(BuildContext context, Atividade atividade) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -627,7 +476,7 @@ class _AtividadeCard extends StatelessWidget {
     required this.onExcluir,
   });
 
-  final _Atividade atividade;
+  final Atividade atividade;
   final VoidCallback onEditar;
   final VoidCallback onExcluir;
 
@@ -660,7 +509,7 @@ class _AtividadeCard extends StatelessWidget {
                   width: 4,
                   height: 60,
                   decoration: BoxDecoration(
-                    color: atividade.statusColor,
+                    color: AtividadesService.statusColor(atividade.status),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -691,13 +540,13 @@ class _AtividadeCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: atividade.statusColor.withValues(alpha: 0.12),
+                    color: AtividadesService.statusColor(atividade.status).withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     atividade.status,
                     style: textTheme.labelSmall?.copyWith(
-                      color: atividade.statusColor,
+                      color: AtividadesService.statusColor(atividade.status),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -895,41 +744,3 @@ class _DetailSection extends StatelessWidget {
   }
 }
 
-class _Atividade {
-  const _Atividade({
-    required this.id,
-    required this.titulo,
-    required this.descricao,
-    required this.data,
-    required this.responsavel,
-    required this.status,
-    required this.statusColor,
-  });
-
-  final String id;
-  final String titulo;
-  final String descricao;
-  final String data;
-  final String responsavel;
-  final String status;
-  final Color statusColor;
-
-  _Atividade copyWith({
-    String? titulo,
-    String? descricao,
-    String? data,
-    String? responsavel,
-    String? status,
-    Color? statusColor,
-  }) {
-    return _Atividade(
-      id: id,
-      titulo: titulo ?? this.titulo,
-      descricao: descricao ?? this.descricao,
-      data: data ?? this.data,
-      responsavel: responsavel ?? this.responsavel,
-      status: status ?? this.status,
-      statusColor: statusColor ?? this.statusColor,
-    );
-  }
-}
