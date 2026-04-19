@@ -36,6 +36,12 @@ flutter run
 flutter run -d chrome
 ```
 
+4. Para executar com fonte remota (Sprint 4):
+
+```bash
+flutter run --dart-define=SIGAD_DATA_SOURCE=remote --dart-define=SIGAD_API_BASE_URL=https://api.sigad.local
+```
+
 ## Qualidade
 
 Validação estática:
@@ -48,6 +54,14 @@ Testes:
 
 ```bash
 flutter test
+```
+
+Marcadores de suite recomendados:
+
+```bash
+flutter test test/core
+flutter test test/*repository*test.dart
+flutter test test/*widget_test.dart
 ```
 
 Cobertura focada (exemplo):
@@ -110,9 +124,13 @@ Evitar acesso direto a persistencia em `presentation`; centralizar serializacao 
 
 - Os fluxos de CRUD atuais são em memória (sem backend persistente).
 - O projeto está preparado para evolução com API e armazenamento remoto.
+- O modo de dados pode alternar entre local/remoto via `--dart-define=SIGAD_DATA_SOURCE`.
+- Sessão de usuário é persistida localmente com expiração e restauração na splash.
+- Existe gate de qualidade em CI com `flutter analyze`, `flutter test --coverage` e mínimo de 35%.
 
 ## Estado atual dos sprints
 
 - Sprint 1: fluxos base e navegacao responsiva concluídos
 - Sprint 2: extracao de camadas (`domain`/`data`) em features principais concluída
 - Sprint 3: endurecimento de qualidade em andamento (testes de widget, robustez e governanca)
+- Sprint 4: base de integrações, sessão persistente, fallback resiliente e CI gate iniciados

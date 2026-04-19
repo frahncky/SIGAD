@@ -1,0 +1,43 @@
+name: quality-gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Static analysis
+        run: flutter analyze
+
+      - name: Unit and widget tests with coverage
+        run: flutter test --coverage
+
+      - name: Coverage gate (minimum 35%)
+        run: |
+          line=$(grep -E '^LF:' coverage/lcov.info | awk -F: '{sum+=$2} END {print sum+0}')
+          hit=$(grep -E '^LH:' coverage/lcov.info | awk -F: '{sum+=$2} END {print sum+0}')
+          if [ "$line" -eq 0 ]; then
+            echo "No executable lines found in coverage report"
+            exit 1
+          fi
+          pct=$((100 * hit / line))
+          echo "Coverage: ${pct}%"
+          if [ "$pct" -lt 35 ]; then
+            echo "Coverage gate failed: expected at least 35%"
+            exit 1
+          fi

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'dart:async';
 import '../../../../app/routes/app_routes.dart';
 import '../../../../core/services/user_context_provider.dart';
 
@@ -19,6 +20,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
   late Animation<double> _iconScaleAnimation;
+  Timer? _navigationTimer;
 
   @override
   void initState() {
@@ -52,17 +54,19 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
 
     _animationController.forward();
 
-    Future.delayed(const Duration(milliseconds: 2500), () {
-      if (mounted) {
-        final userContext = context.read<UserContextProvider>();
-        final nextRoute = userContext.isAuthenticated ? AppRoutes.dashboard : AppRoutes.login;
-        Navigator.of(context).pushReplacementNamed(nextRoute);
-      }
+    _navigationTimer = Timer(const Duration(milliseconds: 2500), () async {
+      if (!mounted) return;
+      final userContext = context.read<UserContextProvider>();
+      await userContext.restoreSession();
+      if (!mounted) return;
+      final nextRoute = userContext.isAuthenticated ? AppRoutes.dashboard : AppRoutes.login;
+      Navigator.of(context).pushReplacementNamed(nextRoute);
     });
   }
 
   @override
   void dispose() {
+    _navigationTimer?.cancel();
     _animationController.dispose();
     super.dispose();
   }

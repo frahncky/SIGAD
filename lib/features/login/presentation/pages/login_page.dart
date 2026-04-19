@@ -245,7 +245,10 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (!mounted) return;
-      await context.read<UserContextProvider>().login(user);
+      await context.read<UserContextProvider>().login(
+        user,
+        sessionToken: 'session_$normalizedEmail',
+      );
       AppEventLogger.action('login_success', details: {
         'userId': user.id,
         'role': user.role.name,
@@ -286,7 +289,10 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (!mounted) return;
-      await context.read<UserContextProvider>().login(user);
+      await context.read<UserContextProvider>().login(
+        user,
+        sessionToken: 'session_demo_${role.name}',
+      );
       AppEventLogger.action('demo_login_success', details: {
         'userId': user.id,
         'role': user.role.name,

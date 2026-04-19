@@ -34,4 +34,10 @@ class LocalStorageService {
     if (raw == null) return null;
     return Map<String, dynamic>.from(jsonDecode(raw) as Map);
   }
+
+  /// Remove um registro salvo por chave.
+  static Future<void> remove(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(key);
+  }
 }

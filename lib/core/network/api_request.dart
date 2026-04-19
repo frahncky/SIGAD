@@ -7,6 +7,7 @@ class ApiRequest {
     this.queryParameters = const {},
     this.headers = const {},
     this.body,
+    this.timeout,
   });
 
   final String path;
@@ -14,4 +15,5 @@ class ApiRequest {
   final Map<String, String> queryParameters;
   final Map<String, String> headers;
   final Object? body;
+  final Duration? timeout;
 }

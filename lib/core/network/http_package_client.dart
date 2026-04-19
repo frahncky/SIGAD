@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../services/app_event_logger.dart';
 import 'api_config.dart';
 import 'api_error.dart';
 import 'api_request.dart';
@@ -12,17 +14,26 @@ class HttpPackageClient implements AppHttpClient {
   HttpPackageClient({
     required this.httpClient,
     this.baseUrl = ApiConfig.baseUrl,
+    this.defaultTimeout = const Duration(seconds: 15),
   });
 
   final http.Client httpClient;
   final String baseUrl;
+  final Duration defaultTimeout;
 
   @override
   Future<ApiResponse> send(ApiRequest request) async {
+    final operationId = DateTime.now().microsecondsSinceEpoch.toString();
     final uri = Uri.parse(baseUrl).replace(
       path: _normalizePath(request.path),
       queryParameters: request.queryParameters.isEmpty ? null : request.queryParameters,
     );
+
+    AppEventLogger.action('http_send_start', details: {
+      'operationId': operationId,
+      'method': request.method.name,
+      'path': request.path,
+    });
 
     final headers = {
       'Content-Type': 'application/json',
@@ -31,35 +42,60 @@ class HttpPackageClient implements AppHttpClient {
 
     final body = request.body == null ? null : jsonEncode(request.body);
 
-    late http.Response response;
-    switch (request.method) {
-      case HttpMethod.get:
-        response = await httpClient.get(uri, headers: headers);
-      case HttpMethod.post:
-        response = await httpClient.post(uri, headers: headers, body: body);
-      case HttpMethod.put:
-        response = await httpClient.put(uri, headers: headers, body: body);
-      case HttpMethod.patch:
-        response = await httpClient.patch(uri, headers: headers, body: body);
-      case HttpMethod.delete:
-        response = await httpClient.delete(uri, headers: headers, body: body);
-    }
+    try {
+      late http.Response response;
+      switch (request.method) {
+        case HttpMethod.get:
+          response = await httpClient.get(uri, headers: headers).timeout(request.timeout ?? defaultTimeout);
+        case HttpMethod.post:
+          response = await httpClient
+              .post(uri, headers: headers, body: body)
+              .timeout(request.timeout ?? defaultTimeout);
+        case HttpMethod.put:
+          response = await httpClient
+              .put(uri, headers: headers, body: body)
+              .timeout(request.timeout ?? defaultTimeout);
+        case HttpMethod.patch:
+          response = await httpClient
+              .patch(uri, headers: headers, body: body)
+              .timeout(request.timeout ?? defaultTimeout);
+        case HttpMethod.delete:
+          response = await httpClient
+              .delete(uri, headers: headers, body: body)
+              .timeout(request.timeout ?? defaultTimeout);
+      }
 
-    final parsedBody = _tryDecodeJson(response.body);
+      final parsedBody = _tryDecodeJson(response.body);
 
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw ApiError(
-        message: 'Falha na comunicacao com a API',
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw ApiError(
+          message: 'Falha na comunicacao com a API',
+          statusCode: response.statusCode,
+          details: parsedBody,
+        );
+      }
+
+      AppEventLogger.action('http_send_success', details: {
+        'operationId': operationId,
+        'method': request.method.name,
+        'path': request.path,
+        'statusCode': response.statusCode,
+      });
+
+      return ApiResponse(
         statusCode: response.statusCode,
-        details: parsedBody,
+        body: parsedBody,
+        headers: response.headers,
       );
+    } on TimeoutException catch (error, stackTrace) {
+      AppEventLogger.error('http_send_timeout:$operationId', error, stackTrace: stackTrace);
+      throw ApiError(
+        message: 'Tempo limite excedido na comunicacao com a API',
+      );
+    } catch (error, stackTrace) {
+      AppEventLogger.error('http_send_error:$operationId', error, stackTrace: stackTrace);
+      rethrow;
     }
-
-    return ApiResponse(
-      statusCode: response.statusCode,
-      body: parsedBody,
-      headers: response.headers,
-    );
   }
 
   Object? _tryDecodeJson(String body) {
