@@ -13,7 +13,7 @@ O aplicativo SIGAD foi configurado com um sistema de múltiplos perfis de usuár
   - ✅ Dashboard (Visão Geral)
   - ✅ Bate-papo
   - ✅ Quadro de Tarefas
-  - ✅ Docente
+  - ✅ Agenda
   - ✅ Atividades
   - ❌ Demandas
   - ❌ Relatórios
@@ -27,7 +27,7 @@ O aplicativo SIGAD foi configurado com um sistema de múltiplos perfis de usuár
   - ✅ Bate-papo
   - ✅ Demandas
   - ✅ Quadro de Tarefas
-  - ✅ Docente
+  - ✅ Agenda
   - ✅ Atividades
   - ✅ Relatórios
   - ❌ Configurações
@@ -42,7 +42,7 @@ O aplicativo SIGAD foi configurado com um sistema de múltiplos perfis de usuár
   - ✅ Atividades
   - ✅ Relatórios
   - ❌ Demandas
-  - ❌ Docente
+  - ❌ Agenda
   - ❌ Configurações
 
 ### 4. **Chefe do Departamento (CD)**
@@ -53,7 +53,7 @@ O aplicativo SIGAD foi configurado com um sistema de múltiplos perfis de usuár
   - ✅ Bate-papo
   - ✅ Demandas
   - ✅ Quadro de Tarefas
-  - ✅ Docente
+  - ✅ Agenda
   - ✅ Atividades
   - ✅ Relatórios
   - ✅ Configurações
