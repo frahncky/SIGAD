@@ -93,6 +93,10 @@ Evitar acesso direto a persistencia em `presentation`; centralizar serializacao 
 - `lib/features`: módulos funcionais por domínio
 - `lib/shared`: componentes e widgets reutilizáveis
 
+Arquitetura e operação detalhadas:
+
+- `ARCHITECTURE_AND_OPERATIONS.md`
+
 ## Funcionalidades implementadas
 
 - Autenticação inicial e seleção de perfil
@@ -132,5 +136,5 @@ Evitar acesso direto a persistencia em `presentation`; centralizar serializacao 
 
 - Sprint 1: fluxos base e navegacao responsiva concluídos
 - Sprint 2: extracao de camadas (`domain`/`data`) em features principais concluída
-- Sprint 3: endurecimento de qualidade em andamento (testes de widget, robustez e governanca)
-- Sprint 4: base de integrações, sessão persistente, fallback resiliente e CI gate iniciados
+- Sprint 3: concluído (qualidade técnica, cobertura e governança)
+- Sprint 4: concluído (integrações, sessão, observabilidade, resiliência e CI gate)

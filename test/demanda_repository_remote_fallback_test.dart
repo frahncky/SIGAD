@@ -83,5 +83,21 @@ void main() {
       expect(demandas, hasLength(1));
       expect(demandas.first.id, '#DEM-500');
     });
+
+    test('propaga erro remoto quando fallback está desativado', () async {
+      SharedPreferences.setMockInitialValues({});
+
+      final repo = DemandaRepository(
+        storageKey: 'test_demandas_remote',
+        remoteClient: _AlwaysFailingHttpClient(),
+        dataSourceMode: DataSourceMode.remote,
+        enableRemoteFallback: false,
+      );
+
+      expect(
+        repo.loadDemandas,
+        throwsA(isA<ApiError>()),
+      );
+    });
   });
 }

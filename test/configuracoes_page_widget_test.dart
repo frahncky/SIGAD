@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:sigad/app/theme/app_theme.dart';
+import 'package:sigad/core/models/user.dart';
+import 'package:sigad/core/models/user_role.dart';
+import 'package:sigad/core/services/user_context_provider.dart';
 import 'package:sigad/features/configuracoes/presentation/pages/configuracoes_page.dart';
 
 void main() {
@@ -11,10 +15,24 @@ void main() {
   });
 
   testWidgets('edita perfil com sucesso', (tester) async {
+    final userContext = UserContextProvider();
+    await userContext.login(
+      User(
+        id: 'cfg-chefe',
+        name: 'Chefia Teste',
+        email: 'chefe@sigad.dev',
+        role: UserRole.chefeDepartamento,
+        createdAt: DateTime(2026, 1, 1),
+      ),
+    );
+
     await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light(),
-        home: const ConfiguracoesPage(),
+      ChangeNotifierProvider<UserContextProvider>.value(
+        value: userContext,
+        child: MaterialApp(
+          theme: AppTheme.light(),
+          home: const ConfiguracoesPage(),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -35,10 +53,24 @@ void main() {
   });
 
   testWidgets('valida email invalido no modal de alteracao', (tester) async {
+    final userContext = UserContextProvider();
+    await userContext.login(
+      User(
+        id: 'cfg-chefe-2',
+        name: 'Chefia Teste 2',
+        email: 'chefe2@sigad.dev',
+        role: UserRole.chefeDepartamento,
+        createdAt: DateTime(2026, 1, 1),
+      ),
+    );
+
     await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light(),
-        home: const ConfiguracoesPage(),
+      ChangeNotifierProvider<UserContextProvider>.value(
+        value: userContext,
+        child: MaterialApp(
+          theme: AppTheme.light(),
+          home: const ConfiguracoesPage(),
+        ),
       ),
     );
     await tester.pumpAndSettle();

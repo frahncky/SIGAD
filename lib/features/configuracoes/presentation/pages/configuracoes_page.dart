@@ -1,7 +1,11 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../core/security/authorization_policy.dart';
+import '../../../../core/services/app_health_service.dart';
 import '../../../../core/services/app_feedback_service.dart';
+import '../../../../core/services/user_context_provider.dart';
 import '../../data/configuracoes_repository.dart';
 import '../../domain/configuracoes_models.dart';
 import '../../domain/configuracoes_service.dart';
@@ -82,10 +86,48 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final role = context.watch<UserContextProvider>().userRole;
+    if (!AuthorizationPolicy.canManageConfiguracoes(role)) {
+      return const _ConfiguracoesAccessDenied();
+    }
+
+    final health = AppHealthService.snapshot();
+    final topErrors = health.errorsByFeature.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    final topFlows = health.eventsByFlow.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
     return Scaffold(
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 16),
         children: [
+          _ConfigSection(
+            titulo: 'Saúde Operacional',
+            children: [
+              _ConfigItem(
+                icon: Icons.monitor_heart_outlined,
+                titulo: 'Resumo da execução',
+                subtitulo: 'Ações: ${health.totalActions} | Erros: ${health.totalErrors}',
+                onTap: () => _mostrarFeedback('Saúde operacional atualizada'),
+              ),
+              _ConfigItem(
+                icon: Icons.warning_amber_outlined,
+                titulo: 'Erros por feature',
+                subtitulo: topErrors.isEmpty
+                    ? 'Sem erros registrados na sessão'
+                    : topErrors.take(3).map((e) => '${e.key}: ${e.value}').join(' | '),
+                onTap: () => _mostrarFeedback('Painel de erros por feature atualizado'),
+              ),
+              _ConfigItem(
+                icon: Icons.route_outlined,
+                titulo: 'Fluxos mais acionados',
+                subtitulo: topFlows.isEmpty
+                    ? 'Sem fluxos registrados na sessão'
+                    : topFlows.take(3).map((e) => '${e.key}: ${e.value}').join(' | '),
+                onTap: () => _mostrarFeedback('Painel de fluxos atualizado'),
+              ),
+            ],
+          ),
           _ConfigSection(
             titulo: 'Conta',
             children: [
@@ -907,6 +949,31 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ConfiguracoesAccessDenied extends StatelessWidget {
+  const _ConfiguracoesAccessDenied();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.lock_outline, size: 56),
+            const SizedBox(height: 12),
+            Text(
+              'Apenas chefia de departamento pode acessar configurações.',
+              style: Theme.of(context).textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }

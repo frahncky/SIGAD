@@ -1,6 +1,9 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../core/security/authorization_policy.dart';
 import '../../../../core/services/app_feedback_service.dart';
+import '../../../../core/services/user_context_provider.dart';
 import '../../data/demanda_repository.dart';
 import '../../domain/demanda_models.dart';
 import '../../domain/demandas_service.dart';
@@ -274,6 +277,8 @@ class _DemandasPageState extends State<DemandasPage> {
   }
 
   void _showCriarDemanda(BuildContext context) {
+    if (!_canManageDemandas(context, actionLabel: 'criar demandas')) return;
+
     final textTheme = Theme.of(context).textTheme;
     final tituloController = TextEditingController();
     final descricaoController = TextEditingController();
@@ -400,6 +405,8 @@ class _DemandasPageState extends State<DemandasPage> {
   }
 
   void _showEditarDemanda(BuildContext context, Demanda demanda) {
+    if (!_canManageDemandas(context, actionLabel: 'editar demandas')) return;
+
     final textTheme = Theme.of(context).textTheme;
     final tituloController = TextEditingController(text: demanda.titulo);
     final descricaoController = TextEditingController(text: demanda.descricao);
@@ -524,6 +531,8 @@ class _DemandasPageState extends State<DemandasPage> {
   }
 
   void _showConfirmarExclusao(BuildContext context, Demanda demanda) {
+    if (!_canManageDemandas(context, actionLabel: 'excluir demandas')) return;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -548,6 +557,15 @@ class _DemandasPageState extends State<DemandasPage> {
         ],
       ),
     );
+  }
+
+  bool _canManageDemandas(BuildContext context, {required String actionLabel}) {
+    final role = context.read<UserContextProvider>().userRole;
+    if (AuthorizationPolicy.canManageDemandas(role)) {
+      return true;
+    }
+    AppFeedbackService.warning(context, 'Seu perfil não possui permissão para $actionLabel.');
+    return false;
   }
 }
 

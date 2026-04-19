@@ -1,6 +1,9 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../core/security/authorization_policy.dart';
 import '../../../../core/services/app_feedback_service.dart';
+import '../../../../core/services/user_context_provider.dart';
 import '../../data/relatorio_repository.dart';
 import '../../domain/relatorio_models.dart';
 import '../../domain/relatorios_service.dart';
@@ -49,12 +52,16 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
   }
 
   void _baixarRelatorio(Relatorio relatorio) {
+    if (!_canAccessRelatorios()) return;
+
     final atualizado = RelatoriosService.registrarDownload(relatorio);
     _atualizarRelatorio(atualizado);
     AppFeedbackService.success(context, 'Relatório baixado: ${relatorio.titulo}');
   }
 
   void _compartilharRelatorio(Relatorio relatorio) {
+    if (!_canAccessRelatorios()) return;
+
     final atualizado = RelatoriosService.registrarCompartilhamento(relatorio);
     _atualizarRelatorio(atualizado);
     AppFeedbackService.info(context, 'Link de compartilhamento gerado para ${relatorio.titulo}');
@@ -68,6 +75,10 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_canAccessRelatorios(showFeedback: false)) {
+      return const _RelatoriosAccessDenied();
+    }
+
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       body: ListView(
@@ -137,6 +148,40 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
                 ),
               ),
         ],
+      ),
+    );
+  }
+
+  bool _canAccessRelatorios({bool showFeedback = true}) {
+    final role = context.read<UserContextProvider>().userRole;
+    final allowed = AuthorizationPolicy.canAccessRelatorios(role);
+    if (!allowed && showFeedback) {
+      AppFeedbackService.warning(context, 'Seu perfil não possui permissão para relatórios.');
+    }
+    return allowed;
+  }
+}
+
+class _RelatoriosAccessDenied extends StatelessWidget {
+  const _RelatoriosAccessDenied();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.lock_outline, size: 56),
+            const SizedBox(height: 12),
+            Text(
+              'Acesso não permitido para este perfil.',
+              style: Theme.of(context).textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }

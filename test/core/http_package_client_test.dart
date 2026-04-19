@@ -38,5 +38,25 @@ void main() {
         ),
       );
     });
+
+    test('lança ApiError em cenário de timeout/offline', () async {
+      final client = HttpPackageClient(
+        baseUrl: 'https://api.sigad.local',
+        httpClient: MockClient((_) async {
+          await Future<void>.delayed(const Duration(milliseconds: 60));
+          return http.Response('{"ok":true}', 200);
+        }),
+      );
+
+      expect(
+        () => client.send(
+          const ApiRequest(
+            path: '/demandas',
+            timeout: Duration(milliseconds: 5),
+          ),
+        ),
+        throwsA(isA<ApiError>().having((e) => e.message, 'message', contains('Tempo limite'))),
+      );
+    });
   });
 }

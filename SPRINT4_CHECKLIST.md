@@ -12,24 +12,24 @@ Preparar o SIGAD para evolucao de produto com foco em integracao, observabilidad
 ## Pilar 2 - Autenticacao e Sessao
 - [x] Evoluir UserContext para fluxo de sessao com expiracao
 - [x] Definir estrategia de refresh token (ou reautenticacao)
-- [ ] Mapear autorizacao por role em pontos criticos de acao
+- [x] Mapear autorizacao por role em pontos criticos de acao
 - [x] Cobrir cenarios de sessao expirada em testes de fluxo
 
 ## Pilar 3 - Observabilidade
 - [x] Padronizar eventos de telemetria por feature
 - [x] Adicionar correlacao basica de operacoes (request id/local op id)
 - [x] Centralizar logging de erros nao tratados
-- [ ] Definir painel minimo de saude (erros por feature e fluxo)
+- [x] Definir painel minimo de saude (erros por feature e fluxo)
 
 ## Pilar 4 - Resiliencia e UX de Falhas
 - [x] Implementar estados de erro/retry para carregamentos principais
 - [x] Garantir feedback consistente para timeout/falha de rede
 - [x] Adicionar fallback para dados parciais quando possivel
-- [ ] Cobrir casos offline em fluxos prioritarios
+- [x] Cobrir casos offline em fluxos prioritarios
 
 ## Pilar 5 - Qualidade Continua
 - [x] Criar suite de testes por marcador (unit/widget/flow)
-- [ ] Definir gate minimo de cobertura para PR
+- [x] Definir gate minimo de cobertura para PR
 - [x] Adicionar pipeline CI com analyze + testes + cobertura
 - [x] Consolidar guia de contribuicao tecnica no README
 
@@ -38,7 +38,7 @@ Preparar o SIGAD para evolucao de produto com foco em integracao, observabilidad
 - [x] Fluxos criticos com tratamento de erro e retry
 - [x] Telemetria basica ativa em features principais
 - [x] CI validando analise e testes automaticamente
-- [ ] Documentacao de arquitetura e operacao atualizada
+- [x] Documentacao de arquitetura e operacao atualizada
 
 ## Sequencia Recomendada
 1. Contratos e client base
@@ -54,3 +54,6 @@ Preparar o SIGAD para evolucao de produto com foco em integracao, observabilidad
 - Adaptadores local/remoto com fallback ativos para atividades, demandas, kanban e relatorios.
 - Sessao persistente com expiracao, restauracao na splash e reautenticacao quando expirada.
 - CI com gate de cobertura minima em `.github/workflows/quality-gate.yml`.
+- Autorizacao por role aplicada em pontos criticos de demandas, relatorios e configuracoes.
+- Painel minimo de saude operacional ativo na tela de configuracoes.
+- Cobertura de cenarios offline/timeout ampliada em testes de client HTTP e repositorio remoto.
