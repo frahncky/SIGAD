@@ -2,6 +2,7 @@
 import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
+import '../../domain/docente_visibility_service.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
@@ -43,6 +44,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     _Docente(
       id: '#DOC-001',
       nome: 'Profa. Dra. Maria Silva',
+      userId: 'user_email_maria.santos@univ.br',
       userEmail: 'maria.santos@univ.br',
       departamento: 'Engenharia de Software',
       cargaHoraria: 20,
@@ -57,6 +59,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     _Docente(
       id: '#DOC-002',
       nome: 'Prof. Dr. João Silva',
+      userId: 'user_email_joao.silva@univ.br',
       userEmail: 'joao.silva@univ.br',
       departamento: 'Sistemas de Informação',
       cargaHoraria: 16,
@@ -70,6 +73,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     _Docente(
       id: '#DOC-003',
       nome: 'Profa. Ana Costa',
+      userId: 'user_email_ana.pereira@univ.br',
       userEmail: 'ana.pereira@univ.br',
       departamento: 'Engenharia de Software',
       cargaHoraria: 12,
@@ -83,6 +87,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     _Docente(
       id: '#DOC-004',
       nome: 'Prof. Carlos Oliveira',
+      userId: 'user_email_carlos.oliveira@univ.br',
       userEmail: 'carlos.oliveira@univ.br',
       departamento: 'Redes e Telecomunicações',
       cargaHoraria: 18,
@@ -97,6 +102,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     _Docente(
       id: '#DOC-005',
       nome: 'Profa. Beatriz Mendes',
+      userId: 'user_email_beatriz.mendes@univ.br',
       userEmail: 'beatriz.mendes@univ.br',
       departamento: 'Engenharia de Software',
       cargaHoraria: 14,
@@ -144,6 +150,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   Map<String, dynamic> _docenteToJson(_Docente d) => {
     'id': d.id,
     'nome': d.nome,
+    if (d.userId != null) 'userId': d.userId,
     if (d.userEmail != null) 'userEmail': d.userEmail,
     'departamento': d.departamento,
     'cargaHoraria': d.cargaHoraria,
@@ -168,6 +175,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     return _Docente(
       id: json['id']?.toString().trim().isNotEmpty == true ? json['id']!.toString().trim() : _gerarProximoIdDocente(),
       nome: json['nome']?.toString().trim().isNotEmpty == true ? json['nome']!.toString().trim() : 'Docente sem nome',
+      userId: _normalizeNullable(json['userId']),
       userEmail: json['userEmail']?.toString().trim().isEmpty == true ? null : json['userEmail']?.toString().trim().toLowerCase(),
       departamento: json['departamento']?.toString().trim().isNotEmpty == true ? json['departamento']!.toString().trim() : 'Não informado',
       cargaHoraria: _toInt(json['cargaHoraria']),
@@ -175,6 +183,18 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       disciplinas: _disciplinasFromJson(json['disciplinas']),
       horariosAula: _horariosAulaFromJson(json['horariosAula']),
     );
+  }
+
+  String? _normalizeNullable(dynamic raw) {
+    final value = raw?.toString().trim();
+    if (value == null || value.isEmpty) return null;
+    return value;
+  }
+
+  String? _buildUserIdFromEmail(String? email) {
+    final normalized = email?.trim().toLowerCase();
+    if (normalized == null || normalized.isEmpty) return null;
+    return 'user_email_$normalized';
   }
 
   int _toInt(dynamic raw, {int defaultValue = 0, int minValue = 0}) {
@@ -221,15 +241,19 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
         .toList(growable: false);
   }
 
-  List<_Docente> _docentesVisiveis(UserRole role, {String? emailUsuario}) {
-    if (role == UserRole.professor) {
-      final emailNormalizado = (emailUsuario ?? '').trim().toLowerCase();
-      return _docentes
-          .where((docente) => (docente.userEmail ?? '').trim().toLowerCase() == emailNormalizado)
-          .toList();
-    }
-
-    return _docentes;
+  List<_Docente> _docentesVisiveis(
+    UserRole role, {
+    String? currentUserId,
+    String? emailUsuario,
+  }) {
+    return DocenteVisibilityService.filterDocentesForRole<_Docente>(
+      role: role,
+      docentes: _docentes,
+      currentUserId: currentUserId,
+      currentUserEmail: emailUsuario,
+      getUserId: (docente) => docente.userId,
+      getUserEmail: (docente) => docente.userEmail,
+    );
   }
 
   String _gerarProximoIdDocente() {
@@ -408,6 +432,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                             _Docente(
                               id: _gerarProximoIdDocente(),
                               nome: nomeController.text.trim(),
+                              userId: _buildUserIdFromEmail(emailController.text),
                               userEmail: emailController.text.trim().isEmpty ? null : emailController.text.trim().toLowerCase(),
                               departamento: departamentoController.text.trim(),
                               cargaHoraria: horarios.length * 2,
@@ -721,6 +746,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                           if (index >= 0) {
                             _docentes[index] = docente.copyWith(
                               nome: nomeController.text.trim(),
+                              userId: _buildUserIdFromEmail(emailController.text),
                               userEmail: emailController.text.trim().isEmpty ? null : emailController.text.trim().toLowerCase(),
                               departamento: departamentoController.text.trim(),
                               cargaHoraria: horarios.length * 2,
@@ -797,7 +823,11 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     final podeGerenciar = role == UserRole.coordenador || role == UserRole.chefeDepartamento;
     final podeVisualizarHorarios = role == UserRole.professor || podeGerenciar;
     final emailNormalizado = (user?.email ?? '').trim().toLowerCase();
-    final docentesVisiveis = _docentesVisiveis(role, emailUsuario: user?.email);
+    final docentesVisiveis = _docentesVisiveis(
+      role,
+      currentUserId: user?.id,
+      emailUsuario: user?.email,
+    );
     final docentesOrdenados = podeGerenciar
         ? [
             ...docentesVisiveis.where((d) => (d.userEmail ?? '').trim().toLowerCase() == emailNormalizado),
@@ -1312,6 +1342,7 @@ class _Docente {
   const _Docente({
     required this.id,
     required this.nome,
+    this.userId,
     this.userEmail,
     required this.departamento,
     required this.cargaHoraria,
@@ -1322,6 +1353,7 @@ class _Docente {
 
   final String id;
   final String nome;
+  final String? userId;
   final String? userEmail;
   final String departamento;
   final int cargaHoraria;
@@ -1331,6 +1363,7 @@ class _Docente {
 
   _Docente copyWith({
     String? nome,
+    String? userId,
     String? userEmail,
     String? departamento,
     int? cargaHoraria,
@@ -1341,6 +1374,7 @@ class _Docente {
     return _Docente(
       id: id,
       nome: nome ?? this.nome,
+      userId: userId ?? this.userId,
       userEmail: userEmail ?? this.userEmail,
       departamento: departamento ?? this.departamento,
       cargaHoraria: cargaHoraria ?? this.cargaHoraria,

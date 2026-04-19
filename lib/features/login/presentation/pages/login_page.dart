@@ -233,8 +233,10 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await Future.delayed(const Duration(milliseconds: 900));
 
+      final normalizedEmail = email.toLowerCase();
+
       final user = User(
-        id: 'user_${DateTime.now().millisecondsSinceEpoch}',
+        id: 'user_email_$normalizedEmail',
         name: email.split('@').first,
         email: email,
         role: _selectedRole!,
