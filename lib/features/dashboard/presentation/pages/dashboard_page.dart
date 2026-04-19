@@ -53,6 +53,18 @@ class DashboardPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   _ModuleGrid(modules: availableModules),
+                  const SizedBox(height: 24),
+                  const _SectionTitle(
+                    title: 'Prioridades',
+                    icon: Icons.flag_outlined,
+                  ),
+                  const SizedBox(height: 12),
+                  _DynamicPriorityList(
+                    role: role,
+                    fallbackItems: profile.priorities,
+                  ),
+                  const SizedBox(height: 16),
+                  _FocusChips(items: profile.focus),
                 ],
               ),
             ),
@@ -428,6 +440,27 @@ class _DynamicPriorityListState extends State<_DynamicPriorityList> {
         final items = snapshot.data ?? widget.fallbackItems;
         return _PriorityList(items: items);
       },
+    );
+  }
+}
+
+class _FocusChips extends StatelessWidget {
+  const _FocusChips({required this.items});
+
+  final List<String> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: items
+          .map(
+            (item) => Chip(
+              label: Text(item),
+            ),
+          )
+          .toList(growable: false),
     );
   }
 }

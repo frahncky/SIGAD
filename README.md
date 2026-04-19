@@ -50,6 +50,28 @@ Testes:
 flutter test
 ```
 
+Cobertura focada (exemplo):
+
+```bash
+flutter test --coverage test/sprint1_flows_test.dart test/bate_papo_page_widget_test.dart test/configuracoes_page_widget_test.dart test/dashboard_page_widget_test.dart
+```
+
+## Fluxo de desenvolvimento recomendado
+
+1. Implementar alteracoes seguindo a estrutura por feature (`domain`, `data`, `presentation`)
+2. Rodar analise estatica (`flutter analyze`)
+3. Executar testes focados da feature e testes de regressao
+4. Validar cobertura dos cenarios criticos
+5. Gerar commit pequeno com escopo unico
+
+## Padrao de arquitetura por feature
+
+- `domain`: entidades, regras de negocio e servicos puros
+- `data`: repositorios e adaptadores de persistencia
+- `presentation`: paginas e widgets de interface
+
+Evitar acesso direto a persistencia em `presentation`; centralizar serializacao em `data`.
+
 ## Estrutura principal
 
 - `lib/app`: roteamento, tema e bootstrap da aplicação
@@ -88,3 +110,9 @@ flutter test
 
 - Os fluxos de CRUD atuais são em memória (sem backend persistente).
 - O projeto está preparado para evolução com API e armazenamento remoto.
+
+## Estado atual dos sprints
+
+- Sprint 1: fluxos base e navegacao responsiva concluídos
+- Sprint 2: extracao de camadas (`domain`/`data`) em features principais concluída
+- Sprint 3: endurecimento de qualidade em andamento (testes de widget, robustez e governanca)

@@ -179,6 +179,8 @@ class ChatProvider extends ChangeNotifier {
     if (list.isEmpty) {
       _seedMessages();
       await _loadReadState();
+      _saveData();
+      notifyListeners();
       return;
     }
     for (final json in list) {

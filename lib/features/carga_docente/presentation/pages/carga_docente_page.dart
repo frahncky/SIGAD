@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
 import '../../data/docente_repository.dart';
-import '../../domain/docente_form_service.dart';
 import '../../domain/docente_models.dart';
 import '../../domain/docente_visibility_service.dart';
 import '../controllers/docente_form_controller.dart';
@@ -219,7 +218,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       isScrollControlled: true,
       builder: (context) => StatefulBuilder(
         builder: (context, setModalState) => PopScope(
-          onPopInvokedWithResult: (_, __) => controller.dispose(),
+          onPopInvokedWithResult: (_, _) => controller.dispose(),
           child: Container(
           padding: const EdgeInsets.all(24),
           height: MediaQuery.of(context).size.height * 0.9,

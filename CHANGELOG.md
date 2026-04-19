@@ -2,6 +2,23 @@
 
 Todas as mudanças relevantes neste repositório serão documentadas neste arquivo.
 
+## [v1.1.0] - 2026-04-19
+
+### Adicionado
+- Checklist de execucao do Sprint 3 em `SPRINT3_CHECKLIST.md`.
+- Testes de widget para Bate Papo, Configuracoes e Dashboard.
+- Estrutura de dominio/dados para Bate Papo (`BatePapoService`, `BatePapoRepository` e `ConversationSummary`).
+- Estrutura de dominio para perfil do Dashboard (`RoleProfile`, `RoleMetric`, `PriorityItem`).
+
+### Alterado
+- Dashboard passou a renderizar secao de prioridades dinamicas e chips de foco por perfil.
+- Bate Papo passou a usar repositorio tambem para marcacao de leitura e envio tipado.
+- Configuracoes recebeu restauracao de textos em PT-BR nos servicos e repositorio.
+- README atualizado com fluxo recomendado de desenvolvimento, padrao de arquitetura por feature e comando de cobertura focada.
+
+### Qualidade
+- Consolidacao da validacao de sprint com testes de camada, fluxo e widget para features principais.
+
 ## [v1.0.0] - 2026-04-13
 
 ### Adicionado

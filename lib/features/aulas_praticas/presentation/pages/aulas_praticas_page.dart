@@ -5,7 +5,6 @@ import '../../../../app/theme/sigad_colors.dart';
 import '../../data/reserva_repository.dart';
 import '../../domain/reserva_models.dart';
 import '../../domain/reserva_service.dart';
-import '../../../../core/models/user_role.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';

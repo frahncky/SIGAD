@@ -110,7 +110,7 @@ void main() {
 
     test('valida acesso e geração de linhas da grade', () {
       expect(ReservaService.canAccess(UserRole.professor), isTrue);
-      expect(ReservaService.canAccess(UserRole.aluno), isFalse);
+      expect(ReservaService.canAccess(null), isFalse);
       expect(ReservaService.gerarLinhasGrade(), isNotEmpty);
     });
 
@@ -134,11 +134,12 @@ void main() {
     });
 
     test('permite alteração apenas para usuário docente logado', () {
-      const user = User(
+      final user = User(
         id: '1',
         name: 'Ana',
         email: 'ana@sigad.br',
         role: UserRole.professor,
+        createdAt: DateTime(2026, 1, 1),
       );
 
       expect(
