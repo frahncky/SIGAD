@@ -121,6 +121,74 @@ void main() {
     expect(find.text('Antecedência do lembrete'), findsOneWidget);
   });
 
+  testWidgets('coordenador vê configuração de lembrete de disciplina', (tester) async {
+    final userContext = UserContextProvider();
+    await userContext.login(
+      User(
+        id: 'cfg-coord-1',
+        name: 'Coordenador Docente',
+        email: 'coord@sigad.dev',
+        role: UserRole.coordenador,
+        createdAt: DateTime(2026, 1, 1),
+      ),
+    );
+
+    await tester.pumpWidget(
+      ChangeNotifierProvider<UserContextProvider>.value(
+        value: userContext,
+        child: MaterialApp(
+          theme: AppTheme.light(),
+          home: const ConfiguracoesPage(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(
+      find.text('Lembrete da próxima disciplina'),
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Lembrete da próxima disciplina'), findsOneWidget);
+    expect(find.text('Antecedência do lembrete'), findsOneWidget);
+  });
+
+  testWidgets('chefe vê configuração de lembrete de disciplina', (tester) async {
+    final userContext = UserContextProvider();
+    await userContext.login(
+      User(
+        id: 'cfg-chefe-3',
+        name: 'Chefe Docente',
+        email: 'chefedocente@sigad.dev',
+        role: UserRole.chefeDepartamento,
+        createdAt: DateTime(2026, 1, 1),
+      ),
+    );
+
+    await tester.pumpWidget(
+      ChangeNotifierProvider<UserContextProvider>.value(
+        value: userContext,
+        child: MaterialApp(
+          theme: AppTheme.light(),
+          home: const ConfiguracoesPage(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(
+      find.text('Lembrete da próxima disciplina'),
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Lembrete da próxima disciplina'), findsOneWidget);
+    expect(find.text('Antecedência do lembrete'), findsOneWidget);
+  });
+
   testWidgets('professor visualiza convite recebido na agenda', (tester) async {
     SharedPreferences.setMockInitialValues({
       'sigad_configuracoes': jsonEncode({
