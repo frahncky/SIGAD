@@ -709,23 +709,74 @@ class _GradeSemanal extends StatelessWidget {
             ],
           ),
           const Divider(height: 1),
-          for (final linha in linhas)
+          for (var index = 0; index < linhas.length; index++) ...[
+            if (index == 0 || linhas[index - 1].turno != linhas[index].turno)
+              _TurnoDividerRow(
+                width: _dayColumnWidth * diasAbreviados.length,
+                turno: linhas[index].turno,
+              ),
             Row(
               children: [
                 for (final diaSemana in diasAbreviados)
                   _GradeReservaCell(
                     width: _dayColumnWidth,
                     height: _rowHeight,
-                    horario: linha.horario,
-                    turno: linha.turno,
-                    periodo: linha.periodo,
+                    horario: linhas[index].horario,
+                    turno: linhas[index].turno,
+                    periodo: linhas[index].periodo,
                     diaSemana: diaSemana,
-                    reserva: reservaPara(diaSemana, linha.turno, linha.periodo),
+                    reserva: reservaPara(diaSemana, linhas[index].turno, linhas[index].periodo),
                     podeEditar: podeEditar,
                     onTapCelula: onTapCelula,
                   ),
               ],
             ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _TurnoDividerRow extends StatelessWidget {
+  const _TurnoDividerRow({
+    required this.width,
+    required this.turno,
+  });
+
+  final double width;
+  final _Turno turno;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: turno.chipBackground,
+        border: const Border(
+          top: BorderSide(color: SigadColors.divider),
+          bottom: BorderSide(color: SigadColors.divider),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: turno.chipTextColor,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            turno.label,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: turno.chipTextColor,
+                ),
+          ),
         ],
       ),
     );
@@ -803,14 +854,35 @@ class _GradeReservaCell extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(
-              horario,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: SigadColors.muted,
-                    fontWeight: FontWeight.w600,
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    horario,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: SigadColors.muted,
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
+                ),
+                const SizedBox(width: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: turno.chipBackground,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    '${turno.shortLabel}$periodo',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: turno.chipTextColor,
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 2),
             Flexible(
@@ -1026,6 +1098,39 @@ enum _Turno {
 
   const _Turno(this.label);
   final String label;
+
+  String get shortLabel {
+    switch (this) {
+      case _Turno.matutino:
+        return 'M';
+      case _Turno.vespertino:
+        return 'T';
+      case _Turno.noturno:
+        return 'N';
+    }
+  }
+
+  Color get chipBackground {
+    switch (this) {
+      case _Turno.matutino:
+        return SigadColors.successSoft.withValues(alpha: 0.85);
+      case _Turno.vespertino:
+        return SigadColors.accentSoft.withValues(alpha: 0.85);
+      case _Turno.noturno:
+        return SigadColors.surfaceAlt;
+    }
+  }
+
+  Color get chipTextColor {
+    switch (this) {
+      case _Turno.matutino:
+        return SigadColors.success;
+      case _Turno.vespertino:
+        return SigadColors.warning;
+      case _Turno.noturno:
+        return SigadColors.brandDark;
+    }
+  }
 
   List<String> get horarios {
     switch (this) {
