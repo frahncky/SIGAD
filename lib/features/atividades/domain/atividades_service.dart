@@ -23,7 +23,7 @@ abstract final class AtividadesService {
   static List<Atividade> defaultAtividades() {
     return const [
       Atividade(
-        id: '#ATv-001',
+        id: '#ATV-001',
         titulo: 'Entrega de levantamento de demandas',
         descricao: 'Documento consolidado com todas as solicitações do período',
         data: '15/04/2026 - 10:30',
@@ -31,7 +31,7 @@ abstract final class AtividadesService {
         status: 'Concluída',
       ),
       Atividade(
-        id: '#ATv-002',
+        id: '#ATV-002',
         titulo: 'Reunião de validação de requisitos',
         descricao: 'Apresentação dos requisitos para stakeholders',
         data: '18/04/2026 - 14:00',
@@ -39,7 +39,7 @@ abstract final class AtividadesService {
         status: 'Concluída',
       ),
       Atividade(
-        id: '#ATv-003',
+        id: '#ATV-003',
         titulo: 'Implementação de sistema de priorização',
         descricao: 'Desenvolvimento da matriz de priorização',
         data: '22/04/2026 - 09:00',
@@ -47,7 +47,7 @@ abstract final class AtividadesService {
         status: 'Em progresso',
       ),
       Atividade(
-        id: '#ATv-004',
+        id: '#ATV-004',
         titulo: 'Treinamento de usuários',
         descricao: 'Capacitação de 150 usuários no novo sistema',
         data: '28/04/2026 - 08:00',
@@ -55,7 +55,7 @@ abstract final class AtividadesService {
         status: 'Agendada',
       ),
       Atividade(
-        id: '#ATv-005',
+        id: '#ATV-005',
         titulo: 'Auditoria de conformidade',
         descricao: 'Verificação de conformidade com normas ISO',
         data: '05/05/2026 - 13:00',
@@ -63,7 +63,7 @@ abstract final class AtividadesService {
         status: 'Agendada',
       ),
       Atividade(
-        id: '#ATv-006',
+        id: '#ATV-006',
         titulo: 'Publicação de resultados',
         descricao: 'Divulgação dos resultados para a comunidade acadêmica',
         data: '10/05/2026',
