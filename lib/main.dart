@@ -1,4 +1,4 @@
-import 'dart:ui';
+﻿import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,7 +8,11 @@ import 'app/routes/app_routes.dart';
 import 'core/config/app_runtime_config.dart';
 import 'core/services/app_event_logger.dart';
 import 'core/services/app_observability_service.dart';
+import 'core/services/theme_provider.dart';
 import 'core/services/user_context_provider.dart';
+import 'features/configuracoes/data/configuracoes_repository.dart';
+import 'core/services/user_context_provider.dart';
+import 'features/configuracoes/data/configuracoes_repository.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,10 +43,14 @@ Future<void> main() async {
   await userContext.restoreSession();
   final initialRoute = userContext.isAuthenticated ? AppRoutes.dashboard : AppRoutes.login;
 
+  final savedConfig = await ConfiguracoesRepository().load();
+  final themeProvider = ThemeProvider(isDark: savedConfig?.modoDark ?? false);
+
   runApp(
     SigadApp(
       initialRoute: initialRoute,
       userContextProvider: userContext,
+      themeProvider: themeProvider,
     ),
   );
 }

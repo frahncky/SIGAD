@@ -5,6 +5,7 @@ import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/security/authorization_policy.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/models/user_role.dart';
+import '../../../../core/services/theme_provider.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../../data/configuracoes_repository.dart';
 import '../../domain/configuracoes_models.dart';
@@ -147,6 +148,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 value: _modoDark,
                 onChanged: (value) {
                   setState(() => _modoDark = value);
+                  context.read<ThemeProvider>().setDark(value);
                                   _saveData();
                 },
               ),

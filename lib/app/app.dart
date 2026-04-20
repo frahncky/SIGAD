@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../core/config/app_runtime_config.dart';
 import '../core/services/chat_provider.dart';
+import '../core/services/theme_provider.dart';
 import '../core/services/user_context_provider.dart';
 import 'routes/app_router.dart';
 import 'routes/app_routes.dart';
@@ -13,14 +14,17 @@ class SigadApp extends StatelessWidget {
     super.key,
     this.initialRoute = AppRoutes.login,
     this.userContextProvider,
+    this.themeProvider,
   });
 
   final String initialRoute;
   final UserContextProvider? userContextProvider;
+  final ThemeProvider? themeProvider;
 
   @override
   Widget build(BuildContext context) {
     final userProvider = userContextProvider;
+    final themeProviderValue = themeProvider;
 
     return MultiProvider(
       providers: [
@@ -29,14 +33,22 @@ class SigadApp extends StatelessWidget {
         else
           ChangeNotifierProvider<UserContextProvider>.value(value: userProvider),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
+        if (themeProviderValue == null)
+          ChangeNotifierProvider(create: (_) => ThemeProvider())
+        else
+          ChangeNotifierProvider<ThemeProvider>.value(value: themeProviderValue),
       ],
-      child: MaterialApp(
-        title: 'SIGAD',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.light(),
-        initialRoute: initialRoute,
-        onGenerateRoute: AppRouter.onGenerateRoute,
-        builder: (context, child) => _FlavorBanner(child: child ?? const SizedBox.shrink()),
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeCtrl, _) => MaterialApp(
+          title: 'SIGAD',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light(),
+          darkTheme: AppTheme.dark(),
+          themeMode: themeCtrl.mode,
+          initialRoute: initialRoute,
+          onGenerateRoute: AppRouter.onGenerateRoute,
+          builder: (context, child) => _FlavorBanner(child: child ?? const SizedBox.shrink()),
+        ),
       ),
     );
   }
