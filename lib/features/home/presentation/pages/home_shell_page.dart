@@ -38,10 +38,12 @@ class HomeShellPage extends StatelessWidget {
             ? kNavigationItems
             : kNavigationItems.where((item) => item.isAvailableFor(userRole)).toList();
         final currentItem = availableItems.where((item) => item.route == currentRoute).firstOrNull;
-        final mobilePrimaryItems = _mobilePrimaryItems(availableItems, currentRoute);
+        final mobilePrimaryItems = _mobilePrimaryItems(availableItems);
 
         final selectedIndex = availableItems.indexWhere((item) => item.route == currentRoute);
-        final selectedMobileIndex = mobilePrimaryItems.indexWhere((item) => item.route == currentRoute);
+        final selectedMobileIndex = mobilePrimaryItems.indexWhere(
+          (item) => item.matchesRoute(currentRoute),
+        );
 
         return Scaffold(
           drawer: isWide
@@ -79,8 +81,17 @@ class HomeShellPage extends StatelessWidget {
           bottomNavigationBar: isWide || mobilePrimaryItems.length < 2
               ? null
               : NavigationBar(
-                  selectedIndex: selectedMobileIndex < 0 ? 0 : selectedMobileIndex,
-                  onDestinationSelected: (index) => _navigate(context, mobilePrimaryItems[index].route),
+                  selectedIndex: selectedMobileIndex < 0
+                      ? mobilePrimaryItems.length - 1
+                      : selectedMobileIndex,
+                  onDestinationSelected: (index) {
+                    final item = mobilePrimaryItems[index];
+                    if (item.isMore) {
+                      _showQuickAccess(context, availableItems);
+                      return;
+                    }
+                    _navigate(context, item.route);
+                  },
                   destinations: mobilePrimaryItems
                       .map(
                         (item) => NavigationDestination(
@@ -137,8 +148,10 @@ class HomeShellPage extends StatelessWidget {
     );
   }
 
-  List<NavigationItem> _mobilePrimaryItems(List<NavigationItem> availableItems, String currentRoute) {
-    if (availableItems.length <= 4) return availableItems;
+  List<_MobileNavItem> _mobilePrimaryItems(List<NavigationItem> availableItems) {
+    if (availableItems.length <= 4) {
+      return availableItems.map(_MobileNavItem.route).toList(growable: false);
+    }
 
     final base = <NavigationItem>[];
     final dashboard = availableItems.where((item) => item.route == AppRoutes.dashboard).firstOrNull;
@@ -147,18 +160,16 @@ class HomeShellPage extends StatelessWidget {
     }
 
     for (final item in availableItems) {
-      if (base.length == 4) break;
+      if (base.length == 3) break;
       if (!base.contains(item)) {
         base.add(item);
       }
     }
 
-    final current = availableItems.where((item) => item.route == currentRoute).firstOrNull;
-    if (current != null && !base.contains(current)) {
-      base[base.length - 1] = current;
-    }
-
-    return base;
+    return [
+      ...base.map(_MobileNavItem.route),
+      const _MobileNavItem.more(),
+    ];
   }
 
   void _navigate(BuildContext context, String route) {
@@ -339,6 +350,23 @@ class HomeShellPage extends StatelessWidget {
       ),
     );
   }
+}
+
+class _MobileNavItem {
+  const _MobileNavItem.route(this.item) : isMore = false;
+
+  const _MobileNavItem.more()
+      : item = null,
+        isMore = true;
+
+  final NavigationItem? item;
+  final bool isMore;
+
+  String get route => item?.route ?? '__more__';
+  String get label => item?.label ?? 'Mais';
+  IconData get icon => item?.icon ?? Icons.more_horiz;
+
+  bool matchesRoute(String route) => !isMore && item?.route == route;
 }
 
 class _SideNav extends StatelessWidget {

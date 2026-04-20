@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
+import '../../../../shared/widgets/horizontal_scroll_hint.dart';
 import '../../../../shared/widgets/page_status_view.dart';
 import '../../data/kanban_repository.dart';
 import '../../domain/kanban_models.dart';
@@ -60,6 +61,7 @@ class _KanbanPageState extends State<KanbanPage> {
 
   @override
   Widget build(BuildContext context) {
+    final shouldShowScrollHint = MediaQuery.of(context).size.width < 960;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -77,21 +79,34 @@ class _KanbanPageState extends State<KanbanPage> {
                   subtitle: _loadError,
                   onAction: _loadData,
                 )
-              : SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Row(
-                    children: [
-                      ..._colunas.entries.map(
-                        (entry) => _KanbanColuna(
-                          titulo: entry.key,
-                          cards: entry.value,
-                          onCardMoved: _moveCard,
-                          onCardDeleted: _deleteCard,
+              : Column(
+                  children: [
+                    if (shouldShowScrollHint)
+                      const Padding(
+                        padding: EdgeInsets.fromLTRB(16, 12, 16, 0),
+                        child: HorizontalScrollHint(
+                          message: 'Arraste lateralmente para navegar entre as colunas do quadro.',
                         ),
                       ),
-                    ],
-                  ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        child: Row(
+                          children: [
+                            ..._colunas.entries.map(
+                              (entry) => _KanbanColuna(
+                                titulo: entry.key,
+                                cards: entry.value,
+                                onCardMoved: _moveCard,
+                                onCardDeleted: _deleteCard,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
     );
   }

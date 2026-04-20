@@ -97,10 +97,7 @@ class _HeroPanel extends StatelessWidget {
           .entries
           .map(
             (entry) {
-              final index = entry.key;
               final metric = entry.value;
-              const labels = ['Indicadores', 'Demandas', 'SLA'];
-              final compactLabel = labels[index.clamp(0, labels.length - 1)];
               return Container(
               constraints: const BoxConstraints(minWidth: 94),
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -121,7 +118,7 @@ class _HeroPanel extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    compactLabel,
+                    metric.label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: textTheme.labelSmall?.copyWith(

@@ -7,6 +7,7 @@ import '../../domain/reserva_models.dart';
 import '../../domain/reserva_service.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
+import '../../../../shared/widgets/horizontal_scroll_hint.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../../../../shared/widgets/page_status_view.dart';
 
@@ -540,6 +541,7 @@ class _MapaSemanal extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final linhas = _gerarLinhasGrade();
     final diasDoMesDaSemana = _diasDoMesDaSemanaSelecionada();
+    final shouldShowScrollHint = MediaQuery.of(context).size.width < 960;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -559,6 +561,12 @@ class _MapaSemanal extends StatelessWidget {
           style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
         ),
         const SizedBox(height: 14),
+        if (shouldShowScrollHint) ...[
+          const HorizontalScrollHint(
+            message: 'Arraste lateralmente para ver todos os dias e horários.',
+          ),
+          const SizedBox(height: 10),
+        ],
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: _GradeSemanal(

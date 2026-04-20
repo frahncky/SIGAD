@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
+import '../../../../shared/widgets/horizontal_scroll_hint.dart';
 import '../../../../shared/widgets/page_status_view.dart';
 import '../../data/atividade_repository.dart';
 import '../../domain/atividade_models.dart';
@@ -75,6 +76,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
   @override
   Widget build(BuildContext context) {
     final atividadesFiltradas = _atividadesFiltradas;
+    final shouldShowScrollHint = MediaQuery.of(context).size.width < 640;
     return Scaffold(
       body: Column(
         children: [
@@ -97,6 +99,12 @@ class _AtividadesPageState extends State<AtividadesPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
+                if (shouldShowScrollHint) ...[
+                  const HorizontalScrollHint(
+                    message: 'Arraste lateralmente para ver todos os filtros.',
+                  ),
+                  const SizedBox(height: 10),
+                ],
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(

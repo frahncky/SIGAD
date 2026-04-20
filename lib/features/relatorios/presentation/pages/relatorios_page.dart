@@ -6,6 +6,7 @@ import '../../../../core/security/authorization_policy.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../../shared/widgets/horizontal_scroll_hint.dart';
 import '../../../../shared/widgets/page_status_view.dart';
 import '../../data/relatorio_repository.dart';
 import '../../domain/relatorio_models.dart';
@@ -101,6 +102,7 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
 
     final textTheme = Theme.of(context).textTheme;
     final relatoriosFiltrados = _relatoriosFiltrados;
+    final shouldShowScrollHint = MediaQuery.of(context).size.width < 640;
 
     return Scaffold(
       body: ListView(
@@ -120,6 +122,12 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
             ),
           ),
           const SizedBox(height: 12),
+          if (shouldShowScrollHint) ...[
+            const HorizontalScrollHint(
+              message: 'Arraste lateralmente para ver todos os status.',
+            ),
+            const SizedBox(height: 10),
+          ],
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
