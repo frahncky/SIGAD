@@ -1,10 +1,8 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/security/authorization_policy.dart';
-import '../../../../core/services/app_health_service.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/services/user_context_provider.dart';
@@ -36,7 +34,6 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
   String _ultimoBackup = ConfiguracoesService.defaultData().ultimoBackup;
   int _problemasReportados = ConfiguracoesService.defaultData().problemasReportados;
   List<CompromissoAgenda> _agendaCompromissos = ConfiguracoesService.defaultData().agendaCompromissos;
-  String _filtroAgendaPeriodo = 'Todos';
 
   final ConfiguracoesRepository _configuracoesRepository = ConfiguracoesRepository();
 
@@ -102,55 +99,11 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
     if (!AuthorizationPolicy.canAccessConfiguracoes(role)) {
       return const _ConfiguracoesAccessDenied();
     }
-    final canManage = AuthorizationPolicy.canManageConfiguracoes(role);
-    final userId = context.watch<UserContextProvider>().currentUser?.id ?? '';
-
-    final health = AppHealthService.snapshot();
-    final topErrors = health.errorsByFeature.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
-    final topFlows = health.eventsByFlow.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
-    final compromissosUsuario = _agendaCompromissos
-        .where((item) => item.destinatarioUserId.isEmpty || item.destinatarioUserId == userId)
-        .toList(growable: false);
-    final compromissosFiltrados = ConfiguracoesService.filtrarAgendaPorPeriodo(
-      compromissos: compromissosUsuario,
-      agora: DateTime.now(),
-      periodo: _filtroAgendaPeriodo,
-    );
 
     return Scaffold(
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 16),
         children: [
-          if (canManage)
-            _ConfigSection(
-              titulo: 'Saúde Operacional',
-              children: [
-                _ConfigItem(
-                  icon: Icons.monitor_heart_outlined,
-                  titulo: 'Resumo da execução',
-                  subtitulo: 'Ações: ${health.totalActions} | Erros: ${health.totalErrors}',
-                  onTap: () => _mostrarFeedback('Saúde operacional atualizada'),
-                ),
-                _ConfigItem(
-                  icon: Icons.warning_amber_outlined,
-                  titulo: 'Erros por feature',
-                  subtitulo: topErrors.isEmpty
-                      ? 'Sem erros registrados na sessão'
-                      : topErrors.take(3).map((e) => '${e.key}: ${e.value}').join(' | '),
-                  onTap: () => _mostrarFeedback('Painel de erros por feature atualizado'),
-                ),
-                _ConfigItem(
-                  icon: Icons.route_outlined,
-                  titulo: 'Fluxos mais acionados',
-                  subtitulo: topFlows.isEmpty
-                      ? 'Sem fluxos registrados na sessão'
-                      : topFlows.take(3).map((e) => '${e.key}: ${e.value}').join(' | '),
-                  onTap: () => _mostrarFeedback('Painel de fluxos atualizado'),
-                ),
-              ],
-            ),
           _ConfigSection(
             titulo: 'Conta',
             children: [
@@ -246,39 +199,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                   ),
               ],
             ),
-          _ConfigSection(
-            titulo: 'Agenda de compromissos',
-            children: [
-              _ConfigItem(
-                icon: Icons.event_note_outlined,
-                titulo: 'Convites recebidos',
-                subtitulo: compromissosFiltrados.isEmpty
-                    ? 'Nenhum convite na agenda'
-                    : '${compromissosFiltrados.length} compromisso(s) no período',
-                onTap: () => _mostrarFeedback('Agenda sincronizada'),
-              ),
-              Wrap(
-                spacing: 8,
-                children: ['Todos', 'Hoje', 'Semana']
-                    .map(
-                      (periodo) => ChoiceChip(
-                        label: Text(periodo),
-                        selected: _filtroAgendaPeriodo == periodo,
-                        onSelected: (_) => setState(() => _filtroAgendaPeriodo = periodo),
-                      ),
-                    )
-                    .toList(growable: false),
-              ),
-              ...compromissosFiltrados.take(5).map(
-                    (compromisso) => _ConfigItem(
-                      icon: Icons.event_available_outlined,
-                      titulo: '${compromisso.titulo} · ${_statusLabel(compromisso.statusConvite)}',
-                      subtitulo: '${compromisso.inicio} · ${compromisso.local}',
-                      onTap: () => _showDetalhesCompromisso(context, compromisso),
-                    ),
-                  ),
-            ],
-          ),
+          // Removed Agenda de compromissos section
           _ConfigSection(
             titulo: 'Idioma e Aparência',
             children: [
@@ -370,135 +291,6 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
         ],
       ),
     );
-  }
-
-  void _showDetalhesCompromisso(BuildContext context, CompromissoAgenda compromisso) {
-    final textTheme = Theme.of(context).textTheme;
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              compromisso.titulo,
-              style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 12),
-            _DetailSection(label: 'Início', value: compromisso.inicio),
-            _DetailSection(label: 'Local', value: compromisso.local),
-            _DetailSection(label: 'Origem', value: compromisso.origem),
-            if (compromisso.linkReuniao != null && compromisso.linkReuniao!.trim().isNotEmpty)
-              _DetailSection(label: 'Link', value: compromisso.linkReuniao!),
-            _DetailSection(label: 'Descrição', value: compromisso.descricao),
-            const SizedBox(height: 12),
-            if (compromisso.linkReuniao != null && compromisso.linkReuniao!.trim().isNotEmpty) ...[
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.tonalIcon(
-                  onPressed: () => _abrirLinkCompromisso(compromisso.linkReuniao!),
-                  icon: const Icon(Icons.open_in_new_outlined),
-                  label: const Text('Abrir link da reunião'),
-                ),
-              ),
-              const SizedBox(height: 12),
-            ],
-            if (compromisso.statusConvite == StatusConviteAgenda.pendente)
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        _atualizarStatusCompromisso(compromisso.id, StatusConviteAgenda.recusado);
-                        Navigator.pop(context);
-                        _mostrarFeedback('Convite recusado.');
-                      },
-                      child: const Text('Recusar'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _atualizarStatusCompromisso(compromisso.id, StatusConviteAgenda.aceito);
-                        Navigator.pop(context);
-                        _mostrarFeedback('Convite aceito e mantido na agenda.');
-                      },
-                      child: const Text('Aceitar'),
-                    ),
-                  ),
-                ],
-              )
-            else
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Fechar'),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _atualizarStatusCompromisso(String compromissoId, StatusConviteAgenda status) {
-    final dataAtual = ConfiguracoesData(
-      notificacoesAtivas: _notificacoesAtivas,
-      notificarAntesDaDisciplina: _notificarAntesDaDisciplina,
-      antecedenciaNotificacaoMinutos: _antecedenciaNotificacaoMinutos,
-      modoDark: _modoDark,
-      biometriaAtiva: _biometriaAtiva,
-      backupAutomaticoAtivo: _backupAutomaticoAtivo,
-      idioma: _idioma,
-      tamanhoFonte: _tamanhoFonte,
-      nomePerfil: _nomePerfil,
-      cargoPerfil: _cargoPerfil,
-      emailUsuario: _emailUsuario,
-      ultimaAlteracaoSenha: _ultimaAlteracaoSenha,
-      proximoBackup: _proximoBackup,
-      ultimoBackup: _ultimoBackup,
-      problemasReportados: _problemasReportados,
-      agendaCompromissos: _agendaCompromissos,
-    );
-
-    final atualizado = ConfiguracoesService.atualizarStatusConvite(
-      data: dataAtual,
-      compromissoId: compromissoId,
-      status: status,
-    );
-
-    setState(() {
-      _agendaCompromissos = atualizado.agendaCompromissos;
-    });
-    _saveData();
-  }
-
-  Future<void> _abrirLinkCompromisso(String link) async {
-    final uri = Uri.tryParse(link.trim());
-    if (uri == null) {
-      _mostrarFeedback('Link inválido.');
-      return;
-    }
-
-    final abriu = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!abriu && mounted) {
-      _mostrarFeedback('Não foi possível abrir o link neste dispositivo.');
-    }
-  }
-
-  String _statusLabel(StatusConviteAgenda status) {
-    switch (status) {
-      case StatusConviteAgenda.pendente:
-        return 'Pendente';
-      case StatusConviteAgenda.aceito:
-        return 'Aceito';
-      case StatusConviteAgenda.recusado:
-        return 'Recusado';
-    }
   }
 
   bool _isDocenteComLembrete(UserRole? role) {

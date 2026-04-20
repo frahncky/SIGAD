@@ -189,7 +189,7 @@ void main() {
     expect(find.text('Antecedência do lembrete'), findsOneWidget);
   });
 
-  testWidgets('professor visualiza convite recebido na agenda', (tester) async {
+  testWidgets('configuracoes nao exibe agenda de compromissos', (tester) async {
     SharedPreferences.setMockInitialValues({
       'sigad_configuracoes': jsonEncode({
         'agendaCompromissos': [
@@ -230,14 +230,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.scrollUntilVisible(
-      find.text('Agenda de compromissos'),
-      300,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.pumpAndSettle();
-
-    expect(find.textContaining('1 compromisso(s) no período'), findsOneWidget);
-    expect(find.textContaining('Reunião de coordenação'), findsOneWidget);
+    expect(find.text('Agenda de compromissos'), findsNothing);
+    expect(find.textContaining('1 compromisso(s) no período'), findsNothing);
+    expect(find.textContaining('Reunião de coordenação'), findsNothing);
   });
 }
