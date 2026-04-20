@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, roleLabels, rolePermissions } from '../types';
+import { User, roleLabels } from '../types';
 
 interface DashboardProps {
   user: User;
@@ -71,14 +71,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
         ))}
       </section>
 
-      <section className="permissions-section">
-        <h2>Suas Permissões</h2>
-        <ul className="permissions-list">
-          {rolePermissions[user.role].map((permission, index) => (
-            <li key={index}>{permission}</li>
-          ))}
-        </ul>
-      </section>
     </div>
   );
 };

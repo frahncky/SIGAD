@@ -53,16 +53,20 @@ class UserContextProvider extends ChangeNotifier {
   }
 
   /// Atualiza o perfil do usuário autenticado
-  void updateUser(User user) {
+  Future<void> updateUser(User user) async {
     _currentUser = user;
     final token = _sessionToken;
     final expiresAt = _sessionExpiresAt;
     if (token != null) {
-      _sessionRepository.save(
-        user: user,
-        sessionToken: token,
-        expiresAt: expiresAt,
-      );
+      try {
+        await _sessionRepository.save(
+          user: user,
+          sessionToken: token,
+          expiresAt: expiresAt,
+        );
+      } catch (error, stackTrace) {
+        AppEventLogger.error('session_update_persist_error', error, stackTrace: stackTrace);
+      }
     }
     notifyListeners();
   }

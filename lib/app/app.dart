@@ -16,16 +16,12 @@ class SigadApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => UserContextProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],
-      child: Consumer<UserContextProvider>(
-        builder: (context, userContext, _) {
-          return MaterialApp(
-            title: 'SIGAD',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.light(),
-            initialRoute: AppRoutes.splash,
-            onGenerateRoute: AppRouter.onGenerateRoute,
-          );
-        },
+      child: MaterialApp(
+        title: 'SIGAD',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light(),
+        initialRoute: AppRoutes.splash,
+        onGenerateRoute: AppRouter.onGenerateRoute,
       ),
     );
   }

@@ -223,8 +223,9 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
+    final emailDomain = email.contains('@') ? email.split('@').last : 'invalid';
     AppEventLogger.action('login_attempt', details: {
-      'email': email,
+      'emailDomain': emailDomain,
       'role': _selectedRole!.name,
     });
 

@@ -923,6 +923,7 @@ class _ColunaMapaSemanal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final temAulas = horarios.isNotEmpty;
     return Container(
       decoration: BoxDecoration(
         color: SigadColors.surfaceAlt,
@@ -932,33 +933,37 @@ class _ColunaMapaSemanal extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            decoration: BoxDecoration(
-              color: horarios.isNotEmpty ? SigadColors.brand.withValues(alpha: 0.08) : SigadColors.surface,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(10),
-                topRight: Radius.circular(10),
-              ),
-            ),
-            child: Text(
-              dia,
-              textAlign: TextAlign.center,
-              style: textTheme.labelSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: horarios.isNotEmpty ? SigadColors.brand : SigadColors.muted,
-              ),
-            ),
-          ),
           Padding(
             padding: const EdgeInsets.all(8),
-            child: horarios.isEmpty
-                ? Text(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: temAulas
+                        ? SigadColors.brand.withValues(alpha: 0.12)
+                        : SigadColors.divider.withValues(alpha: 0.35),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    dia,
+                    textAlign: TextAlign.center,
+                    style: textTheme.labelSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: temAulas ? SigadColors.brand : SigadColors.muted,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                if (!temAulas)
+                  Text(
                     '-',
                     textAlign: TextAlign.center,
                     style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
                   )
-                : Column(
+                else
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       ...horarios.map(
@@ -1011,6 +1016,8 @@ class _ColunaMapaSemanal extends StatelessWidget {
                       ),
                     ],
                   ),
+              ],
+            ),
           ),
         ],
       ),

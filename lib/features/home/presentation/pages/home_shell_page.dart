@@ -176,12 +176,13 @@ class HomeShellPage extends StatelessWidget {
 
   void _showNotifications(BuildContext context) {
     final user = context.read<UserContextProvider>().currentUser;
+    final configuracoesFuture = ConfiguracoesRepository().load();
 
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
       builder: (context) => FutureBuilder<ConfiguracoesData?>(
-        future: ConfiguracoesRepository().load(),
+        future: configuracoesFuture,
         builder: (context, snapshot) {
           final config = snapshot.data;
           final lembretes = (user == null || config == null)
@@ -752,9 +753,10 @@ void _confirmLogout(BuildContext context, UserContextProvider userContext) {
           child: const Text('Cancelar'),
         ),
         TextButton(
-          onPressed: () {
+          onPressed: () async {
             Navigator.pop(context);
-            userContext.logout();
+            await userContext.logout();
+            if (!context.mounted) return;
             Navigator.of(context).pushReplacementNamed(AppRoutes.login);
           },
           child: const Text('Sair'),
