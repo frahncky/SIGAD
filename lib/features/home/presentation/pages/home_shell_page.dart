@@ -267,7 +267,9 @@ class HomeShellPage extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(vertical: 32),
                               child: Text(
                                 'Nenhum módulo encontrado.',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                               ),
                             ),
                           )
@@ -279,7 +281,7 @@ class HomeShellPage extends StatelessWidget {
                               final item = filteredItems[index];
                               return ListTile(
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                                tileColor: SigadColors.surfaceAlt,
+                                tileColor: Theme.of(context).colorScheme.surface,
                                 leading: Icon(item.icon, color: SigadColors.brand),
                                 title: Text(item.label),
                                 subtitle: item.subtitle == null ? null : Text(item.subtitle!),
@@ -337,12 +339,15 @@ class _SideNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final dividerColor = Theme.of(context).dividerColor;
+
     return Container(
       width: 290,
-      decoration: const BoxDecoration(
-        color: SigadColors.surface,
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
         border: Border(
-          right: BorderSide(color: SigadColors.divider),
+          right: BorderSide(color: dividerColor),
         ),
       ),
       child: Column(
@@ -387,7 +392,7 @@ class _SideNav extends StatelessWidget {
             child: ListTile(
               onTap: onLogout,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              leading: const Icon(Icons.logout, color: SigadColors.risk),
+              leading: Icon(Icons.logout, color: colorScheme.error),
               title: const Text('Sair'),
             ),
           ),
@@ -469,6 +474,9 @@ class _NavigationList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       itemCount: availableItems.length,
@@ -477,7 +485,7 @@ class _NavigationList extends StatelessWidget {
         final item = availableItems[index];
         final selected = index == selectedIndex;
         return Material(
-          color: selected ? SigadColors.brand.withValues(alpha: 0.10) : SigadColors.surfaceAlt,
+          color: selected ? colorScheme.primary.withValues(alpha: 0.12) : colorScheme.surface,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           child: InkWell(
             borderRadius: BorderRadius.circular(14),
@@ -488,7 +496,7 @@ class _NavigationList extends StatelessWidget {
                 children: [
                   Icon(
                     item.icon,
-                    color: selected ? SigadColors.brand : SigadColors.muted,
+                    color: selected ? colorScheme.primary : colorScheme.onSurfaceVariant,
                     size: 22,
                   ),
                   const SizedBox(width: 12),
@@ -498,15 +506,15 @@ class _NavigationList extends StatelessWidget {
                       children: [
                         Text(
                           item.label,
-                          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                                color: selected ? SigadColors.brand : SigadColors.ink,
+                          style: textTheme.labelLarge?.copyWith(
+                                color: selected ? colorScheme.primary : colorScheme.onSurface,
                                 fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
                               ),
                         ),
                         if (item.subtitle != null)
                           Text(
                             item.subtitle!,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                            style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -532,6 +540,8 @@ class _UserCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = userContext.currentUser;
     if (user == null) return const SizedBox.shrink();
+    final colorScheme = Theme.of(context).colorScheme;
+    final dividerColor = Theme.of(context).dividerColor;
 
     return Container(
       width: double.infinity,
@@ -540,10 +550,10 @@ class _UserCard extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [SigadColors.surfaceAlt, SigadColors.brand.withValues(alpha: 0.08)],
+          colors: [colorScheme.surface, colorScheme.primary.withValues(alpha: 0.08)],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: SigadColors.divider),
+        border: Border.all(color: dividerColor),
       ),
       child: Row(
         children: [
@@ -567,11 +577,11 @@ class _UserCard extends StatelessWidget {
                 ),
                 Text(
                   user.role.displayName,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
                 ),
                 Text(
                   user.email,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -608,7 +618,7 @@ class _MobileTopBarTitle extends StatelessWidget {
         if (subtitle != null)
           Text(
             subtitle!,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -624,13 +634,16 @@ class _CurrentSectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final dividerColor = Theme.of(context).dividerColor;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: SigadColors.brand.withValues(alpha: 0.08),
+        color: colorScheme.primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: SigadColors.divider),
+        border: Border.all(color: dividerColor),
       ),
       child: Row(
         children: [
@@ -654,7 +667,7 @@ class _CurrentSectionCard extends StatelessWidget {
                 ),
                 Text(
                   currentRoute.subtitle ?? 'Área ativa no momento',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -706,7 +719,9 @@ class _ProfileMenu extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 user.email,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
