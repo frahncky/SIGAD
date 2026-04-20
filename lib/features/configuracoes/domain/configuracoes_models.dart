@@ -10,6 +10,7 @@ class CompromissoAgenda {
     required this.local,
     required this.origem,
     required this.destinatarioUserId,
+    this.linkReuniao,
     this.statusConvite = StatusConviteAgenda.pendente,
   });
 
@@ -21,6 +22,7 @@ class CompromissoAgenda {
   final String local;
   final String origem;
   final String destinatarioUserId;
+  final String? linkReuniao;
   final StatusConviteAgenda statusConvite;
 
   CompromissoAgenda copyWith({
@@ -32,6 +34,7 @@ class CompromissoAgenda {
     String? local,
     String? origem,
     String? destinatarioUserId,
+    String? linkReuniao,
     StatusConviteAgenda? statusConvite,
   }) {
     return CompromissoAgenda(
@@ -43,6 +46,7 @@ class CompromissoAgenda {
       local: local ?? this.local,
       origem: origem ?? this.origem,
       destinatarioUserId: destinatarioUserId ?? this.destinatarioUserId,
+      linkReuniao: linkReuniao ?? this.linkReuniao,
       statusConvite: statusConvite ?? this.statusConvite,
     );
   }
@@ -56,6 +60,7 @@ class CompromissoAgenda {
         'local': local,
         'origem': origem,
         'destinatarioUserId': destinatarioUserId,
+        'linkReuniao': linkReuniao,
         'statusConvite': statusConvite.name,
       };
 
@@ -78,6 +83,7 @@ class CompromissoAgenda {
       local: data['local'] as String,
       origem: data['origem'] as String,
       destinatarioUserId: data['destinatarioUserId'] as String? ?? '',
+      linkReuniao: data['linkReuniao'] as String?,
       statusConvite: parsedStatus ?? StatusConviteAgenda.pendente,
     );
   }

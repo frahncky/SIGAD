@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/security/authorization_policy.dart';
@@ -256,6 +257,14 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                     : '${compromissosFiltrados.length} compromisso(s) no período',
                 onTap: () => _mostrarFeedback('Agenda sincronizada'),
               ),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () => _showNovoCompromissoAgenda(context),
+                  icon: const Icon(Icons.add_circle_outline),
+                  label: const Text('Novo compromisso'),
+                ),
+              ),
               Wrap(
                 spacing: 8,
                 children: ['Todos', 'Hoje', 'Semana']
@@ -389,8 +398,21 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
             _DetailSection(label: 'Início', value: compromisso.inicio),
             _DetailSection(label: 'Local', value: compromisso.local),
             _DetailSection(label: 'Origem', value: compromisso.origem),
+            if (compromisso.linkReuniao != null && compromisso.linkReuniao!.trim().isNotEmpty)
+              _DetailSection(label: 'Link', value: compromisso.linkReuniao!),
             _DetailSection(label: 'Descrição', value: compromisso.descricao),
             const SizedBox(height: 12),
+            if (compromisso.linkReuniao != null && compromisso.linkReuniao!.trim().isNotEmpty) ...[
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.tonalIcon(
+                  onPressed: () => _abrirLinkCompromisso(compromisso.linkReuniao!),
+                  icon: const Icon(Icons.open_in_new_outlined),
+                  label: const Text('Abrir link da reunião'),
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
             if (compromisso.statusConvite == StatusConviteAgenda.pendente)
               Row(
                 children: [
@@ -461,6 +483,255 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
       _agendaCompromissos = atualizado.agendaCompromissos;
     });
     _saveData();
+  }
+
+  Future<void> _showNovoCompromissoAgenda(BuildContext context) async {
+    final tituloController = TextEditingController();
+    final descricaoController = TextEditingController();
+    final localController = TextEditingController();
+    final linkController = TextEditingController();
+
+    DateTime? dataSelecionada;
+    TimeOfDay? horarioSelecionado;
+    String plataforma = 'Sem link';
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) {
+          final dataHoraLabel = _formatarDataHoraSelecionada(dataSelecionada, horarioSelecionado);
+          return Padding(
+            padding: EdgeInsets.fromLTRB(
+              24,
+              12,
+              24,
+              MediaQuery.of(context).viewInsets.bottom + 24,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Novo compromisso',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: tituloController,
+                    decoration: const InputDecoration(
+                      labelText: 'Título',
+                      hintText: 'Ex: Reunião de planejamento',
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: descricaoController,
+                    maxLines: 2,
+                    decoration: const InputDecoration(
+                      labelText: 'Descrição',
+                      hintText: 'Detalhes do compromisso',
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: localController,
+                    decoration: const InputDecoration(
+                      labelText: 'Local',
+                      hintText: 'Sala 12 ou Online',
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () async {
+                            final data = await showDatePicker(
+                              context: context,
+                              firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                              lastDate: DateTime.now().add(const Duration(days: 3650)),
+                              initialDate: dataSelecionada ?? DateTime.now(),
+                            );
+                            if (data == null) return;
+                            setModalState(() => dataSelecionada = data);
+                          },
+                          icon: const Icon(Icons.calendar_today_outlined),
+                          label: const Text('Data'),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () async {
+                            final horario = await showTimePicker(
+                              context: context,
+                              initialTime: horarioSelecionado ?? TimeOfDay.now(),
+                            );
+                            if (horario == null) return;
+                            setModalState(() => horarioSelecionado = horario);
+                          },
+                          icon: const Icon(Icons.access_time_outlined),
+                          label: const Text('Hora'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    dataHoraLabel,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: SigadColors.muted,
+                        ),
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    initialValue: plataforma,
+                    decoration: const InputDecoration(labelText: 'Link de reunião'),
+                    items: const [
+                      DropdownMenuItem(value: 'Sem link', child: Text('Sem link')),
+                      DropdownMenuItem(value: 'Google Meet', child: Text('Google Meet')),
+                      DropdownMenuItem(value: 'Zoom', child: Text('Zoom')),
+                    ],
+                    onChanged: (value) => setModalState(() => plataforma = value ?? 'Sem link'),
+                  ),
+                  if (plataforma != 'Sem link') ...[
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: linkController,
+                      keyboardType: TextInputType.url,
+                      decoration: InputDecoration(
+                        labelText: 'URL da reunião',
+                        hintText: plataforma == 'Google Meet'
+                            ? 'https://meet.google.com/...' 
+                            : 'https://zoom.us/j/...',
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 18),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        final titulo = tituloController.text.trim();
+                        final descricao = descricaoController.text.trim();
+                        final local = localController.text.trim();
+                        final link = linkController.text.trim();
+
+                        if (titulo.isEmpty) {
+                          _mostrarFeedback('Informe o título do compromisso.');
+                          return;
+                        }
+                        if (local.isEmpty) {
+                          _mostrarFeedback('Informe o local do compromisso.');
+                          return;
+                        }
+                        if (dataSelecionada == null || horarioSelecionado == null) {
+                          _mostrarFeedback('Selecione data e hora do compromisso.');
+                          return;
+                        }
+                        if (plataforma != 'Sem link') {
+                          final erro = _validarLinkReuniao(link, plataforma);
+                          if (erro != null) {
+                            _mostrarFeedback(erro);
+                            return;
+                          }
+                        }
+
+                        final dataHora = DateTime(
+                          dataSelecionada!.year,
+                          dataSelecionada!.month,
+                          dataSelecionada!.day,
+                          horarioSelecionado!.hour,
+                          horarioSelecionado!.minute,
+                        );
+
+                        final novoCompromisso = CompromissoAgenda(
+                          id: 'manual_${DateTime.now().microsecondsSinceEpoch}',
+                          titulo: titulo,
+                          descricao: descricao.isEmpty ? 'Compromisso criado manualmente.' : descricao,
+                          inicio: _formatarDataHora(dataHora),
+                          inicioIso: dataHora.toIso8601String(),
+                          local: local,
+                          origem: 'Agenda pessoal',
+                          destinatarioUserId: context.read<UserContextProvider>().currentUser?.id ?? '',
+                          linkReuniao: plataforma == 'Sem link' ? null : link,
+                          statusConvite: StatusConviteAgenda.aceito,
+                        );
+
+                        setState(() {
+                          _agendaCompromissos = List<CompromissoAgenda>.from(_agendaCompromissos)
+                            ..add(novoCompromisso);
+                        });
+                        _saveData();
+                        Navigator.pop(context);
+                        _mostrarFeedback('Compromisso criado com sucesso.');
+                      },
+                      icon: const Icon(Icons.check_circle_outline),
+                      label: const Text('Salvar compromisso'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  String _formatarDataHoraSelecionada(DateTime? data, TimeOfDay? hora) {
+    if (data == null || hora == null) {
+      return 'Selecione data e hora';
+    }
+    final combinada = DateTime(data.year, data.month, data.day, hora.hour, hora.minute);
+    return _formatarDataHora(combinada);
+  }
+
+  String _formatarDataHora(DateTime dataHora) {
+    final dia = dataHora.day.toString().padLeft(2, '0');
+    final mes = dataHora.month.toString().padLeft(2, '0');
+    final ano = dataHora.year.toString();
+    final hora = dataHora.hour.toString().padLeft(2, '0');
+    final minuto = dataHora.minute.toString().padLeft(2, '0');
+    return '$dia/$mes/$ano às $hora:$minuto';
+  }
+
+  String? _validarLinkReuniao(String link, String plataforma) {
+    if (link.trim().isEmpty) {
+      return 'Informe o link da reunião.';
+    }
+    final uri = Uri.tryParse(link.trim());
+    if (uri == null || !(uri.hasScheme && uri.hasAuthority)) {
+      return 'Informe uma URL válida (https://...).';
+    }
+
+    final host = uri.host.toLowerCase();
+    if (plataforma == 'Google Meet' && !host.contains('meet.google.com')) {
+      return 'Use um link válido do Google Meet.';
+    }
+    if (plataforma == 'Zoom' && !(host == 'zoom.us' || host.endsWith('.zoom.us'))) {
+      return 'Use um link válido do Zoom.';
+    }
+
+    return null;
+  }
+
+  Future<void> _abrirLinkCompromisso(String link) async {
+    final uri = Uri.tryParse(link.trim());
+    if (uri == null) {
+      _mostrarFeedback('Link inválido.');
+      return;
+    }
+
+    final abriu = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!abriu && mounted) {
+      _mostrarFeedback('Não foi possível abrir o link neste dispositivo.');
+    }
   }
 
   String _statusLabel(StatusConviteAgenda status) {
