@@ -455,8 +455,9 @@ class _RelatorioCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _InfoChip(icon: Icons.calendar_today, label: relatorio.data),
-                _InfoChip(icon: Icons.person_outline, label: relatorio.autor),
+                Flexible(child: _InfoChip(icon: Icons.calendar_today, label: relatorio.data)),
+                const SizedBox(width: 8),
+                Flexible(child: _InfoChip(icon: Icons.person_outline, label: relatorio.autor)),
               ],
             ),
             if (relatorio.ultimaAcao != null) ...[
@@ -574,9 +575,13 @@ class _InfoChip extends StatelessWidget {
       children: [
         Icon(icon, size: 14, color: SigadColors.muted),
         const SizedBox(width: 6),
-        Text(
-          label,
-          style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+        Flexible(
+          child: Text(
+            label,
+            style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
     );

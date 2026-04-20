@@ -687,12 +687,17 @@ class _DemandasCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  demanda.proprietario,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: SigadColors.muted,
+                Flexible(
+                  child: Text(
+                    demanda.proprietario,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: SigadColors.muted,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
@@ -715,10 +720,14 @@ class _DemandasCard extends StatelessWidget {
               children: [
                 Icon(Icons.calendar_today, size: 16, color: SigadColors.muted),
                 const SizedBox(width: 6),
-                Text(
-                  demanda.prazo,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: SigadColors.muted,
+                Expanded(
+                  child: Text(
+                    demanda.prazo,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: SigadColors.muted,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

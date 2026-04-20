@@ -653,11 +653,15 @@ class _MobileTopBarTitle extends StatelessWidget {
         Text(
           title,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         if (subtitle != null)
           Text(
             subtitle!,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
       ],
     );

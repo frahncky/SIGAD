@@ -615,14 +615,15 @@ class _AtividadeCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _InfoChip(
+                Flexible(child: _InfoChip(
                   icon: Icons.person_outline,
                   label: atividade.responsavel,
-                ),
-                _InfoChip(
+                )),
+                const SizedBox(width: 8),
+                Flexible(child: _InfoChip(
                   icon: Icons.calendar_today,
                   label: atividade.data,
-                ),
+                )),
               ],
             ),
           ],
@@ -729,9 +730,13 @@ class _InfoChip extends StatelessWidget {
       children: [
         Icon(icon, size: 14, color: SigadColors.muted),
         const SizedBox(width: 6),
-        Text(
-          label,
-          style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+        Flexible(
+          child: Text(
+            label,
+            style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
     );
