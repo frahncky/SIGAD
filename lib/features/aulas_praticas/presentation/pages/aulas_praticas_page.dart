@@ -584,7 +584,7 @@ class _GradeSemanal extends StatelessWidget {
   final Future<void> Function(String diaSemana, Turno turno, int periodo, ReservaLaboratorio? reservaAtual) onTapCelula;
 
   static const double _dayColumnWidth = 156;
-  static const double _rowHeight = 72;
+  static const double _rowHeight = 84;
 
   @override
   Widget build(BuildContext context) {
@@ -596,40 +596,6 @@ class _GradeSemanal extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Row(
-            children: [
-              for (var index = 0; index < diasAbreviados.length; index++)
-                _GradeHeaderCell(
-                  width: _dayColumnWidth,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        diasAbreviados[index],
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: diasAbreviados[index] == diaSemanaSelecionado
-                              ? SigadColors.brand
-                              : null,
-                        ),
-                      ),
-                      Text(
-                        '${diasDoMes[index]}',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: diasAbreviados[index] == diaSemanaSelecionado
-                              ? SigadColors.brand
-                              : SigadColors.muted,
-                          fontWeight: diasAbreviados[index] == diaSemanaSelecionado
-                              ? FontWeight.w700
-                              : FontWeight.w400,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-            ],
-          ),
-          const Divider(height: 1),
           for (var index = 0; index < linhas.length; index++) ...[
             if (index == 0 || linhas[index - 1].turno != linhas[index].turno)
               _TurnoDividerRow(
@@ -638,15 +604,20 @@ class _GradeSemanal extends StatelessWidget {
               ),
             Row(
               children: [
-                for (final diaSemana in diasAbreviados)
+                for (var dayIndex = 0; dayIndex < diasAbreviados.length; dayIndex++)
                   _GradeReservaCell(
                     width: _dayColumnWidth,
                     height: _rowHeight,
                     horario: linhas[index].horario,
                     turno: linhas[index].turno,
                     periodo: linhas[index].periodo,
-                    diaSemana: diaSemana,
-                    reserva: reservaPara(diaSemana, linhas[index].turno, linhas[index].periodo),
+                    diaSemana: diasAbreviados[dayIndex],
+                    diaDoMes: diasDoMes[dayIndex],
+                    reserva: reservaPara(
+                      diasAbreviados[dayIndex],
+                      linhas[index].turno,
+                      linhas[index].periodo,
+                    ),
                     podeEditar: podeEditar,
                     onTapCelula: onTapCelula,
                   ),
@@ -704,26 +675,6 @@ class _TurnoDividerRow extends StatelessWidget {
   }
 }
 
-class _GradeHeaderCell extends StatelessWidget {
-  const _GradeHeaderCell({
-    required this.width,
-    required this.child,
-  });
-
-  final double width;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-      alignment: Alignment.center,
-      child: child,
-    );
-  }
-}
-
 class _GradeReservaCell extends StatelessWidget {
   const _GradeReservaCell({
     required this.width,
@@ -732,6 +683,7 @@ class _GradeReservaCell extends StatelessWidget {
     required this.turno,
     required this.periodo,
     required this.diaSemana,
+    required this.diaDoMes,
     required this.reserva,
     required this.podeEditar,
     required this.onTapCelula,
@@ -743,6 +695,7 @@ class _GradeReservaCell extends StatelessWidget {
   final Turno turno;
   final int periodo;
   final String diaSemana;
+  final int diaDoMes;
   final ReservaLaboratorio? reserva;
   final bool podeEditar;
   final Future<void> Function(String diaSemana, Turno turno, int periodo, ReservaLaboratorio? reservaAtual) onTapCelula;
@@ -754,7 +707,7 @@ class _GradeReservaCell extends StatelessWidget {
     final background = livre ? SigadColors.successSoft.withValues(alpha: 0.55) : SigadColors.accentSoft.withValues(alpha: 0.70);
     return Semantics(
       button: podeEditar,
-      label: 'Célula $diaSemana, ${turno.label}, período $periodo, horário $horario.',
+      label: 'Célula $diaSemana, dia $diaDoMes, ${turno.label}, período $periodo, horário $horario.',
       value: livre ? 'Livre' : 'Reservado por ${reserva!.professor}',
       hint: podeEditar ? 'Toque para reservar ou remover reserva.' : null,
       child: InkWell(
@@ -780,6 +733,16 @@ class _GradeReservaCell extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            Text(
+              '$diaSemana · $diaDoMes',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: SigadColors.brandDark,
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+            const SizedBox(height: 2),
             Row(
               children: [
                 Expanded(

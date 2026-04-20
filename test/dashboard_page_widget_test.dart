@@ -14,7 +14,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('renderiza dashboard por perfil com prioridades e foco', (tester) async {
+  testWidgets('renderiza dashboard por perfil com foco', (tester) async {
     final userContext = UserContextProvider();
     await userContext.login(
       User(
@@ -39,7 +39,7 @@ void main() {
 
     expect(find.textContaining('Olá, Maria'), findsOneWidget);
     expect(find.text('Atalhos do seu perfil'), findsOneWidget);
-    expect(find.text('Prioridades'), findsOneWidget);
+    expect(find.text('Prioridades'), findsNothing);
     expect(find.text('Demandas'), findsWidgets);
   });
 }

@@ -6,9 +6,6 @@ import '../../../../core/models/navigation_item.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/navigation/navigation_items.dart';
 import '../../../../core/services/user_context_provider.dart';
-import '../../../demandas/data/demanda_repository.dart';
-import '../../../kanban/data/kanban_repository.dart';
-import '../../domain/dashboard_priorities_service.dart';
 import '../../domain/dashboard_role_profile.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -53,18 +50,6 @@ class DashboardPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   _ModuleGrid(modules: availableModules),
-                  const SizedBox(height: 24),
-                  const _SectionTitle(
-                    title: 'Prioridades',
-                    icon: Icons.flag_outlined,
-                  ),
-                  const SizedBox(height: 12),
-                  _DynamicPriorityList(
-                    role: role,
-                    fallbackItems: profile.priorities,
-                  ),
-                  const SizedBox(height: 16),
-                  _FocusChips(items: profile.focus),
                 ],
               ),
             ),
@@ -303,164 +288,6 @@ class _ModuleCard extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _PriorityList extends StatelessWidget {
-  const _PriorityList({required this.items});
-
-  final List<PriorityItem> items;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: items
-          .map(
-            (item) => Container(
-              margin: const EdgeInsets.only(bottom: 10),
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: SigadColors.surface,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: SigadColors.divider),
-              ),
-              child: Row(
-                children: [
-                  Icon(item.icon, color: item.tone),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      item.label,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
-          .toList(),
-    );
-  }
-}
-
-class _DynamicPriorityList extends StatefulWidget {
-  const _DynamicPriorityList({
-    required this.role,
-    required this.fallbackItems,
-  });
-
-  final UserRole? role;
-  final List<PriorityItem> fallbackItems;
-
-  @override
-  State<_DynamicPriorityList> createState() => _DynamicPriorityListState();
-}
-
-class _DynamicPriorityListState extends State<_DynamicPriorityList> {
-  final DemandaRepository _demandaRepository = DemandaRepository();
-  final KanbanRepository _kanbanRepository = KanbanRepository();
-  late Future<List<PriorityItem>> _futureItems;
-
-  @override
-  void initState() {
-    super.initState();
-    _futureItems = _buildDynamicItems();
-  }
-
-  Future<List<PriorityItem>> _buildDynamicItems() async {
-    final demandas = await _demandaRepository.loadDemandas();
-    final kanban = await _kanbanRepository.loadCards();
-
-    final items = <PriorityItem>[];
-
-    final demandasAtrasadas = DashboardPrioritiesService.countDemandasAtrasadas(demandas);
-    if (demandasAtrasadas > 0) {
-      items.add(
-        PriorityItem(
-          label: 'Resolver $demandasAtrasadas demanda(s) em atraso',
-          icon: Icons.warning_amber_outlined,
-          tone: SigadColors.risk,
-        ),
-      );
-    }
-
-    final demandasAltasAbertas = DashboardPrioritiesService.countDemandasAltasAbertas(demandas);
-    if (demandasAltasAbertas > 0) {
-      items.add(
-        PriorityItem(
-          label: 'Tratar $demandasAltasAbertas demanda(s) de alta prioridade',
-          icon: Icons.priority_high_outlined,
-          tone: SigadColors.warning,
-        ),
-      );
-    }
-
-    final cardsEmRevisao = DashboardPrioritiesService.countKanbanByColumn(kanban, 'Em Revisão');
-    if (cardsEmRevisao > 0) {
-      items.add(
-        PriorityItem(
-          label: 'Validar $cardsEmRevisao card(s) em revisão no Kanban',
-          icon: Icons.rate_review_outlined,
-          tone: SigadColors.info,
-        ),
-      );
-    }
-
-    final cardsBacklogAlto = DashboardPrioritiesService.countKanbanBacklogHigh(kanban);
-    if (cardsBacklogAlto > 0) {
-      items.add(
-        PriorityItem(
-          label: 'Priorizar $cardsBacklogAlto card(s) críticos do backlog',
-          icon: Icons.view_kanban_outlined,
-          tone: SigadColors.brand,
-        ),
-      );
-    }
-
-    if (items.isEmpty) {
-      return widget.fallbackItems;
-    }
-
-    return items.take(3).toList();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<PriorityItem>>(
-      future: _futureItems,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const SizedBox(
-            height: 70,
-            child: Center(child: CircularProgressIndicator(strokeWidth: 2.2)),
-          );
-        }
-
-        final items = snapshot.data ?? widget.fallbackItems;
-        return _PriorityList(items: items);
-      },
-    );
-  }
-}
-
-class _FocusChips extends StatelessWidget {
-  const _FocusChips({required this.items});
-
-  final List<String> items;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: items
-          .map(
-            (item) => Chip(
-              label: Text(item),
-            ),
-          )
-          .toList(growable: false),
     );
   }
 }
