@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sigad/app/app.dart';
 
 void main() {
-  testWidgets('SIGAD app renders splash page', (tester) async {
+  testWidgets('SIGAD app renders login page when session is not restored', (tester) async {
     SharedPreferences.setMockInitialValues({});
 
     tester.view.devicePixelRatio = 1.0;
@@ -17,7 +17,6 @@ void main() {
     await tester.pumpWidget(const SigadApp());
     await tester.pump();
 
-    expect(find.text('SIGAD'), findsWidgets);
-    expect(find.text('Carregando...'), findsOneWidget);
+    expect(find.text('Entrar no SIGAD'), findsOneWidget);
   });
 }

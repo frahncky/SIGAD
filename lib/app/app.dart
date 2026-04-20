@@ -1,27 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'routes/app_router.dart';
-import 'routes/app_routes.dart';
-import 'theme/app_theme.dart';
+
 import '../core/config/app_runtime_config.dart';
 import '../core/services/chat_provider.dart';
 import '../core/services/user_context_provider.dart';
+import 'routes/app_router.dart';
+import 'routes/app_routes.dart';
+import 'theme/app_theme.dart';
 
 class SigadApp extends StatelessWidget {
-  const SigadApp({super.key});
+  const SigadApp({
+    super.key,
+    this.initialRoute = AppRoutes.login,
+    this.userContextProvider,
+  });
+
+  final String initialRoute;
+  final UserContextProvider? userContextProvider;
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = userContextProvider;
+
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => UserContextProvider()),
+        if (userProvider == null)
+          ChangeNotifierProvider(create: (_) => UserContextProvider())
+        else
+          ChangeNotifierProvider<UserContextProvider>.value(value: userProvider),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],
       child: MaterialApp(
         title: 'SIGAD',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light(),
-        initialRoute: AppRoutes.splash,
+        initialRoute: initialRoute,
         onGenerateRoute: AppRouter.onGenerateRoute,
         builder: (context, child) => _FlavorBanner(child: child ?? const SizedBox.shrink()),
       ),
@@ -37,7 +50,7 @@ class _FlavorBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final flavor = AppRuntimeConfig.flavor.toUpperCase();
-    if (flavor == 'PROD') {
+    if (flavor == 'PROD' || flavor == 'DEV') {
       return child;
     }
 

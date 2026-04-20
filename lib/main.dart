@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'app/app.dart';
+import 'app/routes/app_routes.dart';
 import 'core/config/app_runtime_config.dart';
 import 'core/services/app_event_logger.dart';
 import 'core/services/app_observability_service.dart';
+import 'core/services/user_context_provider.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   AppObservabilityService.configure(
@@ -33,5 +35,14 @@ void main() {
     ),
   );
 
-  runApp(const SigadApp());
+  final userContext = UserContextProvider();
+  await userContext.restoreSession();
+  final initialRoute = userContext.isAuthenticated ? AppRoutes.dashboard : AppRoutes.login;
+
+  runApp(
+    SigadApp(
+      initialRoute: initialRoute,
+      userContextProvider: userContext,
+    ),
+  );
 }

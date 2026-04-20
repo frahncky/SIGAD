@@ -10,7 +10,6 @@ import '../../features/kanban/presentation/pages/kanban_page.dart';
 import '../../features/login/presentation/pages/login_page.dart';
 import '../../features/relatorios/presentation/pages/relatorios_page.dart';
 import '../../features/aulas_praticas/presentation/pages/aulas_praticas_page.dart';
-import '../../features/splash/presentation/pages/splash_page.dart';
 import 'app_routes.dart';
 
 abstract final class AppRouter {
@@ -18,11 +17,6 @@ abstract final class AppRouter {
     final routeName = settings.name ?? AppRoutes.dashboard;
 
     switch (routeName) {
-      case AppRoutes.splash:
-        return MaterialPageRoute<void>(
-          settings: const RouteSettings(name: AppRoutes.splash),
-          builder: (_) => const SplashPage(),
-        );
       case AppRoutes.login:
         return MaterialPageRoute<void>(
           settings: const RouteSettings(name: AppRoutes.login),

@@ -36,7 +36,7 @@ android {
             dimension = "environment"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
-            resValue("string", "app_name", "SIGAD Dev")
+            resValue("string", "app_name", "SIGAD")
         }
         create("staging") {
             dimension = "environment"
