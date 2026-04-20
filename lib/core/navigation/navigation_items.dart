@@ -35,7 +35,12 @@ const List<NavigationItem> kNavigationItems = [
     route: AppRoutes.cargaDocente,
     label: 'Agenda',
     icon: Icons.schedule_outlined,
-    availableFor: {UserRole.professor, UserRole.coordenador, UserRole.chefeDepartamento},
+    availableFor: {
+      UserRole.professor,
+      UserRole.coordenador,
+      UserRole.servidorAdministrativo,
+      UserRole.chefeDepartamento,
+    },
   ),
   NavigationItem(
     route: AppRoutes.atividades,
