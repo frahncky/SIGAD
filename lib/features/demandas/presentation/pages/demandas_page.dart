@@ -87,18 +87,8 @@ class _DemandasPageState extends State<DemandasPage> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final demandasVisiveis = _demandasVisiveis;
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: () => _showFiltros(context),
-          ),
-        ],
-      ),
       body: Column(
         children: [
           Padding(
@@ -106,60 +96,31 @@ class _DemandasPageState extends State<DemandasPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextField(
-                  onChanged: (value) => setState(() => _busca = value),
-                  decoration: const InputDecoration(
-                    hintText: 'Buscar por título, descrição ou responsável',
-                    prefixIcon: Icon(Icons.search_outlined),
-                  ),
-                ),
-                const SizedBox(height: 12),
                 Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: SigadColors.surfaceAlt,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        '${demandasVisiveis.length} resultado(s)',
-                        style: textTheme.labelSmall?.copyWith(
-                          color: SigadColors.muted,
-                          fontWeight: FontWeight.w700,
+                    Expanded(
+                      child: TextField(
+                        onChanged: (value) => setState(() => _busca = value),
+                        decoration: const InputDecoration(
+                          hintText: 'Buscar por título, descrição ou responsável',
+                          prefixIcon: Icon(Icons.search_outlined),
                         ),
                       ),
                     ),
-                    const Spacer(),
-                    if (_filtrosAtivos > 0)
-                      TextButton.icon(
-                        onPressed: () {
-                          setState(() {
-                            _busca = '';
-                            _filtroStatus = 'Todas';
-                            _filtroPrioridade = 'Todas';
-                          });
-                        },
-                        icon: const Icon(Icons.restart_alt, size: 18),
-                        label: const Text('Limpar'),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: 48,
+                      height: 48,
+                      child: OutlinedButton(
+                        onPressed: () => _showFiltros(context),
+                        style: OutlinedButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          minimumSize: const Size(48, 48),
+                        ),
+                        child: const Icon(Icons.filter_list),
                       ),
+                    ),
                   ],
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  initialValue: _ordemSelecionada,
-                  decoration: const InputDecoration(
-                    labelText: 'Ordenar por',
-                    prefixIcon: Icon(Icons.sort),
-                  ),
-                  items: DemandasService.opcoesOrdenacao
-                      .map((ordem) => DropdownMenuItem(value: ordem, child: Text(ordem)))
-                      .toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() => _ordemSelecionada = value);
-                    }
-                  },
                 ),
               ],
             ),
@@ -180,15 +141,7 @@ class _DemandasPageState extends State<DemandasPage> {
                                 ? 'Tente limpar os filtros ativos.'
                                 : 'Crie uma nova demanda para começar.',
                             actionLabel: _filtrosAtivos > 0 ? 'Limpar filtros' : null,
-                            onAction: _filtrosAtivos > 0
-                                ? () {
-                                    setState(() {
-                                      _busca = '';
-                                      _filtroStatus = 'Todas';
-                                      _filtroPrioridade = 'Todas';
-                                    });
-                                  }
-                                : null,
+                            onAction: _filtrosAtivos > 0 ? _limparFiltros : null,
                           )
                 : ListView.separated(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -264,15 +217,31 @@ class _DemandasPageState extends State<DemandasPage> {
                     .toList(),
               ),
               const SizedBox(height: 24),
+              Text('Ordenação', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                children: DemandasService.opcoesOrdenacao
+                    .map(
+                      (ordem) => ChoiceChip(
+                        label: Text(ordem),
+                        selected: _ordemSelecionada == ordem,
+                        onSelected: (selected) {
+                          if (selected) {
+                            setModalState(() => _ordemSelecionada = ordem);
+                          }
+                        },
+                      ),
+                    )
+                    .toList(),
+              ),
+              const SizedBox(height: 24),
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () {
-                        setState(() {
-                          _filtroStatus = 'Todas';
-                          _filtroPrioridade = 'Todas';
-                        });
+                        _limparFiltros();
                         Navigator.pop(context);
                       },
                       child: const Text('Limpar'),
@@ -292,6 +261,15 @@ class _DemandasPageState extends State<DemandasPage> {
         ),
       ),
     );
+  }
+
+  void _limparFiltros() {
+    setState(() {
+      _busca = '';
+      _filtroStatus = 'Todas';
+      _filtroPrioridade = 'Todas';
+      _ordemSelecionada = 'Prazo mais próximo';
+    });
   }
 
   void _showCriarDemanda(BuildContext context) {
