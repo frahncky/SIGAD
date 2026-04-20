@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/models/navigation_item.dart';
+import '../../../../core/models/user_role.dart';
 import '../../../../core/navigation/navigation_items.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../../../configuracoes/data/configuracoes_repository.dart';
@@ -46,6 +47,7 @@ class DashboardPage extends StatelessWidget {
                     profile: profile,
                     userName: userName,
                     currentUserId: currentUserId,
+                    role: role,
                   ),
                   const SizedBox(height: 24),
                   const _SectionTitle(
@@ -69,16 +71,19 @@ class _HeroPanel extends StatelessWidget {
     required this.profile,
     required this.userName,
     required this.currentUserId,
+    required this.role,
   });
 
   final RoleProfile profile;
   final String userName;
   final String currentUserId;
+  final UserRole? role;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final isWide = MediaQuery.of(context).size.width >= 1200;
+    final labels = _labelsPorPerfil();
 
     final headerText = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,21 +102,19 @@ class _HeroPanel extends StatelessWidget {
       future: ConfiguracoesRepository().load(),
       builder: (context, snapshot) {
         final indicadores = snapshot.hasData
-            ? _agendaInsights(snapshot.data!.agendaCompromissos)
-            : profile.metrics
-                .take(3)
-                .map((metric) => _HeroInsight(value: metric.value, label: metric.label))
-                .toList(growable: false);
+            ? _agendaInsights(snapshot.data!.agendaCompromissos, labels)
+            : [
+                _HeroInsight(value: '--', label: labels.primeiro),
+                _HeroInsight(value: '0', label: labels.segundo),
+                _HeroInsight(value: '0', label: labels.terceiro),
+              ];
 
-        return Wrap(
-          alignment: WrapAlignment.center,
-          spacing: 8,
-          runSpacing: 8,
-          children: indicadores
-              .map(
-                (item) => Container(
-                  constraints: const BoxConstraints(minWidth: 94),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        return Row(
+          children: [
+            for (var i = 0; i < indicadores.length; i++) ...[
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.16),
                     borderRadius: BorderRadius.circular(10),
@@ -121,7 +124,9 @@ class _HeroPanel extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        item.value,
+                        indicadores[i].value,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: textTheme.titleMedium?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
@@ -129,7 +134,7 @@ class _HeroPanel extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        item.label,
+                        indicadores[i].label,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: textTheme.labelSmall?.copyWith(
@@ -139,8 +144,10 @@ class _HeroPanel extends StatelessWidget {
                     ],
                   ),
                 ),
-              )
-              .toList(growable: false),
+              ),
+              if (i < indicadores.length - 1) const SizedBox(width: 8),
+            ],
+          ],
         );
       },
     );
@@ -182,7 +189,7 @@ class _HeroPanel extends StatelessWidget {
     );
   }
 
-  List<_HeroInsight> _agendaInsights(List<CompromissoAgenda> compromissos) {
+  List<_HeroInsight> _agendaInsights(List<CompromissoAgenda> compromissos, _InsightLabels labels) {
     final agora = DateTime.now();
     final doUsuario = compromissos
         .where(
@@ -218,17 +225,32 @@ class _HeroPanel extends StatelessWidget {
     return [
       _HeroInsight(
         value: proximo == null ? '--' : _formatarHoraMinuto(proximo),
-        label: 'Próximo compromisso',
+        label: labels.primeiro,
       ),
       _HeroInsight(
         value: '$pendentes',
-        label: 'Convites pendentes',
+        label: labels.segundo,
       ),
       _HeroInsight(
         value: '$deHoje',
-        label: 'Compromissos hoje',
+        label: labels.terceiro,
       ),
     ];
+  }
+
+  _InsightLabels _labelsPorPerfil() {
+    switch (role) {
+      case UserRole.professor:
+        return const _InsightLabels('Aula', 'Convites', 'Hoje');
+      case UserRole.coordenador:
+        return const _InsightLabels('Reuniao', 'Convites', 'Hoje');
+      case UserRole.servidorAdministrativo:
+        return const _InsightLabels('Agenda', 'Convites', 'Hoje');
+      case UserRole.chefeDepartamento:
+        return const _InsightLabels('Gestao', 'Convites', 'Hoje');
+      default:
+        return const _InsightLabels('Proximo', 'Pendentes', 'Hoje');
+    }
   }
 
   String _formatarHoraMinuto(DateTime data) {
@@ -243,6 +265,14 @@ class _HeroInsight {
 
   final String value;
   final String label;
+}
+
+class _InsightLabels {
+  const _InsightLabels(this.primeiro, this.segundo, this.terceiro);
+
+  final String primeiro;
+  final String segundo;
+  final String terceiro;
 }
 
 class _SectionTitle extends StatelessWidget {
