@@ -1,9 +1,12 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/security/authorization_policy.dart';
+import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../../shared/widgets/page_status_view.dart';
 import '../../data/relatorio_repository.dart';
 import '../../domain/relatorio_models.dart';
 import '../../domain/relatorios_service.dart';
@@ -18,28 +21,47 @@ class RelatoriosPage extends StatefulWidget {
 class _RelatoriosPageState extends State<RelatoriosPage> {
   String _busca = '';
   String _filtroStatus = 'Todos';
+  bool _isLoading = true;
+  String? _loadError;
+
   final RelatorioRepository _relatorioRepository = RelatorioRepository();
   final List<Relatorio> _relatorios = RelatoriosService.defaultRelatorios();
 
-    @override
-    void initState() {
-      super.initState();
-      _loadData();
-    }
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
 
-    Future<void> _loadData() async {
+  Future<void> _loadData() async {
+    setState(() {
+      _isLoading = true;
+      _loadError = null;
+    });
+    try {
       final list = await _relatorioRepository.loadRelatorios();
-      if (list.isEmpty) return;
+      if (!mounted) return;
       setState(() {
-        _relatorios
-          ..clear()
-          ..addAll(list);
+        if (list.isNotEmpty) {
+          _relatorios
+            ..clear()
+            ..addAll(list);
+        }
+        _isLoading = false;
+      });
+    } catch (error, stackTrace) {
+      AppEventLogger.error('relatorios_load_error', error, stackTrace: stackTrace);
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _loadError = 'Nao foi possivel carregar os relatorios.';
       });
     }
+  }
 
-    void _saveData() {
-      _relatorioRepository.saveRelatorios(_relatorios);
-    }
+  void _saveData() {
+    _relatorioRepository.saveRelatorios(_relatorios);
+  }
 
   void _atualizarRelatorio(Relatorio relatorioAtualizado) {
     setState(() {
@@ -53,15 +75,13 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
 
   void _baixarRelatorio(Relatorio relatorio) {
     if (!_canAccessRelatorios()) return;
-
     final atualizado = RelatoriosService.registrarDownload(relatorio);
     _atualizarRelatorio(atualizado);
-    AppFeedbackService.success(context, 'Relatório baixado: ${relatorio.titulo}');
+    AppFeedbackService.success(context, 'Relatorio baixado: ${relatorio.titulo}');
   }
 
   void _compartilharRelatorio(Relatorio relatorio) {
     if (!_canAccessRelatorios()) return;
-
     final atualizado = RelatoriosService.registrarCompartilhamento(relatorio);
     _atualizarRelatorio(atualizado);
     AppFeedbackService.info(context, 'Link de compartilhamento gerado para ${relatorio.titulo}');
@@ -80,6 +100,8 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
     }
 
     final textTheme = Theme.of(context).textTheme;
+    final relatoriosFiltrados = _relatoriosFiltrados;
+
     return Scaffold(
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -87,13 +109,13 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
           _RelatoriosSummaryBanner(
             totalRelatorios: _relatorios.length,
             publicados: _relatorios.where((r) => r.status == 'Publicado').length,
-            emRevisao: _relatorios.where((r) => r.status == 'Em revisão').length,
+            emRevisao: _relatorios.where((r) => r.status.toLowerCase().contains('revis')).length,
           ),
           const SizedBox(height: 16),
           TextField(
             onChanged: (value) => setState(() => _busca = value),
             decoration: const InputDecoration(
-              hintText: 'Buscar por título, descrição ou autor',
+              hintText: 'Buscar por titulo, descricao ou autor',
               prefixIcon: Icon(Icons.search_outlined),
             ),
           ),
@@ -101,7 +123,7 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-                children: RelatoriosService.statusDisponiveis
+              children: RelatoriosService.statusDisponiveis
                   .map(
                     (status) => Padding(
                       padding: const EdgeInsets.only(right: 8),
@@ -112,7 +134,7 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
                       ),
                     ),
                   )
-                  .toList(),
+                  .toList(growable: false),
             ),
           ),
           const SizedBox(height: 16),
@@ -125,11 +147,11 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
             ),
             child: Row(
               children: [
-                Icon(Icons.info, color: SigadColors.brand),
+                const Icon(Icons.info, color: SigadColors.brand),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    '${_relatoriosFiltrados.length} relatórios disponíveis para consulta',
+                    '${relatoriosFiltrados.length} relatorios disponiveis para consulta',
                     style: textTheme.bodySmall?.copyWith(color: SigadColors.brand),
                   ),
                 ),
@@ -137,16 +159,39 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
             ),
           ),
           const SizedBox(height: 16),
-          ..._relatoriosFiltrados.asMap().entries.map(
-                (entry) => Padding(
-                  padding: EdgeInsets.only(bottom: entry.key < _relatoriosFiltrados.length - 1 ? 12 : 0),
-                  child: _RelatorioCard(
-                    relatorio: entry.value,
-                    onBaixar: () => _baixarRelatorio(entry.value),
-                    onCompartilhar: () => _compartilharRelatorio(entry.value),
+          if (_isLoading)
+            const SizedBox(
+              height: 320,
+              child: PageStatusView.loading(title: 'Carregando relatorios...'),
+            )
+          else if (_loadError != null)
+            SizedBox(
+              height: 320,
+              child: PageStatusView.error(
+                subtitle: _loadError,
+                onAction: _loadData,
+              ),
+            )
+          else if (relatoriosFiltrados.isEmpty)
+            const SizedBox(
+              height: 320,
+              child: PageStatusView.empty(
+                icon: Icons.description_outlined,
+                title: 'Nenhum relatorio encontrado',
+                subtitle: 'Ajuste os filtros para visualizar resultados.',
+              ),
+            )
+          else
+            ...relatoriosFiltrados.asMap().entries.map(
+                  (entry) => Padding(
+                    padding: EdgeInsets.only(bottom: entry.key < relatoriosFiltrados.length - 1 ? 12 : 0),
+                    child: _RelatorioCard(
+                      relatorio: entry.value,
+                      onBaixar: () => _baixarRelatorio(entry.value),
+                      onCompartilhar: () => _compartilharRelatorio(entry.value),
+                    ),
                   ),
                 ),
-              ),
         ],
       ),
     );
@@ -156,7 +201,7 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
     final role = context.read<UserContextProvider>().userRole;
     final allowed = AuthorizationPolicy.canAccessRelatorios(role);
     if (!allowed && showFeedback) {
-      AppFeedbackService.warning(context, 'Seu perfil não possui permissão para relatórios.');
+      AppFeedbackService.warning(context, 'Seu perfil nao possui permissao para relatorios.');
     }
     return allowed;
   }
@@ -176,7 +221,7 @@ class _RelatoriosAccessDenied extends StatelessWidget {
             const Icon(Icons.lock_outline, size: 56),
             const SizedBox(height: 12),
             Text(
-              'Acesso não permitido para este perfil.',
+              'Acesso nao permitido para este perfil.',
               style: Theme.of(context).textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
@@ -212,17 +257,17 @@ class _RelatoriosSummaryBanner extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Central de relatórios',
+            'Central de relatorios',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 14),
           Row(
             children: [
-              _RelatoriosKpi(label: 'Disponíveis', value: '$totalRelatorios'),
+              _RelatoriosKpi(label: 'Disponiveis', value: '$totalRelatorios'),
               const SizedBox(width: 8),
               _RelatoriosKpi(label: 'Publicados', value: '$publicados'),
               const SizedBox(width: 8),
-              _RelatoriosKpi(label: 'Em revisão', value: '$emRevisao'),
+              _RelatoriosKpi(label: 'Em revisao', value: '$emRevisao'),
             ],
           ),
         ],
@@ -302,12 +347,8 @@ class _RelatorioCard extends StatelessWidget {
                     color: SigadColors.brand.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Center(
-                    child: Icon(
-                      Icons.description,
-                      color: SigadColors.brand,
-                      size: 20,
-                    ),
+                  child: const Center(
+                    child: Icon(Icons.description, color: SigadColors.brand, size: 20),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -315,18 +356,11 @@ class _RelatorioCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        relatorio.id,
-                        style: textTheme.labelSmall?.copyWith(
-                          color: SigadColors.muted,
-                        ),
-                      ),
+                      Text(relatorio.id, style: textTheme.labelSmall?.copyWith(color: SigadColors.muted)),
                       const SizedBox(height: 4),
                       Text(
                         relatorio.titulo,
-                        style: textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -338,9 +372,7 @@ class _RelatorioCard extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               relatorio.descricao,
-              style: textTheme.bodySmall?.copyWith(
-                color: SigadColors.muted,
-              ),
+              style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -355,10 +387,7 @@ class _RelatorioCard extends StatelessWidget {
                   ),
                   child: Text(
                     relatorio.tipo,
-                    style: textTheme.labelSmall?.copyWith(
-                      color: SigadColors.brand,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: textTheme.labelSmall?.copyWith(color: SigadColors.brand, fontWeight: FontWeight.w600),
                   ),
                 ),
                 const Spacer(),
@@ -375,10 +404,11 @@ class _RelatorioCard extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                ),                PopupMenuButton<String>(
+                ),
+                PopupMenuButton<String>(
                   onSelected: (value) => _onMenuItemSelected(context, value),
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
+                  itemBuilder: (context) => const [
+                    PopupMenuItem(
                       value: 'visualizar',
                       child: Row(
                         children: [
@@ -388,7 +418,7 @@ class _RelatorioCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'baixar',
                       child: Row(
                         children: [
@@ -398,7 +428,7 @@ class _RelatorioCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'compartilhar',
                       child: Row(
                         children: [
@@ -410,20 +440,15 @@ class _RelatorioCard extends StatelessWidget {
                     ),
                   ],
                   icon: const Icon(Icons.more_vert, size: 18),
-                ),              ],
+                ),
+              ],
             ),
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _InfoChip(
-                  icon: Icons.calendar_today,
-                  label: relatorio.data,
-                ),
-                _InfoChip(
-                  icon: Icons.person_outline,
-                  label: relatorio.autor,
-                ),
+                _InfoChip(icon: Icons.calendar_today, label: relatorio.data),
+                _InfoChip(icon: Icons.person_outline, label: relatorio.autor),
               ],
             ),
             if (relatorio.ultimaAcao != null) ...[
@@ -466,19 +491,18 @@ class _RelatorioCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(relatorio.id, style: textTheme.labelSmall?.copyWith(color: SigadColors.muted)),
-                      const SizedBox(height: 8),
-                      SizedBox(
-                        width: 280,
-                        child: Text(
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(relatorio.id, style: textTheme.labelSmall?.copyWith(color: SigadColors.muted)),
+                        const SizedBox(height: 8),
+                        Text(
                           relatorio.titulo,
                           style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
@@ -487,8 +511,8 @@ class _RelatorioCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 24),
-              _DetailSection(label: 'Descrição', value: relatorio.descricao),
-              _DetailSection(label: 'Tipo de Relatório', value: relatorio.tipo),
+              _DetailSection(label: 'Descricao', value: relatorio.descricao),
+              _DetailSection(label: 'Tipo de relatorio', value: relatorio.tipo),
               _DetailSection(label: 'Autor', value: relatorio.autor),
               _DetailSection(label: 'Data', value: relatorio.data),
               _DetailSection(label: 'Status', value: relatorio.status),
@@ -579,4 +603,3 @@ class _DetailSection extends StatelessWidget {
     );
   }
 }
-

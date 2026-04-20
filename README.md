@@ -138,3 +138,33 @@ Arquitetura e operação detalhadas:
 - Sprint 2: extracao de camadas (`domain`/`data`) em features principais concluída
 - Sprint 3: concluído (qualidade técnica, cobertura e governança)
 - Sprint 4: concluído (integrações, sessão, observabilidade, resiliência e CI gate)
+
+## Ambientes e Flavors
+
+- `SIGAD_FLAVOR=dev|staging|prod` controla o banner visual e tags de runtime.
+- Android possui flavors nativos `dev`, `staging` e `prod`.
+- Observabilidade remota pode ser ligada por define sem alterar codigo:
+  - `SIGAD_OBSERVABILITY_ENABLED=true`
+  - `SIGAD_OBSERVABILITY_ENDPOINT=https://seu-endpoint/events`
+
+Exemplos:
+
+```bash
+flutter run --flavor dev --dart-define=SIGAD_FLAVOR=dev
+flutter run --flavor staging --dart-define=SIGAD_FLAVOR=staging
+flutter run --flavor prod --dart-define=SIGAD_FLAVOR=prod --dart-define=SIGAD_DATA_SOURCE=remote
+```
+
+Release Android (AAB):
+
+```bash
+flutter build appbundle --flavor prod --dart-define=SIGAD_FLAVOR=prod
+```
+
+## Checklist de release
+
+1. Rodar `flutter analyze` e `flutter test`.
+2. Validar flavor alvo (`dev/staging/prod`) e `dart-define` de ambiente.
+3. Confirmar endpoint de observabilidade em producao.
+4. Revisar permissoes e dados sensiveis (logs/token/sessao).
+5. Gerar build assinado e executar smoke test em dispositivo real.

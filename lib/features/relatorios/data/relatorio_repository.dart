@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 
+import '../../../core/contracts/entity_repository.dart';
 import '../../../core/config/app_runtime_config.dart';
 import '../../../core/network/api_request.dart';
 import '../../../core/network/app_http_client.dart';
@@ -9,7 +10,7 @@ import '../domain/relatorio_models.dart';
 import '../../../core/services/local_storage_service.dart';
 import 'contracts/relatorio_api_contract.dart';
 
-class RelatorioRepository {
+class RelatorioRepository implements EntityRepository<Relatorio> {
   RelatorioRepository({
     this.storageKey = 'sigad_relatorios',
     AppHttpClient? remoteClient,
@@ -23,6 +24,12 @@ class RelatorioRepository {
   final AppHttpClient _remoteClient;
   final DataSourceMode _dataSourceMode;
   final bool _enableRemoteFallback;
+
+  @override
+  Future<List<Relatorio>> load() => loadRelatorios();
+
+  @override
+  Future<void> save(List<Relatorio> entities) => saveRelatorios(entities);
 
   Future<List<Relatorio>> loadRelatorios() async {
     if (_dataSourceMode == DataSourceMode.local) {

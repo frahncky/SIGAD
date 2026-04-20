@@ -38,7 +38,7 @@ class AuthSessionRepository {
 
       return AuthSessionData(
         user: user,
-        sessionToken: raw['sessionToken'] as String? ?? 'local_session',
+        sessionToken: _restoreSessionToken(raw),
         expiresAt: DateTime.parse(raw['expiresAt'] as String),
       );
     } catch (_) {
@@ -59,12 +59,35 @@ class AuthSessionRepository {
       'role': user.role.name,
       'createdAt': user.createdAt.toIso8601String(),
       'lastLogin': user.lastLogin?.toIso8601String(),
-      'sessionToken': sessionToken,
+      // Não persistimos o token completo para reduzir exposição em storage local.
+      'sessionTokenHint': _tokenHint(sessionToken),
       'expiresAt': expiry.toIso8601String(),
     });
   }
 
   Future<void> clear() {
     return LocalStorageService.remove(storageKey);
+  }
+
+  String _restoreSessionToken(Map<String, dynamic> raw) {
+    final hinted = raw['sessionTokenHint'] as String?;
+    if (hinted != null && hinted.trim().isNotEmpty) {
+      return 'restored_$hinted';
+    }
+
+    // Migração para payloads antigos que persistiam token completo.
+    final legacy = raw['sessionToken'] as String?;
+    if (legacy != null && legacy.trim().isNotEmpty) {
+      return 'legacy_${_tokenHint(legacy)}';
+    }
+
+    return 'local_session';
+  }
+
+  String _tokenHint(String token) {
+    final clean = token.trim();
+    if (clean.isEmpty) return 'session';
+    if (clean.length <= 4) return clean;
+    return clean.substring(clean.length - 4);
   }
 }

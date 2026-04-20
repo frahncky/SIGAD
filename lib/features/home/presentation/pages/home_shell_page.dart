@@ -757,7 +757,7 @@ void _confirmLogout(BuildContext context, UserContextProvider userContext) {
             Navigator.pop(context);
             await userContext.logout();
             if (!context.mounted) return;
-            Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+            await Navigator.of(context).pushReplacementNamed(AppRoutes.login);
           },
           child: const Text('Sair'),
         ),

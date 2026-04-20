@@ -1,9 +1,11 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/security/authorization_policy.dart';
+import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../../shared/widgets/page_status_view.dart';
 import '../../data/demanda_repository.dart';
 import '../../domain/demanda_models.dart';
 import '../../domain/demandas_service.dart';
@@ -20,6 +22,8 @@ class _DemandasPageState extends State<DemandasPage> {
   String _filtroStatus = 'Todas';
   String _filtroPrioridade = 'Todas';
   String _ordemSelecionada = 'Prazo mais próximo';
+  bool _isLoading = true;
+  String? _loadError;
   final DemandaRepository _demandaRepository = DemandaRepository();
   final List<Demanda> _demandas = DemandasService.defaultDemandas();
 
@@ -30,13 +34,29 @@ class _DemandasPageState extends State<DemandasPage> {
   }
 
   Future<void> _loadData() async {
-    final list = await _demandaRepository.loadDemandas();
-    if (list.isEmpty) return;
     setState(() {
-      _demandas
-        ..clear()
-        ..addAll(list);
+      _isLoading = true;
+      _loadError = null;
     });
+    try {
+      final list = await _demandaRepository.loadDemandas();
+      if (!mounted) return;
+      setState(() {
+        if (list.isNotEmpty) {
+          _demandas
+            ..clear()
+            ..addAll(list);
+        }
+        _isLoading = false;
+      });
+    } catch (error, stackTrace) {
+      AppEventLogger.error('demandas_load_error', error, stackTrace: stackTrace);
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _loadError = 'Não foi possível carregar as demandas.';
+      });
+    }
   }
 
   void _saveData() {
@@ -68,6 +88,7 @@ class _DemandasPageState extends State<DemandasPage> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final demandasVisiveis = _demandasVisiveis;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -102,7 +123,7 @@ class _DemandasPageState extends State<DemandasPage> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        '${_demandasVisiveis.length} resultado(s)',
+                        '${demandasVisiveis.length} resultado(s)',
                         style: textTheme.labelSmall?.copyWith(
                           color: SigadColors.muted,
                           fontWeight: FontWeight.w700,
@@ -144,42 +165,39 @@ class _DemandasPageState extends State<DemandasPage> {
             ),
           ),
           Expanded(
-            child: _demandasVisiveis.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.inbox_outlined, size: 64, color: SigadColors.muted.withValues(alpha: 0.3)),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Nenhuma demanda encontrada',
-                          style: textTheme.bodyLarge?.copyWith(color: SigadColors.muted),
-                        ),
-                        if (_filtrosAtivos > 0) ...[
-                          const SizedBox(height: 12),
-                          OutlinedButton.icon(
-                            onPressed: () {
-                              setState(() {
-                                _busca = '';
-                                _filtroStatus = 'Todas';
-                                _filtroPrioridade = 'Todas';
-                              });
-                            },
-                            icon: const Icon(Icons.restart_alt),
-                            label: const Text('Limpar filtros'),
-                          ),
-                        ],
-                      ],
-                    ),
-                  )
+            child: _isLoading
+                ? const PageStatusView.loading(title: 'Carregando demandas...')
+                : _loadError != null
+                    ? PageStatusView.error(
+                        subtitle: _loadError,
+                        onAction: _loadData,
+                      )
+                    : demandasVisiveis.isEmpty
+                        ? PageStatusView.empty(
+                            icon: Icons.inbox_outlined,
+                            title: 'Nenhuma demanda encontrada',
+                            subtitle: _filtrosAtivos > 0
+                                ? 'Tente limpar os filtros ativos.'
+                                : 'Crie uma nova demanda para começar.',
+                            actionLabel: _filtrosAtivos > 0 ? 'Limpar filtros' : null,
+                            onAction: _filtrosAtivos > 0
+                                ? () {
+                                    setState(() {
+                                      _busca = '';
+                                      _filtroStatus = 'Todas';
+                                      _filtroPrioridade = 'Todas';
+                                    });
+                                  }
+                                : null,
+                          )
                 : ListView.separated(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    itemCount: _demandasVisiveis.length,
+                    itemCount: demandasVisiveis.length,
                     separatorBuilder: (context, i) => const SizedBox(height: 12),
                     itemBuilder: (_, index) => _DemandasCard(
-                      demanda: _demandasVisiveis[index],
-                      onEditar: () => _showEditarDemanda(context, _demandasVisiveis[index]),
-                      onExcluir: () => _showConfirmarExclusao(context, _demandasVisiveis[index]),
+                      demanda: demandasVisiveis[index],
+                      onEditar: () => _showEditarDemanda(context, demandasVisiveis[index]),
+                      onExcluir: () => _showConfirmarExclusao(context, demandasVisiveis[index]),
                     ),
                   ),
           ),
@@ -817,4 +835,3 @@ class _DetailRow extends StatelessWidget {
     );
   }
 }
-

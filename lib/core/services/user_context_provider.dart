@@ -36,7 +36,7 @@ class UserContextProvider extends ChangeNotifier {
       expiresAt: _sessionExpiresAt,
     );
     AppEventLogger.action('session_login_persisted', details: {
-      'userId': user.id,
+      'userRef': _userRef(user.id),
       'role': user.role.name,
     });
     notifyListeners();
@@ -84,7 +84,7 @@ class UserContextProvider extends ChangeNotifier {
         _sessionToken = data.sessionToken;
         _sessionExpiresAt = data.expiresAt;
         AppEventLogger.action('session_restore_success', details: {
-          'userId': data.user.id,
+          'userRef': _userRef(data.user.id),
           'role': data.user.role.name,
         });
       }
@@ -105,7 +105,7 @@ class UserContextProvider extends ChangeNotifier {
       sessionToken: token,
       expiresAt: _sessionExpiresAt,
     );
-    AppEventLogger.action('session_refresh_success', details: {'userId': user.id});
+    AppEventLogger.action('session_refresh_success', details: {'userRef': _userRef(user.id)});
     notifyListeners();
   }
 
@@ -118,5 +118,12 @@ class UserContextProvider extends ChangeNotifier {
   bool hasAnyRole(Set<UserRole> roles) {
     if (_currentUser == null) return false;
     return roles.contains(_currentUser!.role);
+  }
+
+  String _userRef(String userId) {
+    final normalized = userId.trim();
+    if (normalized.isEmpty) return 'unknown';
+    if (normalized.length <= 6) return normalized;
+    return '${normalized.substring(0, 2)}***${normalized.substring(normalized.length - 2)}';
   }
 }

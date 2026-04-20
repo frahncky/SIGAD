@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 
+import '../../../core/contracts/entity_repository.dart';
 import '../../../core/config/app_runtime_config.dart';
 import '../../../core/network/api_request.dart';
 import '../../../core/network/app_http_client.dart';
@@ -9,7 +10,7 @@ import '../../../core/services/local_storage_service.dart';
 import '../domain/atividade_models.dart';
 import 'contracts/atividade_api_contract.dart';
 
-class AtividadeRepository {
+class AtividadeRepository implements EntityRepository<Atividade> {
   AtividadeRepository({
     this.storageKey = 'sigad_atividades',
     AppHttpClient? remoteClient,
@@ -23,6 +24,12 @@ class AtividadeRepository {
   final AppHttpClient _remoteClient;
   final DataSourceMode _dataSourceMode;
   final bool _enableRemoteFallback;
+
+  @override
+  Future<List<Atividade>> load() => loadAtividades();
+
+  @override
+  Future<void> save(List<Atividade> entities) => saveAtividades(entities);
 
   Future<List<Atividade>> loadAtividades() async {
     if (_dataSourceMode == DataSourceMode.local) {

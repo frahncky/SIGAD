@@ -8,6 +8,7 @@ import '../../domain/reserva_service.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../../shared/widgets/page_status_view.dart';
 
 class AulasPraticasPage extends StatefulWidget {
   const AulasPraticasPage({super.key});
@@ -42,6 +43,8 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   final ReservaRepository _reservaRepository = ReservaRepository();
   final List<ReservaLaboratorio> _reservas =
       ReservaService.defaultReservas(DateTime.now().month);
+  bool _isLoading = true;
+  String? _loadError;
 
   String _laboratorioSelecionado = _laboratorios.first;
   int _mesSelecionado = DateTime.now().month;
@@ -54,13 +57,29 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   }
 
   Future<void> _loadData() async {
-    final list = await _reservaRepository.loadReservas();
-    if (list.isEmpty) return;
     setState(() {
-      _reservas
-        ..clear()
-        ..addAll(list);
+      _isLoading = true;
+      _loadError = null;
     });
+    try {
+      final list = await _reservaRepository.loadReservas();
+      if (!mounted) return;
+      setState(() {
+        if (list.isNotEmpty) {
+          _reservas
+            ..clear()
+            ..addAll(list);
+        }
+        _isLoading = false;
+      });
+    } catch (error, stackTrace) {
+      AppEventLogger.error('reservas_load_error', error, stackTrace: stackTrace);
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _loadError = 'Nao foi possivel carregar as reservas.';
+      });
+    }
   }
 
   void _saveData() {
@@ -97,6 +116,17 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
     if (!hasAccess) {
       return const _AccessDenied();
+    }
+
+    if (_isLoading) {
+      return const PageStatusView.loading(title: 'Carregando reservas...');
+    }
+
+    if (_loadError != null) {
+      return PageStatusView.error(
+        subtitle: _loadError,
+        onAction: _loadData,
+      );
     }
 
     final podeEditar = ReservaService.canEdit(role);
@@ -944,4 +974,3 @@ class _AmbientBackground extends StatelessWidget {
     );
   }
 }
-

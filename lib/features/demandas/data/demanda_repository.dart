@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 
+import '../../../core/contracts/entity_repository.dart';
 import '../../../core/config/app_runtime_config.dart';
 import '../../../core/network/api_request.dart';
 import '../../../core/network/app_http_client.dart';
@@ -9,7 +10,7 @@ import '../domain/demanda_models.dart';
 import '../../../core/services/local_storage_service.dart';
 import 'contracts/demanda_api_contract.dart';
 
-class DemandaRepository {
+class DemandaRepository implements EntityRepository<Demanda> {
   DemandaRepository({
     this.storageKey = 'sigad_demandas',
     AppHttpClient? remoteClient,
@@ -23,6 +24,12 @@ class DemandaRepository {
   final AppHttpClient _remoteClient;
   final DataSourceMode _dataSourceMode;
   final bool _enableRemoteFallback;
+
+  @override
+  Future<List<Demanda>> load() => loadDemandas();
+
+  @override
+  Future<void> save(List<Demanda> entities) => saveDemandas(entities);
 
   Future<List<Demanda>> loadDemandas() async {
     if (_dataSourceMode == DataSourceMode.local) {

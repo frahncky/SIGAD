@@ -1,6 +1,8 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
+import '../../../../shared/widgets/page_status_view.dart';
 import '../../data/atividade_repository.dart';
 import '../../domain/atividade_models.dart';
 import '../../domain/atividades_service.dart';
@@ -15,6 +17,8 @@ class AtividadesPage extends StatefulWidget {
 class _AtividadesPageState extends State<AtividadesPage> {
   String _busca = '';
   String _filtro = 'Todas';
+  bool _isLoading = true;
+  String? _loadError;
   final AtividadeRepository _atividadeRepository = AtividadeRepository();
   final List<Atividade> _atividades = AtividadesService.defaultAtividades();
 
@@ -25,13 +29,29 @@ class _AtividadesPageState extends State<AtividadesPage> {
   }
 
   Future<void> _loadData() async {
-    final list = await _atividadeRepository.loadAtividades();
-    if (list.isEmpty) return;
     setState(() {
-      _atividades
-        ..clear()
-        ..addAll(list);
+      _isLoading = true;
+      _loadError = null;
     });
+    try {
+      final list = await _atividadeRepository.loadAtividades();
+      if (!mounted) return;
+      setState(() {
+        if (list.isNotEmpty) {
+          _atividades
+            ..clear()
+            ..addAll(list);
+        }
+        _isLoading = false;
+      });
+    } catch (error, stackTrace) {
+      AppEventLogger.error('atividades_load_error', error, stackTrace: stackTrace);
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _loadError = 'Não foi possível carregar as atividades.';
+      });
+    }
   }
 
   void _saveData() {
@@ -54,7 +74,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final atividadesFiltradas = _atividadesFiltradas;
     return Scaffold(
       body: Column(
         children: [
@@ -101,32 +121,27 @@ class _AtividadesPageState extends State<AtividadesPage> {
             ),
           ),
           Expanded(
-            child: _atividadesFiltradas.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.checklist,
-                          size: 64,
-                          color: SigadColors.muted.withValues(alpha: 0.3),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Nenhuma atividade encontrada',
-                          style: textTheme.bodyLarge?.copyWith(color: SigadColors.muted),
-                        ),
-                      ],
-                    ),
-                  )
+            child: _isLoading
+                ? const PageStatusView.loading(title: 'Carregando atividades...')
+                : _loadError != null
+                    ? PageStatusView.error(
+                        subtitle: _loadError,
+                        onAction: _loadData,
+                      )
+                    : atividadesFiltradas.isEmpty
+                        ? const PageStatusView.empty(
+                            icon: Icons.checklist,
+                            title: 'Nenhuma atividade encontrada',
+                            subtitle: 'Ajuste os filtros ou crie uma nova atividade.',
+                          )
                 : ListView.separated(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    itemCount: _atividadesFiltradas.length,
+                    itemCount: atividadesFiltradas.length,
                     separatorBuilder: (context, i) => const SizedBox(height: 12),
                     itemBuilder: (_, index) => _AtividadeCard(
-                      atividade: _atividadesFiltradas[index],
-                      onEditar: () => _showEditarAtividade(context, _atividadesFiltradas[index]),
-                      onExcluir: () => _showConfirmarExclusao(context, _atividadesFiltradas[index]),
+                      atividade: atividadesFiltradas[index],
+                      onEditar: () => _showEditarAtividade(context, atividadesFiltradas[index]),
+                      onExcluir: () => _showConfirmarExclusao(context, atividadesFiltradas[index]),
                     ),
                   ),
           ),
@@ -743,4 +758,3 @@ class _DetailSection extends StatelessWidget {
     );
   }
 }
-

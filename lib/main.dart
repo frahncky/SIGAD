@@ -1,13 +1,20 @@
-﻿import 'dart:ui';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'app/app.dart';
-import 'core/services/app_event_logger.dart';
 
+import 'app/app.dart';
+import 'core/config/app_runtime_config.dart';
+import 'core/services/app_event_logger.dart';
+import 'core/services/app_observability_service.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  AppObservabilityService.configure(
+    enabled: AppRuntimeConfig.enableObservability,
+    endpoint: AppRuntimeConfig.observabilityEndpoint,
+  );
 
   FlutterError.onError = (details) {
     AppEventLogger.error('flutter_framework_error', details.exception, stackTrace: details.stack);

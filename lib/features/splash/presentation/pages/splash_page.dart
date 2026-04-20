@@ -60,7 +60,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
       await userContext.restoreSession();
       if (!mounted) return;
       final nextRoute = userContext.isAuthenticated ? AppRoutes.dashboard : AppRoutes.login;
-      Navigator.of(context).pushReplacementNamed(nextRoute);
+      await Navigator.of(context).pushReplacementNamed(nextRoute);
     });
   }
 

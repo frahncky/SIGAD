@@ -251,11 +251,11 @@ class _LoginPageState extends State<LoginPage> {
         sessionToken: 'session_$normalizedEmail',
       );
       AppEventLogger.action('login_success', details: {
-        'userId': user.id,
+        'userRef': _userRef(user.id),
         'role': user.role.name,
       });
       if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
+      await Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
     } catch (error, stackTrace) {
       AppEventLogger.error('login_error', error, stackTrace: stackTrace);
       if (!mounted) return;
@@ -295,11 +295,11 @@ class _LoginPageState extends State<LoginPage> {
         sessionToken: 'session_demo_${role.name}',
       );
       AppEventLogger.action('demo_login_success', details: {
-        'userId': user.id,
+        'userRef': _userRef(user.id),
         'role': user.role.name,
       });
       if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
+      await Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
     } catch (error, stackTrace) {
       AppEventLogger.error('demo_login_error', error, stackTrace: stackTrace);
       if (!mounted) return;
@@ -341,6 +341,13 @@ class _LoginPageState extends State<LoginPage> {
 
   void _showError(String message) {
     AppFeedbackService.error(context, message);
+  }
+
+  String _userRef(String userId) {
+    final normalized = userId.trim();
+    if (normalized.isEmpty) return 'unknown';
+    if (normalized.length <= 6) return normalized;
+    return '${normalized.substring(0, 2)}***${normalized.substring(normalized.length - 2)}';
   }
 }
 

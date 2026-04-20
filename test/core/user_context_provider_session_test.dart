@@ -31,7 +31,8 @@ void main() {
 
       expect(restoredProvider.isAuthenticated, isTrue);
       expect(restoredProvider.currentUser?.email, 'teste@sigad.dev');
-      expect(restoredProvider.sessionToken, 'token_abc');
+      expect(restoredProvider.sessionToken, startsWith('restored_'));
+      expect(restoredProvider.sessionToken, isNot('token_abc'));
       expect(restoredProvider.requiresReauthentication, isFalse);
     });
 

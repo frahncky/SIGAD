@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 
+import '../../../core/contracts/entity_repository.dart';
 import '../../../core/config/app_runtime_config.dart';
 import '../../../core/network/api_request.dart';
 import '../../../core/network/app_http_client.dart';
@@ -9,7 +10,7 @@ import '../domain/kanban_models.dart';
 import '../../../core/services/local_storage_service.dart';
 import 'contracts/kanban_api_contract.dart';
 
-class KanbanRepository {
+class KanbanRepository implements EntityRepository<KanbanCardModel> {
   KanbanRepository({
     this.storageKey = 'sigad_kanban',
     AppHttpClient? remoteClient,
@@ -23,6 +24,12 @@ class KanbanRepository {
   final AppHttpClient _remoteClient;
   final DataSourceMode _dataSourceMode;
   final bool _enableRemoteFallback;
+
+  @override
+  Future<List<KanbanCardModel>> load() => loadCards();
+
+  @override
+  Future<void> save(List<KanbanCardModel> entities) => saveCards(entities);
 
   Future<List<KanbanCardModel>> loadCards() async {
     if (_dataSourceMode == DataSourceMode.local) {

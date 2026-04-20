@@ -1,6 +1,8 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
+import '../../../../shared/widgets/page_status_view.dart';
 import '../../data/kanban_repository.dart';
 import '../../domain/kanban_models.dart';
 import '../../domain/kanban_service.dart';
@@ -15,6 +17,8 @@ class KanbanPage extends StatefulWidget {
 class _KanbanPageState extends State<KanbanPage> {
   final KanbanRepository _kanbanRepository = KanbanRepository();
   final List<KanbanCardModel> _cards = KanbanService.defaultCards();
+  bool _isLoading = true;
+  String? _loadError;
 
   @override
   void initState() {
@@ -23,13 +27,29 @@ class _KanbanPageState extends State<KanbanPage> {
   }
 
   Future<void> _loadData() async {
-    final list = await _kanbanRepository.loadCards();
-    if (list.isEmpty) return;
     setState(() {
-      _cards
-        ..clear()
-        ..addAll(list);
+      _isLoading = true;
+      _loadError = null;
     });
+    try {
+      final list = await _kanbanRepository.loadCards();
+      if (!mounted) return;
+      setState(() {
+        if (list.isNotEmpty) {
+          _cards
+            ..clear()
+            ..addAll(list);
+        }
+        _isLoading = false;
+      });
+    } catch (error, stackTrace) {
+      AppEventLogger.error('kanban_load_error', error, stackTrace: stackTrace);
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _loadError = 'Nao foi possivel carregar o quadro Kanban.';
+      });
+    }
   }
 
   void _saveData() {
@@ -50,22 +70,29 @@ class _KanbanPageState extends State<KanbanPage> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            ..._colunas.entries.map(
-              (entry) => _KanbanColuna(
-                titulo: entry.key,
-                cards: entry.value,
-                onCardMoved: _moveCard,
-                onCardDeleted: _deleteCard,
-              ),
-            ),
-          ],
-        ),
-      ),
+      body: _isLoading
+          ? const PageStatusView.loading(title: 'Carregando quadro Kanban...')
+          : _loadError != null
+              ? PageStatusView.error(
+                  subtitle: _loadError,
+                  onAction: _loadData,
+                )
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Row(
+                    children: [
+                      ..._colunas.entries.map(
+                        (entry) => _KanbanColuna(
+                          titulo: entry.key,
+                          cards: entry.value,
+                          onCardMoved: _moveCard,
+                          onCardDeleted: _deleteCard,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
     );
   }
 
