@@ -5,6 +5,7 @@ import '../../../../app/theme/sigad_colors.dart';
 import '../../../configuracoes/data/configuracoes_repository.dart';
 import '../../../configuracoes/domain/configuracoes_models.dart';
 import '../../../configuracoes/domain/configuracoes_service.dart';
+import '../../../../shared/widgets/horizontal_scroll_hint.dart';
 import '../../data/docente_repository.dart';
 import '../../domain/docente_models.dart';
 import '../../domain/docente_visibility_service.dart';
@@ -1096,11 +1097,18 @@ class _MapaSemanalHorarios extends StatelessWidget {
   final bool compacto;
 
   static const List<String> _diasOrdem = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'];
+  static const double _dayColumnWidthCompact = 156;
+  static const double _dayColumnWidthRegular = 176;
+  static const double _rowHeightCompact = 104;
+  static const double _rowHeightRegular = 114;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final horariosPorDia = _agruparPorDia();
+    final slots = _buildSlotsOrdenados();
+    final gradePorDiaSlot = _buildGradePorDiaESlot();
+    final shouldShowScrollHint = MediaQuery.of(context).size.width < 960;
+    final dayColumnWidth = compacto ? _dayColumnWidthCompact : _dayColumnWidthRegular;
+    final rowHeight = compacto ? _rowHeightCompact : _rowHeightRegular;
 
     return Container(
       width: double.infinity,
@@ -1110,52 +1118,83 @@ class _MapaSemanalHorarios extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: SigadColors.divider),
       ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final crossAxisCount = constraints.maxWidth >= 560 ? 5 : 3;
-          final spacing = 8.0;
-          final availableWidth = constraints.maxWidth - ((crossAxisCount - 1) * spacing);
-          final itemWidth = availableWidth > 0 ? availableWidth / crossAxisCount : 80.0;
-
-          return Wrap(
-            spacing: spacing,
-            runSpacing: spacing,
-            children: _diasOrdem
-                .map(
-                  (dia) => SizedBox(
-                    width: itemWidth,
-                    child: _ColunaMapaSemanal(
-                      dia: dia,
-                      horarios: horariosPorDia[dia] ?? const [],
-                      compacto: compacto,
-                      textTheme: textTheme,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (shouldShowScrollHint) ...[
+            const HorizontalScrollHint(
+              message: 'Arraste lateralmente para ver a agenda completa por dia e horário.',
+            ),
+            const SizedBox(height: 10),
+          ],
+          if (slots.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Text(
+                'Sem aulas cadastradas na semana.',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: SigadColors.muted,
                     ),
-                  ),
-                )
-                .toList(),
-          );
-        },
+              ),
+            )
+          else
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Column(
+                children: [
+                  for (final slot in slots)
+                    Row(
+                      children: [
+                        for (final dia in _diasOrdem)
+                          _GradeAgendaCell(
+                            width: dayColumnWidth,
+                            height: rowHeight,
+                            dia: dia,
+                            slot: slot,
+                            horario: gradePorDiaSlot[dia]?[slot.key],
+                          ),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }
 
-  Map<String, List<HorarioAula>> _agruparPorDia() {
-    final agrupado = {
-      for (final dia in _diasOrdem) dia: <HorarioAula>[],
+  Map<String, Map<String, HorarioAula>> _buildGradePorDiaESlot() {
+    final grade = {
+      for (final dia in _diasOrdem) dia: <String, HorarioAula>{},
     };
-
     for (final horario in horarios) {
       final dia = _abreviarDia(horario.diaSemana);
       if (dia == null) continue;
-      agrupado[dia]!.add(horario);
+      final slotKey = _slotKey(horario.inicio, horario.fim);
+      grade[dia]![slotKey] = horario;
     }
-
-    for (final dia in _diasOrdem) {
-      agrupado[dia]!.sort((a, b) => a.inicio.compareTo(b.inicio));
-    }
-
-    return agrupado;
+    return grade;
   }
+
+  List<_AgendaSlot> _buildSlotsOrdenados() {
+    final slots = <String, _AgendaSlot>{};
+    for (final horario in horarios) {
+      slots[_slotKey(horario.inicio, horario.fim)] = _AgendaSlot(
+        inicio: horario.inicio,
+        fim: horario.fim,
+      );
+    }
+
+    final lista = slots.values.toList(growable: false);
+    lista.sort((a, b) {
+      final byInicio = a.inicio.compareTo(b.inicio);
+      if (byInicio != 0) return byInicio;
+      return a.fim.compareTo(b.fim);
+    });
+    return lista;
+  }
+
+  String _slotKey(String inicio, String fim) => '$inicio|$fim';
 
   String? _abreviarDia(String diaSemana) {
     final d = diaSemana.trim().toLowerCase();
@@ -1168,117 +1207,134 @@ class _MapaSemanalHorarios extends StatelessWidget {
   }
 }
 
-class _ColunaMapaSemanal extends StatelessWidget {
-  const _ColunaMapaSemanal({
-    required this.dia,
-    required this.horarios,
-    required this.compacto,
-    required this.textTheme,
+class _AgendaSlot {
+  const _AgendaSlot({
+    required this.inicio,
+    required this.fim,
   });
 
+  final String inicio;
+  final String fim;
+
+  String get key => '$inicio|$fim';
+}
+
+class _GradeAgendaCell extends StatelessWidget {
+  const _GradeAgendaCell({
+    required this.width,
+    required this.height,
+    required this.dia,
+    required this.slot,
+    required this.horario,
+  });
+
+  final double width;
+  final double height;
   final String dia;
-  final List<HorarioAula> horarios;
-  final bool compacto;
-  final TextTheme textTheme;
+  final _AgendaSlot slot;
+  final HorarioAula? horario;
 
   @override
   Widget build(BuildContext context) {
-    final temAulas = horarios.isNotEmpty;
+    final livre = horario == null;
+    final tone = livre ? SigadColors.success : SigadColors.warning;
+    final background = livre
+        ? SigadColors.successSoft.withValues(alpha: 0.45)
+        : SigadColors.accentSoft.withValues(alpha: 0.70);
+
     return Container(
+      width: width,
+      height: height,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
-        color: SigadColors.surfaceAlt,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: SigadColors.divider),
+        color: background,
+        border: Border(
+          top: const BorderSide(color: SigadColors.divider),
+          right: BorderSide(
+            color: dia == 'Sex' ? Colors.transparent : SigadColors.divider,
+          ),
+          bottom: BorderSide(
+            color: tone.withValues(alpha: 0.35),
+            width: 2,
+          ),
+        ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: temAulas
-                        ? SigadColors.brand.withValues(alpha: 0.12)
-                        : SigadColors.divider.withValues(alpha: 0.35),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    dia,
-                    textAlign: TextAlign.center,
-                    style: textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: temAulas ? SigadColors.brand : SigadColors.muted,
-                    ),
-                  ),
+          Text(
+            dia,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: SigadColors.brandDark,
+                  fontWeight: FontWeight.w700,
                 ),
-                const SizedBox(height: 6),
-                if (!temAulas)
-                  Text(
-                    '-',
-                    textAlign: TextAlign.center,
-                    style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-                  )
-                else
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      ...horarios.map(
-                        (h) => Container(
-                          margin: const EdgeInsets.only(bottom: 6),
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: SigadColors.surface,
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(color: SigadColors.divider),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '${h.inicio} – ${h.fim}',
-                                textAlign: TextAlign.center,
-                                style: textTheme.labelSmall?.copyWith(
-                                  color: SigadColors.brand,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              if (h.disciplina != null && h.disciplina!.isNotEmpty) ...[
-                                const SizedBox(height: 3),
-                                Text(
-                                  h.disciplina!,
-                                  style: textTheme.labelSmall?.copyWith(
-                                    color: SigadColors.ink,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 2,
-                                ),
-                              ],
-                              if (h.turma != null && h.turma!.isNotEmpty) ...[
-                                const SizedBox(height: 2),
-                                Text(h.turma!, style: textTheme.labelSmall?.copyWith(color: SigadColors.muted), overflow: TextOverflow.ellipsis),
-                              ],
-                              if (h.cargaHoraria != null && h.cargaHoraria!.isNotEmpty) ...[
-                                const SizedBox(height: 2),
-                                Text(h.cargaHoraria!, style: textTheme.labelSmall?.copyWith(color: SigadColors.muted), overflow: TextOverflow.ellipsis),
-                              ],
-                              if (h.modalidade != null && h.modalidade!.isNotEmpty) ...[
-                                const SizedBox(height: 2),
-                                Text(h.modalidade!, style: textTheme.labelSmall?.copyWith(color: SigadColors.muted), overflow: TextOverflow.ellipsis),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-              ],
-            ),
           ),
+          const SizedBox(height: 2),
+          Text(
+            '${slot.inicio} – ${slot.fim}',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: SigadColors.muted,
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+          const SizedBox(height: 3),
+          Row(
+            children: [
+              Icon(
+                livre ? Icons.check_circle_outline : Icons.event_note_outlined,
+                size: 14,
+                color: tone,
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  livre ? 'Livre' : 'Aula',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: tone,
+                      ),
+                ),
+              ),
+            ],
+          ),
+          if (!livre)
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    if (horario!.disciplina != null && horario!.disciplina!.isNotEmpty)
+                      Text(
+                        horario!.disciplina!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: SigadColors.brandDark,
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                    if (horario!.turma != null && horario!.turma!.isNotEmpty)
+                      Text(
+                        horario!.turma!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: SigadColors.muted,
+                            ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );
