@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/models/navigation_item.dart';
 import '../../../../core/navigation/navigation_items.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../configuracoes/data/configuracoes_repository.dart';
+import '../../../configuracoes/domain/configuracoes_models.dart';
 import '../../domain/dashboard_role_profile.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -16,6 +19,7 @@ class DashboardPage extends StatelessWidget {
     final role = userContext.userRole;
     final profile = RoleProfile.fromRole(role);
     final userName = userContext.currentUser?.name ?? 'Usuário';
+    final currentUserId = userContext.currentUser?.id ?? '';
 
     final availableModules = kNavigationItems
         .where((item) => role == null || item.isAvailableFor(role))
@@ -41,6 +45,7 @@ class DashboardPage extends StatelessWidget {
                   _HeroPanel(
                     profile: profile,
                     userName: userName,
+                    currentUserId: currentUserId,
                   ),
                   const SizedBox(height: 24),
                   const _SectionTitle(
@@ -63,10 +68,12 @@ class _HeroPanel extends StatelessWidget {
   const _HeroPanel({
     required this.profile,
     required this.userName,
+    required this.currentUserId,
   });
 
   final RoleProfile profile;
   final String userName;
+  final String currentUserId;
 
   @override
   Widget build(BuildContext context) {
@@ -86,51 +93,56 @@ class _HeroPanel extends StatelessWidget {
       ],
     );
 
-    final compactIndicators = Wrap(
-      alignment: WrapAlignment.center,
-      spacing: 8,
-      runSpacing: 8,
-      children: profile.metrics
-          .take(3)
-          .toList()
-          .asMap()
-          .entries
-          .map(
-            (entry) {
-              final metric = entry.value;
-              return Container(
-              constraints: const BoxConstraints(minWidth: 94),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.16),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.24)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    metric.value,
-                    style: textTheme.titleMedium?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
+    final compactIndicators = FutureBuilder<ConfiguracoesData?>(
+      future: ConfiguracoesRepository().load(),
+      builder: (context, snapshot) {
+        final indicadores = snapshot.hasData
+            ? _agendaInsights(snapshot.data!.agendaCompromissos)
+            : profile.metrics
+                .take(3)
+                .map((metric) => _HeroInsight(value: metric.value, label: metric.label))
+                .toList(growable: false);
+
+        return Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 8,
+          runSpacing: 8,
+          children: indicadores
+              .map(
+                (item) => Container(
+                  constraints: const BoxConstraints(minWidth: 94),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.16),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.24)),
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    metric.label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: textTheme.labelSmall?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.88),
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.value,
+                        style: textTheme.titleMedium?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        item.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.labelSmall?.copyWith(
+                          color: Colors.white.withValues(alpha: 0.88),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            );
-            },
-          )
-          .toList(),
+                ),
+              )
+              .toList(growable: false),
+        );
+      },
     );
 
     return Container(
@@ -169,6 +181,68 @@ class _HeroPanel extends StatelessWidget {
       ),
     );
   }
+
+  List<_HeroInsight> _agendaInsights(List<CompromissoAgenda> compromissos) {
+    final agora = DateTime.now();
+    final doUsuario = compromissos
+        .where(
+          (item) => item.destinatarioUserId.isEmpty || item.destinatarioUserId == currentUserId,
+        )
+        .toList(growable: false);
+
+    final pendentes = doUsuario.where((item) => item.statusConvite == StatusConviteAgenda.pendente).length;
+
+    final deHoje = doUsuario.where((item) {
+      if (item.statusConvite == StatusConviteAgenda.recusado) return false;
+      final inicio = DateTime.tryParse(item.inicioIso);
+      if (inicio == null) return false;
+      return inicio.year == agora.year && inicio.month == agora.month && inicio.day == agora.day;
+    }).length;
+
+    final futuros = doUsuario
+        .where((item) {
+          if (item.statusConvite == StatusConviteAgenda.recusado) return false;
+          final inicio = DateTime.tryParse(item.inicioIso);
+          if (inicio == null) return false;
+          return !inicio.isBefore(agora);
+        })
+        .toList(growable: false)
+      ..sort((a, b) {
+        final ai = DateTime.tryParse(a.inicioIso) ?? DateTime(2100);
+        final bi = DateTime.tryParse(b.inicioIso) ?? DateTime(2100);
+        return ai.compareTo(bi);
+      });
+
+    final proximo = futuros.isEmpty ? null : DateTime.tryParse(futuros.first.inicioIso);
+
+    return [
+      _HeroInsight(
+        value: proximo == null ? '--' : _formatarHoraMinuto(proximo),
+        label: 'Próximo compromisso',
+      ),
+      _HeroInsight(
+        value: '$pendentes',
+        label: 'Convites pendentes',
+      ),
+      _HeroInsight(
+        value: '$deHoje',
+        label: 'Compromissos hoje',
+      ),
+    ];
+  }
+
+  String _formatarHoraMinuto(DateTime data) {
+    final hora = data.hour.toString().padLeft(2, '0');
+    final minuto = data.minute.toString().padLeft(2, '0');
+    return '$hora:$minuto';
+  }
+}
+
+class _HeroInsight {
+  const _HeroInsight({required this.value, required this.label});
+
+  final String value;
+  final String label;
 }
 
 class _SectionTitle extends StatelessWidget {
