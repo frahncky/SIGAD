@@ -3,5 +3,6 @@
     "CodeGPT.apiKey": "LM Studio",
     "chat.tools.terminal.autoApprove": {
         "Test-Path": true
-    }
+    },
+    "java.configuration.updateBuildConfiguration": "interactive"
 }
