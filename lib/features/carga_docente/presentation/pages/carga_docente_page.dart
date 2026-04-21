@@ -5,7 +5,6 @@ import '../../../../app/theme/sigad_colors.dart';
 import '../../../configuracoes/data/configuracoes_repository.dart';
 import '../../../configuracoes/domain/configuracoes_models.dart';
 import '../../../configuracoes/domain/configuracoes_service.dart';
-import '../../../../shared/widgets/horizontal_scroll_hint.dart';
 import '../../data/docente_repository.dart';
 import '../../domain/docente_models.dart';
 import '../../domain/docente_visibility_service.dart';
@@ -1076,13 +1075,19 @@ class _AgendaDocentePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final horizontalPadding = screenWidth >= 1200
+        ? 8.0
+        : screenWidth >= 900
+            ? 10.0
+            : 6.0;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Agenda do docente'),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+        padding: EdgeInsets.fromLTRB(horizontalPadding, 14, horizontalPadding, 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1156,17 +1161,13 @@ class _MapaSemanalHorarios extends StatelessWidget {
     'Novembro',
     'Dezembro',
   ];
-  static const double _dayColumnWidthCompact = 156;
-  static const double _dayColumnWidthRegular = 176;
-  static const double _rowHeightCompact = 104;
-  static const double _rowHeightRegular = 114;
+  static const double _rowHeightCompact = 82;
+  static const double _rowHeightRegular = 92;
 
   @override
   Widget build(BuildContext context) {
-    final slots = _buildSlotsOrdenados();
-    final gradePorDiaSlot = _buildGradePorDiaESlot();
-    final shouldShowScrollHint = MediaQuery.of(context).size.width < 960;
-    final dayColumnWidth = compacto ? _dayColumnWidthCompact : _dayColumnWidthRegular;
+    final linhas = _gerarLinhasGrade();
+    final gradePorDiaTurnoPeriodo = _buildGradePorDiaTurnoPeriodo(linhas);
     final rowHeight = compacto ? _rowHeightCompact : _rowHeightRegular;
     final diasDoMesDaSemana = _diasDoMesDaSemanaAtual();
     final hoje = DateTime.now();
@@ -1195,13 +1196,7 @@ class _MapaSemanalHorarios extends StatelessWidget {
           style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
         ),
         const SizedBox(height: 14),
-        if (shouldShowScrollHint) ...[
-          const HorizontalScrollHint(
-            message: 'Arraste lateralmente para ver todos os dias e horários.',
-          ),
-          const SizedBox(height: 10),
-        ],
-        if (slots.isEmpty)
+        if (horarios.isEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: Text(
@@ -1212,70 +1207,112 @@ class _MapaSemanalHorarios extends StatelessWidget {
             ),
           )
         else
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Container(
-              decoration: BoxDecoration(
-                color: SigadColors.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: SigadColors.divider),
-              ),
-              child: Column(
-                children: [
-                  for (final slot in slots)
-                    Row(
-                      children: [
-                        for (var i = 0; i < _diasOrdem.length; i++)
-                          _GradeAgendaCell(
-                            width: dayColumnWidth,
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: SigadColors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: SigadColors.divider),
+            ),
+            child: Column(
+              children: [
+                for (var index = 0; index < linhas.length; index++) ...[
+                  if (index == 0 || linhas[index - 1].turno != linhas[index].turno)
+                    _TurnoAgendaDividerRow(turno: linhas[index].turno),
+                  Row(
+                    children: [
+                      for (var i = 0; i < _diasOrdem.length; i++)
+                        Expanded(
+                          child: _GradeAgendaCell(
                             height: rowHeight,
+                            compacto: compacto,
                             dia: _diasOrdem[i],
                             diaDoMes: diasDoMesDaSemana[i],
-                            slot: slot,
-                            horario: gradePorDiaSlot[_diasOrdem[i]]?[slot.key],
+                            horario: linhas[index].horario,
+                            turno: linhas[index].turno,
+                            periodo: linhas[index].periodo,
+                            isLastDay: i == _diasOrdem.length - 1,
+                            aula: gradePorDiaTurnoPeriodo[_diasOrdem[i]]?[
+                              _turnoPeriodoKey(linhas[index].turno, linhas[index].periodo)
+                            ],
                           ),
-                      ],
-                    ),
+                        ),
+                    ],
+                  ),
                 ],
-              ),
+              ],
             ),
           ),
       ],
     );
   }
 
-  Map<String, Map<String, HorarioAula>> _buildGradePorDiaESlot() {
+  Map<String, Map<String, HorarioAula>> _buildGradePorDiaTurnoPeriodo(
+    List<_AgendaGridRow> linhas,
+  ) {
     final grade = {
       for (final dia in _diasOrdem) dia: <String, HorarioAula>{},
     };
-    for (final horario in horarios) {
-      final dia = _abreviarDia(horario.diaSemana);
+
+    for (final aula in horarios) {
+      final dia = _abreviarDia(aula.diaSemana);
       if (dia == null) continue;
-      final slotKey = _slotKey(horario.inicio, horario.fim);
-      grade[dia]![slotKey] = horario;
+
+      for (final linha in linhas) {
+        if (!_aulaSobrepoeFaixa(aula, linha.horario)) continue;
+        grade[dia]!.putIfAbsent(
+          _turnoPeriodoKey(linha.turno, linha.periodo),
+          () => aula,
+        );
+      }
     }
+
     return grade;
   }
 
-  List<_AgendaSlot> _buildSlotsOrdenados() {
-    final slots = <String, _AgendaSlot>{};
-    for (final horario in horarios) {
-      slots[_slotKey(horario.inicio, horario.fim)] = _AgendaSlot(
-        inicio: horario.inicio,
-        fim: horario.fim,
-      );
-    }
-
-    final lista = slots.values.toList(growable: false);
-    lista.sort((a, b) {
-      final byInicio = a.inicio.compareTo(b.inicio);
-      if (byInicio != 0) return byInicio;
-      return a.fim.compareTo(b.fim);
-    });
-    return lista;
+  List<_AgendaGridRow> _gerarLinhasGrade() {
+    return [
+      for (final turno in _AgendaTurno.values)
+        for (var periodo = 1; periodo <= turno.horarios.length; periodo++)
+          _AgendaGridRow(
+            turno: turno,
+            periodo: periodo,
+            horario: turno.horarioDo(periodo),
+          ),
+    ];
   }
 
-  String _slotKey(String inicio, String fim) => '$inicio|$fim';
+  String _turnoPeriodoKey(_AgendaTurno turno, int periodo) => '${turno.name}|$periodo';
+
+  bool _aulaSobrepoeFaixa(HorarioAula aula, String faixa) {
+    final inicioAula = _toMinutes(aula.inicio);
+    final fimAula = _toMinutes(aula.fim);
+    final partes = faixa.split('-');
+    if (partes.length != 2) return false;
+    final inicioFaixa = _toMinutes(partes[0].trim());
+    final fimFaixa = _toMinutes(partes[1].trim());
+
+    if (inicioAula == null || fimAula == null || inicioFaixa == null || fimFaixa == null) {
+      return false;
+    }
+    if (fimAula <= inicioAula || fimFaixa <= inicioFaixa) {
+      return false;
+    }
+
+    return inicioAula < fimFaixa && inicioFaixa < fimAula;
+  }
+
+  int? _toMinutes(String value) {
+    final parts = value.split(':');
+    if (parts.length != 2) return null;
+
+    final hour = int.tryParse(parts[0].trim());
+    final minute = int.tryParse(parts[1].trim());
+    if (hour == null || minute == null) return null;
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return null;
+
+    return hour * 60 + minute;
+  }
 
   List<int> _diasDoMesDaSemanaAtual() {
     final hoje = DateTime.now();
@@ -1348,53 +1385,197 @@ class _MapaSemanalHorarios extends StatelessWidget {
   }
 }
 
-class _AgendaSlot {
-  const _AgendaSlot({
-    required this.inicio,
-    required this.fim,
+class _AgendaGridRow {
+  const _AgendaGridRow({
+    required this.turno,
+    required this.periodo,
+    required this.horario,
   });
 
-  final String inicio;
-  final String fim;
+  final _AgendaTurno turno;
+  final int periodo;
+  final String horario;
+}
 
-  String get key => '$inicio|$fim';
+enum _AgendaTurno {
+  matutino('Matutino'),
+  vespertino('Tarde'),
+  noturno('Noite');
+
+  const _AgendaTurno(this.label);
+
+  final String label;
+
+  String get shortLabel {
+    switch (this) {
+      case _AgendaTurno.matutino:
+        return 'M';
+      case _AgendaTurno.vespertino:
+        return 'T';
+      case _AgendaTurno.noturno:
+        return 'N';
+    }
+  }
+
+  Color get chipBackground {
+    switch (this) {
+      case _AgendaTurno.matutino:
+        return SigadColors.successSoft.withValues(alpha: 0.85);
+      case _AgendaTurno.vespertino:
+        return SigadColors.accentSoft.withValues(alpha: 0.85);
+      case _AgendaTurno.noturno:
+        return SigadColors.surfaceAlt;
+    }
+  }
+
+  Color get chipTextColor {
+    switch (this) {
+      case _AgendaTurno.matutino:
+        return SigadColors.success;
+      case _AgendaTurno.vespertino:
+        return SigadColors.warning;
+      case _AgendaTurno.noturno:
+        return SigadColors.brandDark;
+    }
+  }
+
+  List<String> get horarios {
+    switch (this) {
+      case _AgendaTurno.matutino:
+        return const ['07:15-08:05', '08:05-08:55', '08:55-09:45', '09:45-10:35', '10:50-11:40', '11:40-12:30'];
+      case _AgendaTurno.vespertino:
+        return const ['13:10-14:00', '14:00-14:50', '14:50-15:40', '15:55-16:45', '16:45-17:35', '17:35-18:25'];
+      case _AgendaTurno.noturno:
+        return const ['18:30-19:20', '19:20-20:10', '20:30-21:15', '21:15-22:00', '22:00-22:45'];
+    }
+  }
+
+  String horarioDo(int periodo) {
+    if (periodo < 1 || periodo > horarios.length) return 'Horario indefinido';
+    return horarios[periodo - 1];
+  }
+}
+
+class _TurnoAgendaDividerRow extends StatelessWidget {
+  const _TurnoAgendaDividerRow({
+    required this.turno,
+  });
+
+  final _AgendaTurno turno;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: turno.chipBackground,
+        border: const Border(
+          top: BorderSide(color: SigadColors.divider),
+          bottom: BorderSide(color: SigadColors.divider),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: turno.chipTextColor,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            turno.label,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: turno.chipTextColor,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _GradeAgendaCell extends StatelessWidget {
   const _GradeAgendaCell({
-    required this.width,
     required this.height,
+    required this.compacto,
     required this.dia,
     required this.diaDoMes,
-    required this.slot,
     required this.horario,
+    required this.turno,
+    required this.periodo,
+    required this.isLastDay,
+    required this.aula,
   });
 
-  final double width;
   final double height;
+  final bool compacto;
   final String dia;
   final int diaDoMes;
-  final _AgendaSlot slot;
-  final HorarioAula? horario;
+  final String horario;
+  final _AgendaTurno turno;
+  final int periodo;
+  final bool isLastDay;
+  final HorarioAula? aula;
 
   @override
   Widget build(BuildContext context) {
-    final livre = horario == null;
+    final livre = aula == null;
     final tone = livre ? SigadColors.success : SigadColors.warning;
     final background = livre
-        ? SigadColors.successSoft.withValues(alpha: 0.45)
+        ? SigadColors.successSoft.withValues(alpha: 0.55)
         : SigadColors.accentSoft.withValues(alpha: 0.70);
+    final cellPadding = compacto
+        ? const EdgeInsets.symmetric(horizontal: 6, vertical: 4)
+        : const EdgeInsets.symmetric(horizontal: 8, vertical: 5);
+    final chipPadding = compacto
+        ? const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5)
+        : const EdgeInsets.symmetric(horizontal: 6, vertical: 2);
+    final iconSize = compacto ? 12.0 : 14.0;
+    final statusLabel = livre ? 'Livre' : (compacto ? 'Aula' : 'Ocupado');
+    final headerTextStyle = Theme.of(context).textTheme.labelSmall?.copyWith(
+          color: SigadColors.brandDark,
+          fontWeight: FontWeight.w700,
+          fontSize: compacto ? 9.5 : 10.5,
+        );
+    final chipTextStyle = Theme.of(context).textTheme.labelSmall?.copyWith(
+          color: turno.chipTextColor,
+          fontWeight: FontWeight.w700,
+          fontSize: compacto ? 8.5 : 9.5,
+        );
+    final horarioTextStyle = Theme.of(context).textTheme.labelSmall?.copyWith(
+          color: SigadColors.muted,
+          fontWeight: FontWeight.w600,
+          fontSize: compacto ? 8.8 : 9.8,
+        );
+    final statusTextStyle = Theme.of(context).textTheme.labelSmall?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: tone,
+          fontSize: compacto ? 9.0 : 10.0,
+        );
+    final detailsPrimaryStyle = Theme.of(context).textTheme.labelSmall?.copyWith(
+          color: SigadColors.brandDark,
+          fontWeight: FontWeight.w600,
+          fontSize: 9.2,
+        );
+    final detailsSecondaryStyle = Theme.of(context).textTheme.labelSmall?.copyWith(
+          color: SigadColors.muted,
+          fontSize: 8.8,
+        );
 
     return Container(
-      width: width,
       height: height,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      padding: cellPadding,
       decoration: BoxDecoration(
         color: background,
         border: Border(
           top: const BorderSide(color: SigadColors.divider),
           right: BorderSide(
-            color: dia == 'Sex' ? Colors.transparent : SigadColors.divider,
+            color: isLastDay ? Colors.transparent : SigadColors.divider,
           ),
           bottom: BorderSide(
             color: tone.withValues(alpha: 0.35),
@@ -1406,72 +1587,86 @@ class _GradeAgendaCell extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text(
-            '$dia · $diaDoMes',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: SigadColors.brandDark,
-                  fontWeight: FontWeight.w700,
+          Row(
+            children: [
+              Expanded(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    compacto ? '$dia $diaDoMes' : '$dia · $diaDoMes',
+                    style: headerTextStyle,
+                  ),
                 ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            '${slot.inicio} – ${slot.fim}',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: SigadColors.muted,
-                  fontWeight: FontWeight.w600,
+              ),
+              const SizedBox(width: 4),
+              Container(
+                padding: chipPadding,
+                decoration: BoxDecoration(
+                  color: turno.chipBackground,
+                  borderRadius: BorderRadius.circular(10),
                 ),
+                child: Text(
+                  '${turno.shortLabel}$periodo',
+                  style: chipTextStyle,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 1),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              horario,
+              style: horarioTextStyle,
+            ),
+          ),
+          const SizedBox(height: 1),
           Flexible(
             child: Row(
               children: [
                 Icon(
                   livre ? Icons.check_circle_outline : Icons.event_busy_outlined,
-                  size: 14,
+                  size: iconSize,
                   color: tone,
                 ),
                 const SizedBox(width: 4),
                 Expanded(
-                  child: Text(
-                    livre ? 'Livre' : 'Aula',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: tone,
-                        ),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      statusLabel,
+                      style: statusTextStyle,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
           if (!livre) ...[
-            const SizedBox(height: 2),
-            if (horario!.disciplina != null && horario!.disciplina!.isNotEmpty)
+            const SizedBox(height: 1),
+            if (!compacto && aula!.disciplina != null && aula!.disciplina!.isNotEmpty)
               Flexible(
-                child: Text(
-                  horario!.disciplina!,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: SigadColors.brandDark,
-                        fontWeight: FontWeight.w600,
-                      ),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    aula!.disciplina!,
+                    style: detailsPrimaryStyle,
+                  ),
                 ),
               ),
-            if (horario!.turma != null && horario!.turma!.isNotEmpty)
+            if (!compacto && aula!.turma != null && aula!.turma!.isNotEmpty)
               Flexible(
-                child: Text(
-                  horario!.turma!,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: SigadColors.muted,
-                      ),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    aula!.turma!,
+                    style: detailsSecondaryStyle,
+                  ),
                 ),
               ),
           ],
