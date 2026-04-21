@@ -7,7 +7,6 @@ import '../../../configuracoes/domain/configuracoes_models.dart';
 import '../../../configuracoes/domain/configuracoes_service.dart';
 import '../../data/docente_repository.dart';
 import '../../domain/docente_models.dart';
-import '../../domain/docente_visibility_service.dart';
 import '../controllers/docente_form_controller.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/services/app_event_logger.dart';
@@ -146,19 +145,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     _docenteRepository.saveDocentes(_docentes);
   }
 
-  List<Docente> _docentesVisiveis(
-    UserRole role, {
-    String? currentUserId,
-    String? emailUsuario,
-  }) {
-    return DocenteVisibilityService.filterDocentesForRole<Docente>(
-      role: role,
-      docentes: _docentes,
-      currentUserId: currentUserId,
-      currentUserEmail: emailUsuario,
-      getUserId: (docente) => docente.userId,
-      getUserEmail: (docente) => docente.userEmail,
-    );
+  List<Docente> _docentesVisiveis() {
+    return List<Docente>.from(_docentes, growable: false);
   }
 
   String _gerarProximoIdDocente() {
@@ -812,13 +800,9 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     }
 
     final podeGerenciar = role == UserRole.coordenador || role == UserRole.chefeDepartamento;
-    final podeVisualizarHorarios = role == UserRole.professor || podeGerenciar;
+    final podeVisualizarHorarios = hasAccess;
     final emailNormalizado = (user?.email ?? '').trim().toLowerCase();
-    final docentesVisiveis = _docentesVisiveis(
-      role,
-      currentUserId: user?.id,
-      emailUsuario: user?.email,
-    );
+    final docentesVisiveis = _docentesVisiveis();
     final docentesOrdenados = podeGerenciar
         ? [
             ...docentesVisiveis.where((d) => (d.userEmail ?? '').trim().toLowerCase() == emailNormalizado),
@@ -850,7 +834,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                         Icon(Icons.person_outline, size: 64, color: SigadColors.muted.withValues(alpha: 0.3)),
                         const SizedBox(height: 16),
                         Text(
-                          podeGerenciar ? 'Nenhum docente encontrado' : 'Seu horário docente não foi encontrado',
+                          'Nenhum docente encontrado',
                           style: textTheme.bodyLarge?.copyWith(color: SigadColors.muted),
                         ),
                       ],
@@ -1056,7 +1040,7 @@ class _AccessDenied extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Somente coordenação, chefia de departamento e o próprio docente podem acessar esta área.',
+              'Somente docentes, coordenação, chefia e servidor administrativo podem acessar esta área.',
               textAlign: TextAlign.center,
               style: textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
             ),
@@ -1129,11 +1113,180 @@ class _AgendaDocentePage extends StatelessWidget {
             _MapaSemanalHorarios(
               horarios: docente.horariosAula,
               compacto: false,
+              onTapLivre: (slot) => _showNovoCompromissoPorSlot(context, slot),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _showNovoCompromissoPorSlot(
+    BuildContext pageContext,
+    _AgendaCellTapData slot,
+  ) async {
+    final tituloController = TextEditingController(text: 'Compromisso');
+    final descricaoController = TextEditingController(
+      text: 'Compromisso criado pela grade semanal.',
+    );
+    final localController = TextEditingController();
+
+    try {
+      await showModalBottomSheet(
+        context: pageContext,
+        isScrollControlled: true,
+        showDragHandle: true,
+        builder: (modalContext) => Padding(
+          padding: EdgeInsets.fromLTRB(
+            24,
+            12,
+            24,
+            MediaQuery.of(modalContext).viewInsets.bottom + 24,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Novo compromisso',
+                  style: Theme.of(modalContext).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '${_formatarData(slot.data)} · ${slot.horarioFaixa} (${slot.turno.shortLabel}${slot.periodo})',
+                  style: Theme.of(modalContext).textTheme.bodySmall?.copyWith(
+                        color: SigadColors.muted,
+                      ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: tituloController,
+                  decoration: const InputDecoration(
+                    labelText: 'Titulo',
+                    hintText: 'Ex: Reuniao de alinhamento',
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: descricaoController,
+                  maxLines: 2,
+                  decoration: const InputDecoration(
+                    labelText: 'Descricao',
+                    hintText: 'Detalhes do compromisso',
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: localController,
+                  decoration: const InputDecoration(
+                    labelText: 'Local',
+                    hintText: 'Sala 12 ou Online',
+                  ),
+                ),
+                const SizedBox(height: 18),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      final inicio = _inicioSlot(slot.data, slot.horarioFaixa);
+                      if (inicio == null) {
+                        AppFeedbackService.info(pageContext, 'Nao foi possivel interpretar o horario da celula.');
+                        return;
+                      }
+
+                      final titulo = tituloController.text.trim();
+                      final descricao = descricaoController.text.trim();
+                      final local = localController.text.trim();
+                      if (titulo.isEmpty) {
+                        AppFeedbackService.info(pageContext, 'Informe o titulo do compromisso.');
+                        return;
+                      }
+                      if (local.isEmpty) {
+                        AppFeedbackService.info(pageContext, 'Informe o local do compromisso.');
+                        return;
+                      }
+
+                      final destinatario = _destinatarioAgenda(docente);
+                      final novoCompromisso = CompromissoAgenda(
+                        id: 'slot_${DateTime.now().microsecondsSinceEpoch}',
+                        titulo: titulo,
+                        descricao: descricao.isEmpty ? 'Compromisso criado pela agenda semanal.' : descricao,
+                        inicio: _formatarDataHora(inicio),
+                        inicioIso: inicio.toIso8601String(),
+                        local: local,
+                        origem: 'Agenda semanal do docente',
+                        destinatarioUserId: destinatario,
+                        statusConvite: StatusConviteAgenda.aceito,
+                      );
+
+                      final repository = ConfiguracoesRepository();
+                      final atual = await repository.load() ?? ConfiguracoesService.defaultData();
+                      final atualizado = ConfiguracoesService.adicionarConviteNaAgenda(
+                        data: atual,
+                        convite: novoCompromisso,
+                      );
+                      await repository.save(atualizado);
+
+                      if (!pageContext.mounted) return;
+                      Navigator.pop(modalContext);
+                      AppFeedbackService.info(pageContext, 'Compromisso criado com sucesso na agenda.');
+                    },
+                    icon: const Icon(Icons.check_circle_outline),
+                    label: const Text('Salvar compromisso'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } finally {
+      tituloController.dispose();
+      descricaoController.dispose();
+      localController.dispose();
+    }
+  }
+
+  String _destinatarioAgenda(Docente docente) {
+    final id = (docente.userId ?? '').trim();
+    if (id.isNotEmpty) return id;
+    final email = (docente.userEmail ?? '').trim().toLowerCase();
+    if (email.isNotEmpty) return 'user_email_$email';
+    return docente.id;
+  }
+
+  DateTime? _inicioSlot(DateTime data, String faixa) {
+    final partesFaixa = faixa.split('-');
+    if (partesFaixa.length != 2) return null;
+    final inicio = partesFaixa[0].trim();
+    final partesHora = inicio.split(':');
+    if (partesHora.length != 2) return null;
+
+    final hora = int.tryParse(partesHora[0]);
+    final minuto = int.tryParse(partesHora[1]);
+    if (hora == null || minuto == null) return null;
+    if (hora < 0 || hora > 23 || minuto < 0 || minuto > 59) return null;
+
+    return DateTime(data.year, data.month, data.day, hora, minuto);
+  }
+
+  String _formatarData(DateTime data) {
+    final dia = data.day.toString().padLeft(2, '0');
+    final mes = data.month.toString().padLeft(2, '0');
+    final ano = data.year.toString();
+    return '$dia/$mes/$ano';
+  }
+
+  String _formatarDataHora(DateTime dataHora) {
+    final dia = dataHora.day.toString().padLeft(2, '0');
+    final mes = dataHora.month.toString().padLeft(2, '0');
+    final ano = dataHora.year.toString();
+    final hora = dataHora.hour.toString().padLeft(2, '0');
+    final minuto = dataHora.minute.toString().padLeft(2, '0');
+    return '$dia/$mes/$ano às $hora:$minuto';
   }
 }
 
@@ -1141,10 +1294,12 @@ class _MapaSemanalHorarios extends StatelessWidget {
   const _MapaSemanalHorarios({
     required this.horarios,
     required this.compacto,
+    this.onTapLivre,
   });
 
   final List<HorarioAula> horarios;
   final bool compacto;
+  final Future<void> Function(_AgendaCellTapData slot)? onTapLivre;
 
   static const List<String> _diasOrdem = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'];
   static const List<String> _meses = [
@@ -1169,7 +1324,7 @@ class _MapaSemanalHorarios extends StatelessWidget {
     final linhas = _gerarLinhasGrade();
     final gradePorDiaTurnoPeriodo = _buildGradePorDiaTurnoPeriodo(linhas);
     final rowHeight = compacto ? _rowHeightCompact : _rowHeightRegular;
-    final diasDoMesDaSemana = _diasDoMesDaSemanaAtual();
+    final datasDaSemana = _datasDaSemanaAtual();
     final hoje = DateTime.now();
     final mesLabel = _meses[hoje.month - 1];
     final semanaLabel = _descricaoSemanaAtual();
@@ -1226,7 +1381,7 @@ class _MapaSemanalHorarios extends StatelessWidget {
                             height: rowHeight,
                             compacto: compacto,
                             dia: _diasOrdem[i],
-                            diaDoMes: diasDoMesDaSemana[i],
+                            data: datasDaSemana[i],
                             horario: linhas[index].horario,
                             turno: linhas[index].turno,
                             periodo: linhas[index].periodo,
@@ -1234,6 +1389,23 @@ class _MapaSemanalHorarios extends StatelessWidget {
                             aula: gradePorDiaTurnoPeriodo[_diasOrdem[i]]?[
                               _turnoPeriodoKey(linhas[index].turno, linhas[index].periodo)
                             ],
+                            onTap: gradePorDiaTurnoPeriodo[_diasOrdem[i]]?[
+                                      _turnoPeriodoKey(linhas[index].turno, linhas[index].periodo)
+                                    ] ==
+                                    null
+                                ? () async {
+                                    final callback = onTapLivre;
+                                    if (callback == null) return;
+                                    await callback(
+                                      _AgendaCellTapData(
+                                        data: datasDaSemana[i],
+                                        horarioFaixa: linhas[index].horario,
+                                        turno: linhas[index].turno,
+                                        periodo: linhas[index].periodo,
+                                      ),
+                                    );
+                                  }
+                                : null,
                           ),
                         ),
                     ],
@@ -1313,10 +1485,10 @@ class _MapaSemanalHorarios extends StatelessWidget {
     return hour * 60 + minute;
   }
 
-  List<int> _diasDoMesDaSemanaAtual() {
+  List<DateTime> _datasDaSemanaAtual() {
     final hoje = DateTime.now();
     final inicioDaSemana = hoje.subtract(Duration(days: hoje.weekday - DateTime.monday));
-    return List<int>.generate(5, (index) => inicioDaSemana.add(Duration(days: index)).day);
+    return List<DateTime>.generate(5, (index) => inicioDaSemana.add(Duration(days: index)));
   }
 
   String _descricaoSemanaAtual() {
@@ -1503,23 +1675,25 @@ class _GradeAgendaCell extends StatelessWidget {
     required this.height,
     required this.compacto,
     required this.dia,
-    required this.diaDoMes,
+    required this.data,
     required this.horario,
     required this.turno,
     required this.periodo,
     required this.isLastDay,
     required this.aula,
+    this.onTap,
   });
 
   final double height;
   final bool compacto;
   final String dia;
-  final int diaDoMes;
+  final DateTime data;
   final String horario;
   final _AgendaTurno turno;
   final int periodo;
   final bool isLastDay;
   final HorarioAula? aula;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -1566,113 +1740,133 @@ class _GradeAgendaCell extends StatelessWidget {
           fontSize: 8.8,
         );
 
-    return Container(
-      height: height,
-      padding: cellPadding,
-      decoration: BoxDecoration(
-        color: background,
-        border: Border(
-          top: const BorderSide(color: SigadColors.divider),
-          right: BorderSide(
-            color: isLastDay ? Colors.transparent : SigadColors.divider,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          height: height,
+          padding: cellPadding,
+          decoration: BoxDecoration(
+            color: background,
+            border: Border(
+              top: const BorderSide(color: SigadColors.divider),
+              right: BorderSide(
+                color: isLastDay ? Colors.transparent : SigadColors.divider,
+              ),
+              bottom: BorderSide(
+                color: tone.withValues(alpha: 0.35),
+                width: 2,
+              ),
+            ),
           ),
-          bottom: BorderSide(
-            color: tone.withValues(alpha: 0.35),
-            width: 2,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        compacto ? '$dia ${data.day}' : '$dia · ${data.day}',
+                        style: headerTextStyle,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Container(
+                    padding: chipPadding,
+                    decoration: BoxDecoration(
+                      color: turno.chipBackground,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      '${turno.shortLabel}$periodo',
+                      style: chipTextStyle,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 1),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  horario,
+                  style: horarioTextStyle,
+                ),
+              ),
+              const SizedBox(height: 1),
+              Flexible(
+                child: Row(
+                  children: [
+                    Icon(
+                      livre ? Icons.check_circle_outline : Icons.event_busy_outlined,
+                      size: iconSize,
+                      color: tone,
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          statusLabel,
+                          style: statusTextStyle,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (!livre) ...[
+                const SizedBox(height: 1),
+                if (!compacto && aula!.disciplina != null && aula!.disciplina!.isNotEmpty)
+                  Flexible(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        aula!.disciplina!,
+                        style: detailsPrimaryStyle,
+                      ),
+                    ),
+                  ),
+                if (!compacto && aula!.turma != null && aula!.turma!.isNotEmpty)
+                  Flexible(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        aula!.turma!,
+                        style: detailsSecondaryStyle,
+                      ),
+                    ),
+                  ),
+              ],
+            ],
           ),
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    compacto ? '$dia $diaDoMes' : '$dia · $diaDoMes',
-                    style: headerTextStyle,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 4),
-              Container(
-                padding: chipPadding,
-                decoration: BoxDecoration(
-                  color: turno.chipBackground,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  '${turno.shortLabel}$periodo',
-                  style: chipTextStyle,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 1),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
-            child: Text(
-              horario,
-              style: horarioTextStyle,
-            ),
-          ),
-          const SizedBox(height: 1),
-          Flexible(
-            child: Row(
-              children: [
-                Icon(
-                  livre ? Icons.check_circle_outline : Icons.event_busy_outlined,
-                  size: iconSize,
-                  color: tone,
-                ),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      statusLabel,
-                      style: statusTextStyle,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (!livre) ...[
-            const SizedBox(height: 1),
-            if (!compacto && aula!.disciplina != null && aula!.disciplina!.isNotEmpty)
-              Flexible(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    aula!.disciplina!,
-                    style: detailsPrimaryStyle,
-                  ),
-                ),
-              ),
-            if (!compacto && aula!.turma != null && aula!.turma!.isNotEmpty)
-              Flexible(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    aula!.turma!,
-                    style: detailsSecondaryStyle,
-                  ),
-                ),
-              ),
-          ],
-        ],
-      ),
     );
   }
+}
+
+class _AgendaCellTapData {
+  const _AgendaCellTapData({
+    required this.data,
+    required this.horarioFaixa,
+    required this.turno,
+    required this.periodo,
+  });
+
+  final DateTime data;
+  final String horarioFaixa;
+  final _AgendaTurno turno;
+  final int periodo;
 }
 
 class _HorarioTile extends StatelessWidget {
