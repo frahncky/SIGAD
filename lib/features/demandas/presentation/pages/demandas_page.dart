@@ -303,9 +303,10 @@ class _DemandasPageState extends State<DemandasPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Nova Demanda', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    tooltip: 'Fechar criação de demanda',
+                    icon: const Icon(Icons.close),
                   ),
                 ],
               ),
@@ -431,9 +432,10 @@ class _DemandasPageState extends State<DemandasPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Editar Demanda', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    tooltip: 'Fechar edição de demanda',
+                    icon: const Icon(Icons.close),
                   ),
                 ],
               ),

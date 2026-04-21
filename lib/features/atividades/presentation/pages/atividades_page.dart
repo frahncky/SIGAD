@@ -159,6 +159,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
         onPressed: () => _showCriarAtividade(context),
         backgroundColor: SigadColors.brand,
         foregroundColor: Colors.white,
+        tooltip: 'Criar nova atividade',
         child: const Icon(Icons.add),
       ),
     );
@@ -185,9 +186,10 @@ class _AtividadesPageState extends State<AtividadesPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Nova Atividade', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    tooltip: 'Fechar criação de atividade',
+                    icon: const Icon(Icons.close),
                   ),
                 ],
               ),
@@ -300,9 +302,10 @@ class _AtividadesPageState extends State<AtividadesPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Editar Atividade', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    tooltip: 'Fechar edição de atividade',
+                    icon: const Icon(Icons.close),
                   ),
                 ],
               ),
@@ -506,23 +509,30 @@ class _AtividadeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return GestureDetector(
-      onTap: () => _showDetalhes(context),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: SigadColors.surface,
+    return Semantics(
+      button: true,
+      label: 'Abrir atividade ${atividade.titulo}',
+      child: Material(
+        color: SigadColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: SigadColors.divider),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
+          onTap: () => _showDetalhes(context),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: SigadColors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: SigadColors.divider),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.06),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Column(
+            child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -576,6 +586,7 @@ class _AtividadeCard extends StatelessWidget {
                 ),
                 PopupMenuButton<String>(
                   onSelected: (value) => _onMenuItemSelected(context, value),
+                  tooltip: 'Mais ações da atividade',
                   itemBuilder: (context) => [
                     const PopupMenuItem(
                       value: 'editar',
@@ -627,6 +638,8 @@ class _AtividadeCard extends StatelessWidget {
               ],
             ),
           ],
+            ),
+          ),
         ),
       ),
     );
@@ -664,9 +677,10 @@ class _AtividadeCard extends StatelessWidget {
                       Text(atividade.titulo, style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
                     ],
                   ),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    tooltip: 'Fechar detalhes da atividade',
+                    icon: const Icon(Icons.close),
                   ),
                 ],
               ),
