@@ -371,24 +371,28 @@ class _RolePill extends StatelessWidget {
       button: true,
       selected: selected,
       label: 'Perfil ${role.displayName}',
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-          decoration: BoxDecoration(
-            color: selected ? colorScheme.primary.withValues(alpha: 0.14) : colorScheme.surface,
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(
-              color: selected ? colorScheme.primary : dividerColor,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(22),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+            decoration: BoxDecoration(
+              color: selected ? colorScheme.primary.withValues(alpha: 0.14) : colorScheme.surface,
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(
+                color: selected ? colorScheme.primary : dividerColor,
+              ),
             ),
-          ),
-          child: Text(
-            role.displayName,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-                  color: selected ? colorScheme.primary : colorScheme.onSurface,
-                ),
+            child: Text(
+              role.displayName,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                    color: selected ? colorScheme.primary : colorScheme.onSurface,
+                  ),
+            ),
           ),
         ),
       ),

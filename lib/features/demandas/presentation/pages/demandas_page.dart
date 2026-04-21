@@ -586,23 +586,30 @@ class _DemandasCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return GestureDetector(
-      onTap: () => _showDetalhesDemanda(context),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: SigadColors.surface,
+    return Semantics(
+      button: true,
+      label: 'Abrir demanda ${demanda.titulo}',
+      child: Material(
+        color: SigadColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: SigadColors.divider),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
+          onTap: () => _showDetalhesDemanda(context),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: SigadColors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: SigadColors.divider),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.06),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Column(
+            child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -649,6 +656,7 @@ class _DemandasCard extends StatelessWidget {
                     ),
                     PopupMenuButton<String>(
                       onSelected: (value) => _onMenuItemSelected(context, value, demanda),
+                      tooltip: 'Mais ações da demanda',
                       itemBuilder: (context) => [
                         const PopupMenuItem(
                           value: 'editar',
@@ -740,6 +748,8 @@ class _DemandasCard extends StatelessWidget {
               ],
             ),
           ],
+            ),
+          ),
         ),
       ),
     );
@@ -774,9 +784,10 @@ class _DemandasCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(demanda.id, style: textTheme.labelSmall?.copyWith(color: SigadColors.muted)),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    tooltip: 'Fechar detalhes da demanda',
+                    icon: const Icon(Icons.close),
                   ),
                 ],
               ),

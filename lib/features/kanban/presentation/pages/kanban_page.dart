@@ -220,6 +220,7 @@ class _KanbanColuna extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Container(
+      key: ValueKey('kanban-column-$titulo'),
       width: 300,
       margin: const EdgeInsets.only(right: 12),
       decoration: BoxDecoration(
@@ -301,7 +302,7 @@ class _KanbanColuna extends StatelessWidget {
   }
 }
 
-class _KanbanCard extends StatelessWidget {
+class _KanbanCard extends StatefulWidget {
   const _KanbanCard({
     required this.card,
     required this.onDeleted,
@@ -311,10 +312,24 @@ class _KanbanCard extends StatelessWidget {
   final Function(KanbanCardModel) onDeleted;
 
   @override
+  State<_KanbanCard> createState() => _KanbanCardState();
+}
+
+class _KanbanCardState extends State<_KanbanCard> {
+  static const Duration _tapReleaseCooldown = Duration(milliseconds: 180);
+
+  bool _isDragging = false;
+  DateTime? _tapSuppressedUntil;
+
+  @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Draggable<KanbanCardModel>(
-      data: card,
+      data: widget.card,
+      onDragStarted: _handleDragStarted,
+      onDragEnd: (_) => _handleDragFinished(),
+      onDraggableCanceled: (_, __) => _handleDragFinished(),
+      onDragCompleted: _handleDragFinished,
       feedback: Material(
         elevation: 8,
         borderRadius: BorderRadius.circular(10),
@@ -327,7 +342,7 @@ class _KanbanCard extends StatelessWidget {
             border: Border.all(color: SigadColors.brand),
           ),
           child: Text(
-            card.titulo,
+            widget.card.titulo,
             style: textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -342,28 +357,57 @@ class _KanbanCard extends StatelessWidget {
     );
   }
 
+  void _handleDragStarted() {
+    setState(() {
+      _isDragging = true;
+    });
+  }
+
+  void _handleDragFinished() {
+    if (!mounted) return;
+    setState(() {
+      _isDragging = false;
+      _tapSuppressedUntil = DateTime.now().add(_tapReleaseCooldown);
+    });
+  }
+
+  bool get _canOpenDetails {
+    if (_isDragging) return false;
+    final tapSuppressedUntil = _tapSuppressedUntil;
+    if (tapSuppressedUntil == null) return true;
+    return DateTime.now().isAfter(tapSuppressedUntil);
+  }
+
   Widget _buildCardContent(BuildContext context, TextTheme textTheme) {
-    return GestureDetector(
-      onTap: () => _showDetalhes(context),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: SigadColors.surface,
+    return Semantics(
+      button: true,
+      label: 'Abrir card ${widget.card.titulo}',
+      child: Material(
+        key: ValueKey('kanban-card-${widget.card.id}'),
+        color: SigadColors.surface,
+        borderRadius: BorderRadius.circular(10),
+        child: InkWell(
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: SigadColors.divider),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 6,
-              offset: const Offset(0, 1),
+          onTap: _canOpenDetails ? () => _showDetalhes(context) : null,
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: SigadColors.surface,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: SigadColors.divider),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 6,
+                  offset: const Offset(0, 1),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Column(
+            child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              card.titulo,
+              widget.card.titulo,
               style: textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
@@ -377,13 +421,13 @@ class _KanbanCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: _getPrioridadeColor(card.prioridade).withValues(alpha: 0.12),
+                    color: _getPrioridadeColor(widget.card.prioridade).withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    card.prioridade,
+                    widget.card.prioridade,
                     style: textTheme.labelSmall?.copyWith(
-                      color: _getPrioridadeColor(card.prioridade),
+                      color: _getPrioridadeColor(widget.card.prioridade),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -394,6 +438,7 @@ class _KanbanCard extends StatelessWidget {
                       _showConfirmarExclusao(context);
                     }
                   },
+                  tooltip: 'Mais ações do card',
                   itemBuilder: (context) => [
                     const PopupMenuItem(
                       value: 'excluir',
@@ -415,6 +460,8 @@ class _KanbanCard extends StatelessWidget {
               ],
             ),
           ],
+            ),
+          ),
         ),
       ),
     );
@@ -429,16 +476,16 @@ class _KanbanCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(card.titulo),
+        title: Text(widget.card.titulo),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('ID: ${card.id}', style: textTheme.bodySmall?.copyWith(color: SigadColors.muted)),
+            Text('ID: ${widget.card.id}', style: textTheme.bodySmall?.copyWith(color: SigadColors.muted)),
             const SizedBox(height: 8),
-            Text('Coluna: ${card.coluna}', style: textTheme.bodySmall),
+            Text('Coluna: ${widget.card.coluna}', style: textTheme.bodySmall),
             const SizedBox(height: 8),
-            Text('Prioridade: ${card.prioridade}', style: textTheme.bodySmall),
+            Text('Prioridade: ${widget.card.prioridade}', style: textTheme.bodySmall),
           ],
         ),
         actions: [
@@ -464,8 +511,7 @@ class _KanbanCard extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
-              onDeleted(card);
+              widget.onDeleted(widget.card);
             },
             child: const Text('Excluir', style: TextStyle(color: Colors.red)),
           ),
