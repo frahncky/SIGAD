@@ -29,7 +29,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   static const Set<UserRole> _allowedRoles = {
     UserRole.professor,
     UserRole.coordenador,
-    UserRole.servidorAdministrativo,
     UserRole.chefeDepartamento,
   };
 
@@ -800,7 +799,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     final role = userContext.userRole;
     final user = userContext.currentUser;
     final hasAccess = role != null && _allowedRoles.contains(role);
-
     if (!hasAccess) {
       return const _AccessDenied();
     }
@@ -811,8 +809,10 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     final docentesVisiveis = _docentesVisiveis();
     // Filtro de busca
     List<Docente> docentesFiltrados;
-    if (podeGerenciar) {
-      // Coordenador/Chefe vê todos, com busca
+    // Detecta se está no menu Professores (AppRoutes.professores) ou na Agenda individual (AppRoutes.cargaDocente)
+    final isProfessoresMenu = ModalRoute.of(context)?.settings.name == '/professores';
+    if (isProfessoresMenu && podeGerenciar) {
+      // No menu Professores: coordenador/chefe veem todos e podem editar
       docentesFiltrados = _busca.isEmpty
           ? docentesVisiveis
           : docentesVisiveis.where((d) {
@@ -822,7 +822,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                   d.departamento.toLowerCase().contains(buscaLower);
             }).toList();
     } else {
-      // Professor/Servidor: vê só a própria agenda, outros só se pesquisar
+      // Em qualquer outro menu (inclusive Agenda): só vê a própria agenda, outros só se pesquisar
       final isSearching = _busca.trim().isNotEmpty;
       final self = docentesVisiveis.where((d) => (d.userEmail ?? '').trim().toLowerCase() == emailNormalizado).toList();
       if (!isSearching) {
@@ -876,17 +876,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
               decoration: const InputDecoration(
                 hintText: 'Buscar docente por nome, e-mail ou departamento',
                 prefixIcon: Icon(Icons.search_outlined),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () => _showNovoCompromissoAgenda(context, user?.id ?? ''),
-                icon: const Icon(Icons.add_circle_outline),
-                label: const Text('Novo compromisso na agenda'),
               ),
             ),
           ),
@@ -1117,9 +1106,13 @@ class _AgendaDocentePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Nome do professor destacado acima da grade semanal
             Text(
               docente.nome,
-              style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+              style: textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: SigadColors.brand,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
@@ -1152,6 +1145,17 @@ class _AgendaDocentePage extends StatelessWidget {
                   .toList(),
             ),
             const SizedBox(height: 16),
+            // Nome do professor acima da grade semanal
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Text(
+                'Agenda semanal de ${docente.nome}',
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
             _MapaSemanalHorarios(
               horarios: docente.horariosAula,
               compacto: false,

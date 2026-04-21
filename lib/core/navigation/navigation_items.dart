@@ -21,6 +21,16 @@ const List<NavigationItem> kNavigationItems = [
     availableFor: {UserRole.coordenador, UserRole.chefeDepartamento},
   ),
   NavigationItem(
+    route: AppRoutes.professores,
+    label: 'Professores',
+    icon: Icons.school_outlined,
+    availableFor: {
+      UserRole.professor,
+      UserRole.coordenador,
+      UserRole.chefeDepartamento,
+    },
+  ),
+  NavigationItem(
     route: AppRoutes.kanban,
     label: 'Tarefas',
     icon: Icons.view_kanban_outlined,
@@ -46,12 +56,6 @@ const List<NavigationItem> kNavigationItems = [
     route: AppRoutes.atividades,
     label: 'Atividades',
     icon: Icons.fact_check_outlined,
-  ),
-  NavigationItem(
-    route: AppRoutes.relatorios,
-    label: 'Relatórios',
-    icon: Icons.insights_outlined,
-    availableFor: {UserRole.coordenador, UserRole.servidorAdministrativo, UserRole.chefeDepartamento},
   ),
   NavigationItem(
     route: AppRoutes.configuracoes,

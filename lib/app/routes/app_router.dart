@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../features/atividades/presentation/pages/atividades_page.dart';
 import '../../features/carga_docente/presentation/pages/carga_docente_page.dart';
+import '../../features/carga_docente/presentation/pages/professores_page.dart';
 import '../../features/configuracoes/presentation/pages/configuracoes_page.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/demandas/presentation/pages/demandas_page.dart';
@@ -34,6 +35,8 @@ abstract final class AppRouter {
         return _shell(routeName, const AulasPraticasPage());
       case AppRoutes.cargaDocente:
         return _shell(routeName, const CargaDocentePage());
+      case AppRoutes.professores:
+        return _shell(routeName, const ProfessoresPage());
       case AppRoutes.atividades:
         return _shell(routeName, const AtividadesPage());
       case AppRoutes.relatorios:
