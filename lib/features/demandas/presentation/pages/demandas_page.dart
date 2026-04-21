@@ -25,10 +25,7 @@ class _DemandasPageState extends State<DemandasPage> {
   bool _isLoading = true;
   String? _loadError;
   final DemandaRepository _demandaRepository = DemandaRepository();
-  final List<Demanda> _demandas = List<Demanda>.of(
-    DemandasService.defaultDemandas(),
-    growable: true,
-  );
+  final List<Demanda> _demandas = DemandasService.defaultDemandas();
 
   @override
   void initState() {
@@ -96,22 +93,36 @@ class _DemandasPageState extends State<DemandasPage> {
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
-            child: TextField(
-              onChanged: (value) => setState(() => _busca = value),
-              decoration: InputDecoration(
-                hintText: 'Buscar por título, descrição ou responsável',
-                prefixIcon: const Icon(Icons.search_outlined),
-                isDense: true,
-                suffixIcon: Tooltip(
-                  message: _filtrosAtivos > 0
-                      ? 'Abrir filtros ($_filtrosAtivos ativos)'
-                      : 'Abrir filtros',
-                  child: IconButton(
-                    onPressed: () => _showFiltros(context),
-                    icon: const Icon(Icons.filter_list),
-                  ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        onChanged: (value) => setState(() => _busca = value),
+                        decoration: const InputDecoration(
+                          hintText: 'Buscar por título, descrição ou responsável',
+                          prefixIcon: Icon(Icons.search_outlined),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: 48,
+                      height: 48,
+                      child: OutlinedButton(
+                        onPressed: () => _showFiltros(context),
+                        style: OutlinedButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          minimumSize: const Size(48, 48),
+                        ),
+                        child: const Icon(Icons.filter_list),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
+              ],
             ),
           ),
           Expanded(
@@ -149,7 +160,6 @@ class _DemandasPageState extends State<DemandasPage> {
         onPressed: () => _showCriarDemanda(context),
         backgroundColor: SigadColors.brand,
         foregroundColor: Colors.white,
-        tooltip: 'Criar nova demanda',
         child: const Icon(Icons.add),
       ),
     );
@@ -157,17 +167,6 @@ class _DemandasPageState extends State<DemandasPage> {
 
   void _showFiltros(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final statusOptions = DemandasService.opcoesUnicas(
-      DemandasService.statusDisponiveis,
-      primeiro: 'Todas',
-    );
-    final prioridadeOptions = DemandasService.opcoesUnicas(
-      DemandasService.prioridades,
-      primeiro: 'Todas',
-    );
-    final ordenacaoOptions = DemandasService.opcoesUnicas(
-      DemandasService.opcoesOrdenacao,
-    );
     showModalBottomSheet(
       context: context,
       builder: (context) => StatefulBuilder(
@@ -181,10 +180,9 @@ class _DemandasPageState extends State<DemandasPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Filtros', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    tooltip: 'Fechar filtros',
-                    icon: const Icon(Icons.close),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(Icons.close),
                   ),
                 ],
               ),
@@ -193,7 +191,7 @@ class _DemandasPageState extends State<DemandasPage> {
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
-                children: statusOptions
+                children: ['Todas', ...DemandasService.statusDisponiveis]
                     .map((status) => FilterChip(
                       label: Text(status),
                       selected: _filtroStatus == status,
@@ -208,7 +206,7 @@ class _DemandasPageState extends State<DemandasPage> {
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
-                children: prioridadeOptions
+                children: ['Todas', ...DemandasService.prioridades]
                     .map((prioridade) => FilterChip(
                       label: Text(prioridade),
                       selected: _filtroPrioridade == prioridade,
@@ -223,7 +221,7 @@ class _DemandasPageState extends State<DemandasPage> {
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
-                children: ordenacaoOptions
+                children: DemandasService.opcoesOrdenacao
                     .map(
                       (ordem) => ChoiceChip(
                         label: Text(ordem),
@@ -278,20 +276,11 @@ class _DemandasPageState extends State<DemandasPage> {
     if (!_canManageDemandas(context, actionLabel: 'criar demandas')) return;
 
     final textTheme = Theme.of(context).textTheme;
-    final prioridades = DemandasService.opcoesUnicas(DemandasService.prioridades);
-    final proprietarios = DemandasService.opcoesUnicas(DemandasService.proprietarios);
-    final statusDisponiveis = DemandasService.opcoesUnicas(DemandasService.statusDisponiveis);
     final tituloController = TextEditingController();
     final descricaoController = TextEditingController();
-    String prioridadeSelecionada = prioridades.contains('Média')
-      ? 'Média'
-      : (prioridades.isNotEmpty ? prioridades.first : 'Média');
-    String proprietarioSelecionado = proprietarios.contains('Coordenação')
-      ? 'Coordenação'
-      : (proprietarios.isNotEmpty ? proprietarios.first : 'Coordenação');
-    String statusSelecionado = statusDisponiveis.contains('Novo')
-      ? 'Novo'
-      : (statusDisponiveis.isNotEmpty ? statusDisponiveis.first : 'Novo');
+    String prioridadeSelecionada = 'Média';
+    String proprietarioSelecionado = 'Coordenação';
+    String statusSelecionado = 'Novo';
 
     showModalBottomSheet(
       context: context,
@@ -307,10 +296,9 @@ class _DemandasPageState extends State<DemandasPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Nova Demanda', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    tooltip: 'Fechar criação de demanda',
-                    icon: const Icon(Icons.close),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(Icons.close),
                   ),
                 ],
               ),
@@ -335,7 +323,7 @@ class _DemandasPageState extends State<DemandasPage> {
               DropdownButtonFormField<String>(
                 initialValue: prioridadeSelecionada,
                 decoration: const InputDecoration(labelText: 'Prioridade'),
-                items: prioridades
+                items: DemandasService.prioridades
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                     .toList(),
                 onChanged: (value) => setModalState(() => prioridadeSelecionada = value!),
@@ -344,7 +332,7 @@ class _DemandasPageState extends State<DemandasPage> {
               DropdownButtonFormField<String>(
                 initialValue: proprietarioSelecionado,
                 decoration: const InputDecoration(labelText: 'Proprietário'),
-                items: proprietarios
+                items: DemandasService.proprietarios
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                     .toList(),
                 onChanged: (value) => setModalState(() => proprietarioSelecionado = value!),
@@ -353,7 +341,7 @@ class _DemandasPageState extends State<DemandasPage> {
               DropdownButtonFormField<String>(
                 initialValue: statusSelecionado,
                 decoration: const InputDecoration(labelText: 'Status inicial'),
-                items: statusDisponiveis
+                items: DemandasService.statusDisponiveis
                     .map((status) => DropdownMenuItem(value: status, child: Text(status)))
                     .toList(),
                 onChanged: (value) => setModalState(() => statusSelecionado = value!),
@@ -416,21 +404,6 @@ class _DemandasPageState extends State<DemandasPage> {
     if (!_canManageDemandas(context, actionLabel: 'editar demandas')) return;
 
     final textTheme = Theme.of(context).textTheme;
-    final prioridades = DemandasService.opcoesUnicas(DemandasService.prioridades);
-    final proprietarios = DemandasService.opcoesUnicas(DemandasService.proprietarios);
-    final statusDisponiveis = DemandasService.opcoesUnicas(DemandasService.statusDisponiveis);
-    final prioridadeOptions = DemandasService.opcoesUnicas(
-      prioridades,
-      primeiro: demanda.prioridade,
-    );
-    final proprietarioOptions = DemandasService.opcoesUnicas(
-      proprietarios,
-      primeiro: demanda.proprietario,
-    );
-    final statusOptions = DemandasService.opcoesUnicas(
-      statusDisponiveis,
-      primeiro: demanda.statusLabel,
-    );
     final tituloController = TextEditingController(text: demanda.titulo);
     final descricaoController = TextEditingController(text: demanda.descricao);
     String prioridadeSelecionada = demanda.prioridade;
@@ -451,10 +424,9 @@ class _DemandasPageState extends State<DemandasPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Editar Demanda', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    tooltip: 'Fechar edição de demanda',
-                    icon: const Icon(Icons.close),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(Icons.close),
                   ),
                 ],
               ),
@@ -479,7 +451,7 @@ class _DemandasPageState extends State<DemandasPage> {
               DropdownButtonFormField<String>(
                 initialValue: prioridadeSelecionada,
                 decoration: const InputDecoration(labelText: 'Prioridade'),
-                items: prioridadeOptions
+                items: DemandasService.prioridades
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                     .toList(),
                 onChanged: (value) => setModalState(() => prioridadeSelecionada = value!),
@@ -488,7 +460,7 @@ class _DemandasPageState extends State<DemandasPage> {
               DropdownButtonFormField<String>(
                 initialValue: proprietarioSelecionado,
                 decoration: const InputDecoration(labelText: 'Proprietário'),
-                items: proprietarioOptions
+                items: DemandasService.proprietarios
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                     .toList(),
                 onChanged: (value) => setModalState(() => proprietarioSelecionado = value!),
@@ -497,7 +469,7 @@ class _DemandasPageState extends State<DemandasPage> {
               DropdownButtonFormField<String>(
                 initialValue: statusSelecionado,
                 decoration: const InputDecoration(labelText: 'Status'),
-                items: statusOptions
+                items: DemandasService.statusDisponiveis
                     .map((status) => DropdownMenuItem(value: status, child: Text(status)))
                     .toList(),
                 onChanged: (value) => setModalState(() => statusSelecionado = value!),
@@ -607,30 +579,23 @@ class _DemandasCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return Semantics(
-      button: true,
-      label: 'Abrir demanda ${demanda.titulo}',
-      child: Material(
-        color: SigadColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        child: InkWell(
+    return GestureDetector(
+      onTap: () => _showDetalhesDemanda(context),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: SigadColors.surface,
           borderRadius: BorderRadius.circular(16),
-          onTap: () => _showDetalhesDemanda(context),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: SigadColors.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: SigadColors.divider),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+          border: Border.all(color: SigadColors.divider),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
             ),
-            child: Column(
+          ],
+        ),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -677,7 +642,6 @@ class _DemandasCard extends StatelessWidget {
                     ),
                     PopupMenuButton<String>(
                       onSelected: (value) => _onMenuItemSelected(context, value, demanda),
-                      tooltip: 'Mais ações da demanda',
                       itemBuilder: (context) => [
                         const PopupMenuItem(
                           value: 'editar',
@@ -769,8 +733,6 @@ class _DemandasCard extends StatelessWidget {
               ],
             ),
           ],
-            ),
-          ),
         ),
       ),
     );
@@ -805,10 +767,9 @@ class _DemandasCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(demanda.id, style: textTheme.labelSmall?.copyWith(color: SigadColors.muted)),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    tooltip: 'Fechar detalhes da demanda',
-                    icon: const Icon(Icons.close),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(Icons.close),
                   ),
                 ],
               ),

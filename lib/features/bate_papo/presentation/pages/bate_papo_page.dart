@@ -259,7 +259,6 @@ class _ConversationListPanel extends StatelessWidget {
                     suffixIcon: searchValue.trim().isNotEmpty
                         ? IconButton(
                             onPressed: () => onSearchChanged(''),
-                            tooltip: 'Limpar busca',
                             icon: const Icon(Icons.close_rounded),
                           )
                         : null,
