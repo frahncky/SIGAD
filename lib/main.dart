@@ -11,10 +11,13 @@ import 'core/services/app_observability_service.dart';
 import 'core/services/theme_provider.dart';
 import 'core/services/user_context_provider.dart';
 import 'features/configuracoes/data/configuracoes_repository.dart';
+import 'features/carga_docente/data/seed_docentes.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Carrega docentes de exemplo para testes (apenas em desenvolvimento)
+  await seedDocentes();
   AppObservabilityService.configure(
     enabled: AppRuntimeConfig.enableObservability,
     endpoint: AppRuntimeConfig.observabilityEndpoint,
