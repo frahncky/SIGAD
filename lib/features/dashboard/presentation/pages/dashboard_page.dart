@@ -247,7 +247,7 @@ class _HeroPanel extends StatelessWidget {
       case UserRole.servidorAdministrativo:
         return const _InsightLabels('Agenda', 'Convites', 'Hoje');
       case UserRole.chefeDepartamento:
-        return const _InsightLabels('Gestao', 'Convites', 'Hoje');
+        return const _InsightLabels('Demandas', 'Convites', 'Hoje');
       default:
         return const _InsightLabels('Proximo', 'Pendentes', 'Hoje');
     }
