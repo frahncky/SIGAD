@@ -237,7 +237,6 @@ class HomeShellPage extends StatelessWidget {
             final haystack = '${item.label} ${item.subtitle ?? ''}'.toLowerCase();
             return haystack.contains(query.toLowerCase());
           }).toList();
-
           return SafeArea(
             child: Padding(
               padding: EdgeInsets.fromLTRB(20, 8, 20, MediaQuery.of(context).viewInsets.bottom + 20),
@@ -267,7 +266,7 @@ class HomeShellPage extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(vertical: 32),
                               child: Text(
                                 'Nenhum módulo encontrado.',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                               ),
                             ),
                           )
@@ -693,38 +692,6 @@ class _ProfileMenu extends StatelessWidget {
                         color: SigadColors.brand,
                         fontWeight: FontWeight.w700,
                       ),
-                ),
-              ),
-              const SizedBox(height: 14),
-              Text(
-                user.name,
-                style: Theme.of(context).textTheme.titleLarge,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                user.email,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Agenda',
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(color: SigadColors.brand),
-              ),
-              const SizedBox(height: 18),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.tonal(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _confirmLogout(context, userContext);
-                  },
-                  child: const Text('Sair'),
                 ),
               ),
             ],
