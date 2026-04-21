@@ -235,10 +235,9 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(title, style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    tooltip: 'Fechar formulário do docente',
-                    icon: const Icon(Icons.close),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(Icons.close),
                   ),
                 ],
               ),
@@ -868,7 +867,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
           ? FloatingActionButton(
               onPressed: () => _showAdicionarDocente(context),
               backgroundColor: SigadColors.brand,
-              tooltip: 'Adicionar docente',
               child: const Icon(Icons.add),
             )
           : null,
@@ -911,27 +909,23 @@ class _DocenteCardState extends State<_DocenteCard> {
           button: podeVisualizarHorarios,
           label: 'Docente ${docente.nome}. Carga horária ${docente.cargaHoraria} horas.',
           hint: podeVisualizarHorarios ? 'Toque para expandir distribuição semanal.' : null,
-          child: Material(
-            color: SigadColors.surface,
-            borderRadius: BorderRadius.circular(16),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(16),
-              onTap: podeVisualizarHorarios ? () => setState(() => _isExpanded = !_isExpanded) : null,
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: SigadColors.surface,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: SigadColors.divider),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.06),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
+          child: GestureDetector(
+            onTap: podeVisualizarHorarios ? () => setState(() => _isExpanded = !_isExpanded) : null,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: SigadColors.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: SigadColors.divider),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
@@ -967,7 +961,6 @@ class _DocenteCardState extends State<_DocenteCard> {
                       if (widget.canManage)
                         PopupMenuButton<String>(
                           onSelected: _onMenuItemSelected,
-                          tooltip: 'Mais ações do docente',
                           itemBuilder: (context) => [
                             const PopupMenuItem(
                               value: 'editar',
@@ -1039,7 +1032,6 @@ class _DocenteCardState extends State<_DocenteCard> {
                     ),
                   ],
                 ],
-                ),
               ),
             ),
           ),

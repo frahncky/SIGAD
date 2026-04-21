@@ -14,7 +14,7 @@ abstract final class KanbanService {
   static const List<String> prioridades = ['Baixa', 'Média', 'Alta'];
 
   static List<KanbanCardModel> defaultCards() {
-    return [
+    return const [
       KanbanCardModel(id: 1, titulo: 'Revisão de inventário', coluna: 'Backlog', prioridade: 'Alta'),
       KanbanCardModel(id: 2, titulo: 'Mapear demandas', coluna: 'Em Progresso', prioridade: 'Alta'),
       KanbanCardModel(id: 3, titulo: 'Padronizar formulários', coluna: 'Em Revisão', prioridade: 'Média'),

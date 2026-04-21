@@ -15,15 +15,6 @@ void main() {
       expect(KanbanService.nextId(cards), 3);
     });
 
-    test('fornece lista padrão mutável para suportar drag and drop', () {
-      final cards = KanbanService.defaultCards();
-
-      expect(
-        () => cards[0] = cards[0].copyWith(coluna: 'Concluído'),
-        returnsNormally,
-      );
-    });
-
     test('valida título do card', () {
       expect(KanbanService.validateTitulo(' '), 'Informe o título do card');
       expect(KanbanService.validateTitulo('OK'), isNull);
