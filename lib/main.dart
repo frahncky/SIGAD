@@ -11,8 +11,6 @@ import 'core/services/app_observability_service.dart';
 import 'core/services/theme_provider.dart';
 import 'core/services/user_context_provider.dart';
 import 'features/configuracoes/data/configuracoes_repository.dart';
-import 'core/services/user_context_provider.dart';
-import 'features/configuracoes/data/configuracoes_repository.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

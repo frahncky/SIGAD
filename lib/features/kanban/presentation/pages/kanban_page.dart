@@ -82,7 +82,15 @@ class _KanbanPageState extends State<KanbanPage> {
                   subtitle: _loadError,
                   onAction: _loadData,
                 )
-              : Column(
+              : _cards.isEmpty
+                  ? PageStatusView.empty(
+                      icon: Icons.view_kanban_outlined,
+                      title: 'Nenhum card criado',
+                      subtitle: 'Toque no + para adicionar o primeiro card ao quadro.',
+                      actionLabel: 'Criar card',
+                      onAction: () => _showCriarCard(context),
+                    )
+                  : Column(
                   children: [
                     if (shouldShowScrollHint)
                       const Padding(
@@ -124,7 +132,25 @@ class _KanbanPageState extends State<KanbanPage> {
     _saveData();
   }
 
-  void _deleteCard(KanbanCardModel card) {
+  Future<void> _deleteCard(KanbanCardModel card) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Confirmar exclusão'),
+        content: Text('Deseja excluir o card "${card.titulo}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
     setState(() {
       _cards.removeWhere((c) => c.id == card.id);
     });
