@@ -21,7 +21,10 @@ class _AtividadesPageState extends State<AtividadesPage> {
   bool _isLoading = true;
   String? _loadError;
   final AtividadeRepository _atividadeRepository = AtividadeRepository();
-  final List<Atividade> _atividades = AtividadesService.defaultAtividades();
+  final List<Atividade> _atividades = List<Atividade>.of(
+    AtividadesService.defaultAtividades(),
+    growable: true,
+  );
 
   @override
   void initState() {

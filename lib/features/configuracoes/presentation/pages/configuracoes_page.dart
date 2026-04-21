@@ -34,7 +34,10 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
   String _proximoBackup = ConfiguracoesService.defaultData().proximoBackup;
   String _ultimoBackup = ConfiguracoesService.defaultData().ultimoBackup;
   int _problemasReportados = ConfiguracoesService.defaultData().problemasReportados;
-  List<CompromissoAgenda> _agendaCompromissos = ConfiguracoesService.defaultData().agendaCompromissos;
+  List<CompromissoAgenda> _agendaCompromissos = List<CompromissoAgenda>.of(
+    ConfiguracoesService.defaultData().agendaCompromissos,
+    growable: true,
+  );
 
   final ConfiguracoesRepository _configuracoesRepository = ConfiguracoesRepository();
 
@@ -63,7 +66,10 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
       _proximoBackup = data.proximoBackup;
       _ultimoBackup = data.ultimoBackup;
       _problemasReportados = data.problemasReportados;
-      _agendaCompromissos = data.agendaCompromissos;
+      _agendaCompromissos = List<CompromissoAgenda>.of(
+        data.agendaCompromissos,
+        growable: true,
+      );
     });
   }
 

@@ -26,7 +26,10 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
   String? _loadError;
 
   final RelatorioRepository _relatorioRepository = RelatorioRepository();
-  final List<Relatorio> _relatorios = RelatoriosService.defaultRelatorios();
+  final List<Relatorio> _relatorios = List<Relatorio>.of(
+    RelatoriosService.defaultRelatorios(),
+    growable: true,
+  );
 
   @override
   void initState() {

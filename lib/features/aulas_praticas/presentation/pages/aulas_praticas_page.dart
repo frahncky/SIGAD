@@ -42,8 +42,10 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   ];
 
   final ReservaRepository _reservaRepository = ReservaRepository();
-  final List<ReservaLaboratorio> _reservas =
-      ReservaService.defaultReservas(DateTime.now().month);
+  final List<ReservaLaboratorio> _reservas = List<ReservaLaboratorio>.of(
+    ReservaService.defaultReservas(DateTime.now().month),
+    growable: true,
+  );
   bool _isLoading = true;
   String? _loadError;
 

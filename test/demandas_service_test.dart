@@ -57,5 +57,14 @@ void main() {
         '#DEM-010',
       );
     });
+
+    test('remove opções repetidas preservando ordem e primeiro item', () {
+      final opcoes = DemandasService.opcoesUnicas(
+        const ['Todas', 'Novo', 'Novo', 'Revisão', ''],
+        primeiro: 'Todas',
+      );
+
+      expect(opcoes, const ['Todas', 'Novo', 'Revisão']);
+    });
   });
 }

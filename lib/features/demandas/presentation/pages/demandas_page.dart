@@ -25,7 +25,10 @@ class _DemandasPageState extends State<DemandasPage> {
   bool _isLoading = true;
   String? _loadError;
   final DemandaRepository _demandaRepository = DemandaRepository();
-  final List<Demanda> _demandas = DemandasService.defaultDemandas();
+  final List<Demanda> _demandas = List<Demanda>.of(
+    DemandasService.defaultDemandas(),
+    growable: true,
+  );
 
   @override
   void initState() {
@@ -173,6 +176,17 @@ class _DemandasPageState extends State<DemandasPage> {
 
   void _showFiltros(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final statusOptions = DemandasService.opcoesUnicas(
+      DemandasService.statusDisponiveis,
+      primeiro: 'Todas',
+    );
+    final prioridadeOptions = DemandasService.opcoesUnicas(
+      DemandasService.prioridades,
+      primeiro: 'Todas',
+    );
+    final ordenacaoOptions = DemandasService.opcoesUnicas(
+      DemandasService.opcoesOrdenacao,
+    );
     showModalBottomSheet(
       context: context,
       builder: (context) => StatefulBuilder(
@@ -198,7 +212,7 @@ class _DemandasPageState extends State<DemandasPage> {
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
-                children: ['Todas', ...DemandasService.statusDisponiveis]
+                children: statusOptions
                     .map((status) => FilterChip(
                       label: Text(status),
                       selected: _filtroStatus == status,
@@ -213,7 +227,7 @@ class _DemandasPageState extends State<DemandasPage> {
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
-                children: ['Todas', ...DemandasService.prioridades]
+                children: prioridadeOptions
                     .map((prioridade) => FilterChip(
                       label: Text(prioridade),
                       selected: _filtroPrioridade == prioridade,
@@ -228,7 +242,7 @@ class _DemandasPageState extends State<DemandasPage> {
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
-                children: DemandasService.opcoesOrdenacao
+                children: ordenacaoOptions
                     .map(
                       (ordem) => ChoiceChip(
                         label: Text(ordem),
@@ -283,11 +297,20 @@ class _DemandasPageState extends State<DemandasPage> {
     if (!_canManageDemandas(context, actionLabel: 'criar demandas')) return;
 
     final textTheme = Theme.of(context).textTheme;
+    final prioridades = DemandasService.opcoesUnicas(DemandasService.prioridades);
+    final proprietarios = DemandasService.opcoesUnicas(DemandasService.proprietarios);
+    final statusDisponiveis = DemandasService.opcoesUnicas(DemandasService.statusDisponiveis);
     final tituloController = TextEditingController();
     final descricaoController = TextEditingController();
-    String prioridadeSelecionada = 'Média';
-    String proprietarioSelecionado = 'Coordenação';
-    String statusSelecionado = 'Novo';
+    String prioridadeSelecionada = prioridades.contains('Média')
+      ? 'Média'
+      : (prioridades.isNotEmpty ? prioridades.first : 'Média');
+    String proprietarioSelecionado = proprietarios.contains('Coordenação')
+      ? 'Coordenação'
+      : (proprietarios.isNotEmpty ? proprietarios.first : 'Coordenação');
+    String statusSelecionado = statusDisponiveis.contains('Novo')
+      ? 'Novo'
+      : (statusDisponiveis.isNotEmpty ? statusDisponiveis.first : 'Novo');
 
     showModalBottomSheet(
       context: context,
@@ -331,7 +354,7 @@ class _DemandasPageState extends State<DemandasPage> {
               DropdownButtonFormField<String>(
                 initialValue: prioridadeSelecionada,
                 decoration: const InputDecoration(labelText: 'Prioridade'),
-                items: DemandasService.prioridades
+                items: prioridades
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                     .toList(),
                 onChanged: (value) => setModalState(() => prioridadeSelecionada = value!),
@@ -340,7 +363,7 @@ class _DemandasPageState extends State<DemandasPage> {
               DropdownButtonFormField<String>(
                 initialValue: proprietarioSelecionado,
                 decoration: const InputDecoration(labelText: 'Proprietário'),
-                items: DemandasService.proprietarios
+                items: proprietarios
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                     .toList(),
                 onChanged: (value) => setModalState(() => proprietarioSelecionado = value!),
@@ -349,7 +372,7 @@ class _DemandasPageState extends State<DemandasPage> {
               DropdownButtonFormField<String>(
                 initialValue: statusSelecionado,
                 decoration: const InputDecoration(labelText: 'Status inicial'),
-                items: DemandasService.statusDisponiveis
+                items: statusDisponiveis
                     .map((status) => DropdownMenuItem(value: status, child: Text(status)))
                     .toList(),
                 onChanged: (value) => setModalState(() => statusSelecionado = value!),
@@ -412,6 +435,18 @@ class _DemandasPageState extends State<DemandasPage> {
     if (!_canManageDemandas(context, actionLabel: 'editar demandas')) return;
 
     final textTheme = Theme.of(context).textTheme;
+    final prioridades = DemandasService.opcoesUnicas(DemandasService.prioridades);
+    final proprietarios = DemandasService.opcoesUnicas(DemandasService.proprietarios);
+    final statusDisponiveis = DemandasService.opcoesUnicas(DemandasService.statusDisponiveis);
+    final prioridadeOptions = prioridades.contains(demanda.prioridade)
+      ? prioridades
+      : [demanda.prioridade, ...prioridades];
+    final proprietarioOptions = proprietarios.contains(demanda.proprietario)
+      ? proprietarios
+      : [demanda.proprietario, ...proprietarios];
+    final statusOptions = statusDisponiveis.contains(demanda.statusLabel)
+      ? statusDisponiveis
+      : [demanda.statusLabel, ...statusDisponiveis];
     final tituloController = TextEditingController(text: demanda.titulo);
     final descricaoController = TextEditingController(text: demanda.descricao);
     String prioridadeSelecionada = demanda.prioridade;
@@ -460,7 +495,7 @@ class _DemandasPageState extends State<DemandasPage> {
               DropdownButtonFormField<String>(
                 initialValue: prioridadeSelecionada,
                 decoration: const InputDecoration(labelText: 'Prioridade'),
-                items: DemandasService.prioridades
+                items: prioridadeOptions
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                     .toList(),
                 onChanged: (value) => setModalState(() => prioridadeSelecionada = value!),
@@ -469,7 +504,7 @@ class _DemandasPageState extends State<DemandasPage> {
               DropdownButtonFormField<String>(
                 initialValue: proprietarioSelecionado,
                 decoration: const InputDecoration(labelText: 'Proprietário'),
-                items: DemandasService.proprietarios
+                items: proprietarioOptions
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                     .toList(),
                 onChanged: (value) => setModalState(() => proprietarioSelecionado = value!),
@@ -478,7 +513,7 @@ class _DemandasPageState extends State<DemandasPage> {
               DropdownButtonFormField<String>(
                 initialValue: statusSelecionado,
                 decoration: const InputDecoration(labelText: 'Status'),
-                items: DemandasService.statusDisponiveis
+                items: statusOptions
                     .map((status) => DropdownMenuItem(value: status, child: Text(status)))
                     .toList(),
                 onChanged: (value) => setModalState(() => statusSelecionado = value!),

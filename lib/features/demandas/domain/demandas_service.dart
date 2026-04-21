@@ -30,6 +30,28 @@ abstract final class DemandasService {
     'Comissão de Estágio',
   ];
 
+  static List<String> opcoesUnicas(Iterable<String> valores, {String? primeiro}) {
+    final vistos = <String>{};
+    final resultado = <String>[];
+
+    void adicionar(String valor) {
+      final normalizado = valor.trim();
+      if (normalizado.isEmpty) return;
+      if (vistos.add(normalizado)) {
+        resultado.add(normalizado);
+      }
+    }
+
+    if (primeiro != null) {
+      adicionar(primeiro);
+    }
+    for (final valor in valores) {
+      adicionar(valor);
+    }
+
+    return resultado;
+  }
+
   static List<Demanda> defaultDemandas() {
     return const [
       Demanda(
