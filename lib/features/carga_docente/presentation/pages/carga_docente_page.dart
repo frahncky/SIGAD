@@ -549,6 +549,14 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     );
   }
 
+  void _abrirAgendaDocente(BuildContext context, Docente docente) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => _AgendaDocentePage(docente: docente),
+      ),
+    );
+  }
+
   Future<void> _showNovoCompromissoAgenda(BuildContext context, String userId) async {
     if (userId.trim().isEmpty) {
       _mostrarFeedback('Faça login novamente para criar compromissos na agenda.');
@@ -857,6 +865,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                 docente: docentesOrdenados[index],
                 canManage: podeGerenciar,
                 canViewSchedule: podeVisualizarHorarios,
+                onAbrirAgenda: () => _abrirAgendaDocente(context, docentesOrdenados[index]),
                 onEditar: () => _showEditarDocente(context, docentesOrdenados[index]),
                 onExcluir: () => _showConfirmarExclusao(context, docentesOrdenados[index]),
               ),
@@ -876,11 +885,12 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   }
 }
 
-class _DocenteCard extends StatefulWidget {
+class _DocenteCard extends StatelessWidget {
   const _DocenteCard({
     required this.docente,
     required this.canManage,
     required this.canViewSchedule,
+    required this.onAbrirAgenda,
     required this.onEditar,
     required this.onExcluir,
   });
@@ -888,170 +898,138 @@ class _DocenteCard extends StatefulWidget {
   final Docente docente;
   final bool canManage;
   final bool canViewSchedule;
+  final VoidCallback onAbrirAgenda;
   final VoidCallback onEditar;
   final VoidCallback onExcluir;
 
   @override
-  State<_DocenteCard> createState() => _DocenteCardState();
-}
-
-class _DocenteCardState extends State<_DocenteCard> {
-  bool _isExpanded = false;
-
-  @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final docente = widget.docente;
-    final podeVisualizarHorarios = widget.canViewSchedule && docente.horariosAula.isNotEmpty;
+    final podeVisualizarHorarios = canViewSchedule && docente.horariosAula.isNotEmpty;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Semantics(
-          button: podeVisualizarHorarios,
-          label: 'Docente ${docente.nome}. Carga horária ${docente.cargaHoraria} horas.',
-          hint: podeVisualizarHorarios ? 'Toque para expandir distribuição semanal.' : null,
-          child: GestureDetector(
-            onTap: podeVisualizarHorarios ? () => setState(() => _isExpanded = !_isExpanded) : null,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: SigadColors.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: SigadColors.divider),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.06),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              docente.nome,
-                              style: textTheme.labelLarge?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              docente.departamento,
-                              style: textTheme.bodySmall?.copyWith(
-                                color: SigadColors.muted,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (podeVisualizarHorarios)
-                        Icon(
-                          _isExpanded ? Icons.expand_less : Icons.expand_more,
-                          color: SigadColors.muted,
-                        ),
-                      if (widget.canManage)
-                        PopupMenuButton<String>(
-                          tooltip: 'Mais ações do docente',
-                          onSelected: _onMenuItemSelected,
-                          itemBuilder: (context) => [
-                            const PopupMenuItem(
-                              value: 'editar',
-                              child: Row(
-                                children: [
-                                  Icon(Icons.edit, size: 18),
-                                  SizedBox(width: 8),
-                                  Text('Editar'),
-                                ],
-                              ),
-                            ),
-                            const PopupMenuItem(
-                              value: 'excluir',
-                              child: Row(
-                                children: [
-                                  Icon(Icons.delete, color: Colors.red, size: 18),
-                                  SizedBox(width: 8),
-                                  Text('Excluir', style: TextStyle(color: Colors.red)),
-                                ],
-                              ),
-                            ),
-                          ],
-                          icon: const Icon(Icons.more_vert, size: 18),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Carga horária: ${docente.cargaHoraria}h',
-                    style: textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 6,
-                    children: docente.disciplinas
-                        .map((d) => Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: SigadColors.brand.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                d,
-                                style: textTheme.labelSmall?.copyWith(
-                                  color: SigadColors.brand,
-                                ),
-                              ),
-                            ))
-                        .toList(),
-                  ),
-                  if (_isExpanded && podeVisualizarHorarios && docente.horariosAula.isNotEmpty) ...[
-                    const SizedBox(height: 16),
-                    Divider(color: SigadColors.divider.withValues(alpha: 0.5)),
-                    const SizedBox(height: 12),
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: SigadColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: SigadColors.divider),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      'Distribuição semanal',
-                      style: textTheme.labelSmall?.copyWith(
-                        color: SigadColors.muted,
+                      docente.nome,
+                      style: textTheme.labelLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 8),
-                    _MapaSemanalHorarios(
-                      horarios: docente.horariosAula,
-                      compacto: true,
+                    const SizedBox(height: 4),
+                    Text(
+                      docente.departamento,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: SigadColors.muted,
+                      ),
+                    ),
+                    if (podeVisualizarHorarios) ...[
+                      const SizedBox(height: 10),
+                      OutlinedButton.icon(
+                        onPressed: onAbrirAgenda,
+                        icon: const Icon(Icons.calendar_month_outlined, size: 18),
+                        label: const Text('Ver agenda'),
+                        style: OutlinedButton.styleFrom(
+                          visualDensity: VisualDensity.compact,
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              if (canManage)
+                PopupMenuButton<String>(
+                  tooltip: 'Mais ações do docente',
+                  onSelected: (value) {
+                    switch (value) {
+                      case 'editar':
+                        onEditar();
+                        break;
+                      case 'excluir':
+                        onExcluir();
+                        break;
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: 'editar',
+                      child: Row(
+                        children: [
+                          Icon(Icons.edit, size: 18),
+                          SizedBox(width: 8),
+                          Text('Editar'),
+                        ],
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'excluir',
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete, color: Colors.red, size: 18),
+                          SizedBox(width: 8),
+                          Text('Excluir', style: TextStyle(color: Colors.red)),
+                        ],
+                      ),
                     ),
                   ],
-                ],
-              ),
+                  icon: const Icon(Icons.more_vert, size: 18),
+                ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Carga horária: ${docente.cargaHoraria}h',
+            style: textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w600,
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: docente.disciplinas
+                .map((d) => Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: SigadColors.brand.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        d,
+                        style: textTheme.labelSmall?.copyWith(
+                          color: SigadColors.brand,
+                        ),
+                      ),
+                    ))
+                .toList(),
+          ),
+        ],
+      ),
     );
-  }
-
-  void _onMenuItemSelected(String value) {
-    switch (value) {
-      case 'editar':
-        widget.onEditar();
-        break;
-      case 'excluir':
-        widget.onExcluir();
-        break;
-    }
   }
 }
 
@@ -1090,6 +1068,70 @@ class _AccessDenied extends StatelessWidget {
   }
 }
 
+class _AgendaDocentePage extends StatelessWidget {
+  const _AgendaDocentePage({required this.docente});
+
+  final Docente docente;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Agenda do docente'),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              docente.nome,
+              style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              docente.departamento,
+              style: textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Carga horária: ${docente.cargaHoraria}h',
+              style: textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: docente.disciplinas
+                  .map(
+                    (d) => Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: SigadColors.brand.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        d,
+                        style: textTheme.labelSmall?.copyWith(color: SigadColors.brand),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+            const SizedBox(height: 16),
+            _MapaSemanalHorarios(
+              horarios: docente.horariosAula,
+              compacto: false,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _MapaSemanalHorarios extends StatelessWidget {
   const _MapaSemanalHorarios({
     required this.horarios,
@@ -1100,6 +1142,20 @@ class _MapaSemanalHorarios extends StatelessWidget {
   final bool compacto;
 
   static const List<String> _diasOrdem = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'];
+  static const List<String> _meses = [
+    'Janeiro',
+    'Fevereiro',
+    'Marco',
+    'Abril',
+    'Maio',
+    'Junho',
+    'Julho',
+    'Agosto',
+    'Setembro',
+    'Outubro',
+    'Novembro',
+    'Dezembro',
+  ];
   static const double _dayColumnWidthCompact = 156;
   static const double _dayColumnWidthRegular = 176;
   static const double _rowHeightCompact = 104;
@@ -1112,57 +1168,79 @@ class _MapaSemanalHorarios extends StatelessWidget {
     final shouldShowScrollHint = MediaQuery.of(context).size.width < 960;
     final dayColumnWidth = compacto ? _dayColumnWidthCompact : _dayColumnWidthRegular;
     final rowHeight = compacto ? _rowHeightCompact : _rowHeightRegular;
+    final diasDoMesDaSemana = _diasDoMesDaSemanaAtual();
+    final hoje = DateTime.now();
+    final mesLabel = _meses[hoje.month - 1];
+    final semanaLabel = _descricaoSemanaAtual();
+    final diaSelecionadoAbreviado = _diaSemanaAbreviado(hoje.weekday);
+    final diaSelecionadoCompleto = _diaSemanaCompleto(hoje.weekday);
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: SigadColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: SigadColors.divider),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (shouldShowScrollHint) ...[
-            const HorizontalScrollHint(
-              message: 'Arraste lateralmente para ver a agenda completa por dia e horário.',
-            ),
-            const SizedBox(height: 10),
-          ],
-          if (slots.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Text(
-                'Sem aulas cadastradas na semana.',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: SigadColors.muted,
-                    ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Agenda semanal',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
               ),
-            )
-          else
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          '$semanaLabel de $mesLabel',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          'Dia selecionado: ${hoje.day} ($diaSelecionadoAbreviado - $diaSelecionadoCompleto)',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+        ),
+        const SizedBox(height: 14),
+        if (shouldShowScrollHint) ...[
+          const HorizontalScrollHint(
+            message: 'Arraste lateralmente para ver todos os dias e horários.',
+          ),
+          const SizedBox(height: 10),
+        ],
+        if (slots.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              'Sem aulas cadastradas na semana.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: SigadColors.muted,
+                  ),
+            ),
+          )
+        else
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Container(
+              decoration: BoxDecoration(
+                color: SigadColors.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: SigadColors.divider),
+              ),
               child: Column(
                 children: [
                   for (final slot in slots)
                     Row(
                       children: [
-                        for (final dia in _diasOrdem)
+                        for (var i = 0; i < _diasOrdem.length; i++)
                           _GradeAgendaCell(
                             width: dayColumnWidth,
                             height: rowHeight,
-                            dia: dia,
+                            dia: _diasOrdem[i],
+                            diaDoMes: diasDoMesDaSemana[i],
                             slot: slot,
-                            horario: gradePorDiaSlot[dia]?[slot.key],
+                            horario: gradePorDiaSlot[_diasOrdem[i]]?[slot.key],
                           ),
                       ],
                     ),
                 ],
               ),
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 
@@ -1199,6 +1277,66 @@ class _MapaSemanalHorarios extends StatelessWidget {
 
   String _slotKey(String inicio, String fim) => '$inicio|$fim';
 
+  List<int> _diasDoMesDaSemanaAtual() {
+    final hoje = DateTime.now();
+    final inicioDaSemana = hoje.subtract(Duration(days: hoje.weekday - DateTime.monday));
+    return List<int>.generate(5, (index) => inicioDaSemana.add(Duration(days: index)).day);
+  }
+
+  String _descricaoSemanaAtual() {
+    final hoje = DateTime.now();
+    final inicioDaSemana = hoje.subtract(Duration(days: hoje.weekday - DateTime.monday));
+    final fimDaSemana = inicioDaSemana.add(const Duration(days: 4));
+    if (inicioDaSemana.month == fimDaSemana.month) {
+      return '${_pad2(inicioDaSemana.day)} a ${_pad2(fimDaSemana.day)}';
+    }
+    return '${_pad2(inicioDaSemana.day)}/${_pad2(inicioDaSemana.month)} a ${_pad2(fimDaSemana.day)}/${_pad2(fimDaSemana.month)}';
+  }
+
+  String _diaSemanaAbreviado(int weekday) {
+    switch (weekday) {
+      case DateTime.monday:
+        return 'Seg';
+      case DateTime.tuesday:
+        return 'Ter';
+      case DateTime.wednesday:
+        return 'Qua';
+      case DateTime.thursday:
+        return 'Qui';
+      case DateTime.friday:
+        return 'Sex';
+      case DateTime.saturday:
+        return 'Sab';
+      case DateTime.sunday:
+        return 'Dom';
+      default:
+        return '-';
+    }
+  }
+
+  String _diaSemanaCompleto(int weekday) {
+    switch (weekday) {
+      case DateTime.monday:
+        return 'segunda-feira';
+      case DateTime.tuesday:
+        return 'terca-feira';
+      case DateTime.wednesday:
+        return 'quarta-feira';
+      case DateTime.thursday:
+        return 'quinta-feira';
+      case DateTime.friday:
+        return 'sexta-feira';
+      case DateTime.saturday:
+        return 'sabado';
+      case DateTime.sunday:
+        return 'domingo';
+      default:
+        return 'dia invalido';
+    }
+  }
+
+  String _pad2(int value) => value.toString().padLeft(2, '0');
+
   String? _abreviarDia(String diaSemana) {
     final d = diaSemana.trim().toLowerCase();
     if (d.startsWith('seg')) return 'Seg';
@@ -1227,6 +1365,7 @@ class _GradeAgendaCell extends StatelessWidget {
     required this.width,
     required this.height,
     required this.dia,
+    required this.diaDoMes,
     required this.slot,
     required this.horario,
   });
@@ -1234,6 +1373,7 @@ class _GradeAgendaCell extends StatelessWidget {
   final double width;
   final double height;
   final String dia;
+  final int diaDoMes;
   final _AgendaSlot slot;
   final HorarioAula? horario;
 
@@ -1248,7 +1388,7 @@ class _GradeAgendaCell extends StatelessWidget {
     return Container(
       width: width,
       height: height,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
         color: background,
         border: Border(
@@ -1267,7 +1407,7 @@ class _GradeAgendaCell extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Text(
-            dia,
+            '$dia · $diaDoMes',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -1285,59 +1425,56 @@ class _GradeAgendaCell extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
           ),
-          const SizedBox(height: 3),
-          Row(
-            children: [
-              Icon(
-                livre ? Icons.check_circle_outline : Icons.event_note_outlined,
-                size: 14,
-                color: tone,
-              ),
-              const SizedBox(width: 4),
-              Expanded(
+          const SizedBox(height: 2),
+          Flexible(
+            child: Row(
+              children: [
+                Icon(
+                  livre ? Icons.check_circle_outline : Icons.event_busy_outlined,
+                  size: 14,
+                  color: tone,
+                ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    livre ? 'Livre' : 'Aula',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: tone,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (!livre) ...[
+            const SizedBox(height: 2),
+            if (horario!.disciplina != null && horario!.disciplina!.isNotEmpty)
+              Flexible(
                 child: Text(
-                  livre ? 'Livre' : 'Aula',
+                  horario!.disciplina!,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: tone,
+                        color: SigadColors.brandDark,
+                        fontWeight: FontWeight.w600,
                       ),
                 ),
               ),
-            ],
-          ),
-          if (!livre)
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 2),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    if (horario!.disciplina != null && horario!.disciplina!.isNotEmpty)
-                      Text(
-                        horario!.disciplina!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: SigadColors.brandDark,
-                              fontWeight: FontWeight.w600,
-                            ),
+            if (horario!.turma != null && horario!.turma!.isNotEmpty)
+              Flexible(
+                child: Text(
+                  horario!.turma!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: SigadColors.muted,
                       ),
-                    if (horario!.turma != null && horario!.turma!.isNotEmpty)
-                      Text(
-                        horario!.turma!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: SigadColors.muted,
-                            ),
-                      ),
-                  ],
                 ),
               ),
-            ),
+          ],
         ],
       ),
     );
