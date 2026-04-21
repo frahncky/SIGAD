@@ -326,23 +326,30 @@ class _RelatorioCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return GestureDetector(
-      onTap: () => _showDetalhes(context),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: SigadColors.surface,
+    return Semantics(
+      button: true,
+      label: 'Abrir relatório ${relatorio.titulo}',
+      child: Material(
+        color: SigadColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: SigadColors.divider),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
+          onTap: () => _showDetalhes(context),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: SigadColors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: SigadColors.divider),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.06),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Column(
+            child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -415,6 +422,7 @@ class _RelatorioCard extends StatelessWidget {
                 ),
                 PopupMenuButton<String>(
                   onSelected: (value) => _onMenuItemSelected(context, value),
+                  tooltip: 'Mais ações do relatório',
                   itemBuilder: (context) => const [
                     PopupMenuItem(
                       value: 'visualizar',
@@ -468,6 +476,8 @@ class _RelatorioCard extends StatelessWidget {
               ),
             ],
           ],
+            ),
+          ),
         ),
       ),
     );
@@ -513,9 +523,10 @@ class _RelatorioCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    tooltip: 'Fechar detalhes do relatório',
+                    icon: const Icon(Icons.close),
                   ),
                 ],
               ),

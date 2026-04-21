@@ -18,7 +18,7 @@ Objetivo: consolidar a experiência visual no tema escuro e elevar acessibilidad
 ## Testes e Validação
 
 - [x] Adicionar testes de widget para dark mode em: Login, Home Shell, Dashboard
-- [ ] Adicionar testes de acessibilidade básica (semantics labels e tooltips em ícones críticos)
+- [x] Adicionar testes de acessibilidade básica (semantics labels e tooltips em ícones críticos)
 - [ ] Rodar `flutter test` completo sem regressões
 
 ## Critérios de Pronto

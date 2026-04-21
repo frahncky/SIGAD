@@ -111,13 +111,18 @@ class _DemandasPageState extends State<DemandasPage> {
                     SizedBox(
                       width: 48,
                       height: 48,
-                      child: OutlinedButton(
-                        onPressed: () => _showFiltros(context),
-                        style: OutlinedButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          minimumSize: const Size(48, 48),
+                      child: Tooltip(
+                        message: _filtrosAtivos > 0
+                            ? 'Abrir filtros ($_filtrosAtivos ativos)'
+                            : 'Abrir filtros',
+                        child: OutlinedButton(
+                          onPressed: () => _showFiltros(context),
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(48, 48),
+                          ),
+                          child: const Icon(Icons.filter_list),
                         ),
-                        child: const Icon(Icons.filter_list),
                       ),
                     ),
                   ],
@@ -160,6 +165,7 @@ class _DemandasPageState extends State<DemandasPage> {
         onPressed: () => _showCriarDemanda(context),
         backgroundColor: SigadColors.brand,
         foregroundColor: Colors.white,
+        tooltip: 'Criar nova demanda',
         child: const Icon(Icons.add),
       ),
     );
@@ -180,9 +186,10 @@ class _DemandasPageState extends State<DemandasPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Filtros', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    tooltip: 'Fechar filtros',
+                    icon: const Icon(Icons.close),
                   ),
                 ],
               ),
