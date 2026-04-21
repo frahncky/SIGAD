@@ -96,6 +96,11 @@ Evitar acesso direto a persistencia em `presentation`; centralizar serializacao 
 Arquitetura e operação detalhadas:
 
 - `ARCHITECTURE_AND_OPERATIONS.md`
+- `DOCUMENTACAO_APP.md`
+- `CONTRIBUTING.md`
+- `SECURITY.md`
+- `RELEASE_PLAYBOOK.md`
+- `OPERATIONS_ENV_CHECKLIST.md`
 
 ## Funcionalidades implementadas
 

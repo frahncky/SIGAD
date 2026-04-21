@@ -63,3 +63,23 @@ flutter build apk --flavor prod --dart-define=SIGAD_FLAVOR=prod
 3. Validar login, logout, splash e restauracao de sessao.
 4. Validar modulos criticos: Demandas, Kanban, Relatorios, Aulas praticas.
 5. Fazer smoke test em dispositivo real.
+
+## 6) Release automatizada
+
+Existe workflow manual para release em:
+
+- `.github/workflows/release.yml`
+
+Entradas:
+
+- `version` no formato `X.Y.Z`
+- `release_notes` opcional
+
+O workflow executa:
+
+1. quality gate (format, analyze, test)
+2. bump de versao no `pubspec.yaml`
+3. preparacao de secao no `CHANGELOG.md`
+4. commit e tag `vX.Y.Z`
+5. build AAB
+6. criacao de GitHub Release com artefato

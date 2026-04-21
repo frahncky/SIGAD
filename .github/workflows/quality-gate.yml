@@ -21,8 +21,14 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Format check
+        run: dart format --output=none --set-exit-if-changed .
+
       - name: Static analysis
         run: flutter analyze
+
+      - name: Layer boundaries check
+        run: bash .github/scripts/check_layer_boundaries.sh
 
       - name: Unit and widget tests with coverage
         run: flutter test --coverage
@@ -41,3 +47,50 @@ jobs:
             echo "Coverage gate failed: expected at least 35%"
             exit 1
           fi
+
+      - name: Coverage gate by module
+        run: |
+          awk '
+            BEGIN {
+              current="";
+            }
+            /^SF:/ {
+              current=substr($0,4);
+              next;
+            }
+            /^DA:/ {
+              split($0, a, ",");
+              split(a[1], b, ":");
+              line_hit=(a[2] > 0 ? 1 : 0);
+
+              if (current ~ /^lib\/core\//) {
+                core_total++;
+                core_hit+=line_hit;
+              }
+              if (current ~ /^lib\/features\//) {
+                features_total++;
+                features_hit+=line_hit;
+              }
+            }
+            END {
+              if (core_total == 0 || features_total == 0) {
+                print "Coverage gate by module failed: could not calculate module totals";
+                exit 1;
+              }
+
+              core_pct=int((100 * core_hit) / core_total);
+              features_pct=int((100 * features_hit) / features_total);
+
+              print "Core coverage: " core_pct "%";
+              print "Features coverage: " features_pct "%";
+
+              if (core_pct < 35) {
+                print "Core coverage gate failed: expected at least 35%";
+                exit 1;
+              }
+              if (features_pct < 35) {
+                print "Features coverage gate failed: expected at least 35%";
+                exit 1;
+              }
+            }
+          ' coverage/lcov.info
