@@ -60,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
                               Container(
                                 width: 1,
                                 margin: const EdgeInsets.symmetric(horizontal: 20),
-                                color: Theme.of(context).dividerColor,
+                                color: SigadColors.divider,
                               ),
                               Expanded(child: _buildForm(context)),
                             ],
@@ -71,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
                             _buildIntro(),
                             const Padding(
                               padding: EdgeInsets.symmetric(vertical: 18),
-                              child: Divider(height: 1),
+                              child: Divider(height: 1, color: SigadColors.divider),
                             ),
                             _buildForm(context),
                           ],
@@ -364,35 +364,28 @@ class _RolePill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final dividerColor = Theme.of(context).dividerColor;
-
     return Semantics(
       button: true,
       selected: selected,
       label: 'Perfil ${role.displayName}',
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(22),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-            decoration: BoxDecoration(
-              color: selected ? colorScheme.primary.withValues(alpha: 0.14) : colorScheme.surface,
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(
-                color: selected ? colorScheme.primary : dividerColor,
-              ),
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+          decoration: BoxDecoration(
+            color: selected ? SigadColors.brand.withValues(alpha: 0.14) : SigadColors.surfaceAlt,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+              color: selected ? SigadColors.brand : SigadColors.divider,
             ),
-            child: Text(
-              role.displayName,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-                    color: selected ? colorScheme.primary : colorScheme.onSurface,
-                  ),
-            ),
+          ),
+          child: Text(
+            role.displayName,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                  color: selected ? SigadColors.brand : SigadColors.ink,
+                ),
           ),
         ),
       ),
@@ -407,18 +400,14 @@ class _LoginPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final dividerColor = Theme.of(context).dividerColor;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
       decoration: BoxDecoration(
-        color: colorScheme.surface.withValues(alpha: isDark ? 0.92 : 0.90),
+        color: Colors.white.withValues(alpha: 0.90),
         borderRadius: BorderRadius.circular(26),
-        border: Border.all(color: dividerColor),
+        border: Border.all(color: SigadColors.divider),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.26 : 0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 24,
             offset: const Offset(0, 12),
           ),
@@ -435,17 +424,15 @@ class _LoginBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: isDark
-              ? [colorScheme.surface, colorScheme.surface.withValues(alpha: 0.88)]
-              : [SigadColors.canvas, SigadColors.surfaceAlt],
+          colors: [
+            SigadColors.canvas,
+            SigadColors.surfaceAlt,
+          ],
         ),
       ),
       child: Stack(
@@ -453,12 +440,12 @@ class _LoginBackground extends StatelessWidget {
           Positioned(
             top: -80,
             right: -80,
-            child: _blob(isDark ? colorScheme.secondary.withValues(alpha: 0.35) : SigadColors.accentSoft, 220),
+            child: _blob(SigadColors.accentSoft, 220),
           ),
           Positioned(
             left: -50,
             bottom: -50,
-            child: _blob(isDark ? colorScheme.primary.withValues(alpha: 0.32) : SigadColors.mint, 190),
+            child: _blob(SigadColors.mint, 190),
           ),
         ],
       ),
