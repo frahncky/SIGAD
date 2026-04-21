@@ -96,37 +96,22 @@ class _DemandasPageState extends State<DemandasPage> {
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    onChanged: (value) => setState(() => _busca = value),
-                    decoration: const InputDecoration(
-                      hintText: 'Buscar por título, descrição ou responsável',
-                      prefixIcon: Icon(Icons.search_outlined),
-                      isDense: true,
-                    ),
+            child: TextField(
+              onChanged: (value) => setState(() => _busca = value),
+              decoration: InputDecoration(
+                hintText: 'Buscar por título, descrição ou responsável',
+                prefixIcon: const Icon(Icons.search_outlined),
+                isDense: true,
+                suffixIcon: Tooltip(
+                  message: _filtrosAtivos > 0
+                      ? 'Abrir filtros ($_filtrosAtivos ativos)'
+                      : 'Abrir filtros',
+                  child: IconButton(
+                    onPressed: () => _showFiltros(context),
+                    icon: const Icon(Icons.filter_list),
                   ),
                 ),
-                const SizedBox(width: 8),
-                SizedBox(
-                  width: 48,
-                  height: 48,
-                  child: Tooltip(
-                    message: _filtrosAtivos > 0
-                        ? 'Abrir filtros ($_filtrosAtivos ativos)'
-                        : 'Abrir filtros',
-                    child: OutlinedButton(
-                      onPressed: () => _showFiltros(context),
-                      style: OutlinedButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: const Size(48, 48),
-                      ),
-                      child: const Icon(Icons.filter_list),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
           Expanded(
