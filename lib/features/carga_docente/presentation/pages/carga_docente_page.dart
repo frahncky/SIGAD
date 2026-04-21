@@ -13,6 +13,8 @@ import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
 
+
+
 class CargaDocentePage extends StatefulWidget {
   const CargaDocentePage({super.key});
 
@@ -21,6 +23,9 @@ class CargaDocentePage extends StatefulWidget {
 }
 
 class _CargaDocentePageState extends State<CargaDocentePage> {
+  final TextEditingController _buscaController = TextEditingController();
+  String _busca = '';
+
   static const Set<UserRole> _allowedRoles = {
     UserRole.professor,
     UserRole.coordenador,
@@ -146,6 +151,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   }
 
   List<Docente> _docentesVisiveis() {
+    // Professores podem pesquisar todos, mas só visualizar agenda e enviar convite
     return List<Docente>.from(_docentes, growable: false);
   }
 
@@ -800,22 +806,81 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     }
 
     final podeGerenciar = role == UserRole.coordenador || role == UserRole.chefeDepartamento;
-    final podeVisualizarHorarios = hasAccess;
+    final podeVisualizarHorarios = true; // Todos podem visualizar
     final emailNormalizado = (user?.email ?? '').trim().toLowerCase();
     final docentesVisiveis = _docentesVisiveis();
-    final docentesOrdenados = podeGerenciar
-        ? [
-            ...docentesVisiveis.where((d) => (d.userEmail ?? '').trim().toLowerCase() == emailNormalizado),
-            ...docentesVisiveis.where((d) => (d.userEmail ?? '').trim().toLowerCase() != emailNormalizado),
-          ]
-        : docentesVisiveis;
+    // Filtro de busca
+    List<Docente> docentesFiltrados;
+    if (podeGerenciar) {
+      // Coordenador/Chefe vê todos, com busca
+      docentesFiltrados = _busca.isEmpty
+          ? docentesVisiveis
+          : docentesVisiveis.where((d) {
+              final buscaLower = _busca.toLowerCase();
+              return d.nome.toLowerCase().contains(buscaLower) ||
+                  (d.userEmail ?? '').toLowerCase().contains(buscaLower) ||
+                  d.departamento.toLowerCase().contains(buscaLower);
+            }).toList();
+    } else {
+      // Professor/Servidor: vê só a própria agenda, outros só se pesquisar
+      final isSearching = _busca.trim().isNotEmpty;
+      final self = docentesVisiveis.where((d) => (d.userEmail ?? '').trim().toLowerCase() == emailNormalizado).toList();
+      if (!isSearching) {
+        docentesFiltrados = self;
+      } else {
+        final buscaLower = _busca.toLowerCase();
+        final outros = docentesVisiveis.where((d) =>
+          (d.nome.toLowerCase().contains(buscaLower) ||
+           (d.userEmail ?? '').toLowerCase().contains(buscaLower) ||
+           d.departamento.toLowerCase().contains(buscaLower))
+        ).toList();
+        // Garante que o próprio sempre aparece primeiro, sem duplicar
+        final outrosSemSelf = outros.where((d) => (d.userEmail ?? '').trim().toLowerCase() != emailNormalizado).toList();
+        docentesFiltrados = [...self, ...outrosSemSelf];
+      }
+    }
+    final docentesOrdenados = docentesFiltrados;
     final textTheme = Theme.of(context).textTheme;
+
+    // Identifica o próprio docente
+    Docente? selfDocente;
+    try {
+      selfDocente = docentesVisiveis.firstWhere(
+        (d) => (d.userEmail ?? '').trim().toLowerCase() == emailNormalizado,
+      );
+    } catch (_) {
+      selfDocente = null;
+    }
 
     return Scaffold(
       body: Column(
         children: [
+          if (selfDocente != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: _DocenteCard(
+                docente: selfDocente,
+                canManage: podeGerenciar,
+                canViewSchedule: true,
+                onAbrirAgenda: () => _abrirAgendaDocente(context, selfDocente!),
+                onEditar: podeGerenciar ? () => _showEditarDocente(context, selfDocente!) : null,
+                onExcluir: podeGerenciar ? () => _showConfirmarExclusao(context, selfDocente!) : null,
+                somenteVisualizar: !podeGerenciar,
+              ),
+            ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: TextField(
+              controller: _buscaController,
+              onChanged: (value) => setState(() => _busca = value),
+              decoration: const InputDecoration(
+                hintText: 'Buscar docente por nome, e-mail ou departamento',
+                prefixIcon: Icon(Icons.search_outlined),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
@@ -826,8 +891,14 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
             ),
           ),
           Expanded(
-            child: docentesOrdenados.isEmpty
-                ? Center(
+            child: Builder(
+              builder: (_) {
+                // Lista de outros docentes (exclui o próprio)
+                final outrosDocentes = selfDocente == null
+                  ? docentesOrdenados
+                  : docentesOrdenados.where((d) => d.id != selfDocente!.id).toList();
+                if (outrosDocentes.isEmpty) {
+                  return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -839,19 +910,23 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                         ),
                       ],
                     ),
-                  )
-                : ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              itemCount: docentesOrdenados.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 12),
-              itemBuilder: (_, index) => _DocenteCard(
-                docente: docentesOrdenados[index],
-                canManage: podeGerenciar,
-                canViewSchedule: podeVisualizarHorarios,
-                onAbrirAgenda: () => _abrirAgendaDocente(context, docentesOrdenados[index]),
-                onEditar: () => _showEditarDocente(context, docentesOrdenados[index]),
-                onExcluir: () => _showConfirmarExclusao(context, docentesOrdenados[index]),
-              ),
+                  );
+                }
+                return ListView.separated(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  itemCount: outrosDocentes.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 12),
+                  itemBuilder: (_, index) => _DocenteCard(
+                    docente: outrosDocentes[index],
+                    canManage: podeGerenciar,
+                    canViewSchedule: podeVisualizarHorarios,
+                    onAbrirAgenda: () => _abrirAgendaDocente(context, outrosDocentes[index]),
+                    onEditar: podeGerenciar ? () => _showEditarDocente(context, outrosDocentes[index]) : null,
+                    onExcluir: podeGerenciar ? () => _showConfirmarExclusao(context, outrosDocentes[index]) : null,
+                    somenteVisualizar: !podeGerenciar,
+                  ),
+                );
+              },
             ),
           ),
         ],
@@ -874,21 +949,22 @@ class _DocenteCard extends StatelessWidget {
     required this.canManage,
     required this.canViewSchedule,
     required this.onAbrirAgenda,
-    required this.onEditar,
-    required this.onExcluir,
+    this.onEditar,
+    this.onExcluir,
+    this.somenteVisualizar = false,
   });
 
   final Docente docente;
   final bool canManage;
   final bool canViewSchedule;
   final VoidCallback onAbrirAgenda;
-  final VoidCallback onEditar;
-  final VoidCallback onExcluir;
+  final VoidCallback? onEditar;
+  final VoidCallback? onExcluir;
+  final bool somenteVisualizar;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final podeVisualizarHorarios = canViewSchedule && docente.horariosAula.isNotEmpty;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -898,7 +974,7 @@ class _DocenteCard extends StatelessWidget {
         border: Border.all(color: SigadColors.divider),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
+            color: Colors.black.withOpacity(0.06),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -910,50 +986,16 @@ class _DocenteCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      docente.nome,
-                      style: textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      docente.departamento,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: SigadColors.muted,
-                      ),
-                    ),
-                    if (podeVisualizarHorarios) ...[
-                      const SizedBox(height: 10),
-                      OutlinedButton.icon(
-                        onPressed: onAbrirAgenda,
-                        icon: const Icon(Icons.calendar_month_outlined, size: 18),
-                        label: const Text('Ver agenda'),
-                        style: OutlinedButton.styleFrom(
-                          visualDensity: VisualDensity.compact,
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              if (canManage)
+              if (canManage && !somenteVisualizar)
                 PopupMenuButton<String>(
                   tooltip: 'Mais ações do docente',
                   onSelected: (value) {
                     switch (value) {
                       case 'editar':
-                        onEditar();
+                        if (onEditar != null) onEditar!();
                         break;
                       case 'excluir':
-                        onExcluir();
+                        if (onExcluir != null) onExcluir!();
                         break;
                     }
                   },
@@ -998,7 +1040,7 @@ class _DocenteCard extends StatelessWidget {
                 .map((d) => Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: SigadColors.brand.withValues(alpha: 0.1),
+                        color: SigadColors.brand.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
