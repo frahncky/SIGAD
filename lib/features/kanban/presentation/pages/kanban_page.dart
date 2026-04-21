@@ -17,7 +17,10 @@ class KanbanPage extends StatefulWidget {
 
 class _KanbanPageState extends State<KanbanPage> {
   final KanbanRepository _kanbanRepository = KanbanRepository();
-  final List<KanbanCardModel> _cards = KanbanService.defaultCards();
+  final List<KanbanCardModel> _cards = List<KanbanCardModel>.of(
+    KanbanService.defaultCards(),
+    growable: true,
+  );
   bool _isLoading = true;
   String? _loadError;
 
