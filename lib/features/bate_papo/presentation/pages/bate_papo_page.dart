@@ -258,6 +258,7 @@ class _ConversationListPanel extends StatelessWidget {
                     hintText: 'Buscar conversa',
                     suffixIcon: searchValue.trim().isNotEmpty
                         ? IconButton(
+                            tooltip: 'Limpar busca',
                             onPressed: () => onSearchChanged(''),
                             icon: const Icon(Icons.close_rounded),
                           )
@@ -693,6 +694,7 @@ class _NewConversationSheetState extends State<_NewConversationSheet> {
                       prefixIcon: const Icon(Icons.search_rounded),
                       suffixIcon: _query.isNotEmpty
                           ? IconButton(
+                              tooltip: 'Limpar busca',
                               onPressed: () {
                                 _searchController.clear();
                                 setState(() => _query = '');

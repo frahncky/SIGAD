@@ -368,9 +368,10 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Editar Perfil', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: const Icon(Icons.close),
+                IconButton(
+                  tooltip: 'Fechar edição de perfil',
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close),
                 ),
               ],
             ),
@@ -449,9 +450,10 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Alterar Email', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: const Icon(Icons.close),
+                IconButton(
+                  tooltip: 'Fechar alteração de email',
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close),
                 ),
               ],
             ),
@@ -527,9 +529,10 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Alterar Senha', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: const Icon(Icons.close),
+                IconButton(
+                  tooltip: 'Fechar alteração de senha',
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close),
                 ),
               ],
             ),
@@ -621,9 +624,10 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Backup Automático', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
+                  IconButton(
+                    tooltip: 'Fechar backup automático',
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
                   ),
                 ],
               ),
@@ -693,9 +697,10 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Política de Privacidade', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: const Icon(Icons.close),
+                IconButton(
+                  tooltip: 'Fechar política de privacidade',
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close),
                 ),
               ],
             ),
@@ -752,9 +757,10 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Termos de Serviço', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: const Icon(Icons.close),
+                IconButton(
+                  tooltip: 'Fechar termos de serviço',
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close),
                 ),
               ],
             ),
@@ -812,9 +818,10 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Sobre o SIGAD', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: const Icon(Icons.close),
+                IconButton(
+                  tooltip: 'Fechar sobre o SIGAD',
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close),
                 ),
               ],
             ),
@@ -882,9 +889,10 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Reportar Problema', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: const Icon(Icons.close),
+                IconButton(
+                  tooltip: 'Fechar relato de problema',
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close),
                 ),
               ],
             ),

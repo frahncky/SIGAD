@@ -329,7 +329,10 @@ class _RelatorioCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return GestureDetector(
+    return Semantics(
+      button: true,
+      label: 'Ver relatório ${relatorio.titulo}',
+      child: GestureDetector(
       onTap: () => _showDetalhes(context),
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -417,6 +420,7 @@ class _RelatorioCard extends StatelessWidget {
                   ),
                 ),
                 PopupMenuButton<String>(
+                  tooltip: 'Mais ações do relatório',
                   onSelected: (value) => _onMenuItemSelected(context, value),
                   itemBuilder: (context) => const [
                     PopupMenuItem(
@@ -473,6 +477,7 @@ class _RelatorioCard extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 
@@ -516,9 +521,10 @@ class _RelatorioCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
+                  IconButton(
+                    tooltip: 'Fechar detalhes do relatório',
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
                   ),
                 ],
               ),

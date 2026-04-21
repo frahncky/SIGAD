@@ -61,7 +61,9 @@ class _InteractiveCardState extends State<InteractiveCard>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Semantics(
+      button: widget.onTap != null,
+      child: GestureDetector(
       onTap: widget.onTap,
       onTapDown: (_) => _onPointerDown(),
       onTapUp: (_) => _onPointerUp(),
@@ -96,6 +98,7 @@ class _InteractiveCardState extends State<InteractiveCard>
           ),
         ),
       ),
+    ),
     );
   }
 }
@@ -163,7 +166,10 @@ class _InteractiveButtonState extends State<InteractiveButton>
     final isDarkVariant = widget.variant == ButtonVariant.filled;
     final padding = _getPadding();
 
-    return GestureDetector(
+    return Semantics(
+      button: true,
+      label: widget.label,
+      child: GestureDetector(
       onTapDown: (_) => _onPointerDown(),
       onTapUp: (_) => _onPointerUp(),
       onTapCancel: () => _animationController.reverse(),
@@ -218,6 +224,7 @@ class _InteractiveButtonState extends State<InteractiveButton>
           ),
         ),
       ),
+    ),
     );
   }
 

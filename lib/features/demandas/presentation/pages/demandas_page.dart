@@ -108,7 +108,11 @@ class _DemandasPageState extends State<DemandasPage> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    SizedBox(
+                    Tooltip(
+                      message: _filtrosAtivos > 0
+                          ? 'Filtros ativos: $_filtrosAtivos'
+                          : 'Filtrar demandas',
+                      child: SizedBox(
                       width: 48,
                       height: 48,
                       child: OutlinedButton(
@@ -119,6 +123,7 @@ class _DemandasPageState extends State<DemandasPage> {
                         ),
                         child: const Icon(Icons.filter_list),
                       ),
+                    ),
                     ),
                   ],
                 ),
@@ -158,6 +163,7 @@ class _DemandasPageState extends State<DemandasPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showCriarDemanda(context),
+        tooltip: 'Criar nova demanda',
         backgroundColor: SigadColors.brand,
         foregroundColor: Colors.white,
         child: const Icon(Icons.add),
@@ -180,9 +186,10 @@ class _DemandasPageState extends State<DemandasPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Filtros', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
+                  IconButton(
+                    tooltip: 'Fechar filtros',
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
                   ),
                 ],
               ),
@@ -296,9 +303,10 @@ class _DemandasPageState extends State<DemandasPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Nova Demanda', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
+                  IconButton(
+                    tooltip: 'Fechar formulário da demanda',
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
                   ),
                 ],
               ),
@@ -424,9 +432,10 @@ class _DemandasPageState extends State<DemandasPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Editar Demanda', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
+                  IconButton(
+                    tooltip: 'Fechar formulário da demanda',
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
                   ),
                 ],
               ),
@@ -579,7 +588,10 @@ class _DemandasCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return GestureDetector(
+    return Semantics(
+      button: true,
+      label: 'Abrir demanda ${demanda.titulo}',
+      child: GestureDetector(
       onTap: () => _showDetalhesDemanda(context),
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -735,6 +747,7 @@ class _DemandasCard extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 
@@ -767,9 +780,10 @@ class _DemandasCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(demanda.id, style: textTheme.labelSmall?.copyWith(color: SigadColors.muted)),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
+                  IconButton(
+                    tooltip: 'Fechar detalhes da demanda',
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
                   ),
                 ],
               ),

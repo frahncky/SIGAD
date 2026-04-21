@@ -372,7 +372,10 @@ class _KanbanCard extends StatelessWidget {
   }
 
   Widget _buildCardContent(BuildContext context, TextTheme textTheme) {
-    return GestureDetector(
+    return Semantics(
+      button: true,
+      label: 'Card: ${card.titulo}. Prioridade ${card.prioridade}.',
+      child: GestureDetector(
       onTap: () => _showDetalhes(context),
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -418,6 +421,7 @@ class _KanbanCard extends StatelessWidget {
                   ),
                 ),
                 PopupMenuButton<String>(
+                  tooltip: 'Mais ações do card',
                   onSelected: (value) {
                     if (value == 'excluir') {
                       _showConfirmarExclusao(context);
@@ -446,6 +450,7 @@ class _KanbanCard extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 

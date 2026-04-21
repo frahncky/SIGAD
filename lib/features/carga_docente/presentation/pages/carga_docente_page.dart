@@ -235,9 +235,10 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(title, style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
+                  IconButton(
+                    tooltip: 'Fechar formulário do docente',
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
                   ),
                 ],
               ),
@@ -866,6 +867,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       floatingActionButton: podeGerenciar
           ? FloatingActionButton(
               onPressed: () => _showAdicionarDocente(context),
+              tooltip: 'Adicionar docente',
               backgroundColor: SigadColors.brand,
               child: const Icon(Icons.add),
             )
@@ -960,6 +962,7 @@ class _DocenteCardState extends State<_DocenteCard> {
                         ),
                       if (widget.canManage)
                         PopupMenuButton<String>(
+                          tooltip: 'Mais ações do docente',
                           onSelected: _onMenuItemSelected,
                           itemBuilder: (context) => [
                             const PopupMenuItem(

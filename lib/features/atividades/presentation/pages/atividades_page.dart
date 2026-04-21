@@ -160,6 +160,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showCriarAtividade(context),
+        tooltip: 'Criar nova atividade',
         backgroundColor: SigadColors.brand,
         foregroundColor: Colors.white,
         child: const Icon(Icons.add),
@@ -188,9 +189,10 @@ class _AtividadesPageState extends State<AtividadesPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Nova Atividade', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
+                  IconButton(
+                    tooltip: 'Fechar formulário',
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
                   ),
                 ],
               ),
@@ -303,9 +305,10 @@ class _AtividadesPageState extends State<AtividadesPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Editar Atividade', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
+                  IconButton(
+                    tooltip: 'Fechar formulário',
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
                   ),
                 ],
               ),
@@ -509,7 +512,10 @@ class _AtividadeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return GestureDetector(
+    return Semantics(
+      button: true,
+      label: 'Abrir atividade ${atividade.titulo}',
+      child: GestureDetector(
       onTap: () => _showDetalhes(context),
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -578,6 +584,7 @@ class _AtividadeCard extends StatelessWidget {
                   ),
                 ),
                 PopupMenuButton<String>(
+                  tooltip: 'Mais ações da atividade',
                   onSelected: (value) => _onMenuItemSelected(context, value),
                   itemBuilder: (context) => [
                     const PopupMenuItem(
@@ -632,6 +639,7 @@ class _AtividadeCard extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 
@@ -667,9 +675,10 @@ class _AtividadeCard extends StatelessWidget {
                       Text(atividade.titulo, style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
                     ],
                   ),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close),
+                  IconButton(
+                    tooltip: 'Fechar detalhes da atividade',
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
                   ),
                 ],
               ),
