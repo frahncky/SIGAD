@@ -1211,7 +1211,6 @@ class _MapaSemanalHorarios extends StatelessWidget {
             width: double.infinity,
             decoration: BoxDecoration(
               color: SigadColors.surface,
-              borderRadius: BorderRadius.circular(16),
               border: Border.all(color: SigadColors.divider),
             ),
             child: Column(
