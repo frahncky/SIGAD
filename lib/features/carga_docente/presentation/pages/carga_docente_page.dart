@@ -15,6 +15,7 @@ import '../../../../core/services/user_context_provider.dart';
 
 
 
+
 class CargaDocentePage extends StatefulWidget {
   const CargaDocentePage({super.key});
 
@@ -23,6 +24,7 @@ class CargaDocentePage extends StatefulWidget {
 }
 
 class _CargaDocentePageState extends State<CargaDocentePage> {
+  Docente? _docenteSelecionado;
   final TextEditingController _buscaController = TextEditingController();
   String _busca = '';
 
@@ -129,7 +131,16 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   @override
   void initState() {
     super.initState();
-    _loadData();
+    // Aguarda contexto para pegar argumentos
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is Docente) {
+        setState(() {
+          _docenteSelecionado = args;
+        });
+      }
+      _loadData();
+    });
   }
 
   Future<void> _loadData() async {
@@ -803,6 +814,12 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       return const _AccessDenied();
     }
 
+    // Se veio um docente selecionado via argumento, mostra a agenda semanal dele
+    if (_docenteSelecionado != null) {
+      return _AgendaDocentePage(docente: _docenteSelecionado!);
+    }
+
+    // ...código original da agenda para o próprio usuário...
     final podeGerenciar = role == UserRole.coordenador || role == UserRole.chefeDepartamento;
     final podeVisualizarHorarios = true; // Todos podem visualizar
     final emailNormalizado = (user?.email ?? '').trim().toLowerCase();
