@@ -96,39 +96,35 @@ class _DemandasPageState extends State<DemandasPage> {
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        onChanged: (value) => setState(() => _busca = value),
-                        decoration: const InputDecoration(
-                          hintText: 'Buscar por título, descrição ou responsável',
-                          prefixIcon: Icon(Icons.search_outlined),
-                        ),
-                      ),
+                Expanded(
+                  child: TextField(
+                    onChanged: (value) => setState(() => _busca = value),
+                    decoration: const InputDecoration(
+                      hintText: 'Buscar por título, descrição ou responsável',
+                      prefixIcon: Icon(Icons.search_outlined),
+                      isDense: true,
                     ),
-                    const SizedBox(width: 8),
-                    SizedBox(
-                      width: 48,
-                      height: 48,
-                      child: Tooltip(
-                        message: _filtrosAtivos > 0
-                            ? 'Abrir filtros ($_filtrosAtivos ativos)'
-                            : 'Abrir filtros',
-                        child: OutlinedButton(
-                          onPressed: () => _showFiltros(context),
-                          style: OutlinedButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size(48, 48),
-                          ),
-                          child: const Icon(Icons.filter_list),
-                        ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  width: 48,
+                  height: 48,
+                  child: Tooltip(
+                    message: _filtrosAtivos > 0
+                        ? 'Abrir filtros ($_filtrosAtivos ativos)'
+                        : 'Abrir filtros',
+                    child: OutlinedButton(
+                      onPressed: () => _showFiltros(context),
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size(48, 48),
                       ),
+                      child: const Icon(Icons.filter_list),
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),
@@ -438,15 +434,18 @@ class _DemandasPageState extends State<DemandasPage> {
     final prioridades = DemandasService.opcoesUnicas(DemandasService.prioridades);
     final proprietarios = DemandasService.opcoesUnicas(DemandasService.proprietarios);
     final statusDisponiveis = DemandasService.opcoesUnicas(DemandasService.statusDisponiveis);
-    final prioridadeOptions = prioridades.contains(demanda.prioridade)
-      ? prioridades
-      : [demanda.prioridade, ...prioridades];
-    final proprietarioOptions = proprietarios.contains(demanda.proprietario)
-      ? proprietarios
-      : [demanda.proprietario, ...proprietarios];
-    final statusOptions = statusDisponiveis.contains(demanda.statusLabel)
-      ? statusDisponiveis
-      : [demanda.statusLabel, ...statusDisponiveis];
+    final prioridadeOptions = DemandasService.opcoesUnicas(
+      prioridades,
+      primeiro: demanda.prioridade,
+    );
+    final proprietarioOptions = DemandasService.opcoesUnicas(
+      proprietarios,
+      primeiro: demanda.proprietario,
+    );
+    final statusOptions = DemandasService.opcoesUnicas(
+      statusDisponiveis,
+      primeiro: demanda.statusLabel,
+    );
     final tituloController = TextEditingController(text: demanda.titulo);
     final descricaoController = TextEditingController(text: demanda.descricao);
     String prioridadeSelecionada = demanda.prioridade;
