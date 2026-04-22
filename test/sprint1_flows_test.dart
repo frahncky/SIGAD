@@ -35,14 +35,14 @@ void main() {
     expect(find.text('Informe um email válido.'), findsOneWidget);
   });
 
-  testWidgets('Professor consegue expandir distribuição semanal', (tester) async {
+  testWidgets('Coordenador consegue expandir distribuição semanal de qualquer docente', (tester) async {
     final userContext = UserContextProvider();
     await userContext.login(
       User(
-        id: 'user_email_joao.silva@univ.br',
-        name: 'João',
-        email: 'joao.silva@univ.br',
-        role: UserRole.professor,
+        id: 'user_email_coordenador@univ.br',
+        name: 'Coordenador',
+        email: 'coordenador@univ.br',
+        role: UserRole.coordenador,
         createdAt: DateTime.now(),
       ),
     );
