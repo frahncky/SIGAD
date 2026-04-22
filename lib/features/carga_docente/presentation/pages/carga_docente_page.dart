@@ -1168,17 +1168,7 @@ class _AgendaDocentePage extends StatelessWidget {
                   .toList(),
             ),
             const SizedBox(height: 16),
-            // Nome do professor acima da grade semanal
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: Text(
-                'Agenda semanal de ${docente.nome}',
-                style: textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              ),
-            ),
+            // ...linha removida para evitar repetição do nome do professor
             _MapaSemanalHorarios(
               horarios: docente.horariosAula,
               compacto: false,
@@ -1420,69 +1410,58 @@ class _MapaSemanalHorarios extends StatelessWidget {
           style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
         ),
         const SizedBox(height: 14),
-        if (horarios.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Text(
-              'Sem aulas cadastradas na semana.',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: SigadColors.muted,
-                  ),
-            ),
-          )
-        else
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: SigadColors.surface,
-              border: Border.all(color: SigadColors.divider),
-            ),
-            child: Column(
-              children: [
-                for (var index = 0; index < linhas.length; index++) ...[
-                  if (index == 0 || linhas[index - 1].turno != linhas[index].turno)
-                    _TurnoAgendaDividerRow(turno: linhas[index].turno),
-                  Row(
-                    children: [
-                      for (var i = 0; i < _diasOrdem.length; i++)
-                        Expanded(
-                          child: _GradeAgendaCell(
-                            height: rowHeight,
-                            compacto: compacto,
-                            dia: _diasOrdem[i],
-                            data: datasDaSemana[i],
-                            horario: linhas[index].horario,
-                            turno: linhas[index].turno,
-                            periodo: linhas[index].periodo,
-                            isLastDay: i == _diasOrdem.length - 1,
-                            aula: gradePorDiaTurnoPeriodo[_diasOrdem[i]]?[
-                              _turnoPeriodoKey(linhas[index].turno, linhas[index].periodo)
-                            ],
-                            onTap: gradePorDiaTurnoPeriodo[_diasOrdem[i]]?[
-                                      _turnoPeriodoKey(linhas[index].turno, linhas[index].periodo)
-                                    ] ==
-                                    null
-                                ? () async {
-                                    final callback = onTapLivre;
-                                    if (callback == null) return;
-                                    await callback(
-                                      _AgendaCellTapData(
-                                        data: datasDaSemana[i],
-                                        horarioFaixa: linhas[index].horario,
-                                        turno: linhas[index].turno,
-                                        periodo: linhas[index].periodo,
-                                      ),
-                                    );
-                                  }
-                                : null,
-                          ),
-                        ),
-                    ],
-                  ),
-                ],
-              ],
-            ),
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: SigadColors.surface,
+            border: Border.all(color: SigadColors.divider),
           ),
+          child: Column(
+            children: [
+              for (var index = 0; index < linhas.length; index++) ...[
+                if (index == 0 || linhas[index - 1].turno != linhas[index].turno)
+                  _TurnoAgendaDividerRow(turno: linhas[index].turno),
+                Row(
+                  children: [
+                    for (var i = 0; i < _diasOrdem.length; i++)
+                      Expanded(
+                        child: _GradeAgendaCell(
+                          height: rowHeight,
+                          compacto: compacto,
+                          dia: _diasOrdem[i],
+                          data: datasDaSemana[i],
+                          horario: linhas[index].horario,
+                          turno: linhas[index].turno,
+                          periodo: linhas[index].periodo,
+                          isLastDay: i == _diasOrdem.length - 1,
+                          aula: gradePorDiaTurnoPeriodo[_diasOrdem[i]]?[
+                            _turnoPeriodoKey(linhas[index].turno, linhas[index].periodo)
+                          ],
+                          onTap: gradePorDiaTurnoPeriodo[_diasOrdem[i]]?[
+                                    _turnoPeriodoKey(linhas[index].turno, linhas[index].periodo)
+                                  ] ==
+                                  null
+                              ? () async {
+                                  final callback = onTapLivre;
+                                  if (callback == null) return;
+                                  await callback(
+                                    _AgendaCellTapData(
+                                      data: datasDaSemana[i],
+                                      horarioFaixa: linhas[index].horario,
+                                      turno: linhas[index].turno,
+                                      periodo: linhas[index].periodo,
+                                    ),
+                                  );
+                                }
+                              : null,
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ),
       ],
     );
   }
