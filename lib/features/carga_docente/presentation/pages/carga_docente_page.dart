@@ -963,7 +963,7 @@ class _DocenteCard extends StatelessWidget {
   final Docente docente;
   final bool canManage;
   final bool canViewSchedule;
-  final VoidCallback onAbrirAgenda;
+  final VoidCallback? onAbrirAgenda;
   final VoidCallback? onEditar;
   final VoidCallback? onExcluir;
   final bool somenteVisualizar;
@@ -971,7 +971,6 @@ class _DocenteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -1020,23 +1019,30 @@ class _DocenteCard extends StatelessWidget {
                       value: 'excluir',
                       child: Row(
                         children: [
-                          Icon(Icons.delete, color: Colors.red, size: 18),
+                          Icon(Icons.delete, size: 18),
                           SizedBox(width: 8),
-                          Text('Excluir', style: TextStyle(color: Colors.red)),
+                          Text('Excluir'),
                         ],
                       ),
                     ),
                   ],
-                  icon: const Icon(Icons.more_vert, size: 18),
                 ),
+              // Exibe o nome do docente como Text
+              Expanded(
+                child: GestureDetector(
+                  onTap: onAbrirAgenda,
+                  child: Text(
+                    docente.nome,
+                    style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 16),
           Text(
             'Carga horária: ${docente.cargaHoraria}h',
-            style: textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
           Wrap(
