@@ -1,8 +1,6 @@
 ﻿import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'app/app.dart';
 import 'app/routes/app_routes.dart';
 import 'core/config/app_runtime_config.dart';

@@ -7,9 +7,6 @@ O aplicativo SIGAD foi configurado com um sistema de múltiplos perfis de usuár
 ## Roles (Perfis) Disponíveis
 
 ### 1. **Professor (PR)**
-- **DisplayName**: Professor
-- **Descrição**: Docente responsável por disciplinas e cargas horárias
-- **Acessos Permitidos**:
   - ✅ Dashboard (Visão Geral)
   - ✅ Bate-papo
   - ✅ Quadro de Tarefas
@@ -20,9 +17,6 @@ O aplicativo SIGAD foi configurado com um sistema de múltiplos perfis de usuár
   - ❌ Configurações
 
 ### 2. **Coordenador de Curso (CC)**
-- **DisplayName**: Coordenador de Curso
-- **Descrição**: Responsável pela coordenação e gestão do curso
-- **Acessos Permitidos**:
   - ✅ Dashboard (Visão Geral)
   - ✅ Bate-papo
   - ✅ Demandas
@@ -33,9 +27,6 @@ O aplicativo SIGAD foi configurado com um sistema de múltiplos perfis de usuár
   - ❌ Configurações
 
 ### 3. **Servidor Administrativo (SA)**
-- **DisplayName**: Servidor Administrativo
-- **Descrição**: Suporte administrativo e processamento de documentação
-- **Acessos Permitidos**:
   - ✅ Dashboard (Visão Geral)
   - ✅ Bate-papo
   - ✅ Quadro de Tarefas
@@ -46,9 +37,6 @@ O aplicativo SIGAD foi configurado com um sistema de múltiplos perfis de usuár
   - ❌ Configurações
 
 ### 4. **Chefe do Departamento (CD)**
-- **DisplayName**: Chefe do Departamento
-- **Descrição**: Gestor geral do departamento com acesso total
-- **Acessos Permitidos**:
   - ✅ Dashboard (Visão Geral)
   - ✅ Bate-papo
   - ✅ Demandas
