@@ -60,6 +60,23 @@ void main() {
 
     expect(find.text('Distribuição semanal'), findsNothing);
 
+
+    // Simula busca pelo nome do docente
+    final searchField = find.byType(TextField).last;
+    await tester.enterText(searchField, 'João Silva');
+    await tester.pumpAndSettle();
+
+    // Depuração: printa todos os textos encontrados na tela
+    final allTexts = find.byType(Text);
+    final textWidgets = allTexts.evaluate().map((e) => (e.widget as Text).data).toList();
+    // ignore: avoid_print
+    print('Textos na tela:');
+    for (final t in textWidgets) {
+      // ignore: avoid_print
+      print(t);
+    }
+
+    expect(find.text('Prof. Dr. João Silva'), findsOneWidget);
     await tester.tap(find.text('Prof. Dr. João Silva'));
     await tester.pumpAndSettle();
 

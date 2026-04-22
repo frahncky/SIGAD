@@ -30,25 +30,7 @@ android {
         versionName = flutter.versionName
     }
 
-    flavorDimensions += "environment"
-    productFlavors {
-        create("dev") {
-            dimension = "environment"
-            applicationIdSuffix = ".dev"
-            versionNameSuffix = "-dev"
-            resValue("string", "app_name", "SIGAD")
-        }
-        create("staging") {
-            dimension = "environment"
-            applicationIdSuffix = ".staging"
-            versionNameSuffix = "-staging"
-            resValue("string", "app_name", "SIGAD Staging")
-        }
-        create("prod") {
-            dimension = "environment"
-            resValue("string", "app_name", "SIGAD")
-        }
-    }
+    // Flavors removidos para restaurar o fluxo antigo. O APK será gerado no caminho padrão.
 
     buildTypes {
         release {
