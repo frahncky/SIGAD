@@ -65,7 +65,6 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
   void _saveData() {
     _reservaRepository.saveReservas(_reservas);
-    _showInfo('Reservas salvas com sucesso.');
   }
 
   int get _semanaSelecionada => ((_diaSelecionado - 1) ~/ 7) + 1;
@@ -117,7 +116,6 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     final userContext = context.watch<UserContextProvider>();
     final role = userContext.userRole;
     final hasAccess = ReservaService.canAccess(role);
-    final podeEditar = ReservaService.canEdit(role);
 
     if (!hasAccess) {
       return const _AccessDenied();
@@ -167,10 +165,6 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                   ],
                 ),
                 const SizedBox(height: 10),
-                Text(
-                  'Visualização da Grade Semanal',
-                  style: Theme.of(context).textTheme.headline6,
-                ),
                 _SelecaoDiaMesRow(
                   diaSelecionado: _diaSelecionado,
                   diasNoMes: _diasNoMesSelecionado,
