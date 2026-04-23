@@ -1410,57 +1410,61 @@ class _MapaSemanalHorarios extends StatelessWidget {
           style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
         ),
         const SizedBox(height: 14),
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: SigadColors.surface,
-            border: Border.all(color: SigadColors.divider),
-          ),
-          child: Column(
-            children: [
-              for (var index = 0; index < linhas.length; index++) ...[
-                if (index == 0 || linhas[index - 1].turno != linhas[index].turno)
-                  _TurnoAgendaDividerRow(turno: linhas[index].turno),
-                Row(
-                  children: [
-                    for (var i = 0; i < _diasOrdem.length; i++)
-                      Expanded(
-                        child: _GradeAgendaCell(
-                          height: rowHeight,
-                          compacto: compacto,
-                          dia: _diasOrdem[i],
-                          data: datasDaSemana[i],
-                          horario: linhas[index].horario,
-                          turno: linhas[index].turno,
-                          periodo: linhas[index].periodo,
-                          isLastDay: i == _diasOrdem.length - 1,
-                          aula: gradePorDiaTurnoPeriodo[_diasOrdem[i]]?[
-                            _turnoPeriodoKey(linhas[index].turno, linhas[index].periodo)
-                          ],
-                          onTap: gradePorDiaTurnoPeriodo[_diasOrdem[i]]?[
-                                    _turnoPeriodoKey(linhas[index].turno, linhas[index].periodo)
-                                  ] ==
-                                  null
-                              ? () async {
-                                  final callback = onTapLivre;
-                                  if (callback == null) return;
-                                  await callback(
-                                    _AgendaCellTapData(
-                                      data: datasDaSemana[i],
-                                      horarioFaixa: linhas[index].horario,
-                                      turno: linhas[index].turno,
-                                      periodo: linhas[index].periodo,
-                                    ),
-                                  );
-                                }
-                              : null,
-                        ),
-                      ),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return Container(
+              width: constraints.maxWidth,
+              decoration: BoxDecoration(
+                color: SigadColors.surface,
+                border: Border.all(color: SigadColors.divider),
+              ),
+              child: Column(
+                children: [
+                  for (var index = 0; index < linhas.length; index++) ...[
+                    if (index == 0 || linhas[index - 1].turno != linhas[index].turno)
+                      _TurnoAgendaDividerRow(turno: linhas[index].turno),
+                    Row(
+                      children: [
+                        for (var i = 0; i < _diasOrdem.length; i++)
+                          Expanded(
+                            child: _GradeAgendaCell(
+                              height: rowHeight,
+                              compacto: compacto,
+                              dia: _diasOrdem[i],
+                              data: datasDaSemana[i],
+                              horario: linhas[index].horario,
+                              turno: linhas[index].turno,
+                              periodo: linhas[index].periodo,
+                              isLastDay: i == _diasOrdem.length - 1,
+                              aula: gradePorDiaTurnoPeriodo[_diasOrdem[i]]?[
+                                _turnoPeriodoKey(linhas[index].turno, linhas[index].periodo)
+                              ],
+                              onTap: gradePorDiaTurnoPeriodo[_diasOrdem[i]]?[
+                                        _turnoPeriodoKey(linhas[index].turno, linhas[index].periodo)
+                                      ] ==
+                                      null
+                                  ? () async {
+                                      final callback = onTapLivre;
+                                      if (callback == null) return;
+                                      await callback(
+                                        _AgendaCellTapData(
+                                          data: datasDaSemana[i],
+                                          horarioFaixa: linhas[index].horario,
+                                          turno: linhas[index].turno,
+                                          periodo: linhas[index].periodo,
+                                        ),
+                                      );
+                                    }
+                                  : null,
+                            ),
+                          ),
+                      ],
+                    ),
                   ],
-                ),
-              ],
-            ],
-          ),
+                ],
+              ),
+            );
+          },
         ),
       ],
     );

@@ -7,9 +7,7 @@ import '../../domain/reserva_models.dart';
 import '../../domain/reserva_service.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
-import '../../../../shared/widgets/horizontal_scroll_hint.dart';
 import '../../../../core/services/user_context_provider.dart';
-import '../../../../shared/widgets/page_status_view.dart';
 
 class AulasPraticasPage extends StatefulWidget {
   const AulasPraticasPage({super.key});
@@ -42,12 +40,8 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   ];
 
   final ReservaRepository _reservaRepository = ReservaRepository();
-  final List<ReservaLaboratorio> _reservas = List<ReservaLaboratorio>.of(
-    ReservaService.defaultReservas(DateTime.now().month),
-    growable: true,
-  );
-  bool _isLoading = true;
-  String? _loadError;
+  final List<ReservaLaboratorio> _reservas =
+      ReservaService.defaultReservas(DateTime.now().month);
 
   String _laboratorioSelecionado = _laboratorios.first;
   int _mesSelecionado = DateTime.now().month;
@@ -60,29 +54,13 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   }
 
   Future<void> _loadData() async {
+    final list = await _reservaRepository.loadReservas();
+    if (list.isEmpty) return;
     setState(() {
-      _isLoading = true;
-      _loadError = null;
+      _reservas
+        ..clear()
+        ..addAll(list);
     });
-    try {
-      final list = await _reservaRepository.loadReservas();
-      if (!mounted) return;
-      setState(() {
-        if (list.isNotEmpty) {
-          _reservas
-            ..clear()
-            ..addAll(list);
-        }
-        _isLoading = false;
-      });
-    } catch (error, stackTrace) {
-      AppEventLogger.error('reservas_load_error', error, stackTrace: stackTrace);
-      if (!mounted) return;
-      setState(() {
-        _isLoading = false;
-        _loadError = 'Nao foi possivel carregar as reservas.';
-      });
-    }
   }
 
   void _saveData() {
@@ -96,6 +74,28 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       return _laboratorioSelecionado;
     }
     return _laboratorios.first;
+  }
+
+  String get _diaSemanaAbreviadoDoDiaSelecionado {
+    // Segunda = 1, Domingo = 7
+    const dias = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+    final data = DateTime(DateTime.now().year, _mesSelecionado, _diaSelecionado);
+    // DateTime.weekday: segunda=1, domingo=7
+    return dias[data.weekday - 1];
+  }
+
+  String get _diaSemanaCompletoDoDiaSelecionado {
+    const dias = [
+      'Segunda-feira',
+      'Terça-feira',
+      'Quarta-feira',
+      'Quinta-feira',
+      'Sexta-feira',
+      'Sábado',
+      'Domingo',
+    ];
+    final data = DateTime(DateTime.now().year, _mesSelecionado, _diaSelecionado);
+    return dias[data.weekday - 1];
   }
 
   List<ReservaLaboratorio> get _reservasDoLaboratorio =>
@@ -119,17 +119,6 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
     if (!hasAccess) {
       return const _AccessDenied();
-    }
-
-    if (_isLoading) {
-      return const PageStatusView.loading(title: 'Carregando reservas...');
-    }
-
-    if (_loadError != null) {
-      return PageStatusView.error(
-        subtitle: _loadError,
-        onAction: _loadData,
-      );
     }
 
     final podeEditar = ReservaService.canEdit(role);
@@ -312,6 +301,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       _showInfo('Reserva removida.');
     } catch (error, stackTrace) {
       AppEventLogger.error('reserva_error', error, stackTrace: stackTrace);
+
       _showError('Não foi possível concluir a operação. Tente novamente.');
     }
   }
@@ -369,55 +359,11 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     AppFeedbackService.info(context, message);
   }
 
+
   void _showError(String message) {
     if (!mounted) return;
     AppFeedbackService.error(context, message);
   }
-
-  String get _diaSemanaAbreviadoDoDiaSelecionado {
-    final weekday = DateTime(DateTime.now().year, _mesSelecionado, _diaSelecionado).weekday;
-    switch (weekday) {
-      case DateTime.monday:
-        return 'Seg';
-      case DateTime.tuesday:
-        return 'Ter';
-      case DateTime.wednesday:
-        return 'Qua';
-      case DateTime.thursday:
-        return 'Qui';
-      case DateTime.friday:
-        return 'Sex';
-      case DateTime.saturday:
-        return 'Sáb';
-      case DateTime.sunday:
-        return 'Dom';
-      default:
-        return '-';
-    }
-  }
-
-  String get _diaSemanaCompletoDoDiaSelecionado {
-    final weekday = DateTime(DateTime.now().year, _mesSelecionado, _diaSelecionado).weekday;
-    switch (weekday) {
-      case DateTime.monday:
-        return 'segunda-feira';
-      case DateTime.tuesday:
-        return 'terça-feira';
-      case DateTime.wednesday:
-        return 'quarta-feira';
-      case DateTime.thursday:
-        return 'quinta-feira';
-      case DateTime.friday:
-        return 'sexta-feira';
-      case DateTime.saturday:
-        return 'sábado';
-      case DateTime.sunday:
-        return 'domingo';
-      default:
-        return 'dia inválido';
-    }
-  }
-
 }
 
 class _FiltroLabRow extends StatelessWidget {
@@ -434,7 +380,7 @@ class _FiltroLabRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      initialValue: laboratorioSelecionado,
+      value: laboratorioSelecionado,
       decoration: const InputDecoration(labelText: 'Laboratório'),
       items: laboratorios.map((lab) => DropdownMenuItem(value: lab, child: Text(lab))).toList(),
       onChanged: (value) {
@@ -458,7 +404,7 @@ class _FiltroPeriodoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<int>(
-      initialValue: mesSelecionado,
+      value: mesSelecionado,
       decoration: const InputDecoration(labelText: 'Mês'),
       items: [
         for (var i = 0; i < meses.length; i++)
@@ -543,7 +489,6 @@ class _MapaSemanal extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final linhas = _gerarLinhasGrade();
     final diasDoMesDaSemana = _diasDoMesDaSemanaSelecionada();
-    final shouldShowScrollHint = MediaQuery.of(context).size.width < 960;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -563,12 +508,6 @@ class _MapaSemanal extends StatelessWidget {
           style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
         ),
         const SizedBox(height: 14),
-        if (shouldShowScrollHint) ...[
-          const HorizontalScrollHint(
-            message: 'Arraste lateralmente para ver todos os dias e horários.',
-          ),
-          const SizedBox(height: 10),
-        ],
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: _GradeSemanal(
@@ -623,49 +562,52 @@ class _GradeSemanal extends StatelessWidget {
   final bool podeEditar;
   final Future<void> Function(String diaSemana, Turno turno, int periodo, ReservaLaboratorio? reservaAtual) onTapCelula;
 
-  static const double _dayColumnWidth = 156;
-  static const double _rowHeight = 84;
+  static const double _rowHeight = 90;
+  static const double _columnWidth = 140.0;
 
   @override
   Widget build(BuildContext context) {
+    final dayColumnWidth = _columnWidth;
+    final totalWidth = dayColumnWidth * diasAbreviados.length;
+
     return Container(
-      decoration: BoxDecoration(
-        color: SigadColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: SigadColors.divider),
-      ),
-      child: Column(
-        children: [
-          for (var index = 0; index < linhas.length; index++) ...[
-            if (index == 0 || linhas[index - 1].turno != linhas[index].turno)
-              _TurnoDividerRow(
-                width: _dayColumnWidth * diasAbreviados.length,
-                turno: linhas[index].turno,
-              ),
-            Row(
-              children: [
-                for (var dayIndex = 0; dayIndex < diasAbreviados.length; dayIndex++)
-                  _GradeReservaCell(
-                    width: _dayColumnWidth,
-                    height: _rowHeight,
-                    horario: linhas[index].horario,
+          decoration: BoxDecoration(
+            color: SigadColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: SigadColors.divider),
+          ),
+          child: Column(
+            children: [
+              for (var index = 0; index < linhas.length; index++) ...[
+                if (index == 0 || linhas[index - 1].turno != linhas[index].turno)
+                  _TurnoDividerRow(
+                width: totalWidth,
                     turno: linhas[index].turno,
-                    periodo: linhas[index].periodo,
-                    diaSemana: diasAbreviados[dayIndex],
-                    diaDoMes: diasDoMes[dayIndex],
-                    reserva: reservaPara(
-                      diasAbreviados[dayIndex],
-                      linhas[index].turno,
-                      linhas[index].periodo,
-                    ),
-                    podeEditar: podeEditar,
-                    onTapCelula: onTapCelula,
                   ),
+                Row(
+                  children: [
+                    for (var dayIndex = 0; dayIndex < diasAbreviados.length; dayIndex++)
+                      _GradeReservaCell(
+                        width: dayColumnWidth,
+                        height: _rowHeight,
+                        horario: linhas[index].horario,
+                        turno: linhas[index].turno,
+                        periodo: linhas[index].periodo,
+                        diaSemana: diasAbreviados[dayIndex],
+                        diaDoMes: diasDoMes[dayIndex],
+                        reserva: reservaPara(
+                          diasAbreviados[dayIndex],
+                          linhas[index].turno,
+                          linhas[index].periodo,
+                        ),
+                        podeEditar: podeEditar,
+                        onTapCelula: onTapCelula,
+                      ),
+                  ],
+                ),
               ],
-            ),
-          ],
-        ],
-      ),
+            ],
+          ),
     );
   }
 }
@@ -755,7 +697,7 @@ class _GradeReservaCell extends StatelessWidget {
         child: Container(
         width: width,
         height: height,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        padding: EdgeInsets.zero,
         decoration: BoxDecoration(
           color: background,
           border: Border(
@@ -780,9 +722,10 @@ class _GradeReservaCell extends StatelessWidget {
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: SigadColors.brandDark,
                     fontWeight: FontWeight.w700,
+                    fontSize: 10,
                   ),
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 1),
             Row(
               children: [
                 Expanded(
@@ -793,12 +736,13 @@ class _GradeReservaCell extends StatelessWidget {
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: SigadColors.muted,
                           fontWeight: FontWeight.w600,
+                          fontSize: 10,
                         ),
                   ),
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(width: 2),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                   decoration: BoxDecoration(
                     color: turno.chipBackground,
                     borderRadius: BorderRadius.circular(10),
@@ -808,21 +752,22 @@ class _GradeReservaCell extends StatelessWidget {
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: turno.chipTextColor,
                           fontWeight: FontWeight.w700,
+                          fontSize: 10,
                         ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 1),
             Flexible(
               child: Row(
                 children: [
                   Icon(
                     livre ? Icons.check_circle_outline : Icons.event_busy_outlined,
-                    size: 14,
+                    size: 12,
                     color: tone,
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: 2),
                   Expanded(
                     child: Text(
                       livre ? 'Livre' : 'Reservado',
@@ -831,6 +776,7 @@ class _GradeReservaCell extends StatelessWidget {
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                             fontWeight: FontWeight.w700,
                             color: tone,
+                            fontSize: 10,
                           ),
                     ),
                   ),
@@ -838,7 +784,7 @@ class _GradeReservaCell extends StatelessWidget {
               ),
             ),
             if (!livre) ...[
-              const SizedBox(height: 2),
+              const SizedBox(height: 1),
               Flexible(
                 child: Text(
                   reserva!.professor,
@@ -847,6 +793,7 @@ class _GradeReservaCell extends StatelessWidget {
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: SigadColors.brandDark,
                         fontWeight: FontWeight.w600,
+                        fontSize: 10,
                       ),
                 ),
               ),
@@ -858,6 +805,8 @@ class _GradeReservaCell extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: SigadColors.brandDark,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 10,
                         ),
                   ),
                 ),
