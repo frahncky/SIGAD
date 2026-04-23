@@ -65,6 +65,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
   void _saveData() {
     _reservaRepository.saveReservas(_reservas);
+    _showInfo('Reservas salvas com sucesso.');
   }
 
   int get _semanaSelecionada => ((_diaSelecionado - 1) ~/ 7) + 1;
@@ -116,6 +117,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     final userContext = context.watch<UserContextProvider>();
     final role = userContext.userRole;
     final hasAccess = ReservaService.canAccess(role);
+    final podeEditar = ReservaService.canEdit(role);
 
     if (!hasAccess) {
       return const _AccessDenied();
@@ -165,6 +167,10 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                   ],
                 ),
                 const SizedBox(height: 10),
+                Text(
+                  'Visualização da Grade Semanal',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
                 _SelecaoDiaMesRow(
                   diaSelecionado: _diaSelecionado,
                   diasNoMes: _diasNoMesSelecionado,
@@ -562,8 +568,8 @@ class _GradeSemanal extends StatelessWidget {
   final bool podeEditar;
   final Future<void> Function(String diaSemana, Turno turno, int periodo, ReservaLaboratorio? reservaAtual) onTapCelula;
 
-  static const double _rowHeight = 90;
-  static const double _columnWidth = 140.0;
+  static const double _rowHeight = 60;
+  static const double _columnWidth = 80.0;
 
   @override
   Widget build(BuildContext context) {
@@ -571,43 +577,43 @@ class _GradeSemanal extends StatelessWidget {
     final totalWidth = dayColumnWidth * diasAbreviados.length;
 
     return Container(
-          decoration: BoxDecoration(
-            color: SigadColors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: SigadColors.divider),
-          ),
-          child: Column(
-            children: [
-              for (var index = 0; index < linhas.length; index++) ...[
-                if (index == 0 || linhas[index - 1].turno != linhas[index].turno)
-                  _TurnoDividerRow(
+      decoration: BoxDecoration(
+        color: SigadColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: SigadColors.divider),
+      ),
+      child: Column(
+        children: [
+          for (var index = 0; index < linhas.length; index++) ...[
+            if (index == 0 || linhas[index - 1].turno != linhas[index].turno)
+              _TurnoDividerRow(
                 width: totalWidth,
+                turno: linhas[index].turno,
+              ),
+            Row(
+              children: [
+                for (var dayIndex = 0; dayIndex < diasAbreviados.length; dayIndex++)
+                  _GradeReservaCell(
+                    width: dayColumnWidth,
+                    height: _rowHeight,
+                    horario: linhas[index].horario,
                     turno: linhas[index].turno,
+                    periodo: linhas[index].periodo,
+                    diaSemana: diasAbreviados[dayIndex],
+                    diaDoMes: diasDoMes[dayIndex],
+                    reserva: reservaPara(
+                      diasAbreviados[dayIndex],
+                      linhas[index].turno,
+                      linhas[index].periodo,
+                    ),
+                    podeEditar: podeEditar,
+                    onTapCelula: onTapCelula,
                   ),
-                Row(
-                  children: [
-                    for (var dayIndex = 0; dayIndex < diasAbreviados.length; dayIndex++)
-                      _GradeReservaCell(
-                        width: dayColumnWidth,
-                        height: _rowHeight,
-                        horario: linhas[index].horario,
-                        turno: linhas[index].turno,
-                        periodo: linhas[index].periodo,
-                        diaSemana: diasAbreviados[dayIndex],
-                        diaDoMes: diasDoMes[dayIndex],
-                        reserva: reservaPara(
-                          diasAbreviados[dayIndex],
-                          linhas[index].turno,
-                          linhas[index].periodo,
-                        ),
-                        podeEditar: podeEditar,
-                        onTapCelula: onTapCelula,
-                      ),
-                  ],
-                ),
               ],
-            ],
-          ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -715,32 +721,19 @@ class _GradeReservaCell extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(
-              '$diaSemana · $diaDoMes',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: SigadColors.brandDark,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 10,
-                  ),
-            ),
-            const SizedBox(height: 1),
             Row(
               children: [
-                Expanded(
-                  child: Text(
-                    horario,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: SigadColors.muted,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 10,
-                        ),
-                  ),
+                Text(
+                  '$diaSemana · $diaDoMes',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: SigadColors.brandDark,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 10,
+                      ),
                 ),
-                const SizedBox(width: 2),
+                const SizedBox(width: 4),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                   decoration: BoxDecoration(
@@ -757,6 +750,17 @@ class _GradeReservaCell extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 1),
+            Text(
+              horario,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: SigadColors.muted,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 10,
+                  ),
             ),
             const SizedBox(height: 1),
             Flexible(
