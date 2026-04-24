@@ -24,7 +24,11 @@ Future<void> main() async {
   );
 
   FlutterError.onError = (details) {
-    AppEventLogger.error('flutter_framework_error', details.exception, stackTrace: details.stack);
+    AppEventLogger.error(
+      'flutter_framework_error',
+      details.exception,
+      stackTrace: details.stack ?? StackTrace.current,
+    );
   };
 
   PlatformDispatcher.instance.onError = (error, stackTrace) {

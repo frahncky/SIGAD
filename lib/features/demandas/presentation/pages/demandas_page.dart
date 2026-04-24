@@ -175,95 +175,103 @@ class _DemandasPageState extends State<DemandasPage> {
     final textTheme = Theme.of(context).textTheme;
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) => Container(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Filtros', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  IconButton(
-                    tooltip: 'Fechar filtros',
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              Text('Status', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                children: ['Todas', ...DemandasService.statusDisponiveis]
-                    .map((status) => FilterChip(
-                      label: Text(status),
-                      selected: _filtroStatus == status,
-                      onSelected: (selected) {
-                        setModalState(() => _filtroStatus = selected ? status : 'Todas');
-                      },
-                    ))
-                    .toList(),
-              ),
-              const SizedBox(height: 24),
-              Text('Prioridade', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                children: ['Todas', ...DemandasService.prioridades]
-                    .map((prioridade) => FilterChip(
-                      label: Text(prioridade),
-                      selected: _filtroPrioridade == prioridade,
-                      onSelected: (selected) {
-                        setModalState(() => _filtroPrioridade = selected ? prioridade : 'Todas');
-                      },
-                    ))
-                    .toList(),
-              ),
-              const SizedBox(height: 24),
-              Text('Ordenação', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                children: DemandasService.opcoesOrdenacao
-                    .map(
-                      (ordem) => ChoiceChip(
-                        label: Text(ordem),
-                        selected: _ordemSelecionada == ordem,
-                        onSelected: (selected) {
-                          if (selected) {
-                            setModalState(() => _ordemSelecionada = ordem);
-                          }
-                        },
-                      ),
-                    )
-                    .toList(),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        _limparFiltros();
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Limpar'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
+        builder: (context, setModalState) => SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 24,
+              right: 24,
+              top: 24,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Filtros', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                    IconButton(
+                      tooltip: 'Fechar filtros',
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Aplicar'),
+                      icon: const Icon(Icons.close),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+                const SizedBox(height: 15),
+                Text('Status', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  children: ['Todas', ...DemandasService.statusDisponiveis]
+                      .map((status) => FilterChip(
+                        label: Text(status),
+                        selected: _filtroStatus == status,
+                        onSelected: (selected) {
+                          setModalState(() => _filtroStatus = selected ? status : 'Todas');
+                        },
+                      ))
+                      .toList(),
+                ),
+                const SizedBox(height: 15),
+                Text('Prioridade', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  children: ['Todas', ...DemandasService.prioridades]
+                      .map((prioridade) => FilterChip(
+                        label: Text(prioridade),
+                        selected: _filtroPrioridade == prioridade,
+                        onSelected: (selected) {
+                          setModalState(() => _filtroPrioridade = selected ? prioridade : 'Todas');
+                        },
+                      ))
+                      .toList(),
+                ),
+                const SizedBox(height: 15),
+                Text('Ordenação', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  children: DemandasService.opcoesOrdenacao
+                      .map(
+                        (ordem) => ChoiceChip(
+                          label: Text(ordem),
+                          selected: _ordemSelecionada == ordem,
+                          onSelected: (selected) {
+                            if (selected) {
+                              setModalState(() => _ordemSelecionada = ordem);
+                            }
+                          },
+                        ),
+                      )
+                      .toList(),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          _limparFiltros();
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Limpar'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Aplicar'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

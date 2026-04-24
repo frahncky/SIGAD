@@ -16,61 +16,75 @@ class AtividadesPage extends StatefulWidget {
 
 class _AtividadesPageState extends State<AtividadesPage> {
     void _showFiltroAtividades(BuildContext context) {
-      showModalBottomSheet(
-        context: context,
-        builder: (context) => Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Filtrar atividades', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              ...AtividadesService.statusAtividade.map((status) => RadioListTile<String>(
-                title: Text(status),
-                value: status,
-                groupValue: _filtro,
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() => _filtro = value);
-                    Navigator.pop(context);
-                  }
-                },
-              )),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        setState(() => _filtro = 'Todas');
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Limpar'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Aplicar'),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          left: 24,
+          right: 24,
+          top: 24,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
         ),
-      );
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Filtrar atividades', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Flexible(
+              child: ListView(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                children: [
+                  ...AtividadesService.statusAtividade.map((status) => RadioListTile<String>(
+                    title: Text(status),
+                    value: status,
+                    groupValue: _filtro,
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() => _filtro = value);
+                        Navigator.pop(context);
+                      }
+                    },
+                  )),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {
+                      setState(() => _filtro = 'Todas');
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Limpar'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Aplicar'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
     }
   String _busca = '';
   String _filtro = 'Todas';
