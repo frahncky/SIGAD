@@ -700,7 +700,7 @@ class _GradeReservaCell extends StatelessWidget {
         child: Container(
         width: width,
         height: height,
-        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
         decoration: BoxDecoration(
           color: background,
           border: Border(

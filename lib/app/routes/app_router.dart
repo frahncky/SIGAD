@@ -27,15 +27,15 @@ abstract final class AppRouter {
         return _shell(routeName, const DashboardPage());
       case AppRoutes.batePapo:
         return _shell(routeName, const BatePapoPage());
+      case AppRoutes.cargaDocente:
+        return _shell(routeName, const CargaDocentePage());  
       case AppRoutes.demandas:
         return _shell(routeName, const DemandasPage());
       case AppRoutes.kanban:
         return _shell(routeName, const KanbanPage());
       case AppRoutes.aulasPraticas:
         return _shell(routeName, const AulasPraticasPage());
-      case AppRoutes.cargaDocente:
-        return _shell(routeName, const CargaDocentePage());
-      case AppRoutes.professores:
+       case AppRoutes.professores:
         return _shell(routeName, const ProfessoresPage());
       case AppRoutes.atividades:
         return _shell(routeName, const AtividadesPage());
