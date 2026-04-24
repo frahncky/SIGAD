@@ -11,6 +11,8 @@ import 'core/services/user_context_provider.dart';
 import 'features/configuracoes/data/configuracoes_repository.dart';
 import 'features/carga_docente/data/seed_docentes.dart';
 
+
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
