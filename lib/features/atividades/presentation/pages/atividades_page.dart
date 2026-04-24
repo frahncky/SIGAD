@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
-import '../../../../shared/widgets/horizontal_scroll_hint.dart';
 import '../../../../shared/widgets/page_status_view.dart';
 import '../../data/atividade_repository.dart';
 import '../../domain/atividade_models.dart';
@@ -16,6 +15,63 @@ class AtividadesPage extends StatefulWidget {
 }
 
 class _AtividadesPageState extends State<AtividadesPage> {
+    void _showFiltroAtividades(BuildContext context) {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) => Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Filtrar atividades', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              ...AtividadesService.statusAtividade.map((status) => RadioListTile<String>(
+                title: Text(status),
+                value: status,
+                groupValue: _filtro,
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() => _filtro = value);
+                    Navigator.pop(context);
+                  }
+                },
+              )),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        setState(() => _filtro = 'Todas');
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Limpar'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Aplicar'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    }
   String _busca = '';
   String _filtro = 'Todas';
   bool _isLoading = true;
@@ -79,7 +135,6 @@ class _AtividadesPageState extends State<AtividadesPage> {
   @override
   Widget build(BuildContext context) {
     final atividadesFiltradas = _atividadesFiltradas;
-    final shouldShowScrollHint = MediaQuery.of(context).size.width < 640;
     return Scaffold(
       body: Column(
         children: [
@@ -94,40 +149,38 @@ class _AtividadesPageState extends State<AtividadesPage> {
                   atividadesPendentes: _atividadesPendentes,
                 ),
                 const SizedBox(height: 16),
-                TextField(
-                  onChanged: (value) => setState(() => _busca = value),
-                  decoration: const InputDecoration(
-                    hintText: 'Buscar por título, descrição ou responsável',
-                    prefixIcon: Icon(Icons.search_outlined),
-                  ),
+                Row(
+                  children: [
+                    // Campo de busca
+                    Expanded(
+                      flex: 2,
+                      child: TextField(
+                        onChanged: (value) => setState(() => _busca = value),
+                        decoration: const InputDecoration(
+                          hintText: 'Buscar por título, descrição ou responsável',
+                          prefixIcon: Icon(Icons.search_outlined),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    // Botão de filtro funcional
+                    SizedBox(
+                      width: 48,
+                      height: 48,
+                      child: OutlinedButton(
+                        onPressed: () => _showFiltroAtividades(context),
+                        style: OutlinedButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          minimumSize: const Size(48, 48),
+                        ),
+                        child: const Icon(Icons.filter_list),
+                      ),
+                    ),
+                                         
+                  ],
                 ),
-                const SizedBox(height: 16),
-                if (shouldShowScrollHint) ...[
-                  const HorizontalScrollHint(
-                    message: 'Arraste lateralmente para ver todos os filtros.',
-                  ),
-                  const SizedBox(height: 10),
-                ],
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      'Todas',
-                      ...AtividadesService.statusAtividade,
-                    ]
-                        .map((status) => Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: FilterChip(
-                                label: Text(status),
-                                selected: _filtro == status,
-                                onSelected: (selected) {
-                                  setState(() => _filtro = selected ? status : 'Todas');
-                                },
-                              ),
-                            ))
-                        .toList(),
-                  ),
-                ),
+                //const SizedBox(height: 5),
+                // Linha de filtros removida
               ],
             ),
           ),
