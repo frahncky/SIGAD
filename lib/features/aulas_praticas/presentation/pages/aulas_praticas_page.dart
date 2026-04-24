@@ -128,10 +128,11 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         children: [
           const _AmbientBackground(),
           SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 12),
                 Row(
                   children: [
                     Expanded(
@@ -437,7 +438,8 @@ class _SelecaoDiaMesRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(10),
+    //  margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+      padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
         color: SigadColors.surface,
         borderRadius: BorderRadius.circular(12),
@@ -562,7 +564,7 @@ class _GradeSemanal extends StatelessWidget {
   final bool podeEditar;
   final Future<void> Function(String diaSemana, Turno turno, int periodo, ReservaLaboratorio? reservaAtual) onTapCelula;
 
-  static const double _rowHeight = 60;
+  static const double _rowHeight = 70;
   static const double _columnWidth = 80.0;
 
   @override
@@ -571,9 +573,10 @@ class _GradeSemanal extends StatelessWidget {
     final totalWidth = dayColumnWidth * diasAbreviados.length;
 
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       decoration: BoxDecoration(
         color: SigadColors.surface,
-        borderRadius: BorderRadius.circular(16),
+        //borderRadius: BorderRadius.circular(16),
         border: Border.all(color: SigadColors.divider),
       ),
       child: Column(
@@ -697,7 +700,7 @@ class _GradeReservaCell extends StatelessWidget {
         child: Container(
         width: width,
         height: height,
-        padding: EdgeInsets.zero,
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
         decoration: BoxDecoration(
           color: background,
           border: Border(
@@ -753,7 +756,7 @@ class _GradeReservaCell extends StatelessWidget {
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: SigadColors.muted,
                     fontWeight: FontWeight.w600,
-                    fontSize: 10,
+                    fontSize: 8,
                   ),
             ),
             const SizedBox(height: 1),
@@ -774,7 +777,7 @@ class _GradeReservaCell extends StatelessWidget {
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                             fontWeight: FontWeight.w700,
                             color: tone,
-                            fontSize: 10,
+                            fontSize: 8,
                           ),
                     ),
                   ),
@@ -791,7 +794,7 @@ class _GradeReservaCell extends StatelessWidget {
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: SigadColors.brandDark,
                         fontWeight: FontWeight.w600,
-                        fontSize: 10,
+                        fontSize: 8,
                       ),
                 ),
               ),
@@ -804,7 +807,7 @@ class _GradeReservaCell extends StatelessWidget {
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: SigadColors.brandDark,
                           fontWeight: FontWeight.w400,
-                          fontSize: 10,
+                          fontSize: 8,
                         ),
                   ),
                 ),
