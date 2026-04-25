@@ -17,14 +17,14 @@ class AulasPraticasPage extends StatefulWidget {
 }
 
 class _AulasPraticasPageState extends State<AulasPraticasPage> {
-  static const List<String> _laboratorios = [
+  static const List<String> _laboratoriosDefault = [
     'Lab Química 1',
     'Lab Biologia 2',
     'Lab Física 1',
     'Lab Automação',
   ];
 
-  static const List<String> _meses = [
+  static const List<String> _mesesDefault = [
     'Janeiro',
     'Fevereiro',
     'Março',
@@ -43,7 +43,9 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   final List<ReservaLaboratorio> _reservas =
       ReservaService.defaultReservas(DateTime.now().month);
 
-  String _laboratorioSelecionado = _laboratorios.first;
+  final TransformationController _transformationController = TransformationController();
+
+  String? _laboratorioSelecionado;
   int _mesSelecionado = DateTime.now().month;
   int _diaSelecionado = DateTime.now().day;
 
@@ -51,6 +53,12 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   void initState() {
     super.initState();
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    _transformationController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -70,10 +78,10 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   int get _semanaSelecionada => ((_diaSelecionado - 1) ~/ 7) + 1;
 
   String get _laboratorioSelecionadoValido {
-    if (_laboratorios.contains(_laboratorioSelecionado)) {
-      return _laboratorioSelecionado;
+    if (_laboratorioSelecionado != null && _laboratoriosDefault.contains(_laboratorioSelecionado)) {
+      return _laboratorioSelecionado!;
     }
-    return _laboratorios.first;
+    return _laboratoriosDefault.first;
   }
 
   String get _diaSemanaAbreviadoDoDiaSelecionado {
@@ -139,7 +147,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                       flex: 3,
                       child: _FiltroLabRow(
                         laboratorioSelecionado: _laboratorioSelecionadoValido,
-                        laboratorios: _laboratorios,
+                        laboratorios: _laboratoriosDefault,
                         onChanged: (value) => setState(() => _laboratorioSelecionado = value),
                       ),
                     ),
@@ -148,7 +156,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                       flex: 2,
                       child: _FiltroPeriodoRow(
                         mesSelecionado: _mesSelecionado,
-                        meses: _meses,
+                        meses: _mesesDefault,
                         onMesChanged: (value) {
                           setState(() {
                             _mesSelecionado = value;
@@ -174,7 +182,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                 const SizedBox(height: 12),
                 _MapaSemanal(
                   mesSelecionado: _mesSelecionado,
-                  mesLabel: ReservaService.nomeMes(_mesSelecionado, _meses),
+                  mesLabel: ReservaService.nomeMes(_mesSelecionado, _mesesDefault),
                   semanaLabel: ReservaService.descricaoSemana(_semanaSelecionada),
                   diaSelecionado: _diaSelecionado,
                   diaSemanaSelecionado: _diaSemanaAbreviadoDoDiaSelecionado,
@@ -279,7 +287,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       final confirmarExclusao = await _confirmarAcao(
         titulo: 'Excluir reserva',
         mensagem:
-          'Deseja remover sua reserva de ${ReservaService.diaCompleto(diaSemana)}, ${turno.horarioDo(periodo)}, ${ReservaService.descricaoSemana(_semanaSelecionada)} de ${ReservaService.nomeMes(_mesSelecionado, _meses)} no $_laboratorioSelecionadoValido?',
+          'Deseja remover sua reserva de ${ReservaService.diaCompleto(diaSemana)}, ${turno.horarioDo(periodo)}, ${ReservaService.descricaoSemana(_semanaSelecionada)} de ${ReservaService.nomeMes(_mesSelecionado, _mesesDefault)} no $_laboratorioSelecionadoValido?',
         confirmarLabel: 'Excluir',
         isDelete: true,
       );
@@ -439,23 +447,44 @@ class _SelecaoDiaMesRow extends StatelessWidget {
     return Container(
       width: double.infinity,
     //  margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-      padding: const EdgeInsets.all(5),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: SigadColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: SigadColors.divider),
       ),
       child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: [
-          for (var dia = 1; dia <= diasNoMes; dia++)
-            ChoiceChip(
-              label: Text('$dia'),
-              selected: dia == diaSelecionado,
-              onSelected: (_) => onDiaChanged(dia),
+        spacing: 6,
+        runSpacing: 6,
+        children: List.generate(diasNoMes, (index) {
+          final dia = index + 1;
+          final isSelected = dia == diaSelecionado;
+          return InkWell(
+            onTap: () => onDiaChanged(dia),
+            borderRadius: BorderRadius.circular(6),
+            child: Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: isSelected ? SigadColors.brand : Colors.transparent,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: isSelected ? SigadColors.brand : SigadColors.divider,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  '$dia',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    color: isSelected ? Colors.white : SigadColors.ink,
+                  ),
+                ),
+              ),
             ),
-        ],
+          );
+        }),
       ),
     );
   }
@@ -501,26 +530,18 @@ class _MapaSemanal extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          '$semanaLabel de $mesLabel',
-          style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          'Dia selecionado: $diaSelecionado ($diaSemanaSelecionado - $diaSemanaSelecionadoCompleto)',
+          '$semanaLabel de $mesLabel · Dia $diaSelecionado ($diaSemanaSelecionado)',
           style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
         ),
         const SizedBox(height: 14),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: _GradeSemanal(
-            diasAbreviados: _diasAbreviados,
-            diasDoMes: diasDoMesDaSemana,
-            diaSemanaSelecionado: diaSemanaSelecionado,
-            linhas: linhas,
-            reservaPara: _reservaPara,
-            podeEditar: podeEditar,
-            onTapCelula: onTapCelula,
-          ),
+        _GradeSemanal(
+          diasAbreviados: _diasAbreviados,
+          diasDoMes: diasDoMesDaSemana,
+          diaSemanaSelecionado: diaSemanaSelecionado,
+          linhas: linhas,
+          reservaPara: _reservaPara,
+          podeEditar: podeEditar,
+          onTapCelula: onTapCelula,
         ),
       ],
     );
@@ -564,47 +585,42 @@ class _GradeSemanal extends StatelessWidget {
   final bool podeEditar;
   final Future<void> Function(String diaSemana, Turno turno, int periodo, ReservaLaboratorio? reservaAtual) onTapCelula;
 
-  static const double _rowHeight = 70;
-  static const double _columnWidth = 80.0;
+  static const double _rowHeight = 60;
 
   @override
   Widget build(BuildContext context) {
-    final dayColumnWidth = _columnWidth;
-    final totalWidth = dayColumnWidth * diasAbreviados.length;
-
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       decoration: BoxDecoration(
-        color: SigadColors.surface,
-        //borderRadius: BorderRadius.circular(16),
         border: Border.all(color: SigadColors.divider),
+        borderRadius: BorderRadius.circular(8),
       ),
+      clipBehavior: Clip.antiAlias,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           for (var index = 0; index < linhas.length; index++) ...[
             if (index == 0 || linhas[index - 1].turno != linhas[index].turno)
-              _TurnoDividerRow(
-                width: totalWidth,
-                turno: linhas[index].turno,
-              ),
+              _TurnoDividerRow(turno: linhas[index].turno),
             Row(
               children: [
                 for (var dayIndex = 0; dayIndex < diasAbreviados.length; dayIndex++)
-                  _GradeReservaCell(
-                    width: dayColumnWidth,
-                    height: _rowHeight,
-                    horario: linhas[index].horario,
-                    turno: linhas[index].turno,
-                    periodo: linhas[index].periodo,
-                    diaSemana: diasAbreviados[dayIndex],
-                    diaDoMes: diasDoMes[dayIndex],
-                    reserva: reservaPara(
-                      diasAbreviados[dayIndex],
-                      linhas[index].turno,
-                      linhas[index].periodo,
+                  Expanded(
+                    child: _GradeReservaCell(
+                      height: _rowHeight,
+                      horario: linhas[index].horario,
+                      turno: linhas[index].turno,
+                      periodo: linhas[index].periodo,
+                      diaSemana: diasAbreviados[dayIndex],
+                      diaDoMes: diasDoMes[dayIndex],
+                      reserva: reservaPara(
+                        diasAbreviados[dayIndex],
+                        linhas[index].turno,
+                        linhas[index].periodo,
+                      ),
+                      podeEditar: podeEditar,
+                      onTapCelula: onTapCelula,
                     ),
-                    podeEditar: podeEditar,
-                    onTapCelula: onTapCelula,
                   ),
               ],
             ),
@@ -617,17 +633,14 @@ class _GradeSemanal extends StatelessWidget {
 
 class _TurnoDividerRow extends StatelessWidget {
   const _TurnoDividerRow({
-    required this.width,
     required this.turno,
   });
 
-  final double width;
   final Turno turno;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: width,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: turno.chipBackground,
@@ -662,7 +675,6 @@ class _TurnoDividerRow extends StatelessWidget {
 
 class _GradeReservaCell extends StatelessWidget {
   const _GradeReservaCell({
-    required this.width,
     required this.height,
     required this.horario,
     required this.turno,
@@ -674,7 +686,6 @@ class _GradeReservaCell extends StatelessWidget {
     required this.onTapCelula,
   });
 
-  final double width;
   final double height;
   final String horario;
   final Turno turno;
@@ -698,7 +709,6 @@ class _GradeReservaCell extends StatelessWidget {
       child: InkWell(
         onTap: podeEditar ? () => onTapCelula(diaSemana, turno, periodo, reserva) : null,
         child: Container(
-        width: width,
         height: height,
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
         decoration: BoxDecoration(
@@ -718,35 +728,37 @@ class _GradeReservaCell extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Text(
-                  '$diaSemana · $diaDoMes',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: SigadColors.brandDark,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 10,
-                      ),
-                ),
-                const SizedBox(width: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                  decoration: BoxDecoration(
-                    color: turno.chipBackground,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    '${turno.shortLabel}$periodo',
+            Expanded(
+              child: Row(
+                children: [
+                  Text(
+                    '$diaSemana · $diaDoMes',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: turno.chipTextColor,
+                          color: SigadColors.brandDark,
                           fontWeight: FontWeight.w700,
-                          fontSize: 10,
+                          fontSize: 9,
                         ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                    decoration: BoxDecoration(
+                      color: turno.chipBackground,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      '${turno.shortLabel}$periodo',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: turno.chipTextColor,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 8,
+                          ),
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 1),
             Text(

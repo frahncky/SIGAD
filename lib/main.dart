@@ -1,4 +1,5 @@
 ﻿import 'dart:ui';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'app/app.dart';
@@ -16,8 +17,10 @@ import 'features/carga_docente/data/seed_docentes.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Carrega docentes de exemplo para testes (apenas em desenvolvimento)
-  await seedDocentes();
+  if (kDebugMode) {
+    // Carrega docentes de exemplo para testes (apenas em desenvolvimento)
+    await seedDocentes();
+  }
   AppObservabilityService.configure(
     enabled: AppRuntimeConfig.enableObservability,
     endpoint: AppRuntimeConfig.observabilityEndpoint,

@@ -2,6 +2,15 @@
 
 Todas as mudanças relevantes neste repositório serão documentadas neste arquivo.
 
+## [v1.2.0] - 2026-04-25
+
+### Alterado
+- Módulo de Aulas Práticas: Refatoração completa da grade semanal para uso de layout flexível (`Expanded`), eliminando a necessidade de zoom e rolagem horizontal.
+- Seletor de Dias: Alterado de lista de rolagem para layout em bloco (`Wrap`), permitindo visualizar todos os dias do mês de uma só vez.
+- UI/UX: Otimização de tamanhos de fonte e densidade de células para melhor legibilidade em dispositivos móveis.
+### Qualidade
+- Validação de usabilidade para visualização direta de Segunda a Sexta sem interações complexas de gesto.
+
 ## [v1.1.0] - 2026-04-19
 
 ### Adicionado

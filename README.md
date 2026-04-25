@@ -142,7 +142,7 @@ Arquitetura e operação detalhadas:
 - Sprint 1: fluxos base e navegacao responsiva concluídos
 - Sprint 2: extracao de camadas (`domain`/`data`) em features principais concluída
 - Sprint 3: concluído (qualidade técnica, cobertura e governança)
-- Sprint 4: concluído (integrações, sessão, observabilidade, resiliência e CI gate)
+- Sprint 4: concluído (integrações, sessão, observabilidadeticas e refatoração responsiva)
 
 ## Ambientes e Flavors
 
