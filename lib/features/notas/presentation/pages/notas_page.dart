@@ -98,7 +98,7 @@ class _NotasPageState extends State<NotasPage> {
               )
             : ListView.separated(
                 itemCount: _notas.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                separatorBuilder: (_, __) => const SizedBox(height: 14),
                 itemBuilder: (context, index) {
                   final nota = _notas[index];
                   return Dismissible(
@@ -108,52 +108,63 @@ class _NotasPageState extends State<NotasPage> {
                       alignment: Alignment.centerRight,
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       color: Colors.red.shade100,
-                      child: const Icon(Icons.delete, color: Colors.red),
+                      child: const Icon(Icons.delete, color: Colors.red, size: 28),
                     ),
                     confirmDismiss: (_) async {
                       _excluirNota(index);
                       return false;
                     },
-                    child: GestureDetector(
-                      onTap: () => _criarOuEditarNota(nota: nota, index: index),
-                      child: Card(
-                        elevation: 3,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                nota.texto,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Icon(Icons.edit, size: 16, color: Colors.grey.shade600),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'Editável',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Icon(Icons.calendar_today, size: 14, color: Colors.grey.shade400),
-                                  const SizedBox(width: 2),
-                                  Text(
-                                    '${nota.data.day.toString().padLeft(2, '0')}/${nota.data.month.toString().padLeft(2, '0')} ${nota.data.hour.toString().padLeft(2, '0')}:${nota.data.minute.toString().padLeft(2, '0')}',
-                                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-                                  ),
-                                ],
-                              ),
-                            ],
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.teal.shade50,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.06),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
                           ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(18.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    nota.texto,
+                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 17),
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.edit_note, color: Colors.teal, size: 26),
+                                  tooltip: 'Editar anotação',
+                                  onPressed: () => _criarOuEditarNota(nota: nota, index: index),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete_outline, color: Colors.red, size: 24),
+                                  tooltip: 'Excluir anotação',
+                                  onPressed: () => _excluirNota(index),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Icon(Icons.calendar_today, size: 15, color: Colors.teal.shade300),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${nota.data.day.toString().padLeft(2, '0')}/${nota.data.month.toString().padLeft(2, '0')} ${nota.data.hour.toString().padLeft(2, '0')}:${nota.data.minute.toString().padLeft(2, '0')}',
+                                  style: TextStyle(fontSize: 13, color: Colors.teal.shade700, fontWeight: FontWeight.w500),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ),
