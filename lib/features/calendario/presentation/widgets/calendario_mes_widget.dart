@@ -30,6 +30,12 @@ class CalendarioMesWidget extends StatelessWidget {
     );
     final hoje = DateTime.now();
 
+    // Filtra feriados do mês atual
+    final feriadosDoMes = feriados.entries
+        .where((e) => e.key.year == mesAtual.year && e.key.month == mesAtual.month)
+        .toList()
+      ..sort((a, b) => a.key.day.compareTo(b.key.day));
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -113,6 +119,45 @@ class CalendarioMesWidget extends StatelessWidget {
             );
           },
         ),
+        if (feriadosDoMes.isNotEmpty) ...[
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Text(
+              'Feriados do mês',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Colors.teal.shade700,
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+          ),
+          ...feriadosDoMes.map((e) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2.0),
+                child: Row(
+                  children: [
+                    Text(
+                      '${e.key.day.toString().padLeft(2, '0')}/${e.key.month.toString().padLeft(2, '0')}',
+                      style: TextStyle(
+                        color: Colors.teal.shade700,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        e.value,
+                        style: TextStyle(
+                          color: Colors.teal.shade900,
+                          fontWeight: FontWeight.normal,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ))
+        ],
       ],
     );
   }
