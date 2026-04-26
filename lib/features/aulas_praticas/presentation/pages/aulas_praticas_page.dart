@@ -8,6 +8,7 @@ import '../../domain/reserva_service.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../widgets/dialog_disciplina_semanas_reserva.dart';
 
 class AulasPraticasPage extends StatefulWidget {
   const AulasPraticasPage({super.key});
@@ -231,10 +232,14 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       if (reservaAtual == null) {
         String? disciplina;
         if (ReservaService.canEdit(role)) {
-          disciplina = await _solicitarDisciplinaProfessor();
-          if (disciplina == null) {
+          final result = await showDialog<Map<String, dynamic>>(
+            context: context,
+            builder: (_) => const DialogDisciplinaSemanasReserva(),
+          );
+          if (result == null) {
             return;
           }
+          disciplina = result['disciplina'] as String?;
         }
 
         final jaOcupado = ReservaService.isSlotOccupied(
@@ -352,21 +357,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     return result ?? false;
   }
 
-  Future<String?> _solicitarDisciplinaProfessor() async {
-    final result = await showDialog<String>(
-      context: context,
-      builder: (_) => const _DialogDisciplinaReserva(),
-    );
 
-    if (result == null) {
-      return null;
-    }
-    if (ReservaService.validateDisciplina(result) != null) {
-      return null;
-    }
-
-    return result.trim();
-  }
 
   void _showInfo(String message) {
     if (!mounted) return;
