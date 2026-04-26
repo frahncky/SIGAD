@@ -357,30 +357,7 @@ class _SideNav extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: _UserCard(userContext: userContext),
             ),
-          const SizedBox(height: 12),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: FilledButton.tonalIcon(
-              onPressed: onQuickAccess,
-              icon: const Icon(Icons.search_outlined),
-              label: const Text('Acesso rápido'),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _CurrentSectionCard(
-              currentRoute: availableItems[selectedIndex < 0 ? 0 : selectedIndex],
-            ),
-          ),
-          const SizedBox(height: 12),
-          Expanded(
-            child: _NavigationList(
-              selectedIndex: selectedIndex,
-              availableItems: availableItems,
-              onSelected: onSelected,
-            ),
-          ),
+          const Spacer(),
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
             child: ListTile(
@@ -425,17 +402,7 @@ class _AppDrawer extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: _UserCard(userContext: userContext),
               ),
-            const SizedBox(height: 8),
-            Expanded(
-              child: _NavigationList(
-                selectedIndex: selectedIndex,
-                availableItems: availableItems,
-                onSelected: (index) {
-                  Navigator.pop(context);
-                  onSelected(index);
-                },
-              ),
-            ),
+            const Spacer(),
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
               child: ListTile(
