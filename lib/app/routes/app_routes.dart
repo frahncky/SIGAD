@@ -10,4 +10,6 @@ abstract final class AppRoutes {
   static const String atividades = '/atividades';
   static const String relatorios = '/relatorios';
   static const String configuracoes = '/configuracoes';
+  static const String notas = '/notas';
+  static const String calendario = '/calendario';
 }

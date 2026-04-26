@@ -1,3 +1,5 @@
+import '../../features/calendario/presentation/pages/calendario_page.dart';
+import '../../features/notas/presentation/pages/notas_page.dart';
 import 'package:flutter/material.dart';
 import '../../features/atividades/presentation/pages/atividades_page.dart';
 import '../../features/carga_docente/presentation/pages/carga_docente_page.dart';
@@ -43,6 +45,10 @@ abstract final class AppRouter {
         return _shell(routeName, const RelatoriosPage());
       case AppRoutes.configuracoes:
         return _shell(routeName, const ConfiguracoesPage());
+      case AppRoutes.notas:
+        return _shell(routeName, const NotasPage());
+      case AppRoutes.calendario:
+        return _shell(routeName, const CalendarioPage());
       default:
         return _shell(AppRoutes.dashboard, const DashboardPage());
     }

@@ -4,7 +4,6 @@ import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/models/navigation_item.dart';
 import '../../../../core/navigation/navigation_items.dart';
-import '../../../../core/services/chat_provider.dart';
 import '../../../../core/services/notificacoes_service.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../../../../shared/widgets/brand_title.dart';
@@ -25,22 +24,15 @@ class HomeShellPage extends StatelessWidget {
       builder: (context, constraints) {
         final isWide = constraints.maxWidth >= 1024;
         final userContext = context.watch<UserContextProvider>();
-        final chatProvider = context.watch<ChatProvider>();
         final userRole = userContext.userRole;
-        final currentUser = userContext.currentUser;
-        final unreadChatCount = currentUser == null ? 0 : chatProvider.unreadCountForUser(currentUser.email);
+        // unreadChatCount removido pois não é mais utilizado
         final notifCount = NotificacoesService.porRole(userRole).length;
 
         final availableItems = userRole == null
             ? kNavigationItems
             : kNavigationItems.where((item) => item.isAvailableFor(userRole)).toList();
         final currentItem = availableItems.where((item) => item.route == currentRoute).firstOrNull;
-        final mobilePrimaryItems = _mobilePrimaryItems(availableItems);
-
         final selectedIndex = availableItems.indexWhere((item) => item.route == currentRoute);
-        final selectedMobileIndex = mobilePrimaryItems.indexWhere(
-          (item) => item.matchesRoute(currentRoute),
-        );
 
         return Scaffold(
           drawer: isWide
@@ -80,30 +72,19 @@ class HomeShellPage extends StatelessWidget {
                     const SizedBox(width: 8),
                   ],
                 ),
-          bottomNavigationBar: isWide || mobilePrimaryItems.length < 2
+          bottomNavigationBar: isWide
               ? null
               : NavigationBar(
-                  selectedIndex: selectedMobileIndex < 0
-                      ? mobilePrimaryItems.length - 1
-                      : selectedMobileIndex,
+                  selectedIndex: _bottomNavIndex(),
                   onDestinationSelected: (index) {
-                    final item = mobilePrimaryItems[index];
-                    if (item.isMore) {
-                      _showQuickAccess(context, availableItems);
-                      return;
-                    }
-                    _navigate(context, item.route);
+                    final item = _bottomNavItems[index];
+                    _navigate(context, item['route'] as String);
                   },
-                  destinations: mobilePrimaryItems
+                  destinations: _bottomNavItems
                       .map(
                         (item) => NavigationDestination(
-                          icon: item.route == AppRoutes.batePapo && unreadChatCount > 0
-                              ? Badge(
-                                  label: Text(unreadChatCount > 99 ? '99+' : '$unreadChatCount'),
-                                  child: Icon(item.icon),
-                                )
-                              : Icon(item.icon),
-                          label: item.label,
+                          icon: Icon(item['icon'] as IconData),
+                          label: item['label'] as String,
                         ),
                       )
                       .toList(),
@@ -150,28 +131,28 @@ class HomeShellPage extends StatelessWidget {
     );
   }
 
-  List<_MobileNavItem> _mobilePrimaryItems(List<NavigationItem> availableItems) {
-    if (availableItems.length <= 4) {
-      return availableItems.map(_MobileNavItem.route).toList(growable: false);
-    }
+  // Menu inferior fixo e independente
+  static const _bottomNavItems = [
+    {
+      'route': AppRoutes.dashboard,
+      'label': 'Visão geral',
+      'icon': Icons.dashboard_outlined,
+    },
+    {
+      'route': AppRoutes.calendario,
+      'label': 'Calendário',
+      'icon': Icons.calendar_month_outlined,
+    },
+    {
+      'route': AppRoutes.notas,
+      'label': 'Anotações',
+      'icon': Icons.sticky_note_2_outlined,
+    },
+  ];
 
-    final base = <NavigationItem>[];
-    final dashboard = availableItems.where((item) => item.route == AppRoutes.dashboard).firstOrNull;
-    if (dashboard != null) {
-      base.add(dashboard);
-    }
-
-    for (final item in availableItems) {
-      if (base.length == 3) break;
-      if (!base.contains(item)) {
-        base.add(item);
-      }
-    }
-
-    return [
-      ...base.map(_MobileNavItem.route),
-      const _MobileNavItem.more(),
-    ];
+  int _bottomNavIndex() {
+    final idx = _bottomNavItems.indexWhere((item) => item['route'] == currentRoute);
+    return idx >= 0 ? idx : 0;
   }
 
   void _navigate(BuildContext context, String route) {
@@ -300,22 +281,7 @@ class HomeShellPage extends StatelessWidget {
   }
 }
 
-class _MobileNavItem {
-  const _MobileNavItem.route(this.item) : isMore = false;
 
-  const _MobileNavItem.more()
-      : item = null,
-        isMore = true;
-
-  final NavigationItem? item;
-  final bool isMore;
-
-  String get route => item?.route ?? '__more__';
-  String get label => item?.label ?? 'Mais';
-  IconData get icon => item?.icon ?? Icons.more_horiz;
-
-  bool matchesRoute(String route) => !isMore && item?.route == route;
-}
 
 class _SideNav extends StatelessWidget {
   const _SideNav({
@@ -422,72 +388,7 @@ class _AppDrawer extends StatelessWidget {
   }
 }
 
-class _NavigationList extends StatelessWidget {
-  const _NavigationList({
-    required this.selectedIndex,
-    required this.availableItems,
-    required this.onSelected,
-  });
 
-  final int selectedIndex;
-  final List<NavigationItem> availableItems;
-  final ValueChanged<int> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      itemCount: availableItems.length,
-      separatorBuilder: (_, index) => const SizedBox(height: 6),
-      itemBuilder: (context, index) {
-        final item = availableItems[index];
-        final selected = index == selectedIndex;
-        return Material(
-          color: selected ? SigadColors.brand.withValues(alpha: 0.10) : SigadColors.surfaceAlt,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(14),
-            onTap: () => onSelected(index),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              child: Row(
-                children: [
-                  Icon(
-                    item.icon,
-                    color: selected ? SigadColors.brand : SigadColors.muted,
-                    size: 22,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item.label,
-                          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                                color: selected ? SigadColors.brand : SigadColors.ink,
-                                fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-                              ),
-                        ),
-                        if (item.subtitle != null)
-                          Text(
-                            item.subtitle!,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
 
 class _UserCard extends StatelessWidget {
   const _UserCard({required this.userContext});
@@ -583,55 +484,7 @@ class _MobileTopBarTitle extends StatelessWidget {
   }
 }
 
-class _CurrentSectionCard extends StatelessWidget {
-  const _CurrentSectionCard({required this.currentRoute});
 
-  final NavigationItem currentRoute;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: SigadColors.brand.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: SigadColors.divider),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: SigadColors.brand.withValues(alpha: 0.14),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(currentRoute.icon, color: SigadColors.brand),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  currentRoute.label,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
-                ),
-                Text(
-                  currentRoute.subtitle ?? 'Área ativa no momento',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _ProfileMenu extends StatelessWidget {
   const _ProfileMenu({required this.userContext});
