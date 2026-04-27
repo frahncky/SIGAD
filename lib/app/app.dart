@@ -9,6 +9,9 @@ import 'routes/app_router.dart';
 import 'routes/app_routes.dart';
 import 'theme/app_theme.dart';
 
+
+/// Widget principal do aplicativo SIGAD.
+/// Responsável por configurar provedores globais e o MaterialApp.
 class SigadApp extends StatelessWidget {
   const SigadApp({
     super.key,
@@ -54,6 +57,8 @@ class SigadApp extends StatelessWidget {
   }
 }
 
+
+/// Banner de ambiente (flavor) exibido no topo da tela, exceto em PROD e DEV.
 class _FlavorBanner extends StatelessWidget {
   const _FlavorBanner({required this.child});
 

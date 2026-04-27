@@ -15,7 +15,10 @@ import '../../features/relatorios/presentation/pages/relatorios_page.dart';
 import '../../features/aulas_praticas/presentation/pages/aulas_praticas_page.dart';
 import 'app_routes.dart';
 
+/// Responsável por gerar as rotas do aplicativo SIGAD.
+/// Inclui tratamento para rotas desconhecidas (404).
 abstract final class AppRouter {
+  /// Gera a rota baseada no nome informado.
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     final routeName = settings.name ?? AppRoutes.dashboard;
 
@@ -37,7 +40,7 @@ abstract final class AppRouter {
         return _shell(routeName, const KanbanPage());
       case AppRoutes.aulasPraticas:
         return _shell(routeName, const AulasPraticasPage());
-       case AppRoutes.professores:
+      case AppRoutes.professores:
         return _shell(routeName, const ProfessoresPage());
       case AppRoutes.atividades:
         return _shell(routeName, const AtividadesPage());
@@ -50,16 +53,35 @@ abstract final class AppRouter {
       case AppRoutes.calendario:
         return _shell(routeName, const CalendarioPage());
       default:
-        return _shell(AppRoutes.dashboard, const DashboardPage());
+        return MaterialPageRoute<void>(
+          settings: const RouteSettings(name: '/404'),
+          builder: (_) => const _NotFoundPage(),
+        );
     }
   }
 
+  /// Cria uma rota com o shell padrão do app.
   static MaterialPageRoute<void> _shell(String routeName, Widget page) {
     return MaterialPageRoute<void>(
       settings: RouteSettings(name: routeName),
       builder: (_) => HomeShellPage(
         currentRoute: routeName,
         child: page,
+      ),
+    );
+  }
+}
+
+/// Página exibida para rotas não encontradas (404).
+class _NotFoundPage extends StatelessWidget {
+  const _NotFoundPage();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Página não encontrada')),
+      body: const Center(
+        child: Text('404 - Página não encontrada'),
       ),
     );
   }

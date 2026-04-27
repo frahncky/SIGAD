@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'sigad_colors.dart';
 
+/// Responsável por fornecer os temas claro e escuro do app SIGAD.
 abstract final class AppTheme {
+  /// Tema claro do aplicativo.
   static ThemeData light() {
     final base = ThemeData.light(useMaterial3: true);
     final textTheme = GoogleFonts.spaceGroteskTextTheme(base.textTheme);
@@ -112,6 +114,7 @@ abstract final class AppTheme {
     );
   }
 
+  /// Tema escuro do aplicativo.
   static ThemeData dark() {
     const canvasDark = Color(0xFF0F1A18);
     const surfaceDark = Color(0xFF1A2B28);
