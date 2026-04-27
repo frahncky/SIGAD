@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+      - name: Instalar dependências
+        run: flutter pub get
+      - name: Análise estática
+        run: flutter analyze
+      - name: Rodar testes
+        run: flutter test --coverage
+      - name: Publicar cobertura no PR
+        uses: romeovs/lcov-reporter-action@v0.2.16
+        with:
+          lcov-file: coverage/lcov.info
+          github-token: ${{ secrets.GITHUB_TOKEN }}
