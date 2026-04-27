@@ -1,5 +1,6 @@
 /// Widget de exemplo compartilhado para o app SIGAD.
 /// Adicione aqui widgets reutilizáveis entre telas.
+library sigad_loading_indicator;
 import 'package:flutter/material.dart';
 
 class SigadLoadingIndicator extends StatelessWidget {

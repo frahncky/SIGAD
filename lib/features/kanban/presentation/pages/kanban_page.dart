@@ -31,6 +31,7 @@ class _KanbanPageState extends State<KanbanPage> {
   }
 
   Future<void> _loadData() async {
+    if (!mounted) return;
     setState(() {
       _isLoading = true;
       _loadError = null;

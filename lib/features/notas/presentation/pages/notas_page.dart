@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class NotasPage extends StatefulWidget {
-  const NotasPage({Key? key}) : super(key: key);
+  const NotasPage({super.key});
 
   @override
   State<NotasPage> createState() => _NotasPageState();
@@ -98,7 +98,7 @@ class _NotasPageState extends State<NotasPage> {
               )
             : ListView.separated(
                 itemCount: _notas.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 14),
+                separatorBuilder: (context, index) => const SizedBox(height: 14),
                 itemBuilder: (context, index) {
                   final nota = _notas[index];
                   return Dismissible(
@@ -120,7 +120,7 @@ class _NotasPageState extends State<NotasPage> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.06),
+                            color: Colors.black.withValues(alpha: 0.06),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),

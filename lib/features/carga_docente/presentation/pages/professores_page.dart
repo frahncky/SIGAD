@@ -46,7 +46,7 @@ class _ProfessoresPageState extends State<ProfessoresPage> {
     final userContext = context.watch<UserContextProvider>();
     final role = userContext.userRole;
     final podeGerenciar = role == UserRole.coordenador || role == UserRole.chefeDepartamento;
-    List<Docente> docentesFiltrados = _busca.isEmpty
+    final docentesFiltrados = _busca.isEmpty
       ? List<Docente>.from(_docentes)
       : _docentes.where((d) {
         final buscaLower = _busca.toLowerCase();
@@ -98,8 +98,8 @@ class _ProfessoresPageState extends State<ProfessoresPage> {
                 : ListView.separated(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     itemCount: docentesFiltrados.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (_, index) {
+                    separatorBuilder: (context, index) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
                       final docente = docentesFiltrados[index];
                       return Card(
                         child: ListTile(

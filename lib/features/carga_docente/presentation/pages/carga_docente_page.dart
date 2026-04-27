@@ -766,7 +766,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       ),
     );
   }
-
+  // Função _showNovoCompromissoAgenda removida por não ser utilizada.
   String _formatarDataHoraSelecionada(DateTime? data, TimeOfDay? hora) {
     if (data == null || hora == null) {
       return 'Selecione data e hora';
@@ -1052,7 +1052,7 @@ class _DocenteCard extends StatelessWidget {
                 .map((d) => Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: SigadColors.brand.withOpacity(0.1),
+                        color: SigadColors.brand.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(

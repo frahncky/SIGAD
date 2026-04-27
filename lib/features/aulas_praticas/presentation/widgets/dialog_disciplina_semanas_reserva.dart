@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DialogDisciplinaSemanasReserva extends StatefulWidget {
-  const DialogDisciplinaSemanasReserva({Key? key}) : super(key: key);
+  const DialogDisciplinaSemanasReserva({super.key});
 
   @override
   State<DialogDisciplinaSemanasReserva> createState() => DialogDisciplinaSemanasReservaState();
