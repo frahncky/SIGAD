@@ -5,6 +5,7 @@ import '../../../../app/theme/sigad_colors.dart';
 import '../../../configuracoes/data/configuracoes_repository.dart';
 import '../../../configuracoes/domain/configuracoes_models.dart';
 import '../../../configuracoes/domain/configuracoes_service.dart';
+import '../../../configuracoes/domain/agenda_convites_service.dart';
 import '../../data/docente_repository.dart';
 import '../../domain/docente_models.dart';
 import '../controllers/docente_form_controller.dart';
@@ -16,8 +17,10 @@ import '../../../../core/services/user_context_provider.dart';
 
 
 
+
 class CargaDocentePage extends StatefulWidget {
-  const CargaDocentePage({super.key});
+  final Docente? docente;
+  const CargaDocentePage({super.key, this.docente});
 
   @override
   State<CargaDocentePage> createState() => _CargaDocentePageState();
@@ -131,14 +134,11 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   @override
   void initState() {
     super.initState();
-    // Aguarda contexto para pegar argumentos
+    // Se vier argumento via construtor, já define o docente selecionado
+    if (widget.docente != null) {
+      _docenteSelecionado = widget.docente;
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final args = ModalRoute.of(context)?.settings.arguments;
-      if (args is Docente) {
-        setState(() {
-          _docenteSelecionado = args;
-        });
-      }
       _loadData();
     });
   }
@@ -220,127 +220,125 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     required DocenteFormController controller,
     required bool Function() onSubmit,
   }) {
-    final textTheme = Theme.of(context).textTheme;
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) => PopScope(
-          onPopInvokedWithResult: (_, _) => controller.dispose(),
-          child: Container(
-          padding: const EdgeInsets.all(24),
-          height: MediaQuery.of(context).size.height * 0.9,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(title, style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  IconButton(
-                    tooltip: 'Fechar formulário do docente',
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
-                  ),
-                ],
+        builder: (context, setModalState) {
+          final textTheme = Theme.of(context).textTheme;
+          return PopScope(
+            onPopInvokedWithResult: (_, _) => controller.dispose(),
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(
+                24,
+                24,
+                24,
+                MediaQuery.of(context).viewInsets.bottom + 24,
               ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextField(
-                        controller: controller.nomeController,
-                        decoration: const InputDecoration(labelText: 'Nome Completo', hintText: 'Digite o nome do docente'),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: controller.emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(labelText: 'Email de acesso', hintText: 'docente@univ.br'),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: controller.departamentoController,
-                        decoration: const InputDecoration(labelText: 'Departamento', hintText: 'Digite o departamento'),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: controller.cargaMaximaController,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(labelText: 'Carga Horária Máxima (horas)', hintText: 'Ex: 20'),
-                      ),
-                      const SizedBox(height: 16),
-                      Text('Disciplinas', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          ...controller.disciplinas.map((d) => Chip(
-                                label: Text(d),
-                                onDeleted: () => setModalState(() => controller.removeDisciplina(d)),
-                              )),
-                          ActionChip(
-                            label: const Text('Adicionar'),
-                            onPressed: () => _showAdicionarDisciplina(context, controller, setModalState),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Horários de Aula', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
-                          TextButton.icon(
-                            icon: const Icon(Icons.add, size: 16),
-                            label: const Text('Adicionar'),
-                            onPressed: () => _showAdicionarHorario(context, controller, setModalState),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      if (controller.horarios.isEmpty)
-                        Text('Nenhum horário cadastrado', style: textTheme.bodySmall?.copyWith(color: SigadColors.muted))
-                      else
-                        ...controller.horarios.map((h) => _HorarioTile(
-                              horario: h,
-                              textTheme: textTheme,
-                              onDelete: () => setModalState(() => controller.removeHorario(h)),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(title, style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                        IconButton(
+                          tooltip: 'Fechar formulário do docente',
+                          onPressed: () => Navigator.pop(context),
+                          icon: const Icon(Icons.close),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: controller.nomeController,
+                      decoration: const InputDecoration(labelText: 'Nome Completo', hintText: 'Digite o nome do docente'),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: controller.emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(labelText: 'Email de acesso', hintText: 'docente@univ.br'),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: controller.departamentoController,
+                      decoration: const InputDecoration(labelText: 'Departamento', hintText: 'Digite o departamento'),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: controller.cargaMaximaController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(labelText: 'Carga Horária Máxima (horas)', hintText: 'Ex: 20'),
+                    ),
+                    const SizedBox(height: 16),
+                    Text('Disciplinas', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        ...controller.disciplinas.map((d) => Chip(
+                              label: Text(d),
+                              onDeleted: () => setModalState(() => controller.removeDisciplina(d)),
                             )),
-                      const SizedBox(height: 16),
-                    ],
-                  ),
+                        ActionChip(
+                          label: const Text('Adicionar'),
+                          onPressed: () => _showAdicionarDisciplina(context, controller, setModalState),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Horários de Aula', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
+                        TextButton.icon(
+                          icon: const Icon(Icons.add, size: 16),
+                          label: const Text('Adicionar'),
+                          onPressed: () => _showAdicionarHorario(context, controller, setModalState),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    if (controller.horarios.isEmpty)
+                      Text('Nenhum horário cadastrado', style: textTheme.bodySmall?.copyWith(color: SigadColors.muted))
+                    else
+                      ...controller.horarios.map((h) => _HorarioTile(
+                            horario: h,
+                            textTheme: textTheme,
+                            onDelete: () => setModalState(() => controller.removeHorario(h)),
+                          )),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancelar'),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (onSubmit()) {
+                                Navigator.pop(context);
+                              }
+                            },
+                            child: Text(confirmLabel),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancelar'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (onSubmit()) {
-                          Navigator.pop(context);
-                        }
-                      },
-                      child: Text(confirmLabel),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -1120,6 +1118,12 @@ class _AgendaDocentePage extends StatelessWidget {
             ? 10.0
             : 6.0;
 
+    final userContext = context.watch<UserContextProvider>();
+    final user = userContext.currentUser;
+    final role = userContext.userRole;
+    final isSelf = user != null && (user.email.trim().toLowerCase() == (docente.userEmail ?? '').trim().toLowerCase());
+    final isCoordOrChefe = role == UserRole.coordenador || role == UserRole.chefeDepartamento;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Agenda do docente'),
@@ -1129,7 +1133,6 @@ class _AgendaDocentePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Nome do professor destacado acima da grade semanal
             Text(
               docente.nome,
               style: textTheme.headlineMedium?.copyWith(
@@ -1137,38 +1140,39 @@ class _AgendaDocentePage extends StatelessWidget {
                 color: SigadColors.brand,
               ),
             ),
-            const SizedBox(height: 4),
-            Text(
-              docente.departamento,
-              style: textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Carga horária: ${docente.cargaHoraria}h',
-              style: textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: docente.disciplinas
-                  .map(
-                    (d) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: SigadColors.brand.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(6),
+            if (isSelf || isCoordOrChefe) ...[
+              const SizedBox(height: 4),
+              Text(
+                docente.departamento,
+                style: textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Carga horária: ${docente.cargaHoraria}h',
+                style: textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: docente.disciplinas
+                    .map(
+                      (d) => Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: SigadColors.brand.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          d,
+                          style: textTheme.labelSmall?.copyWith(color: SigadColors.brand),
+                        ),
                       ),
-                      child: Text(
-                        d,
-                        style: textTheme.labelSmall?.copyWith(color: SigadColors.brand),
-                      ),
-                    ),
-                  )
-                  .toList(),
-            ),
+                    )
+                    .toList(),
+              ),
+            ],
             const SizedBox(height: 16),
-            // ...linha removida para evitar repetição do nome do professor
             _MapaSemanalHorarios(
               horarios: docente.horariosAula,
               compacto: false,
@@ -1184,9 +1188,9 @@ class _AgendaDocentePage extends StatelessWidget {
     BuildContext pageContext,
     _AgendaCellTapData slot,
   ) async {
-    final tituloController = TextEditingController(text: 'Compromisso');
+    final tituloController = TextEditingController(text: 'Convite para reunião');
     final descricaoController = TextEditingController(
-      text: 'Compromisso criado pela grade semanal.',
+      text: 'Convite enviado via agenda do SIGAD.',
     );
     final localController = TextEditingController();
 
@@ -1208,7 +1212,7 @@ class _AgendaDocentePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Novo compromisso',
+                  'Enviar convite de reunião',
                   style: Theme.of(modalContext).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -1224,8 +1228,8 @@ class _AgendaDocentePage extends StatelessWidget {
                 TextField(
                   controller: tituloController,
                   decoration: const InputDecoration(
-                    labelText: 'Titulo',
-                    hintText: 'Ex: Reuniao de alinhamento',
+                    labelText: 'Título do convite',
+                    hintText: 'Ex: Reunião de alinhamento',
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -1233,8 +1237,8 @@ class _AgendaDocentePage extends StatelessWidget {
                   controller: descricaoController,
                   maxLines: 2,
                   decoration: const InputDecoration(
-                    labelText: 'Descricao',
-                    hintText: 'Detalhes do compromisso',
+                    labelText: 'Descrição',
+                    hintText: 'Detalhes do convite',
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -1252,7 +1256,7 @@ class _AgendaDocentePage extends StatelessWidget {
                     onPressed: () async {
                       final inicio = _inicioSlot(slot.data, slot.horarioFaixa);
                       if (inicio == null) {
-                        AppFeedbackService.info(pageContext, 'Nao foi possivel interpretar o horario da celula.');
+                        AppFeedbackService.info(pageContext, 'Não foi possível interpretar o horário da célula.');
                         return;
                       }
 
@@ -1260,41 +1264,31 @@ class _AgendaDocentePage extends StatelessWidget {
                       final descricao = descricaoController.text.trim();
                       final local = localController.text.trim();
                       if (titulo.isEmpty) {
-                        AppFeedbackService.info(pageContext, 'Informe o titulo do compromisso.');
+                        AppFeedbackService.info(pageContext, 'Informe o título do convite.');
                         return;
                       }
                       if (local.isEmpty) {
-                        AppFeedbackService.info(pageContext, 'Informe o local do compromisso.');
+                        AppFeedbackService.info(pageContext, 'Informe o local do convite.');
                         return;
                       }
 
                       final destinatario = _destinatarioAgenda(docente);
-                      final novoCompromisso = CompromissoAgenda(
-                        id: 'slot_${DateTime.now().microsecondsSinceEpoch}',
-                        titulo: titulo,
-                        descricao: descricao.isEmpty ? 'Compromisso criado pela agenda semanal.' : descricao,
-                        inicio: _formatarDataHora(inicio),
-                        inicioIso: inicio.toIso8601String(),
-                        local: local,
-                        origem: 'Agenda semanal do docente',
+                      await AgendaConvitesService.registrarConviteRecebido(
                         destinatarioUserId: destinatario,
-                        statusConvite: StatusConviteAgenda.aceito,
+                        titulo: titulo,
+                        descricao: descricao.isEmpty ? 'Convite enviado via agenda do SIGAD.' : descricao,
+                        inicio: _formatarDataHora(inicio),
+                        inicioDateTime: inicio,
+                        local: local,
+                        origem: 'Convite enviado pela agenda semanal',
                       );
-
-                      final repository = ConfiguracoesRepository();
-                      final atual = await repository.load() ?? ConfiguracoesService.defaultData();
-                      final atualizado = ConfiguracoesService.adicionarConviteNaAgenda(
-                        data: atual,
-                        convite: novoCompromisso,
-                      );
-                      await repository.save(atualizado);
 
                       if (!pageContext.mounted) return;
                       Navigator.pop(modalContext);
-                      AppFeedbackService.info(pageContext, 'Compromisso criado com sucesso na agenda.');
+                      AppFeedbackService.info(pageContext, 'Convite enviado com sucesso para a agenda do docente.');
                     },
-                    icon: const Icon(Icons.check_circle_outline),
-                    label: const Text('Salvar compromisso'),
+                    icon: const Icon(Icons.send),
+                    label: const Text('Enviar convite'),
                   ),
                 ),
               ],

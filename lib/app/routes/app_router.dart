@@ -3,6 +3,7 @@ import '../../features/notas/presentation/pages/notas_page.dart';
 import 'package:flutter/material.dart';
 import '../../features/atividades/presentation/pages/atividades_page.dart';
 import '../../features/carga_docente/presentation/pages/carga_docente_page.dart';
+import '../../features/carga_docente/domain/docente_models.dart';
 import '../../features/carga_docente/presentation/pages/professores_page.dart';
 import '../../features/configuracoes/presentation/pages/configuracoes_page.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
@@ -33,7 +34,8 @@ abstract final class AppRouter {
       case AppRoutes.batePapo:
         return _shell(routeName, const BatePapoPage());
       case AppRoutes.cargaDocente:
-        return _shell(routeName, const CargaDocentePage());  
+        final docente = settings.arguments is Docente ? settings.arguments as Docente : null;
+        return _shell(routeName, CargaDocentePage(docente: docente));
       case AppRoutes.demandas:
         return _shell(routeName, const DemandasPage());
       case AppRoutes.kanban:

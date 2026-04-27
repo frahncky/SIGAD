@@ -232,105 +232,109 @@ class _AtividadesPageState extends State<AtividadesPage> {
       context: context,
       isScrollControlled: true,
       builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) => Container(
-          padding: const EdgeInsets.all(24),
-          height: MediaQuery.of(context).size.height * 0.8,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Nova Atividade', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  IconButton(
-                    tooltip: 'Fechar formulário',
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              TextField(
-                controller: tituloController,
-                decoration: const InputDecoration(
-                  labelText: 'Título',
-                  hintText: 'Digite o título da atividade',
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: descricaoController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Descrição',
-                  hintText: 'Descreva a atividade em detalhes',
-                ),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: responsavelSelecionado,
-                decoration: const InputDecoration(labelText: 'Responsável'),
-                items: AtividadesService.responsaveis
-                    .map((r) => DropdownMenuItem(value: r, child: Text(r)))
-                    .toList(),
-                onChanged: (value) => setModalState(() => responsavelSelecionado = value!),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: statusSelecionado,
-                decoration: const InputDecoration(labelText: 'Status inicial'),
-                items: AtividadesService.statusAtividade
-                    .map((status) => DropdownMenuItem(value: status, child: Text(status)))
-                    .toList(),
-                onChanged: (value) => setModalState(() => statusSelecionado = value!),
-              ),
-              const Spacer(),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
+        builder: (context, setModalState) => Padding(
+          padding: EdgeInsets.fromLTRB(
+            24,
+            24,
+            24,
+            MediaQuery.of(context).viewInsets.bottom + 24,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Nova Atividade', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                    IconButton(
+                      tooltip: 'Fechar formulário',
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancelar'),
+                      icon: const Icon(Icons.close),
                     ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                TextField(
+                  controller: tituloController,
+                  decoration: const InputDecoration(
+                    labelText: 'Título',
+                    hintText: 'Digite o título da atividade',
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        final erro = AtividadesService.validarAtividade(
-                          titulo: tituloController.text,
-                          descricao: descricaoController.text,
-                        );
-
-                        if (erro != null) {
-                          _mostrarFeedback(erro);
-                          return;
-                        }
-
-                        setState(() {
-                          _atividades.insert(
-                            0,
-                            Atividade(
-                              id: AtividadesService.gerarProximoIdAtividade(_atividades),
-                              titulo: tituloController.text.trim(),
-                              descricao: descricaoController.text.trim(),
-                              data: AtividadesService.dataPadraoNovaAtividade(),
-                              responsavel: responsavelSelecionado,
-                              status: statusSelecionado,
-                            ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: descricaoController,
+                  maxLines: 3,
+                  decoration: const InputDecoration(
+                    labelText: 'Descrição',
+                    hintText: 'Descreva a atividade em detalhes',
+                  ),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  initialValue: responsavelSelecionado,
+                  decoration: const InputDecoration(labelText: 'Responsável'),
+                  items: AtividadesService.responsaveis
+                      .map((r) => DropdownMenuItem(value: r, child: Text(r)))
+                      .toList(),
+                  onChanged: (value) => setModalState(() => responsavelSelecionado = value!),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  initialValue: statusSelecionado,
+                  decoration: const InputDecoration(labelText: 'Status inicial'),
+                  items: AtividadesService.statusAtividade
+                      .map((status) => DropdownMenuItem(value: status, child: Text(status)))
+                      .toList(),
+                  onChanged: (value) => setModalState(() => statusSelecionado = value!),
+                ),
+                const Spacer(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Cancelar'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          final erro = AtividadesService.validarAtividade(
+                            titulo: tituloController.text,
+                            descricao: descricaoController.text,
                           );
-                        });
-                        _saveData();
-
-                        Navigator.pop(context);
-                        _mostrarFeedback('Atividade criada com sucesso!');
-                      },
-                      child: const Text('Criar'),
+                          if (erro != null) {
+                            _mostrarFeedback(erro);
+                            return;
+                          }
+                          setState(() {
+                            _atividades.insert(
+                              0,
+                              Atividade(
+                                id: AtividadesService.gerarProximoIdAtividade(_atividades),
+                                titulo: tituloController.text.trim(),
+                                descricao: descricaoController.text.trim(),
+                                data: AtividadesService.dataPadraoNovaAtividade(),
+                                responsavel: responsavelSelecionado,
+                                status: statusSelecionado,
+                              ),
+                            );
+                          });
+                          _saveData();
+                          Navigator.pop(context);
+                          _mostrarFeedback('Atividade criada com sucesso!');
+                        },
+                        child: const Text('Criar'),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -348,103 +352,107 @@ class _AtividadesPageState extends State<AtividadesPage> {
       context: context,
       isScrollControlled: true,
       builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) => Container(
-          padding: const EdgeInsets.all(24),
-          height: MediaQuery.of(context).size.height * 0.8,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Editar Atividade', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  IconButton(
-                    tooltip: 'Fechar formulário',
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              TextField(
-                controller: tituloController,
-                decoration: const InputDecoration(
-                  labelText: 'Título',
-                  hintText: 'Digite o título da atividade',
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: descricaoController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Descrição',
-                  hintText: 'Descreva a atividade em detalhes',
-                ),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: responsavelSelecionado,
-                decoration: const InputDecoration(labelText: 'Responsável'),
-                items: AtividadesService.responsaveis
-                    .map((r) => DropdownMenuItem(value: r, child: Text(r)))
-                    .toList(),
-                onChanged: (value) => setModalState(() => responsavelSelecionado = value!),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: statusSelecionado,
-                decoration: const InputDecoration(labelText: 'Status'),
-                items: AtividadesService.statusAtividade
-                    .map((status) => DropdownMenuItem(value: status, child: Text(status)))
-                    .toList(),
-                onChanged: (value) => setModalState(() => statusSelecionado = value!),
-              ),
-              const Spacer(),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
+        builder: (context, setModalState) => Padding(
+          padding: EdgeInsets.fromLTRB(
+            24,
+            24,
+            24,
+            MediaQuery.of(context).viewInsets.bottom + 24,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Editar Atividade', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                    IconButton(
+                      tooltip: 'Fechar formulário',
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancelar'),
+                      icon: const Icon(Icons.close),
                     ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                TextField(
+                  controller: tituloController,
+                  decoration: const InputDecoration(
+                    labelText: 'Título',
+                    hintText: 'Digite o título da atividade',
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        final erro = AtividadesService.validarAtividade(
-                          titulo: tituloController.text,
-                          descricao: descricaoController.text,
-                        );
-
-                        if (erro != null) {
-                          _mostrarFeedback(erro);
-                          return;
-                        }
-
-                        setState(() {
-                          final index = _atividades.indexWhere((item) => item.id == atividade.id);
-                          if (index >= 0) {
-                            _atividades[index] = atividade.copyWith(
-                              titulo: tituloController.text.trim(),
-                              descricao: descricaoController.text.trim(),
-                              responsavel: responsavelSelecionado,
-                              status: statusSelecionado,
-                            );
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: descricaoController,
+                  maxLines: 3,
+                  decoration: const InputDecoration(
+                    labelText: 'Descrição',
+                    hintText: 'Descreva a atividade em detalhes',
+                  ),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  initialValue: responsavelSelecionado,
+                  decoration: const InputDecoration(labelText: 'Responsável'),
+                  items: AtividadesService.responsaveis
+                      .map((r) => DropdownMenuItem(value: r, child: Text(r)))
+                      .toList(),
+                  onChanged: (value) => setModalState(() => responsavelSelecionado = value!),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  initialValue: statusSelecionado,
+                  decoration: const InputDecoration(labelText: 'Status'),
+                  items: AtividadesService.statusAtividade
+                      .map((status) => DropdownMenuItem(value: status, child: Text(status)))
+                      .toList(),
+                  onChanged: (value) => setModalState(() => statusSelecionado = value!),
+                ),
+                const Spacer(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Cancelar'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          final erro = AtividadesService.validarAtividade(
+                            titulo: tituloController.text,
+                            descricao: descricaoController.text,
+                          );
+                          if (erro != null) {
+                            _mostrarFeedback(erro);
+                            return;
                           }
-                        });
-                        _saveData();
-
-                        Navigator.pop(context);
-                        _mostrarFeedback('Atividade atualizada com sucesso!');
-                      },
-                      child: const Text('Salvar'),
+                          setState(() {
+                            final index = _atividades.indexWhere((item) => item.id == atividade.id);
+                            if (index >= 0) {
+                              _atividades[index] = atividade.copyWith(
+                                titulo: tituloController.text.trim(),
+                                descricao: descricaoController.text.trim(),
+                                responsavel: responsavelSelecionado,
+                                status: statusSelecionado,
+                              );
+                            }
+                          });
+                          _saveData();
+                          Navigator.pop(context);
+                          _mostrarFeedback('Atividade atualizada com sucesso!');
+                        },
+                        child: const Text('Salvar'),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

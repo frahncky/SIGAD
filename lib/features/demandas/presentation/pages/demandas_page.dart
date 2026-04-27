@@ -293,115 +293,119 @@ class _DemandasPageState extends State<DemandasPage> {
       context: context,
       isScrollControlled: true,
       builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) => Container(
-          padding: const EdgeInsets.all(24),
-          height: MediaQuery.of(context).size.height * 0.8,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Nova Demanda', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  IconButton(
-                    tooltip: 'Fechar formulário da demanda',
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              TextField(
-                controller: tituloController,
-                decoration: const InputDecoration(
-                  labelText: 'Título',
-                  hintText: 'Digite o título da demanda',
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: descricaoController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Descrição',
-                  hintText: 'Descreva a demanda em detalhes',
-                ),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: prioridadeSelecionada,
-                decoration: const InputDecoration(labelText: 'Prioridade'),
-                items: DemandasService.prioridades
-                    .map((p) => DropdownMenuItem(value: p, child: Text(p)))
-                    .toList(),
-                onChanged: (value) => setModalState(() => prioridadeSelecionada = value!),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: proprietarioSelecionado,
-                decoration: const InputDecoration(labelText: 'Proprietário'),
-                items: DemandasService.proprietarios
-                    .map((p) => DropdownMenuItem(value: p, child: Text(p)))
-                    .toList(),
-                onChanged: (value) => setModalState(() => proprietarioSelecionado = value!),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: statusSelecionado,
-                decoration: const InputDecoration(labelText: 'Status inicial'),
-                items: DemandasService.statusDisponiveis
-                    .map((status) => DropdownMenuItem(value: status, child: Text(status)))
-                    .toList(),
-                onChanged: (value) => setModalState(() => statusSelecionado = value!),
-              ),
-              const Spacer(),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
+        builder: (context, setModalState) => Padding(
+          padding: EdgeInsets.fromLTRB(
+            24,
+            24,
+            24,
+            MediaQuery.of(context).viewInsets.bottom + 24,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Nova Demanda', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                    IconButton(
+                      tooltip: 'Fechar formulário da demanda',
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancelar'),
+                      icon: const Icon(Icons.close),
                     ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                TextField(
+                  controller: tituloController,
+                  decoration: const InputDecoration(
+                    labelText: 'Título',
+                    hintText: 'Digite o título da demanda',
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        final erro = DemandasService.validarDemanda(
-                          titulo: tituloController.text,
-                          descricao: descricaoController.text,
-                        );
-
-                        if (erro != null) {
-                          _mostrarFeedback(erro);
-                          return;
-                        }
-
-                        setState(() {
-                          _demandas.insert(
-                            0,
-                            Demanda(
-                              id: DemandasService.gerarProximoIdDemanda(_demandas),
-                              titulo: tituloController.text.trim(),
-                              descricao: descricaoController.text.trim(),
-                              prioridade: prioridadeSelecionada,
-                              statusLabel: statusSelecionado,
-                              proprietario: proprietarioSelecionado,
-                              prazo: DemandasService.dataAtual(),
-                            ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: descricaoController,
+                  maxLines: 3,
+                  decoration: const InputDecoration(
+                    labelText: 'Descrição',
+                    hintText: 'Descreva a demanda em detalhes',
+                  ),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  initialValue: prioridadeSelecionada,
+                  decoration: const InputDecoration(labelText: 'Prioridade'),
+                  items: DemandasService.prioridades
+                      .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+                      .toList(),
+                  onChanged: (value) => setModalState(() => prioridadeSelecionada = value!),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  initialValue: proprietarioSelecionado,
+                  decoration: const InputDecoration(labelText: 'Proprietário'),
+                  items: DemandasService.proprietarios
+                      .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+                      .toList(),
+                  onChanged: (value) => setModalState(() => proprietarioSelecionado = value!),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  initialValue: statusSelecionado,
+                  decoration: const InputDecoration(labelText: 'Status inicial'),
+                  items: DemandasService.statusDisponiveis
+                      .map((status) => DropdownMenuItem(value: status, child: Text(status)))
+                      .toList(),
+                  onChanged: (value) => setModalState(() => statusSelecionado = value!),
+                ),
+                const Spacer(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Cancelar'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          final erro = DemandasService.validarDemanda(
+                            titulo: tituloController.text,
+                            descricao: descricaoController.text,
                           );
-                        });
-                        _saveData();
-
-                        Navigator.pop(context);
-                        _mostrarFeedback('Demanda criada com sucesso!');
-                      },
-                      child: const Text('Criar'),
+                          if (erro != null) {
+                            _mostrarFeedback(erro);
+                            return;
+                          }
+                          setState(() {
+                            _demandas.insert(
+                              0,
+                              Demanda(
+                                id: DemandasService.gerarProximoIdDemanda(_demandas),
+                                titulo: tituloController.text.trim(),
+                                descricao: descricaoController.text.trim(),
+                                prioridade: prioridadeSelecionada,
+                                statusLabel: statusSelecionado,
+                                proprietario: proprietarioSelecionado,
+                                prazo: DemandasService.dataAtual(),
+                              ),
+                            );
+                          });
+                          _saveData();
+                          Navigator.pop(context);
+                          _mostrarFeedback('Demanda criada com sucesso!');
+                        },
+                        child: const Text('Criar'),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -422,113 +426,117 @@ class _DemandasPageState extends State<DemandasPage> {
       context: context,
       isScrollControlled: true,
       builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) => Container(
-          padding: const EdgeInsets.all(24),
-          height: MediaQuery.of(context).size.height * 0.8,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Editar Demanda', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
-                  IconButton(
-                    tooltip: 'Fechar formulário da demanda',
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              TextField(
-                controller: tituloController,
-                decoration: const InputDecoration(
-                  labelText: 'Título',
-                  hintText: 'Digite o título da demanda',
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: descricaoController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Descrição',
-                  hintText: 'Descreva a demanda em detalhes',
-                ),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: prioridadeSelecionada,
-                decoration: const InputDecoration(labelText: 'Prioridade'),
-                items: DemandasService.prioridades
-                    .map((p) => DropdownMenuItem(value: p, child: Text(p)))
-                    .toList(),
-                onChanged: (value) => setModalState(() => prioridadeSelecionada = value!),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: proprietarioSelecionado,
-                decoration: const InputDecoration(labelText: 'Proprietário'),
-                items: DemandasService.proprietarios
-                    .map((p) => DropdownMenuItem(value: p, child: Text(p)))
-                    .toList(),
-                onChanged: (value) => setModalState(() => proprietarioSelecionado = value!),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: statusSelecionado,
-                decoration: const InputDecoration(labelText: 'Status'),
-                items: DemandasService.statusDisponiveis
-                    .map((status) => DropdownMenuItem(value: status, child: Text(status)))
-                    .toList(),
-                onChanged: (value) => setModalState(() => statusSelecionado = value!),
-              ),
-              const Spacer(),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
+        builder: (context, setModalState) => Padding(
+          padding: EdgeInsets.fromLTRB(
+            24,
+            24,
+            24,
+            MediaQuery.of(context).viewInsets.bottom + 24,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Editar Demanda', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                    IconButton(
+                      tooltip: 'Fechar formulário da demanda',
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancelar'),
+                      icon: const Icon(Icons.close),
                     ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                TextField(
+                  controller: tituloController,
+                  decoration: const InputDecoration(
+                    labelText: 'Título',
+                    hintText: 'Digite o título da demanda',
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        final erro = DemandasService.validarDemanda(
-                          titulo: tituloController.text,
-                          descricao: descricaoController.text,
-                        );
-
-                        if (erro != null) {
-                          _mostrarFeedback(erro);
-                          return;
-                        }
-
-                        setState(() {
-                          final index = _demandas.indexWhere((item) => item.id == demanda.id);
-                          if (index >= 0) {
-                            _demandas[index] = demanda.copyWith(
-                              titulo: tituloController.text.trim(),
-                              descricao: descricaoController.text.trim(),
-                              prioridade: prioridadeSelecionada,
-                              statusLabel: statusSelecionado,
-                              proprietario: proprietarioSelecionado,
-                            );
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: descricaoController,
+                  maxLines: 3,
+                  decoration: const InputDecoration(
+                    labelText: 'Descrição',
+                    hintText: 'Descreva a demanda em detalhes',
+                  ),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  initialValue: prioridadeSelecionada,
+                  decoration: const InputDecoration(labelText: 'Prioridade'),
+                  items: DemandasService.prioridades
+                      .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+                      .toList(),
+                  onChanged: (value) => setModalState(() => prioridadeSelecionada = value!),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  initialValue: proprietarioSelecionado,
+                  decoration: const InputDecoration(labelText: 'Proprietário'),
+                  items: DemandasService.proprietarios
+                      .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+                      .toList(),
+                  onChanged: (value) => setModalState(() => proprietarioSelecionado = value!),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  initialValue: statusSelecionado,
+                  decoration: const InputDecoration(labelText: 'Status'),
+                  items: DemandasService.statusDisponiveis
+                      .map((status) => DropdownMenuItem(value: status, child: Text(status)))
+                      .toList(),
+                  onChanged: (value) => setModalState(() => statusSelecionado = value!),
+                ),
+                const Spacer(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Cancelar'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          final erro = DemandasService.validarDemanda(
+                            titulo: tituloController.text,
+                            descricao: descricaoController.text,
+                          );
+                          if (erro != null) {
+                            _mostrarFeedback(erro);
+                            return;
                           }
-                        });
-                        _saveData();
-
-                        Navigator.pop(context);
-                        _mostrarFeedback('Demanda atualizada com sucesso!');
-                      },
-                      child: const Text('Salvar'),
+                          setState(() {
+                            final index = _demandas.indexWhere((item) => item.id == demanda.id);
+                            if (index >= 0) {
+                              _demandas[index] = demanda.copyWith(
+                                titulo: tituloController.text.trim(),
+                                descricao: descricaoController.text.trim(),
+                                prioridade: prioridadeSelecionada,
+                                statusLabel: statusSelecionado,
+                                proprietario: proprietarioSelecionado,
+                              );
+                            }
+                          });
+                          _saveData();
+                          Navigator.pop(context);
+                          _mostrarFeedback('Demanda atualizada com sucesso!');
+                        },
+                        child: const Text('Salvar'),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
