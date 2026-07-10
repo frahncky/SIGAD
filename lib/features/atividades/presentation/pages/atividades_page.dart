@@ -728,12 +728,21 @@ class _AtividadeCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  // Adiciona Expanded para o título para evitar overflow
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(atividade.id, style: textTheme.labelSmall?.copyWith(color: SigadColors.muted)),
                       const SizedBox(height: 8),
-                      Text(atividade.titulo, style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                      SizedBox(
+                        width: 260, // valor fixo ou ajuste conforme necessário
+                        child: Text(
+                          atividade.titulo,
+                          style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700), // fonte menor
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ],
                   ),
                   IconButton(

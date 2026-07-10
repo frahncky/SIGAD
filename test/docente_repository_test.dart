@@ -27,6 +27,7 @@ void main() {
           cargaHoraria: 12,
           cargaMaxima: 20,
           disciplinas: ['Laboratório I'],
+          regimeTrabalho: RegimeTrabalhoEbtt.vinteHoras,
           horariosAula: [
             HorarioAula(
               diaSemana: 'Segunda',
@@ -50,6 +51,7 @@ void main() {
       expect(carregados.first.id, '#DOC-101');
       expect(carregados.first.userId, 'user_email_prof.teste@sigad.br');
       expect(carregados.first.userEmail, 'prof.teste@sigad.br');
+      expect(carregados.first.regimeTrabalho, RegimeTrabalhoEbtt.vinteHoras);
       expect(carregados.first.horariosAula, hasLength(1));
       expect(carregados.first.horariosAula.first.disciplina, 'Laboratório I');
     });

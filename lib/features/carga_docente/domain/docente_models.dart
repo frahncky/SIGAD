@@ -1,3 +1,31 @@
+enum RegimeTrabalhoEbtt {
+  vinteHoras('20h', '20 horas', 20),
+  quarentaHoras('40h', '40 horas', 40),
+  dedicacaoExclusiva('DE', 'Dedicação exclusiva', 40);
+
+  const RegimeTrabalhoEbtt(this.code, this.label, this.cargaSemanalLimite);
+
+  final String code;
+  final String label;
+  final int cargaSemanalLimite;
+
+  static RegimeTrabalhoEbtt fromStorage(String? raw, {int? cargaMaxima}) {
+    switch (raw?.trim().toUpperCase()) {
+      case '20H':
+        return RegimeTrabalhoEbtt.vinteHoras;
+      case '40H':
+        return RegimeTrabalhoEbtt.quarentaHoras;
+      case 'DE':
+        return RegimeTrabalhoEbtt.dedicacaoExclusiva;
+      default:
+        if (cargaMaxima != null && cargaMaxima <= 20) {
+          return RegimeTrabalhoEbtt.vinteHoras;
+        }
+        return RegimeTrabalhoEbtt.quarentaHoras;
+    }
+  }
+}
+
 class Docente {
   const Docente({
     required this.id,
@@ -8,6 +36,7 @@ class Docente {
     required this.cargaHoraria,
     required this.cargaMaxima,
     required this.disciplinas,
+    this.regimeTrabalho = RegimeTrabalhoEbtt.vinteHoras,
     this.horariosAula = const [],
   });
 
@@ -19,6 +48,7 @@ class Docente {
   final int cargaHoraria;
   final int cargaMaxima;
   final List<String> disciplinas;
+  final RegimeTrabalhoEbtt regimeTrabalho;
   final List<HorarioAula> horariosAula;
 
   Docente copyWith({
@@ -29,6 +59,7 @@ class Docente {
     int? cargaHoraria,
     int? cargaMaxima,
     List<String>? disciplinas,
+    RegimeTrabalhoEbtt? regimeTrabalho,
     List<HorarioAula>? horariosAula,
   }) {
     return Docente(
@@ -40,6 +71,7 @@ class Docente {
       cargaHoraria: cargaHoraria ?? this.cargaHoraria,
       cargaMaxima: cargaMaxima ?? this.cargaMaxima,
       disciplinas: disciplinas ?? this.disciplinas,
+      regimeTrabalho: regimeTrabalho ?? this.regimeTrabalho,
       horariosAula: horariosAula ?? this.horariosAula,
     );
   }

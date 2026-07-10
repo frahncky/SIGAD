@@ -7,6 +7,7 @@ import '../../../configuracoes/domain/configuracoes_models.dart';
 import '../../../configuracoes/domain/configuracoes_service.dart';
 import '../../../configuracoes/domain/agenda_convites_service.dart';
 import '../../data/docente_repository.dart';
+import '../../domain/docente_form_service.dart';
 import '../../domain/docente_models.dart';
 import '../controllers/docente_form_controller.dart';
 import '../../../../core/models/user_role.dart';
@@ -271,7 +272,48 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                     TextField(
                       controller: controller.cargaMaximaController,
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: 'Carga Horária Máxima (horas)', hintText: 'Ex: 20'),
+                      decoration: const InputDecoration(labelText: 'Carga Horária Máxima Semanal (horas)', hintText: 'Ex: 20'),
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<RegimeTrabalhoEbtt>(
+                      initialValue: controller.regimeTrabalho,
+                      decoration: const InputDecoration(labelText: 'Regime EBTT'),
+                      items: RegimeTrabalhoEbtt.values
+                          .map(
+                            (regime) => DropdownMenuItem<RegimeTrabalhoEbtt>(
+                              value: regime,
+                              child: Text('${regime.label} (${regime.code})'),
+                            ),
+                          )
+                          .toList(growable: false),
+                      onChanged: (value) {
+                        if (value == null) return;
+                        setModalState(() => controller.regimeTrabalho = value);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: SigadColors.info.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: SigadColors.info.withValues(alpha: 0.18)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Distribuição em aulas: ${DocenteFormService.calcularCargaHorariaSemanal(controller.horarios)}h/sem',
+                            style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Regime ${controller.regimeTrabalho.code}: limite legal semanal de ${controller.regimeTrabalho.cargaSemanalLimite}h na carreira EBTT. Pesquisa, extensão e gestão continuam dependentes da normativa interna da instituição.',
+                            style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 16),
                     Text('Disciplinas', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
@@ -311,6 +353,16 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                             textTheme: textTheme,
                             onDelete: () => setModalState(() => controller.removeHorario(h)),
                           )),
+                    if (controller.horarios.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        'Carga distribuída em aulas: ${DocenteFormService.calcularCargaHorariaSemanal(controller.horarios)}h/sem',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: SigadColors.ink,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 16),
                     Row(
                       children: [
@@ -456,7 +508,11 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
               onPressed: () {
                 final inicio = inicioController.text.trim();
                 final fim = fimController.text.trim();
-                final erro = controller.validateHorario(inicio: inicio, fim: fim);
+                final erro = controller.validateHorario(
+                  diaSemana: diaSelecionado,
+                  inicio: inicio,
+                  fim: fim,
+                );
                 if (erro != null) {
                   _mostrarFeedback(erro);
                   return;
@@ -1039,8 +1095,13 @@ class _DocenteCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Carga horária: ${docente.cargaHoraria}h',
+            'Regime EBTT: ${docente.regimeTrabalho.label} (${docente.regimeTrabalho.code})',
             style: textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Distribuição em aulas: ${docente.cargaHoraria}h/${docente.cargaMaxima}h',
+            style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
           ),
           const SizedBox(height: 12),
           Wrap(
@@ -1148,8 +1209,13 @@ class _AgendaDocentePage extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                'Carga horária: ${docente.cargaHoraria}h',
+                'Regime EBTT: ${docente.regimeTrabalho.label} (${docente.regimeTrabalho.code})',
                 style: textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Distribuição em aulas: ${docente.cargaHoraria}h/${docente.cargaMaxima}h',
+                style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
               ),
               const SizedBox(height: 12),
               Wrap(

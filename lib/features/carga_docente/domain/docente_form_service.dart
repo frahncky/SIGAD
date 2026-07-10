@@ -6,6 +6,8 @@ abstract final class DocenteFormService {
     required String departamento,
     required String cargaMaxima,
     required List<String> disciplinas,
+    required RegimeTrabalhoEbtt regimeTrabalho,
+    required List<HorarioAula> horarios,
   }) {
     if (nome.trim().isEmpty) {
       return 'Informe o nome do docente';
@@ -20,8 +22,17 @@ abstract final class DocenteFormService {
       return 'Informe uma carga horária máxima válida';
     }
 
+    if (carga > regimeTrabalho.cargaSemanalLimite) {
+      return 'O regime ${regimeTrabalho.code} permite até ${regimeTrabalho.cargaSemanalLimite}h semanais.';
+    }
+
     if (disciplinas.isEmpty) {
       return 'Adicione pelo menos uma disciplina';
+    }
+
+    final cargaDistribuida = calcularCargaHorariaSemanal(horarios);
+    if (cargaDistribuida > carga) {
+      return 'A distribuição semanal cadastrada (${cargaDistribuida}h) excede a carga máxima do docente (${carga}h).';
     }
 
     return null;
@@ -46,6 +57,8 @@ abstract final class DocenteFormService {
   static String? validateHorario({
     required String inicio,
     required String fim,
+    String? diaSemana,
+    List<HorarioAula> horariosExistentes = const [],
   }) {
     final normalizedInicio = inicio.trim();
     final normalizedFim = fim.trim();
@@ -60,6 +73,27 @@ abstract final class DocenteFormService {
       return 'Use o formato HH:MM para os horários.';
     }
 
+    final inicioMinutos = _horarioEmMinutos(normalizedInicio);
+    final fimMinutos = _horarioEmMinutos(normalizedFim);
+    if (inicioMinutos == null || fimMinutos == null) {
+      return 'Use o formato HH:MM para os horários.';
+    }
+
+    if (fimMinutos <= inicioMinutos) {
+      return 'O horário de fim deve ser posterior ao de início.';
+    }
+
+    if (diaSemana != null) {
+      for (final horario in horariosExistentes.where((item) => item.diaSemana == diaSemana)) {
+        final inicioExistente = _horarioEmMinutos(horario.inicio);
+        final fimExistente = _horarioEmMinutos(horario.fim);
+        if (inicioExistente == null || fimExistente == null) continue;
+        if (inicioMinutos < fimExistente && fimMinutos > inicioExistente) {
+          return 'Já existe horário cadastrado em conflito para $diaSemana.';
+        }
+      }
+    }
+
     return null;
   }
 
@@ -70,6 +104,7 @@ abstract final class DocenteFormService {
     required String departamento,
     required String cargaMaxima,
     required List<String> disciplinas,
+    required RegimeTrabalhoEbtt regimeTrabalho,
     required List<HorarioAula> horarios,
   }) {
     return Docente(
@@ -78,9 +113,10 @@ abstract final class DocenteFormService {
       userId: buildUserIdFromEmail(email),
       userEmail: normalizeEmail(email),
       departamento: departamento.trim(),
-      cargaHoraria: horarios.length * 2,
+      cargaHoraria: calcularCargaHorariaSemanal(horarios),
       cargaMaxima: int.parse(cargaMaxima.trim()),
       disciplinas: List<String>.from(disciplinas),
+      regimeTrabalho: regimeTrabalho,
       horariosAula: List<HorarioAula>.from(horarios),
     );
   }
@@ -92,6 +128,7 @@ abstract final class DocenteFormService {
     required String departamento,
     required String cargaMaxima,
     required List<String> disciplinas,
+    required RegimeTrabalhoEbtt regimeTrabalho,
     required List<HorarioAula> horarios,
   }) {
     return docente.copyWith(
@@ -99,11 +136,20 @@ abstract final class DocenteFormService {
       userId: buildUserIdFromEmail(email),
       userEmail: normalizeEmail(email),
       departamento: departamento.trim(),
-      cargaHoraria: horarios.length * 2,
+      cargaHoraria: calcularCargaHorariaSemanal(horarios),
       cargaMaxima: int.parse(cargaMaxima.trim()),
+      regimeTrabalho: regimeTrabalho,
       horariosAula: List<HorarioAula>.from(horarios),
       disciplinas: List<String>.from(disciplinas),
     );
+  }
+
+  static int calcularCargaHorariaSemanal(List<HorarioAula> horarios) {
+    var total = 0;
+    for (final horario in horarios) {
+      total += _cargaSemanalDoHorario(horario);
+    }
+    return total;
   }
 
   static HorarioAula createHorario({
@@ -136,6 +182,41 @@ abstract final class DocenteFormService {
     final normalized = email?.trim().toLowerCase();
     if (normalized == null || normalized.isEmpty) return null;
     return normalized;
+  }
+
+  static int _cargaSemanalDoHorario(HorarioAula horario) {
+    final cargaDeclarada = _parseCargaHorariaSemanal(horario.cargaHoraria);
+    if (cargaDeclarada != null && cargaDeclarada > 0) {
+      return cargaDeclarada;
+    }
+
+    final inicio = _horarioEmMinutos(horario.inicio);
+    final fim = _horarioEmMinutos(horario.fim);
+    if (inicio == null || fim == null || fim <= inicio) {
+      return 0;
+    }
+
+    final duracao = fim - inicio;
+    final blocos = (duracao / 50).round();
+    return blocos < 1 ? 1 : blocos;
+  }
+
+  static int? _parseCargaHorariaSemanal(String? cargaHoraria) {
+    final raw = cargaHoraria?.trim();
+    if (raw == null || raw.isEmpty) return null;
+
+    final match = RegExp(r'(\d+)\s*h\s*/\s*sem', caseSensitive: false).firstMatch(raw);
+    if (match == null) return null;
+    return int.tryParse(match.group(1)!);
+  }
+
+  static int? _horarioEmMinutos(String horario) {
+    final partes = horario.split(':');
+    if (partes.length != 2) return null;
+    final hora = int.tryParse(partes[0]);
+    final minuto = int.tryParse(partes[1]);
+    if (hora == null || minuto == null) return null;
+    return (hora * 60) + minuto;
   }
 
   static String? _normalizeNullable(String? value) {

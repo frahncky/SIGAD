@@ -395,13 +395,14 @@ class _KanbanCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              card.titulo,
-              style: textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w600,
+            SizedBox(
+              width: 220, // valor fixo ou ajuste conforme necessário
+              child: Text(
+                card.titulo,
+                style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 8),
             Row(

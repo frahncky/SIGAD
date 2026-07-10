@@ -796,7 +796,15 @@ class _DemandasCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
-              Text(demanda.titulo, style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+              SizedBox(
+                width: 260, // valor fixo ou ajuste conforme necessário
+                child: Text(
+                  demanda.titulo,
+                  style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700), // fonte menor
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
               const SizedBox(height: 16),
               _DetailRow(label: 'Descrição', value: demanda.descricao),
               _DetailRow(label: 'Proprietário', value: demanda.proprietario),

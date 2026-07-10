@@ -12,6 +12,7 @@ void main() {
       controller.emailController.text = 'ANA@sigad.br';
       controller.departamentoController.text = 'Computação';
       controller.cargaMaximaController.text = '20';
+      controller.regimeTrabalho = RegimeTrabalhoEbtt.vinteHoras;
       controller.addDisciplina('Algoritmos');
       controller.addHorario(
         controller.createHorario(
@@ -40,6 +41,7 @@ void main() {
         cargaHoraria: 2,
         cargaMaxima: 20,
         disciplinas: ['Banco de Dados'],
+        regimeTrabalho: RegimeTrabalhoEbtt.vinteHoras,
       );
 
       final controller = DocenteFormController.fromDocente(docente);
@@ -47,6 +49,7 @@ void main() {
       controller.emailController.text = 'novo@sigad.br';
       controller.departamentoController.text = 'Redes';
       controller.cargaMaximaController.text = '16';
+      controller.regimeTrabalho = RegimeTrabalhoEbtt.vinteHoras;
       controller.removeDisciplina('Banco de Dados');
       controller.addDisciplina('Redes I');
 
@@ -65,8 +68,21 @@ void main() {
 
       expect(controller.validateDisciplina('Algoritmos'), 'Disciplina já adicionada.');
       expect(
-        controller.validateHorario(inicio: '8:00', fim: '09:40'),
+        controller.validateHorario(diaSemana: 'Segunda', inicio: '8:00', fim: '09:40'),
         'Use o formato HH:MM para os horários.',
+      );
+
+      controller.addHorario(
+        controller.createHorario(
+          diaSemana: 'Segunda',
+          inicio: '08:00',
+          fim: '09:40',
+          modalidade: 'Integral',
+        ),
+      );
+      expect(
+        controller.validateHorario(diaSemana: 'Segunda', inicio: '08:30', fim: '09:00'),
+        'Já existe horário cadastrado em conflito para Segunda.',
       );
       controller.dispose();
     });

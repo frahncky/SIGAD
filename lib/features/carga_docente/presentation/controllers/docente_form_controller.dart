@@ -12,6 +12,7 @@ class DocenteFormController {
           text: docente?.cargaMaxima.toString() ?? '',
         ),
         disciplinas = List<String>.from(docente?.disciplinas ?? const []),
+        regimeTrabalho = docente?.regimeTrabalho ?? RegimeTrabalhoEbtt.vinteHoras,
         horarios = List<HorarioAula>.from(docente?.horariosAula ?? const []);
 
   factory DocenteFormController.createNew() => DocenteFormController._();
@@ -24,6 +25,7 @@ class DocenteFormController {
   final TextEditingController departamentoController;
   final TextEditingController cargaMaximaController;
   final List<String> disciplinas;
+  RegimeTrabalhoEbtt regimeTrabalho;
   final List<HorarioAula> horarios;
 
   String? validate() {
@@ -32,6 +34,8 @@ class DocenteFormController {
       departamento: departamentoController.text,
       cargaMaxima: cargaMaximaController.text,
       disciplinas: disciplinas,
+      regimeTrabalho: regimeTrabalho,
+      horarios: horarios,
     );
   }
 
@@ -42,8 +46,17 @@ class DocenteFormController {
     );
   }
 
-  String? validateHorario({required String inicio, required String fim}) {
-    return DocenteFormService.validateHorario(inicio: inicio, fim: fim);
+  String? validateHorario({
+    required String diaSemana,
+    required String inicio,
+    required String fim,
+  }) {
+    return DocenteFormService.validateHorario(
+      diaSemana: diaSemana,
+      inicio: inicio,
+      fim: fim,
+      horariosExistentes: horarios,
+    );
   }
 
   void addDisciplina(String disciplina) {
@@ -90,6 +103,7 @@ class DocenteFormController {
       departamento: departamentoController.text,
       cargaMaxima: cargaMaximaController.text,
       disciplinas: disciplinas,
+      regimeTrabalho: regimeTrabalho,
       horarios: horarios,
     );
   }
@@ -102,6 +116,7 @@ class DocenteFormController {
       departamento: departamentoController.text,
       cargaMaxima: cargaMaximaController.text,
       disciplinas: disciplinas,
+      regimeTrabalho: regimeTrabalho,
       horarios: horarios,
     );
   }

@@ -514,9 +514,14 @@ class _RelatorioCard extends StatelessWidget {
                       children: [
                         Text(relatorio.id, style: textTheme.labelSmall?.copyWith(color: SigadColors.muted)),
                         const SizedBox(height: 8),
-                        Text(
-                          relatorio.titulo,
-                          style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+                        SizedBox(
+                          width: 260, // valor fixo ou ajuste conforme necessário
+                          child: Text(
+                            relatorio.titulo,
+                            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                     ),

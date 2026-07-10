@@ -36,6 +36,7 @@ class DocenteRepository {
         'departamento': d.departamento,
         'cargaHoraria': d.cargaHoraria,
         'cargaMaxima': d.cargaMaxima,
+        'regimeTrabalho': d.regimeTrabalho.code,
         'disciplinas': d.disciplinas,
         'horariosAula': d.horariosAula
             .map(
@@ -56,6 +57,8 @@ class DocenteRepository {
     Map<String, dynamic> json, {
     required String Function() generateFallbackId,
   }) {
+    final cargaMaxima = _toInt(json['cargaMaxima'], defaultValue: 20, minValue: 0);
+
     return Docente(
       id: json['id']?.toString().trim().isNotEmpty == true
           ? json['id']!.toString().trim()
@@ -71,8 +74,12 @@ class DocenteRepository {
           ? json['departamento']!.toString().trim()
           : 'Não informado',
       cargaHoraria: _toInt(json['cargaHoraria']),
-      cargaMaxima: _toInt(json['cargaMaxima'], defaultValue: 20, minValue: 0),
+      cargaMaxima: cargaMaxima,
       disciplinas: _disciplinasFromJson(json['disciplinas']),
+      regimeTrabalho: RegimeTrabalhoEbtt.fromStorage(
+        json['regimeTrabalho']?.toString(),
+        cargaMaxima: cargaMaxima,
+      ),
       horariosAula: _horariosAulaFromJson(json['horariosAula']),
     );
   }
