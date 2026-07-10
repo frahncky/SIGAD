@@ -2,6 +2,22 @@
 
 Todas as mudanças relevantes neste repositório serão documentadas neste arquivo.
 
+## [v1.3.0] - 2026-07-10
+
+### Adicionado
+- Simulação assistida de redistribuição de carga docente, com propostas automáticas entre docentes da mesma disciplina.
+- Fluxo para aplicar redistribuições diretamente na tela de Carga Docente, com atualização de cargas e persistência dos dados.
+- Painel inteligente de otimização com indicadores de ocupação e recomendações operacionais.
+- Recomendação cruzada entre carga docente e disponibilidade de laboratórios para apoiar decisões de alocação.
+- Sugestão automática de melhores slots livres em laboratórios com base em ocupação e conflitos.
+
+### Alterado
+- Regras de domínio de carga docente ampliadas para validação de conflitos e simulação de balanceamento.
+- Módulo de aulas práticas aprimorado com métricas de ocupação e reserva orientada por sugestão.
+
+### Qualidade
+- Testes unitários atualizados para cobrir simulação de redistribuição, detecção de conflitos e otimização de reservas.
+
 ## [v1.2.0] - 2026-04-25
 
 ### Alterado
