@@ -96,3 +96,33 @@ class HorarioAula {
   final String? turma;
   final String? modalidade;
 }
+
+class PropostaRedistribuicao {
+  const PropostaRedistribuicao({
+    required this.docenteOrigemId,
+    required this.docenteOrigemNome,
+    required this.docenteDestinoId,
+    required this.docenteDestinoNome,
+    required this.horario,
+    required this.cargaSemanal,
+  });
+
+  final String docenteOrigemId;
+  final String docenteOrigemNome;
+  final String docenteDestinoId;
+  final String docenteDestinoNome;
+  final HorarioAula horario;
+  final int cargaSemanal;
+}
+
+class ResultadoSimulacaoRedistribuicao {
+  const ResultadoSimulacaoRedistribuicao({
+    required this.propostas,
+    required this.mediaOcupacaoAntes,
+    required this.mediaOcupacaoDepois,
+  });
+
+  final List<PropostaRedistribuicao> propostas;
+  final double mediaOcupacaoAntes;
+  final double mediaOcupacaoDepois;
+}

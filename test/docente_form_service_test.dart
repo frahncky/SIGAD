@@ -165,5 +165,65 @@ void main() {
         'Já existe horário cadastrado em conflito para Segunda.',
       );
     });
+
+    test('simula redistribuicao entre docentes com mesma disciplina', () {
+      final resultado = DocenteFormService.simularRedistribuicaoDocentes([
+        const Docente(
+          id: '#DOC-301',
+          nome: 'Profa. Alta',
+          departamento: 'Computação',
+          cargaHoraria: 18,
+          cargaMaxima: 20,
+          disciplinas: ['Algoritmos'],
+          horariosAula: [
+            HorarioAula(
+              diaSemana: 'Segunda',
+              inicio: '08:00',
+              fim: '09:40',
+              disciplina: 'Algoritmos',
+              cargaHoraria: '4h/sem · 60h',
+            ),
+          ],
+        ),
+        const Docente(
+          id: '#DOC-302',
+          nome: 'Prof. Baixa',
+          departamento: 'Computação',
+          cargaHoraria: 6,
+          cargaMaxima: 20,
+          disciplinas: ['Algoritmos'],
+          horariosAula: [],
+        ),
+      ]);
+
+      expect(resultado.propostas, isNotEmpty);
+      expect(resultado.propostas.first.docenteOrigemId, '#DOC-301');
+      expect(resultado.propostas.first.docenteDestinoId, '#DOC-302');
+      expect(resultado.mediaOcupacaoDepois, lessThanOrEqualTo(resultado.mediaOcupacaoAntes));
+    });
+
+    test('detecta conflito ao tentar encaixar horario existente', () {
+      const candidato = HorarioAula(
+        diaSemana: 'Terça',
+        inicio: '10:00',
+        fim: '11:40',
+        disciplina: 'Estruturas',
+      );
+
+      final conflito = DocenteFormService.existeConflitoHorario(
+        horarios: const [
+          HorarioAula(
+            diaSemana: 'Terça',
+            inicio: '10:30',
+            fim: '11:20',
+            disciplina: 'Banco de Dados',
+          ),
+        ],
+        candidato: candidato,
+      );
+
+      expect(conflito, isTrue);
+      expect(DocenteFormService.cargaSemanalDoHorario(candidato), greaterThanOrEqualTo(1));
+    });
   });
 }

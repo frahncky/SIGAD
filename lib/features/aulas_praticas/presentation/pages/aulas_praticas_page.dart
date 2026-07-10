@@ -5,6 +5,8 @@ import '../../../../app/theme/sigad_colors.dart';
 import '../../data/reserva_repository.dart';
 import '../../domain/reserva_models.dart';
 import '../../domain/reserva_service.dart';
+import '../../../carga_docente/data/docente_repository.dart';
+import '../../../carga_docente/domain/docente_models.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
@@ -41,8 +43,10 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   ];
 
   final ReservaRepository _reservaRepository = ReservaRepository();
+  final DocenteRepository _docenteRepository = DocenteRepository();
   final List<ReservaLaboratorio> _reservas =
       ReservaService.defaultReservas(DateTime.now().month);
+  final List<Docente> _docentes = [];
 
   final TransformationController _transformationController = TransformationController();
 
@@ -64,11 +68,20 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
   Future<void> _loadData() async {
     final list = await _reservaRepository.loadReservas();
-    if (list.isEmpty) return;
+
+    final docentes = await _docenteRepository.loadDocentes(
+      generateFallbackId: () => 'DOC-FALLBACK',
+    );
+
     setState(() {
-      _reservas
+      if (list.isNotEmpty) {
+        _reservas
+          ..clear()
+          ..addAll(list);
+      }
+      _docentes
         ..clear()
-        ..addAll(list);
+        ..addAll(docentes);
     });
   }
 
@@ -118,6 +131,50 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         mes: _mesSelecionado,
         semanaDoMes: _semanaSelecionada,
       );
+
+  List<IndicadorOcupacaoLaboratorio> get _indicadoresOcupacao =>
+      ReservaService.calcularOcupacaoLaboratorios(
+        reservas: _reservas,
+        laboratorios: _laboratoriosDefault,
+        mes: _mesSelecionado,
+        semanaDoMes: _semanaSelecionada,
+      );
+
+  List<SugestaoReservaLaboratorio> get _sugestoesReserva =>
+      ReservaService.sugerirSlotsLivres(
+        reservas: _reservas,
+        laboratorios: _laboratoriosDefault,
+        mes: _mesSelecionado,
+        semanaDoMes: _semanaSelecionada,
+        diaSemanaPreferencial: _diaSemanaAbreviadoDoDiaSelecionado,
+        limite: 4,
+      );
+
+  List<String> get _recomendacoesCruzadas {
+    final altaCarga = _docentes.where((docente) {
+      if (docente.cargaMaxima <= 0) return false;
+      return (docente.cargaHoraria / docente.cargaMaxima) >= 0.9;
+    }).toList(growable: false);
+
+    if (altaCarga.isEmpty || _sugestoesReserva.isEmpty) {
+      return const [];
+    }
+
+    final recomendacoes = <String>[];
+    final limite = altaCarga.length < _sugestoesReserva.length
+        ? altaCarga.length
+        : _sugestoesReserva.length;
+
+    for (var index = 0; index < limite; index++) {
+      final docente = altaCarga[index];
+      final sugestao = _sugestoesReserva[index];
+      recomendacoes.add(
+        '${docente.nome.split(' ').first}: priorizar ${sugestao.laboratorio} em ${sugestao.diaSemana} ${sugestao.horario} para aliviar carga em turmas práticas.',
+      );
+    }
+
+    return recomendacoes;
+  }
 
   int get _diasNoMesSelecionado {
     final now = DateTime.now();
@@ -184,6 +241,14 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                   diaSelecionado: _diaSelecionado,
                   diasNoMes: _diasNoMesSelecionado,
                   onDiaChanged: (value) => setState(() => _diaSelecionado = value),
+                ),
+                const SizedBox(height: 12),
+                _PainelOtimizacaoLaboratorio(
+                  indicadores: _indicadoresOcupacao,
+                  sugestoes: _sugestoesReserva,
+                  recomendacoesCruzadas: _recomendacoesCruzadas,
+                  laboratorioSelecionado: _laboratorioSelecionadoValido,
+                  onAplicarSugestao: podeEditar ? _reservarSugestaoAutomatica : null,
                 ),
                 const SizedBox(height: 12),
                 _MapaSemanal(
@@ -323,6 +388,74 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
       _showError('Não foi possível concluir a operação. Tente novamente.');
     }
+  }
+
+  Future<void> _reservarSugestaoAutomatica() async {
+    final userContext = context.read<UserContextProvider>();
+    final user = userContext.currentUser;
+    final role = userContext.userRole;
+
+    if (!ReservaService.canChangeReservation(user: user, role: role)) {
+      _showInfo('Somente perfis docentes podem reservar horários.');
+      return;
+    }
+
+    if (user == null) {
+      _showInfo('Faça login para reservar horários.');
+      return;
+    }
+
+    final sugestoes = _sugestoesReserva;
+    if (sugestoes.isEmpty) {
+      _showInfo('Não há slots livres recomendados para a semana selecionada.');
+      return;
+    }
+
+    final sugestao = sugestoes.first;
+    final jaOcupado = ReservaService.isSlotOccupied(
+      reservas: _reservas,
+      laboratorio: sugestao.laboratorio,
+      mes: _mesSelecionado,
+      semanaDoMes: _semanaSelecionada,
+      diaSemana: sugestao.diaSemana,
+      turno: sugestao.turno,
+      periodo: sugestao.periodo,
+    );
+
+    if (jaOcupado) {
+      _showInfo('A sugestão ficou indisponível. Tente novamente.');
+      return;
+    }
+
+    setState(() {
+      _laboratorioSelecionado = sugestao.laboratorio;
+      _reservas.add(
+        ReservaService.createReserva(
+          professor: user.name,
+          laboratorio: sugestao.laboratorio,
+          mes: _mesSelecionado,
+          semanaDoMes: _semanaSelecionada,
+          diaSemana: sugestao.diaSemana,
+          turno: sugestao.turno,
+          periodo: sugestao.periodo,
+          disciplina: 'Reserva sugerida automaticamente',
+        ),
+      );
+    });
+
+    await _saveData();
+
+    AppEventLogger.action('reserva_auto_create', details: {
+      'laboratorio': sugestao.laboratorio,
+      'diaSemana': sugestao.diaSemana,
+      'turno': sugestao.turno.name,
+      'periodo': sugestao.periodo,
+      'score': sugestao.score.toStringAsFixed(2),
+    });
+
+    _showInfo(
+      'Reserva automática criada em ${sugestao.laboratorio} (${sugestao.diaSemana} ${sugestao.horario}).',
+    );
   }
 
   Future<bool> _confirmarAcao({
@@ -977,6 +1110,137 @@ class _AmbientBackground extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [SigadColors.canvas, SigadColors.surfaceAlt],
         ),
+      ),
+    );
+  }
+}
+
+class _PainelOtimizacaoLaboratorio extends StatelessWidget {
+  const _PainelOtimizacaoLaboratorio({
+    required this.indicadores,
+    required this.sugestoes,
+    required this.recomendacoesCruzadas,
+    required this.laboratorioSelecionado,
+    this.onAplicarSugestao,
+  });
+
+  final List<IndicadorOcupacaoLaboratorio> indicadores;
+  final List<SugestaoReservaLaboratorio> sugestoes;
+  final List<String> recomendacoesCruzadas;
+  final String laboratorioSelecionado;
+  final Future<void> Function()? onAplicarSugestao;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final indicadoresOrdenados = List<IndicadorOcupacaoLaboratorio>.from(indicadores)
+      ..sort((a, b) => a.taxaOcupacao.compareTo(b.taxaOcupacao));
+
+    final indicadorSelecionado = indicadores.firstWhere(
+      (item) => item.laboratorio == laboratorioSelecionado,
+      orElse: () => const IndicadorOcupacaoLaboratorio(
+        laboratorio: '',
+        totalSlots: 0,
+        slotsReservados: 0,
+      ),
+    );
+
+    final taxa = (indicadorSelecionado.taxaOcupacao * 100);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: SigadColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: SigadColors.divider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.insights_outlined, size: 18, color: SigadColors.brand),
+              const SizedBox(width: 6),
+              Text(
+                'Otimização de laboratórios',
+                style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const Spacer(),
+              if (onAplicarSugestao != null)
+                TextButton.icon(
+                  onPressed: onAplicarSugestao,
+                  icon: const Icon(Icons.auto_fix_high_outlined, size: 16),
+                  label: const Text('Reservar sugestão'),
+                ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Laboratório selecionado: ${laboratorioSelecionado.isEmpty ? 'N/D' : laboratorioSelecionado} · ${taxa.toStringAsFixed(0)}% ocupado na semana.',
+            style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: indicadoresOrdenados
+                .take(4)
+                .map((indicador) => Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: indicador.laboratorio == laboratorioSelecionado
+                            ? SigadColors.brand.withValues(alpha: 0.12)
+                            : SigadColors.surfaceAlt,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '${indicador.laboratorio}: ${(indicador.taxaOcupacao * 100).toStringAsFixed(0)}% · ${indicador.slotsLivres} livres',
+                        style: textTheme.labelSmall?.copyWith(
+                          color: indicador.laboratorio == laboratorioSelecionado
+                              ? SigadColors.brandDark
+                              : SigadColors.muted,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ))
+                .toList(growable: false),
+          ),
+          if (sugestoes.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Text(
+              'Sugestões de slots livres',
+              style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 6),
+            ...sugestoes.take(3).map(
+                  (sugestao) => Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      '• ${sugestao.laboratorio} · ${sugestao.diaSemana} · ${sugestao.horario} (${sugestao.turno.shortLabel}${sugestao.periodo})',
+                      style: textTheme.bodySmall?.copyWith(color: SigadColors.ink),
+                    ),
+                  ),
+                ),
+          ],
+          if (recomendacoesCruzadas.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Text(
+              'Recomendações cruzadas com carga docente',
+              style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 6),
+            ...recomendacoesCruzadas.take(2).map(
+                  (recomendacao) => Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      '• $recomendacao',
+                      style: textTheme.bodySmall?.copyWith(color: SigadColors.ink),
+                    ),
+                  ),
+                ),
+          ],
+        ],
       ),
     );
   }

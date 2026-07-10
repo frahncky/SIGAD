@@ -858,6 +858,124 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     return null;
   }
 
+  double _percentualOcupacao(Docente docente) {
+    if (docente.cargaMaxima <= 0) return 0;
+    return docente.cargaHoraria / docente.cargaMaxima;
+  }
+
+  List<Docente> _docentesComAltaCarga(List<Docente> docentes) {
+    return docentes.where((docente) => _percentualOcupacao(docente) >= 0.9).toList(growable: false);
+  }
+
+  List<Docente> _docentesComBaixaCarga(List<Docente> docentes) {
+    return docentes.where((docente) => _percentualOcupacao(docente) <= 0.5).toList(growable: false);
+  }
+
+  List<String> _gerarSugestoesDistribuicao(List<Docente> docentes) {
+    final altaCarga = _docentesComAltaCarga(docentes);
+    final baixaCarga = _docentesComBaixaCarga(docentes);
+
+    if (altaCarga.isEmpty && baixaCarga.isEmpty) {
+      return const [
+        'A distribuição atual está equilibrada. Priorize acompanhamento quinzenal e ajuste fino por disciplina.',
+      ];
+    }
+
+    final sugestoes = <String>[];
+
+    if (altaCarga.isNotEmpty) {
+      final nomes = altaCarga.take(2).map((docente) => docente.nome.split(' ').first).join(', ');
+      sugestoes.add(
+        'Docentes com maior pressão: $nomes. Considere redistribuir turmas práticas e orientações para reduzir risco de sobrecarga.',
+      );
+    }
+
+    if (baixaCarga.isNotEmpty) {
+      final nomes = baixaCarga.take(2).map((docente) => docente.nome.split(' ').first).join(', ');
+      sugestoes.add(
+        'Há capacidade ociosa com $nomes. Priorize alocação de componentes compartilhados e reforço em horários de laboratório.',
+      );
+    }
+
+    sugestoes.add('Programe revisão semanal conjunta entre coordenação e laboratórios para reduzir conflitos de agenda e janelas vazias.');
+
+    return sugestoes;
+  }
+
+  Future<void> _abrirSimulacaoRedistribuicao() async {
+    final simulacao = DocenteFormService.simularRedistribuicaoDocentes(_docentesVisiveis());
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (context) => _SimulacaoRedistribuicaoSheet(
+        resultado: simulacao,
+        onAplicar: simulacao.propostas.isEmpty
+            ? null
+            : () {
+                _aplicarRedistribuicao(simulacao.propostas);
+                Navigator.pop(context);
+              },
+      ),
+    );
+  }
+
+  void _aplicarRedistribuicao(List<PropostaRedistribuicao> propostas) {
+    if (propostas.isEmpty) return;
+
+    final atualizados = List<Docente>.from(_docentes);
+
+    for (final proposta in propostas) {
+      final origemIndex = atualizados.indexWhere((docente) => docente.id == proposta.docenteOrigemId);
+      final destinoIndex = atualizados.indexWhere((docente) => docente.id == proposta.docenteDestinoId);
+      if (origemIndex < 0 || destinoIndex < 0) continue;
+
+      final origem = atualizados[origemIndex];
+      final destino = atualizados[destinoIndex];
+
+      final horario = _encontrarHorarioTransferencia(origem.horariosAula, proposta.horario);
+      if (horario == null) continue;
+
+      final horariosOrigem = List<HorarioAula>.from(origem.horariosAula)..remove(horario);
+      final horariosDestino = List<HorarioAula>.from(destino.horariosAula)..add(horario);
+
+      atualizados[origemIndex] = origem.copyWith(
+        horariosAula: horariosOrigem,
+        cargaHoraria: DocenteFormService.calcularCargaHorariaSemanal(horariosOrigem),
+      );
+
+      atualizados[destinoIndex] = destino.copyWith(
+        horariosAula: horariosDestino,
+        cargaHoraria: DocenteFormService.calcularCargaHorariaSemanal(horariosDestino),
+      );
+    }
+
+    setState(() {
+      _docentes
+        ..clear()
+        ..addAll(atualizados);
+    });
+
+    _saveData();
+    AppEventLogger.action('carga_docente_apply_redistribuicao', details: {
+      'qtdPropostas': propostas.length,
+    });
+    _mostrarFeedback('${propostas.length} redistribuições aplicadas com sucesso.');
+  }
+
+  HorarioAula? _encontrarHorarioTransferencia(List<HorarioAula> horarios, HorarioAula referencia) {
+    for (final horario in horarios) {
+      if (horario.diaSemana == referencia.diaSemana &&
+          horario.inicio == referencia.inicio &&
+          horario.fim == referencia.fim &&
+          horario.disciplina == referencia.disciplina) {
+        return horario;
+      }
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final userContext = context.watch<UserContextProvider>();
@@ -912,6 +1030,16 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     }
     final docentesOrdenados = docentesFiltrados;
     final textTheme = Theme.of(context).textTheme;
+    final docentesBasePainel = _docentesVisiveis();
+    final altaCarga = _docentesComAltaCarga(docentesBasePainel);
+    final baixaCarga = _docentesComBaixaCarga(docentesBasePainel);
+    final mediaOcupacao = docentesBasePainel.isEmpty
+      ? 0
+      : docentesBasePainel
+          .map(_percentualOcupacao)
+          .reduce((a, b) => a + b) /
+        docentesBasePainel.length;
+    final sugestoesDistribuicao = _gerarSugestoesDistribuicao(docentesBasePainel);
 
     // Identifica o próprio docente
     Docente? selfDocente;
@@ -948,6 +1076,16 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                 hintText: 'Buscar docente por nome, e-mail ou departamento',
                 prefixIcon: Icon(Icons.search_outlined),
               ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: _PainelDistribuicaoInteligente(
+              mediaOcupacao: mediaOcupacao,
+              docentesAltaCarga: altaCarga.length,
+              docentesBaixaCarga: baixaCarga.length,
+              sugestoes: sugestoesDistribuicao,
+              onSimularRedistribuicao: _abrirSimulacaoRedistribuicao,
             ),
           ),
           Expanded(
@@ -1122,6 +1260,198 @@ class _DocenteCard extends StatelessWidget {
                       ),
                     ))
                 .toList(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PainelDistribuicaoInteligente extends StatelessWidget {
+  const _PainelDistribuicaoInteligente({
+    required this.mediaOcupacao,
+    required this.docentesAltaCarga,
+    required this.docentesBaixaCarga,
+    required this.sugestoes,
+    required this.onSimularRedistribuicao,
+  });
+
+  final double mediaOcupacao;
+  final int docentesAltaCarga;
+  final int docentesBaixaCarga;
+  final List<String> sugestoes;
+  final VoidCallback onSimularRedistribuicao;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final mediaPercentual = (mediaOcupacao * 100).clamp(0, 999).toStringAsFixed(0);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: SigadColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: SigadColors.divider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.tune_outlined, size: 18, color: SigadColors.brand),
+              const SizedBox(width: 6),
+              Text(
+                'Otimização da distribuição',
+                style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const Spacer(),
+              TextButton.icon(
+                onPressed: onSimularRedistribuicao,
+                icon: const Icon(Icons.auto_graph_outlined, size: 16),
+                label: const Text('Simular'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _KpiChip(label: 'Ocupação média', value: '$mediaPercentual%'),
+              _KpiChip(label: 'Alta carga (>=90%)', value: '$docentesAltaCarga'),
+              _KpiChip(label: 'Baixa carga (<=50%)', value: '$docentesBaixaCarga'),
+            ],
+          ),
+          const SizedBox(height: 10),
+          ...sugestoes.take(3).map(
+                (sugestao) => Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Text(
+                    '• $sugestao',
+                    style: textTheme.bodySmall?.copyWith(color: SigadColors.ink),
+                  ),
+                ),
+              ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SimulacaoRedistribuicaoSheet extends StatelessWidget {
+  const _SimulacaoRedistribuicaoSheet({
+    required this.resultado,
+    this.onAplicar,
+  });
+
+  final ResultadoSimulacaoRedistribuicao resultado;
+  final VoidCallback? onAplicar;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final antes = (resultado.mediaOcupacaoAntes * 100).toStringAsFixed(1);
+    final depois = (resultado.mediaOcupacaoDepois * 100).toStringAsFixed(1);
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Simulação de redistribuição',
+              style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Ocupação média prevista: $antes% -> $depois%',
+              style: textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
+            ),
+            const SizedBox(height: 12),
+            if (resultado.propostas.isEmpty)
+              Text(
+                'Nenhuma redistribuição segura foi encontrada para o cenário atual.',
+                style: textTheme.bodyMedium,
+              )
+            else
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 320),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: resultado.propostas.length,
+                  separatorBuilder: (_, _) => const Divider(height: 16),
+                  itemBuilder: (_, index) {
+                    final proposta = resultado.propostas[index];
+                    return Text(
+                      '${index + 1}. ${proposta.docenteOrigemNome} -> ${proposta.docenteDestinoNome} · ${proposta.horario.disciplina ?? 'Disciplina'} · ${proposta.horario.diaSemana} ${proposta.horario.inicio}-${proposta.horario.fim} (${proposta.cargaSemanal}h/sem)',
+                      style: textTheme.bodySmall,
+                    );
+                  },
+                ),
+              ),
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Fechar'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: onAplicar,
+                    child: const Text('Aplicar sugestão'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _KpiChip extends StatelessWidget {
+  const _KpiChip({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: SigadColors.surfaceAlt,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: textTheme.labelSmall?.copyWith(
+              color: SigadColors.muted,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            value,
+            style: textTheme.titleSmall?.copyWith(
+              color: SigadColors.brandDark,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ],
       ),

@@ -37,6 +37,43 @@ class HorarioGridRow {
   final String horario;
 }
 
+class IndicadorOcupacaoLaboratorio {
+  const IndicadorOcupacaoLaboratorio({
+    required this.laboratorio,
+    required this.totalSlots,
+    required this.slotsReservados,
+  });
+
+  final String laboratorio;
+  final int totalSlots;
+  final int slotsReservados;
+
+  int get slotsLivres => totalSlots - slotsReservados;
+
+  double get taxaOcupacao {
+    if (totalSlots <= 0) return 0;
+    return slotsReservados / totalSlots;
+  }
+}
+
+class SugestaoReservaLaboratorio {
+  const SugestaoReservaLaboratorio({
+    required this.laboratorio,
+    required this.diaSemana,
+    required this.turno,
+    required this.periodo,
+    required this.horario,
+    required this.score,
+  });
+
+  final String laboratorio;
+  final String diaSemana;
+  final Turno turno;
+  final int periodo;
+  final String horario;
+  final double score;
+}
+
 enum Turno {
   matutino('Matutino'),
   vespertino('Tarde'),

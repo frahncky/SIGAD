@@ -152,6 +152,104 @@ abstract final class DocenteFormService {
     return total;
   }
 
+  static int cargaSemanalDoHorario(HorarioAula horario) {
+    return _cargaSemanalDoHorario(horario);
+  }
+
+  static bool existeConflitoHorario({
+    required List<HorarioAula> horarios,
+    required HorarioAula candidato,
+  }) {
+    final inicioCandidato = _horarioEmMinutos(candidato.inicio);
+    final fimCandidato = _horarioEmMinutos(candidato.fim);
+    if (inicioCandidato == null || fimCandidato == null) return false;
+
+    for (final horario in horarios.where((item) => item.diaSemana == candidato.diaSemana)) {
+      final inicioExistente = _horarioEmMinutos(horario.inicio);
+      final fimExistente = _horarioEmMinutos(horario.fim);
+      if (inicioExistente == null || fimExistente == null) continue;
+      if (inicioCandidato < fimExistente && fimCandidato > inicioExistente) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  static ResultadoSimulacaoRedistribuicao simularRedistribuicaoDocentes(
+    List<Docente> docentes, {
+    double limiarAlta = 0.9,
+    double limiarBaixa = 0.5,
+    int limitePropostas = 6,
+  }) {
+    if (docentes.isEmpty || limitePropostas <= 0) {
+      return const ResultadoSimulacaoRedistribuicao(
+        propostas: [],
+        mediaOcupacaoAntes: 0,
+        mediaOcupacaoDepois: 0,
+      );
+    }
+
+    final ocupacaoAntes = _mediaOcupacao(docentes);
+    final propostas = <PropostaRedistribuicao>[];
+    final cargasProjetadas = {
+      for (final docente in docentes) docente.id: docente.cargaHoraria,
+    };
+
+    final docentesAlta = docentes.where((docente) {
+      return _ocupacao(docente.cargaHoraria, docente.cargaMaxima) >= limiarAlta;
+    }).toList(growable: false);
+
+    final docentesBaixa = docentes.where((docente) {
+      return _ocupacao(docente.cargaHoraria, docente.cargaMaxima) <= limiarBaixa;
+    }).toList(growable: false);
+
+    for (final origem in docentesAlta) {
+      for (final horario in origem.horariosAula) {
+        if (propostas.length >= limitePropostas) break;
+        if ((horario.disciplina ?? '').trim().isEmpty) continue;
+
+        final cargaHorario = _cargaSemanalDoHorario(horario);
+        if (cargaHorario <= 0) continue;
+
+        for (final destino in docentesBaixa) {
+          if (destino.id == origem.id) continue;
+          if (!destino.disciplinas.contains(horario.disciplina)) continue;
+          if (existeConflitoHorario(horarios: destino.horariosAula, candidato: horario)) continue;
+
+          final cargaDestinoProjetada = (cargasProjetadas[destino.id] ?? destino.cargaHoraria) + cargaHorario;
+          final cargaOrigemProjetada = (cargasProjetadas[origem.id] ?? origem.cargaHoraria) - cargaHorario;
+          if (cargaDestinoProjetada > destino.cargaMaxima) continue;
+          if (cargaOrigemProjetada < 0) continue;
+
+          cargasProjetadas[destino.id] = cargaDestinoProjetada;
+          cargasProjetadas[origem.id] = cargaOrigemProjetada;
+
+          propostas.add(
+            PropostaRedistribuicao(
+              docenteOrigemId: origem.id,
+              docenteOrigemNome: origem.nome,
+              docenteDestinoId: destino.id,
+              docenteDestinoNome: destino.nome,
+              horario: horario,
+              cargaSemanal: cargaHorario,
+            ),
+          );
+          break;
+        }
+      }
+      if (propostas.length >= limitePropostas) break;
+    }
+
+    final ocupacaoDepois = _mediaOcupacaoProjetada(docentes, cargasProjetadas);
+
+    return ResultadoSimulacaoRedistribuicao(
+      propostas: propostas,
+      mediaOcupacaoAntes: ocupacaoAntes,
+      mediaOcupacaoDepois: ocupacaoDepois,
+    );
+  }
+
   static HorarioAula createHorario({
     required String diaSemana,
     required String inicio,
@@ -217,6 +315,30 @@ abstract final class DocenteFormService {
     final minuto = int.tryParse(partes[1]);
     if (hora == null || minuto == null) return null;
     return (hora * 60) + minuto;
+  }
+
+  static double _ocupacao(int cargaHoraria, int cargaMaxima) {
+    if (cargaMaxima <= 0) return 0;
+    return cargaHoraria / cargaMaxima;
+  }
+
+  static double _mediaOcupacao(List<Docente> docentes) {
+    if (docentes.isEmpty) return 0;
+    final soma = docentes
+        .map((docente) => _ocupacao(docente.cargaHoraria, docente.cargaMaxima))
+        .reduce((a, b) => a + b);
+    return soma / docentes.length;
+  }
+
+  static double _mediaOcupacaoProjetada(
+    List<Docente> docentes,
+    Map<String, int> cargasProjetadas,
+  ) {
+    if (docentes.isEmpty) return 0;
+    final soma = docentes
+        .map((docente) => _ocupacao(cargasProjetadas[docente.id] ?? docente.cargaHoraria, docente.cargaMaxima))
+        .reduce((a, b) => a + b);
+    return soma / docentes.length;
   }
 
   static String? _normalizeNullable(String? value) {
