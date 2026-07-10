@@ -78,23 +78,30 @@ abstract final class AtividadesService {
     required String busca,
     required String filtro,
   }) {
-    return atividades.where((atividade) {
-      final filtroMatch = filtro == 'Todas' || atividade.status == filtro;
-      final query = busca.trim().toLowerCase();
-      final buscaMatch = query.isEmpty ||
-          atividade.titulo.toLowerCase().contains(query) ||
-          atividade.descricao.toLowerCase().contains(query) ||
-          atividade.responsavel.toLowerCase().contains(query);
-      return filtroMatch && buscaMatch;
-    }).toList(growable: false);
+    return atividades
+        .where((atividade) {
+          final filtroMatch = filtro == 'Todas' || atividade.status == filtro;
+          final query = busca.trim().toLowerCase();
+          final buscaMatch =
+              query.isEmpty ||
+              atividade.titulo.toLowerCase().contains(query) ||
+              atividade.descricao.toLowerCase().contains(query) ||
+              atividade.responsavel.toLowerCase().contains(query);
+          return filtroMatch && buscaMatch;
+        })
+        .toList(growable: false);
   }
 
   static int countConcluidas(List<Atividade> atividades) {
-    return atividades.where((atividade) => atividade.status == 'Concluída').length;
+    return atividades
+        .where((atividade) => atividade.status == 'Concluída')
+        .length;
   }
 
   static int countPendentes(List<Atividade> atividades) {
-    return atividades.where((atividade) => atividade.status == 'Pendente').length;
+    return atividades
+        .where((atividade) => atividade.status == 'Pendente')
+        .length;
   }
 
   static Color statusColor(String status) {
@@ -116,7 +123,9 @@ abstract final class AtividadesService {
     var maiorId = 0;
 
     for (final atividade in atividades) {
-      final numero = int.tryParse(atividade.id.replaceAll(RegExp(r'[^0-9]'), ''));
+      final numero = int.tryParse(
+        atividade.id.replaceAll(RegExp(r'[^0-9]'), ''),
+      );
       if (numero != null && numero > maiorId) {
         maiorId = numero;
       }

@@ -16,9 +16,11 @@ class RelatorioRepository implements EntityRepository<Relatorio> {
     AppHttpClient? remoteClient,
     DataSourceMode? dataSourceMode,
     bool? enableRemoteFallback,
-  })  : _remoteClient = remoteClient ?? HttpPackageClient(httpClient: http.Client()),
-        _dataSourceMode = dataSourceMode ?? AppRuntimeConfig.dataSourceMode,
-        _enableRemoteFallback = enableRemoteFallback ?? AppRuntimeConfig.enableRemoteFallback;
+  }) : _remoteClient =
+           remoteClient ?? HttpPackageClient(httpClient: http.Client()),
+       _dataSourceMode = dataSourceMode ?? AppRuntimeConfig.dataSourceMode,
+       _enableRemoteFallback =
+           enableRemoteFallback ?? AppRuntimeConfig.enableRemoteFallback;
 
   final String storageKey;
   final AppHttpClient _remoteClient;
@@ -39,7 +41,11 @@ class RelatorioRepository implements EntityRepository<Relatorio> {
     try {
       return await _loadRemoteRelatorios();
     } catch (error, stackTrace) {
-      AppEventLogger.error('relatorios_remote_load_error', error, stackTrace: stackTrace);
+      AppEventLogger.error(
+        'relatorios_remote_load_error',
+        error,
+        stackTrace: stackTrace,
+      );
       if (_enableRemoteFallback) {
         AppEventLogger.action('relatorios_remote_load_fallback_local');
         return _loadLocalRelatorios();
@@ -57,7 +63,11 @@ class RelatorioRepository implements EntityRepository<Relatorio> {
       await _saveRemoteRelatorios(relatorios);
       await _saveLocalRelatorios(relatorios);
     } catch (error, stackTrace) {
-      AppEventLogger.error('relatorios_remote_save_error', error, stackTrace: stackTrace);
+      AppEventLogger.error(
+        'relatorios_remote_save_error',
+        error,
+        stackTrace: stackTrace,
+      );
       if (_enableRemoteFallback) {
         AppEventLogger.action('relatorios_remote_save_fallback_local');
         return _saveLocalRelatorios(relatorios);
@@ -108,7 +118,9 @@ class RelatorioRepository implements EntityRepository<Relatorio> {
   }
 
   Future<void> _saveRemoteRelatorios(List<Relatorio> relatorios) {
-    final payload = relatorios.map((item) => RelatorioDto.fromDomain(item).toJson()).toList(growable: false);
+    final payload = relatorios
+        .map((item) => RelatorioDto.fromDomain(item).toJson())
+        .toList(growable: false);
     return _remoteClient.send(
       ApiRequest(
         path: RelatorioApiContract.collectionPath,
@@ -120,7 +132,10 @@ class RelatorioRepository implements EntityRepository<Relatorio> {
 
   List<Map<String, dynamic>> _extractListPayload(Object? body) {
     if (body is List) {
-      return body.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList(growable: false);
+      return body
+          .whereType<Map>()
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList(growable: false);
     }
     if (body is Map<String, dynamic>) {
       final nested = body['items'] ?? body['data'];
@@ -135,28 +150,28 @@ class RelatorioRepository implements EntityRepository<Relatorio> {
   }
 
   Map<String, dynamic> _relatorioToJson(Relatorio r) => {
-        'id': r.id,
-        'titulo': r.titulo,
-        'descricao': r.descricao,
-        'tipo': r.tipo,
-        'data': r.data,
-        'autor': r.autor,
-        'status': r.status,
-        'downloads': r.downloads,
-        'compartilhamentos': r.compartilhamentos,
-        if (r.ultimaAcao != null) 'ultimaAcao': r.ultimaAcao,
-      };
+    'id': r.id,
+    'titulo': r.titulo,
+    'descricao': r.descricao,
+    'tipo': r.tipo,
+    'data': r.data,
+    'autor': r.autor,
+    'status': r.status,
+    'downloads': r.downloads,
+    'compartilhamentos': r.compartilhamentos,
+    if (r.ultimaAcao != null) 'ultimaAcao': r.ultimaAcao,
+  };
 
   Relatorio _relatorioFromJson(Map<String, dynamic> json) => Relatorio(
-        id: json['id'] as String,
-        titulo: json['titulo'] as String,
-        descricao: json['descricao'] as String,
-        tipo: json['tipo'] as String,
-        data: json['data'] as String,
-        autor: json['autor'] as String,
-        status: json['status'] as String,
-        downloads: json['downloads'] as int? ?? 0,
-        compartilhamentos: json['compartilhamentos'] as int? ?? 0,
-        ultimaAcao: json['ultimaAcao'] as String?,
-      );
+    id: json['id'] as String,
+    titulo: json['titulo'] as String,
+    descricao: json['descricao'] as String,
+    tipo: json['tipo'] as String,
+    data: json['data'] as String,
+    autor: json['autor'] as String,
+    status: json['status'] as String,
+    downloads: json['downloads'] as int? ?? 0,
+    compartilhamentos: json['compartilhamentos'] as int? ?? 0,
+    ultimaAcao: json['ultimaAcao'] as String?,
+  );
 }

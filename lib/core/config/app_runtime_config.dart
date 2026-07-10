@@ -31,7 +31,9 @@ abstract final class AppRuntimeConfig {
     defaultValue: true,
   );
 
-  static final DataSourceMode dataSourceMode = _resolveDataSourceMode(_dataSourceValue);
+  static final DataSourceMode dataSourceMode = _resolveDataSourceMode(
+    _dataSourceValue,
+  );
 
   static DataSourceMode _resolveDataSourceMode(String value) {
     switch (value.toLowerCase()) {

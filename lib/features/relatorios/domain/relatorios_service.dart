@@ -16,7 +16,8 @@ abstract final class RelatoriosService {
       Relatorio(
         id: '#REL-001',
         titulo: 'Mapeamento de Demandas do Período',
-        descricao: 'Análise consolidada de todas as solicitações recebidas no semestre 2026.1',
+        descricao:
+            'Análise consolidada de todas as solicitações recebidas no semestre 2026.1',
         tipo: 'Análise Geral',
         data: '15/04/2026',
         autor: 'Coordenação Acadêmica',
@@ -25,7 +26,8 @@ abstract final class RelatoriosService {
       Relatorio(
         id: '#REL-002',
         titulo: 'Distribuição de Carga Horária Docente',
-        descricao: 'Relatório detalhado sobre equilíbrio de carga entre docentes',
+        descricao:
+            'Relatório detalhado sobre equilíbrio de carga entre docentes',
         tipo: 'Recursos Humanos',
         data: '12/04/2026',
         autor: 'Departamento de RH',
@@ -52,7 +54,8 @@ abstract final class RelatoriosService {
       Relatorio(
         id: '#REL-005',
         titulo: 'Conformidade com Normas ISO',
-        descricao: 'Avaliação de conformidade dos processos com normas internacionais',
+        descricao:
+            'Avaliação de conformidade dos processos com normas internacionais',
         tipo: 'Conformidade',
         data: '20/04/2026',
         autor: 'Auditoria Interna',
@@ -66,15 +69,19 @@ abstract final class RelatoriosService {
     required String busca,
     required String filtroStatus,
   }) {
-    return relatorios.where((relatorio) {
-      final filtroMatch = filtroStatus == 'Todos' || relatorio.status == filtroStatus;
-      final query = busca.trim().toLowerCase();
-      final buscaMatch = query.isEmpty ||
-          relatorio.titulo.toLowerCase().contains(query) ||
-          relatorio.descricao.toLowerCase().contains(query) ||
-          relatorio.autor.toLowerCase().contains(query);
-      return filtroMatch && buscaMatch;
-    }).toList(growable: false);
+    return relatorios
+        .where((relatorio) {
+          final filtroMatch =
+              filtroStatus == 'Todos' || relatorio.status == filtroStatus;
+          final query = busca.trim().toLowerCase();
+          final buscaMatch =
+              query.isEmpty ||
+              relatorio.titulo.toLowerCase().contains(query) ||
+              relatorio.descricao.toLowerCase().contains(query) ||
+              relatorio.autor.toLowerCase().contains(query);
+          return filtroMatch && buscaMatch;
+        })
+        .toList(growable: false);
   }
 
   static Relatorio registrarDownload(Relatorio relatorio) {

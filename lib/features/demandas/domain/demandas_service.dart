@@ -30,7 +30,10 @@ abstract final class DemandasService {
     'Comissão de Estágio',
   ];
 
-  static List<String> opcoesUnicas(Iterable<String> valores, {String? primeiro}) {
+  static List<String> opcoesUnicas(
+    Iterable<String> valores, {
+    String? primeiro,
+  }) {
     final vistos = <String>{};
     final resultado = <String>[];
 
@@ -108,17 +111,21 @@ abstract final class DemandasService {
     required String filtroStatus,
     required String filtroPrioridade,
   }) {
-    return demandas.where((d) {
-      final statusMatch = filtroStatus == 'Todas' || d.statusLabel == filtroStatus;
-      final prioridadeMatch =
-          filtroPrioridade == 'Todas' || d.prioridade == filtroPrioridade;
-      final query = busca.trim().toLowerCase();
-      final buscaMatch = query.isEmpty ||
-          d.titulo.toLowerCase().contains(query) ||
-          d.descricao.toLowerCase().contains(query) ||
-          d.proprietario.toLowerCase().contains(query);
-      return statusMatch && prioridadeMatch && buscaMatch;
-    }).toList(growable: false);
+    return demandas
+        .where((d) {
+          final statusMatch =
+              filtroStatus == 'Todas' || d.statusLabel == filtroStatus;
+          final prioridadeMatch =
+              filtroPrioridade == 'Todas' || d.prioridade == filtroPrioridade;
+          final query = busca.trim().toLowerCase();
+          final buscaMatch =
+              query.isEmpty ||
+              d.titulo.toLowerCase().contains(query) ||
+              d.descricao.toLowerCase().contains(query) ||
+              d.proprietario.toLowerCase().contains(query);
+          return statusMatch && prioridadeMatch && buscaMatch;
+        })
+        .toList(growable: false);
   }
 
   static List<Demanda> ordenarDemandas(
@@ -129,8 +136,9 @@ abstract final class DemandasService {
     switch (ordemSelecionada) {
       case 'Prioridade':
         list.sort((a, b) {
-          final prioridade =
-              pesoPrioridade(a.prioridade).compareTo(pesoPrioridade(b.prioridade));
+          final prioridade = pesoPrioridade(
+            a.prioridade,
+          ).compareTo(pesoPrioridade(b.prioridade));
           if (prioridade != 0) return prioridade;
           return parsePrazo(a.prazo).compareTo(parsePrazo(b.prazo));
         });

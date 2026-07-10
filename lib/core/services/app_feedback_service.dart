@@ -19,15 +19,16 @@ abstract final class AppFeedbackService {
     _show(context, message, background: SigadColors.risk);
   }
 
-  static void _show(BuildContext context, String message, {required Color background}) {
+  static void _show(
+    BuildContext context,
+    String message, {
+    required Color background,
+  }) {
     final messenger = ScaffoldMessenger.of(context);
     messenger
       ..hideCurrentSnackBar()
       ..showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: background,
-        ),
+        SnackBar(content: Text(message), backgroundColor: background),
       );
   }
 }

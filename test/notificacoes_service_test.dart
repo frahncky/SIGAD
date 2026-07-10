@@ -19,14 +19,20 @@ void main() {
     });
 
     test('servidorAdministrativo retorna notificações não vazias', () {
-      final lista = NotificacoesService.porRole(UserRole.servidorAdministrativo);
+      final lista = NotificacoesService.porRole(
+        UserRole.servidorAdministrativo,
+      );
       expect(lista, isNotEmpty);
     });
 
     test('chefeDepartamento retorna mais notificações que outros roles', () {
-      final chefeCount = NotificacoesService.porRole(UserRole.chefeDepartamento).length;
+      final chefeCount = NotificacoesService.porRole(
+        UserRole.chefeDepartamento,
+      ).length;
       final profCount = NotificacoesService.porRole(UserRole.professor).length;
-      final coordCount = NotificacoesService.porRole(UserRole.coordenador).length;
+      final coordCount = NotificacoesService.porRole(
+        UserRole.coordenador,
+      ).length;
       expect(chefeCount, greaterThanOrEqualTo(profCount));
       expect(chefeCount, greaterThanOrEqualTo(coordCount));
     });
@@ -35,7 +41,11 @@ void main() {
       for (final role in UserRole.values) {
         for (final notif in NotificacoesService.porRole(role)) {
           expect(notif.titulo, isNotEmpty, reason: 'titulo vazio em $role');
-          expect(notif.subtitulo, isNotEmpty, reason: 'subtitulo vazio em $role');
+          expect(
+            notif.subtitulo,
+            isNotEmpty,
+            reason: 'subtitulo vazio em $role',
+          );
           expect(notif.icone, isNotNull, reason: 'icone nulo em $role');
         }
       }

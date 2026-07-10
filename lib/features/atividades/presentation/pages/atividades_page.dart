@@ -15,63 +15,75 @@ class AtividadesPage extends StatefulWidget {
 }
 
 class _AtividadesPageState extends State<AtividadesPage> {
-    void _showFiltroAtividades(BuildContext context) {
-      showModalBottomSheet(
-        context: context,
-        builder: (context) => Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Filtrar atividades', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  IconButton(
-                    icon: const Icon(Icons.close),
+  void _showFiltroAtividades(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Filtrar atividades',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            RadioGroup<String>(
+              groupValue: _filtro,
+              onChanged: (value) {
+                if (value == null) return;
+                setState(() => _filtro = value);
+                Navigator.pop(context);
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: AtividadesService.statusAtividade
+                    .map(
+                      (status) => RadioListTile<String>(
+                        title: Text(status),
+                        value: status,
+                      ),
+                    )
+                    .toList(growable: false),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {
+                      setState(() => _filtro = 'Todas');
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Limpar'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
                     onPressed: () => Navigator.pop(context),
+                    child: const Text('Aplicar'),
                   ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              ...AtividadesService.statusAtividade.map((status) => RadioListTile<String>(
-                title: Text(status),
-                value: status,
-                groupValue: _filtro,
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() => _filtro = value);
-                    Navigator.pop(context);
-                  }
-                },
-              )),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        setState(() => _filtro = 'Todas');
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Limpar'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Aplicar'),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
-      );
-    }
+      ),
+    );
+  }
+
   String _busca = '';
   String _filtro = 'Todas';
   bool _isLoading = true;
@@ -105,7 +117,11 @@ class _AtividadesPageState extends State<AtividadesPage> {
         _isLoading = false;
       });
     } catch (error, stackTrace) {
-      AppEventLogger.error('atividades_load_error', error, stackTrace: stackTrace);
+      AppEventLogger.error(
+        'atividades_load_error',
+        error,
+        stackTrace: stackTrace,
+      );
       if (!mounted) return;
       setState(() {
         _isLoading = false;
@@ -118,13 +134,15 @@ class _AtividadesPageState extends State<AtividadesPage> {
     _atividadeRepository.saveAtividades(_atividades);
   }
 
-  List<Atividade> get _atividadesFiltradas => AtividadesService.filtrarAtividades(
-    atividades: _atividades,
-    busca: _busca,
-    filtro: _filtro,
-  );
+  List<Atividade> get _atividadesFiltradas =>
+      AtividadesService.filtrarAtividades(
+        atividades: _atividades,
+        busca: _busca,
+        filtro: _filtro,
+      );
 
-  int get _atividadesConcluidas => AtividadesService.countConcluidas(_atividades);
+  int get _atividadesConcluidas =>
+      AtividadesService.countConcluidas(_atividades);
 
   int get _atividadesPendentes => AtividadesService.countPendentes(_atividades);
 
@@ -157,7 +175,8 @@ class _AtividadesPageState extends State<AtividadesPage> {
                       child: TextField(
                         onChanged: (value) => setState(() => _busca = value),
                         decoration: const InputDecoration(
-                          hintText: 'Buscar por título, descrição ou responsável',
+                          hintText:
+                              'Buscar por título, descrição ou responsável',
                           prefixIcon: Icon(Icons.search_outlined),
                         ),
                       ),
@@ -176,7 +195,6 @@ class _AtividadesPageState extends State<AtividadesPage> {
                         child: const Icon(Icons.filter_list),
                       ),
                     ),
-                                         
                   ],
                 ),
                 //const SizedBox(height: 5),
@@ -186,26 +204,38 @@ class _AtividadesPageState extends State<AtividadesPage> {
           ),
           Expanded(
             child: _isLoading
-                ? const PageStatusView.loading(title: 'Carregando atividades...')
+                ? const PageStatusView.loading(
+                    title: 'Carregando atividades...',
+                  )
                 : _loadError != null
-                    ? PageStatusView.error(
-                        subtitle: _loadError,
-                        onAction: _loadData,
-                      )
-                    : atividadesFiltradas.isEmpty
-                        ? const PageStatusView.empty(
-                            icon: Icons.checklist,
-                            title: 'Nenhuma atividade encontrada',
-                            subtitle: 'Ajuste os filtros ou crie uma nova atividade.',
-                          )
+                ? PageStatusView.error(
+                    subtitle: _loadError,
+                    onAction: _loadData,
+                  )
+                : atividadesFiltradas.isEmpty
+                ? const PageStatusView.empty(
+                    icon: Icons.checklist,
+                    title: 'Nenhuma atividade encontrada',
+                    subtitle: 'Ajuste os filtros ou crie uma nova atividade.',
+                  )
                 : ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     itemCount: atividadesFiltradas.length,
-                    separatorBuilder: (context, i) => const SizedBox(height: 12),
+                    separatorBuilder: (context, i) =>
+                        const SizedBox(height: 12),
                     itemBuilder: (_, index) => _AtividadeCard(
                       atividade: atividadesFiltradas[index],
-                      onEditar: () => _showEditarAtividade(context, atividadesFiltradas[index]),
-                      onExcluir: () => _showConfirmarExclusao(context, atividadesFiltradas[index]),
+                      onEditar: () => _showEditarAtividade(
+                        context,
+                        atividadesFiltradas[index],
+                      ),
+                      onExcluir: () => _showConfirmarExclusao(
+                        context,
+                        atividadesFiltradas[index],
+                      ),
                     ),
                   ),
           ),
@@ -247,7 +277,12 @@ class _AtividadesPageState extends State<AtividadesPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Nova Atividade', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                    Text(
+                      'Nova Atividade',
+                      style: textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                     IconButton(
                       tooltip: 'Fechar formulário',
                       onPressed: () => Navigator.pop(context),
@@ -279,16 +314,25 @@ class _AtividadesPageState extends State<AtividadesPage> {
                   items: AtividadesService.responsaveis
                       .map((r) => DropdownMenuItem(value: r, child: Text(r)))
                       .toList(),
-                  onChanged: (value) => setModalState(() => responsavelSelecionado = value!),
+                  onChanged: (value) =>
+                      setModalState(() => responsavelSelecionado = value!),
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   initialValue: statusSelecionado,
-                  decoration: const InputDecoration(labelText: 'Status inicial'),
+                  decoration: const InputDecoration(
+                    labelText: 'Status inicial',
+                  ),
                   items: AtividadesService.statusAtividade
-                      .map((status) => DropdownMenuItem(value: status, child: Text(status)))
+                      .map(
+                        (status) => DropdownMenuItem(
+                          value: status,
+                          child: Text(status),
+                        ),
+                      )
                       .toList(),
-                  onChanged: (value) => setModalState(() => statusSelecionado = value!),
+                  onChanged: (value) =>
+                      setModalState(() => statusSelecionado = value!),
                 ),
                 const Spacer(),
                 Row(
@@ -315,10 +359,13 @@ class _AtividadesPageState extends State<AtividadesPage> {
                             _atividades.insert(
                               0,
                               Atividade(
-                                id: AtividadesService.gerarProximoIdAtividade(_atividades),
+                                id: AtividadesService.gerarProximoIdAtividade(
+                                  _atividades,
+                                ),
                                 titulo: tituloController.text.trim(),
                                 descricao: descricaoController.text.trim(),
-                                data: AtividadesService.dataPadraoNovaAtividade(),
+                                data:
+                                    AtividadesService.dataPadraoNovaAtividade(),
                                 responsavel: responsavelSelecionado,
                                 status: statusSelecionado,
                               ),
@@ -344,7 +391,9 @@ class _AtividadesPageState extends State<AtividadesPage> {
   void _showEditarAtividade(BuildContext context, Atividade atividade) {
     final textTheme = Theme.of(context).textTheme;
     final tituloController = TextEditingController(text: atividade.titulo);
-    final descricaoController = TextEditingController(text: atividade.descricao);
+    final descricaoController = TextEditingController(
+      text: atividade.descricao,
+    );
     String responsavelSelecionado = atividade.responsavel;
     String statusSelecionado = atividade.status;
 
@@ -367,7 +416,12 @@ class _AtividadesPageState extends State<AtividadesPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Editar Atividade', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                    Text(
+                      'Editar Atividade',
+                      style: textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                     IconButton(
                       tooltip: 'Fechar formulário',
                       onPressed: () => Navigator.pop(context),
@@ -399,16 +453,23 @@ class _AtividadesPageState extends State<AtividadesPage> {
                   items: AtividadesService.responsaveis
                       .map((r) => DropdownMenuItem(value: r, child: Text(r)))
                       .toList(),
-                  onChanged: (value) => setModalState(() => responsavelSelecionado = value!),
+                  onChanged: (value) =>
+                      setModalState(() => responsavelSelecionado = value!),
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   initialValue: statusSelecionado,
                   decoration: const InputDecoration(labelText: 'Status'),
                   items: AtividadesService.statusAtividade
-                      .map((status) => DropdownMenuItem(value: status, child: Text(status)))
+                      .map(
+                        (status) => DropdownMenuItem(
+                          value: status,
+                          child: Text(status),
+                        ),
+                      )
                       .toList(),
-                  onChanged: (value) => setModalState(() => statusSelecionado = value!),
+                  onChanged: (value) =>
+                      setModalState(() => statusSelecionado = value!),
                 ),
                 const Spacer(),
                 Row(
@@ -432,7 +493,9 @@ class _AtividadesPageState extends State<AtividadesPage> {
                             return;
                           }
                           setState(() {
-                            final index = _atividades.indexWhere((item) => item.id == atividade.id);
+                            final index = _atividades.indexWhere(
+                              (item) => item.id == atividade.id,
+                            );
                             if (index >= 0) {
                               _atividades[index] = atividade.copyWith(
                                 titulo: tituloController.text.trim(),
@@ -513,14 +576,19 @@ class _AtividadesSummaryBanner extends StatelessWidget {
         children: [
           Text(
             'Agenda operacional',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 14),
           Row(
             children: [
               _AtividadesKpi(label: 'No total', value: '$totalAtividades'),
               const SizedBox(width: 8),
-              _AtividadesKpi(label: 'Concluídas', value: '$atividadesConcluidas'),
+              _AtividadesKpi(
+                label: 'Concluídas',
+                value: '$atividadesConcluidas',
+              ),
               const SizedBox(width: 8),
               _AtividadesKpi(label: 'Pendentes', value: '$atividadesPendentes'),
             ],
@@ -549,9 +617,19 @@ class _AtividadesKpi extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted)),
+            Text(
+              label,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+            ),
             const SizedBox(height: 4),
-            Text(value, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+            Text(
+              value,
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+            ),
           ],
         ),
       ),
@@ -577,130 +655,140 @@ class _AtividadeCard extends StatelessWidget {
       button: true,
       label: 'Abrir atividade ${atividade.titulo}',
       child: GestureDetector(
-      onTap: () => _showDetalhes(context),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: SigadColors.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: SigadColors.divider),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 4,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: AtividadesService.statusColor(atividade.status),
-                    borderRadius: BorderRadius.circular(2),
+        onTap: () => _showDetalhes(context),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: SigadColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: SigadColors.divider),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 4,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: AtividadesService.statusColor(atividade.status),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        atividade.id,
-                        style: textTheme.labelSmall?.copyWith(
-                          color: SigadColors.muted,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          atividade.id,
+                          style: textTheme.labelSmall?.copyWith(
+                            color: SigadColors.muted,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          atividade.titulo,
+                          style: textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AtividadesService.statusColor(
+                        atividade.status,
+                      ).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      atividade.status,
+                      style: textTheme.labelSmall?.copyWith(
+                        color: AtividadesService.statusColor(atividade.status),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  PopupMenuButton<String>(
+                    tooltip: 'Mais ações da atividade',
+                    onSelected: (value) => _onMenuItemSelected(context, value),
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'editar',
+                        child: Row(
+                          children: [
+                            Icon(Icons.edit, size: 18),
+                            SizedBox(width: 8),
+                            Text('Editar'),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        atividade.titulo,
-                        style: textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
+                      const PopupMenuItem(
+                        value: 'excluir',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete, color: Colors.red, size: 18),
+                            SizedBox(width: 8),
+                            Text(
+                              'Excluir',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ],
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
+                    icon: const Icon(Icons.more_vert, size: 18),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AtividadesService.statusColor(atividade.status).withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    atividade.status,
-                    style: textTheme.labelSmall?.copyWith(
-                      color: AtividadesService.statusColor(atividade.status),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                PopupMenuButton<String>(
-                  tooltip: 'Mais ações da atividade',
-                  onSelected: (value) => _onMenuItemSelected(context, value),
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 'editar',
-                      child: Row(
-                        children: [
-                          Icon(Icons.edit, size: 18),
-                          SizedBox(width: 8),
-                          Text('Editar'),
-                        ],
-                      ),
-                    ),
-                    const PopupMenuItem(
-                      value: 'excluir',
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete, color: Colors.red, size: 18),
-                          SizedBox(width: 8),
-                          Text('Excluir', style: TextStyle(color: Colors.red)),
-                        ],
-                      ),
-                    ),
-                  ],
-                  icon: const Icon(Icons.more_vert, size: 18),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(
-              atividade.descricao,
-              style: textTheme.bodySmall?.copyWith(
-                color: SigadColors.muted,
+                ],
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(child: _InfoChip(
-                  icon: Icons.person_outline,
-                  label: atividade.responsavel,
-                )),
-                const SizedBox(width: 8),
-                Flexible(child: _InfoChip(
-                  icon: Icons.calendar_today,
-                  label: atividade.data,
-                )),
-              ],
-            ),
-          ],
+              const SizedBox(height: 12),
+              Text(
+                atividade.descricao,
+                style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: _InfoChip(
+                      icon: Icons.person_outline,
+                      label: atividade.responsavel,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: _InfoChip(
+                      icon: Icons.calendar_today,
+                      label: atividade.data,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 
@@ -732,13 +820,20 @@ class _AtividadeCard extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(atividade.id, style: textTheme.labelSmall?.copyWith(color: SigadColors.muted)),
+                      Text(
+                        atividade.id,
+                        style: textTheme.labelSmall?.copyWith(
+                          color: SigadColors.muted,
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       SizedBox(
                         width: 260, // valor fixo ou ajuste conforme necessário
                         child: Text(
                           atividade.titulo,
-                          style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700), // fonte menor
+                          style: textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ), // fonte menor
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -753,22 +848,13 @@ class _AtividadeCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 24),
-              _DetailSection(
-                label: 'Descrição',
-                value: atividade.descricao,
-              ),
+              _DetailSection(label: 'Descrição', value: atividade.descricao),
               _DetailSection(
                 label: 'Responsável',
                 value: atividade.responsavel,
               ),
-              _DetailSection(
-                label: 'Data',
-                value: atividade.data,
-              ),
-              _DetailSection(
-                label: 'Status',
-                value: atividade.status,
-              ),
+              _DetailSection(label: 'Data', value: atividade.data),
+              _DetailSection(label: 'Status', value: atividade.status),
               const SizedBox(height: 24),
               Row(
                 children: [

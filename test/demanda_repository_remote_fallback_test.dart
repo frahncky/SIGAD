@@ -94,10 +94,7 @@ void main() {
         enableRemoteFallback: false,
       );
 
-      expect(
-        repo.loadDemandas,
-        throwsA(isA<ApiError>()),
-      );
+      expect(repo.loadDemandas, throwsA(isA<ApiError>()));
     });
   });
 }

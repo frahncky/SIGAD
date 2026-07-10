@@ -21,7 +21,9 @@ abstract final class AgendaConvitesService {
       titulo: titulo,
       descricao: descricao,
       inicio: inicio,
-      inicioIso: (inicioDateTime ?? DateTime.now().add(const Duration(minutes: 45))).toIso8601String(),
+      inicioIso:
+          (inicioDateTime ?? DateTime.now().add(const Duration(minutes: 45)))
+              .toIso8601String(),
       local: local,
       origem: origem,
       destinatarioUserId: destinatarioUserId,

@@ -199,7 +199,10 @@ void main() {
       expect(resultado.propostas, isNotEmpty);
       expect(resultado.propostas.first.docenteOrigemId, '#DOC-301');
       expect(resultado.propostas.first.docenteDestinoId, '#DOC-302');
-      expect(resultado.mediaOcupacaoDepois, lessThanOrEqualTo(resultado.mediaOcupacaoAntes));
+      expect(
+        resultado.mediaOcupacaoDepois,
+        lessThanOrEqualTo(resultado.mediaOcupacaoAntes),
+      );
     });
 
     test('detecta conflito ao tentar encaixar horario existente', () {
@@ -223,7 +226,10 @@ void main() {
       );
 
       expect(conflito, isTrue);
-      expect(DocenteFormService.cargaSemanalDoHorario(candidato), greaterThanOrEqualTo(1));
+      expect(
+        DocenteFormService.cargaSemanalDoHorario(candidato),
+        greaterThanOrEqualTo(1),
+      );
     });
   });
 }

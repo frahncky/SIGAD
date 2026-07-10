@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
@@ -19,27 +19,34 @@ class ConfiguracoesPage extends StatefulWidget {
 }
 
 class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
-  bool _notificacoesAtivas = ConfiguracoesService.defaultData().notificacoesAtivas;
-  bool _notificarAntesDaDisciplina = ConfiguracoesService.defaultData().notificarAntesDaDisciplina;
-  int _antecedenciaNotificacaoMinutos = ConfiguracoesService.defaultData().antecedenciaNotificacaoMinutos;
+  bool _notificacoesAtivas =
+      ConfiguracoesService.defaultData().notificacoesAtivas;
+  bool _notificarAntesDaDisciplina =
+      ConfiguracoesService.defaultData().notificarAntesDaDisciplina;
+  int _antecedenciaNotificacaoMinutos =
+      ConfiguracoesService.defaultData().antecedenciaNotificacaoMinutos;
   bool _modoDark = ConfiguracoesService.defaultData().modoDark;
   bool _biometriaAtiva = ConfiguracoesService.defaultData().biometriaAtiva;
-  bool _backupAutomaticoAtivo = ConfiguracoesService.defaultData().backupAutomaticoAtivo;
+  bool _backupAutomaticoAtivo =
+      ConfiguracoesService.defaultData().backupAutomaticoAtivo;
   String _idioma = ConfiguracoesService.defaultData().idioma;
   String _tamanhoFonte = ConfiguracoesService.defaultData().tamanhoFonte;
   String _nomePerfil = ConfiguracoesService.defaultData().nomePerfil;
   String _cargoPerfil = ConfiguracoesService.defaultData().cargoPerfil;
   String _emailUsuario = ConfiguracoesService.defaultData().emailUsuario;
-  String _ultimaAlteracaoSenha = ConfiguracoesService.defaultData().ultimaAlteracaoSenha;
+  String _ultimaAlteracaoSenha =
+      ConfiguracoesService.defaultData().ultimaAlteracaoSenha;
   String _proximoBackup = ConfiguracoesService.defaultData().proximoBackup;
   String _ultimoBackup = ConfiguracoesService.defaultData().ultimoBackup;
-  int _problemasReportados = ConfiguracoesService.defaultData().problemasReportados;
+  int _problemasReportados =
+      ConfiguracoesService.defaultData().problemasReportados;
   List<CompromissoAgenda> _agendaCompromissos = List<CompromissoAgenda>.of(
     ConfiguracoesService.defaultData().agendaCompromissos,
     growable: true,
   );
 
-  final ConfiguracoesRepository _configuracoesRepository = ConfiguracoesRepository();
+  final ConfiguracoesRepository _configuracoesRepository =
+      ConfiguracoesRepository();
 
   @override
   void initState() {
@@ -144,7 +151,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 value: _notificacoesAtivas,
                 onChanged: (value) {
                   setState(() => _notificacoesAtivas = value);
-                                  _saveData();
+                  _saveData();
                 },
               ),
               _ConfigToggle(
@@ -155,7 +162,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 onChanged: (value) {
                   setState(() => _modoDark = value);
                   context.read<ThemeProvider>().setDark(value);
-                                  _saveData();
+                  _saveData();
                 },
               ),
               _ConfigToggle(
@@ -165,7 +172,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 value: _biometriaAtiva,
                 onChanged: (value) {
                   setState(() => _biometriaAtiva = value);
-                                  _saveData();
+                  _saveData();
                 },
               ),
             ],
@@ -196,7 +203,10 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                         .toList(growable: false),
                     onChanged: (valor) {
                       final minutos = int.parse(valor.replaceAll(' min', ''));
-                      final erro = ConfiguracoesService.validarAntecedenciaDisciplina(minutos);
+                      final erro =
+                          ConfiguracoesService.validarAntecedenciaDisciplina(
+                            minutos,
+                          );
                       if (erro != null) {
                         _mostrarFeedback(erro);
                         return;
@@ -215,28 +225,20 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 icon: Icons.language,
                 titulo: 'Idioma',
                 valor: _idioma,
-                opcoes: [
-                  'Português (Brasil)',
-                  'English',
-                  'Español',
-                ],
+                opcoes: ['Português (Brasil)', 'English', 'Español'],
                 onChanged: (valor) {
                   setState(() => _idioma = valor);
-                                  _saveData();
+                  _saveData();
                 },
               ),
               _ConfigDropdown(
                 icon: Icons.text_fields,
                 titulo: 'Tamanho da fonte',
                 valor: _tamanhoFonte,
-                opcoes: [
-                  'Pequeno',
-                  'Médio',
-                  'Grande',
-                ],
+                opcoes: ['Pequeno', 'Médio', 'Grande'],
                 onChanged: (valor) {
                   setState(() => _tamanhoFonte = valor);
-                                  _saveData();
+                  _saveData();
                 },
               ),
             ],
@@ -367,7 +369,12 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Editar Perfil', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                Text(
+                  'Editar Perfil',
+                  style: textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 IconButton(
                   tooltip: 'Fechar edição de perfil',
                   onPressed: () => Navigator.pop(context),
@@ -404,14 +411,14 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                        final erro = ConfiguracoesService.validarPerfil(
-                          nome: nomeController.text,
-                          cargo: cargoController.text,
-                        );
-                        if (erro != null) {
-                          _mostrarFeedback(erro);
+                      final erro = ConfiguracoesService.validarPerfil(
+                        nome: nomeController.text,
+                        cargo: cargoController.text,
+                      );
+                      if (erro != null) {
+                        _mostrarFeedback(erro);
                         return;
-                        }
+                      }
 
                       setState(() {
                         _nomePerfil = nomeController.text.trim();
@@ -449,7 +456,12 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Alterar Email', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                Text(
+                  'Alterar Email',
+                  style: textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 IconButton(
                   tooltip: 'Fechar alteração de email',
                   onPressed: () => Navigator.pop(context),
@@ -485,11 +497,11 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                   child: ElevatedButton(
                     onPressed: () {
                       final email = emailController.text.trim();
-                        final erro = ConfiguracoesService.validarEmail(email);
-                        if (erro != null) {
-                          _mostrarFeedback(erro);
+                      final erro = ConfiguracoesService.validarEmail(email);
+                      if (erro != null) {
+                        _mostrarFeedback(erro);
                         return;
-                        }
+                      }
 
                       setState(() {
                         _emailUsuario = email;
@@ -528,7 +540,12 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Alterar Senha', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                Text(
+                  'Alterar Senha',
+                  style: textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 IconButton(
                   tooltip: 'Fechar alteração de senha',
                   onPressed: () => Navigator.pop(context),
@@ -578,20 +595,22 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                     onPressed: () {
                       final senhaAtual = senhaAtualController.text.trim();
                       final novaSenha = novaSenhaController.text.trim();
-                      final confirmarSenha = confirmarSenhaController.text.trim();
+                      final confirmarSenha = confirmarSenhaController.text
+                          .trim();
 
-                        final erro = ConfiguracoesService.validarAlteracaoSenha(
-                          senhaAtual: senhaAtual,
-                          novaSenha: novaSenha,
-                          confirmarSenha: confirmarSenha,
-                        );
-                        if (erro != null) {
-                          _mostrarFeedback(erro);
-                          return;
-                        }
+                      final erro = ConfiguracoesService.validarAlteracaoSenha(
+                        senhaAtual: senhaAtual,
+                        novaSenha: novaSenha,
+                        confirmarSenha: confirmarSenha,
+                      );
+                      if (erro != null) {
+                        _mostrarFeedback(erro);
+                        return;
+                      }
 
                       setState(() {
-                          _ultimaAlteracaoSenha = ConfiguracoesService.dataAtual();
+                        _ultimaAlteracaoSenha =
+                            ConfiguracoesService.dataAtual();
                       });
                       _saveData();
 
@@ -623,7 +642,12 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Backup Automático', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                  Text(
+                    'Backup Automático',
+                    style: textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                   IconButton(
                     tooltip: 'Fechar backup automático',
                     onPressed: () => Navigator.pop(context),
@@ -634,7 +658,9 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               const SizedBox(height: 24),
               Text(
                 'Configurações de Backup',
-                style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+                style: textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const SizedBox(height: 16),
               _ConfigToggle(
@@ -645,7 +671,9 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 onChanged: (value) {
                   setState(() {
                     _backupAutomaticoAtivo = value;
-                    _proximoBackup = value ? ConfiguracoesService.dataFutura(1) : 'Desativado';
+                    _proximoBackup = value
+                        ? ConfiguracoesService.dataFutura(1)
+                        : 'Desativado';
                   });
                   _saveData();
                   setModalState(() {});
@@ -664,7 +692,9 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                       onPressed: () {
                         setState(() {
                           _ultimoBackup = ConfiguracoesService.dataHoraAtual();
-                          _proximoBackup = _backupAutomaticoAtivo ? ConfiguracoesService.dataFutura(1) : 'Desativado';
+                          _proximoBackup = _backupAutomaticoAtivo
+                              ? ConfiguracoesService.dataFutura(1)
+                              : 'Desativado';
                         });
                         _saveData();
                         Navigator.pop(context);
@@ -696,7 +726,12 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Política de Privacidade', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                Text(
+                  'Política de Privacidade',
+                  style: textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 IconButton(
                   tooltip: 'Fechar política de privacidade',
                   onPressed: () => Navigator.pop(context),
@@ -756,7 +791,12 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Termos de Serviço', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                Text(
+                  'Termos de Serviço',
+                  style: textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 IconButton(
                   tooltip: 'Fechar termos de serviço',
                   onPressed: () => Navigator.pop(context),
@@ -817,7 +857,12 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Sobre o SIGAD', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                Text(
+                  'Sobre o SIGAD',
+                  style: textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 IconButton(
                   tooltip: 'Fechar sobre o SIGAD',
                   onPressed: () => Navigator.pop(context),
@@ -848,9 +893,15 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
             ),
             const SizedBox(height: 24),
             _DetailSection(label: 'Versão', value: '1.0.0 (Build 42)'),
-            _DetailSection(label: 'Desenvolvido por', value: 'Equipe de Desenvolvimento SIGAD'),
+            _DetailSection(
+              label: 'Desenvolvido por',
+              value: 'Equipe de Desenvolvimento SIGAD',
+            ),
             _DetailSection(label: 'Data de lançamento', value: '15/03/2026'),
-            _DetailSection(label: 'Compatibilidade', value: 'Android 8.0+, iOS 12.0+'),
+            _DetailSection(
+              label: 'Compatibilidade',
+              value: 'Android 8.0+, iOS 12.0+',
+            ),
             const SizedBox(height: 24),
             Text(
               'O SIGAD é um sistema integrado de gestão acadêmica desenvolvido para otimizar processos administrativos e acadêmicos.',
@@ -888,7 +939,12 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Reportar Problema', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                Text(
+                  'Reportar Problema',
+                  style: textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 IconButton(
                   tooltip: 'Fechar relato de problema',
                   onPressed: () => Navigator.pop(context),
@@ -910,7 +966,8 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               maxLines: 5,
               decoration: const InputDecoration(
                 labelText: 'Descrição Detalhada',
-                hintText: 'Descreva o problema em detalhes, incluindo passos para reproduzir',
+                hintText:
+                    'Descreva o problema em detalhes, incluindo passos para reproduzir',
               ),
             ),
             const SizedBox(height: 16),
@@ -931,14 +988,14 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                        final erro = ConfiguracoesService.validarRelatoProblema(
-                          titulo: tituloController.text,
-                          descricao: descricaoController.text,
-                        );
-                        if (erro != null) {
-                          _mostrarFeedback(erro);
+                      final erro = ConfiguracoesService.validarRelatoProblema(
+                        titulo: tituloController.text,
+                        descricao: descricaoController.text,
+                      );
+                      if (erro != null) {
+                        _mostrarFeedback(erro);
                         return;
-                        }
+                      }
 
                       setState(() {
                         _problemasReportados += 1;
@@ -975,14 +1032,15 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
             child: const Text('Cancelar'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
+              await context.read<UserContextProvider>().logout();
+              if (!context.mounted) return;
+              await Navigator.of(
+                context,
+              ).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
             },
-            child: Text(
-              'Sair',
-              style: TextStyle(color: SigadColors.risk),
-            ),
+            child: Text('Sair', style: TextStyle(color: SigadColors.risk)),
           ),
         ],
       ),
@@ -1016,10 +1074,7 @@ class _ConfiguracoesAccessDenied extends StatelessWidget {
 }
 
 class _ConfigSection extends StatelessWidget {
-  const _ConfigSection({
-    required this.titulo,
-    required this.children,
-  });
+  const _ConfigSection({required this.titulo, required this.children});
 
   final String titulo;
   final List<Widget> children;
@@ -1041,17 +1096,17 @@ class _ConfigSection extends StatelessWidget {
           ),
         ),
         ...children.asMap().entries.map(
-              (entry) => Column(
-                children: [
-                  entry.value,
-                  if (entry.key < children.length - 1)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Divider(color: SigadColors.divider),
-                    ),
-                ],
-              ),
-            ),
+          (entry) => Column(
+            children: [
+              entry.value,
+              if (entry.key < children.length - 1)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Divider(color: SigadColors.divider),
+                ),
+            ],
+          ),
+        ),
         const SizedBox(height: 8),
       ],
     );
@@ -1188,7 +1243,9 @@ class _ConfigDropdown extends StatelessWidget {
               children: [
                 Text(
                   titulo,
-                  style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                  style: textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Container(
@@ -1203,10 +1260,12 @@ class _ConfigDropdown extends StatelessWidget {
                     isExpanded: true,
                     underline: const SizedBox(),
                     items: opcoes
-                        .map((opcao) => DropdownMenuItem(
-                              value: opcao,
-                              child: Text(opcao, style: textTheme.bodySmall),
-                            ))
+                        .map(
+                          (opcao) => DropdownMenuItem(
+                            value: opcao,
+                            child: Text(opcao, style: textTheme.bodySmall),
+                          ),
+                        )
                         .toList(),
                     onChanged: (newValue) {
                       if (newValue != null) {

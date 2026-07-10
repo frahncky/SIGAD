@@ -27,7 +27,7 @@ class RoleBasedWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userContext = context.watch<UserContextProvider>();
-    
+
     if (!userContext.isAuthenticated) {
       return defaultWidget ?? const SizedBox();
     }
@@ -63,11 +63,11 @@ class RoleRestrictedWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userContext = context.watch<UserContextProvider>();
-    
+
     if (userContext.hasAnyRole(allowedRoles)) {
       return child;
     }
-    
+
     return restrictedWidget ?? const SizedBox();
   }
 }
@@ -113,10 +113,7 @@ class _ProfessorDashboard extends StatelessWidget {
 
   Widget _buildSection(String title) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Text(title),
-      ),
+      child: Padding(padding: const EdgeInsets.all(16), child: Text(title)),
     );
   }
 }
@@ -143,10 +140,7 @@ class _CoordDashboard extends StatelessWidget {
 
   Widget _buildSection(String title) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Text(title),
-      ),
+      child: Padding(padding: const EdgeInsets.all(16), child: Text(title)),
     );
   }
 }
@@ -173,10 +167,7 @@ class _AdminDashboard extends StatelessWidget {
 
   Widget _buildSection(String title) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Text(title),
-      ),
+      child: Padding(padding: const EdgeInsets.all(16), child: Text(title)),
     );
   }
 }
@@ -205,10 +196,7 @@ class _ChefeDashboard extends StatelessWidget {
 
   Widget _buildSection(String title) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Text(title),
-      ),
+      child: Padding(padding: const EdgeInsets.all(16), child: Text(title)),
     );
   }
 }
@@ -230,7 +218,7 @@ class ConfigurationsExample extends StatelessWidget {
             // Seção comum a todos
             const Text('Perfil do Usuário'),
             const SizedBox(height: 16),
-            
+
             // Seção apenas para coordenador e chefe
             RoleRestrictedWidget(
               allowedRoles: {UserRole.coordenador, UserRole.chefeDepartamento},
@@ -247,7 +235,7 @@ class ConfigurationsExample extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Seção apenas para chefe
             RoleRestrictedWidget(
               allowedRoles: {UserRole.chefeDepartamento},
@@ -289,25 +277,28 @@ class AdministrativeActionExample extends StatelessWidget {
             RoleRestrictedWidget(
               allowedRoles: {UserRole.chefeDepartamento},
               child: ElevatedButton(
-                onPressed: () => Navigator.of(context).pushNamed(AppRoutes.configuracoes),
+                onPressed: () =>
+                    Navigator.of(context).pushNamed(AppRoutes.configuracoes),
                 child: const Text('Configurar Departamento'),
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Botão visible apenas para coordenador e chefe
             RoleRestrictedWidget(
               allowedRoles: {UserRole.coordenador, UserRole.chefeDepartamento},
               child: ElevatedButton(
-                onPressed: () => Navigator.of(context).pushNamed(AppRoutes.demandas),
+                onPressed: () =>
+                    Navigator.of(context).pushNamed(AppRoutes.demandas),
                 child: const Text('Criar Demanda'),
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Botão visível para todos
             ElevatedButton(
-              onPressed: () => Navigator.of(context).pushNamed(AppRoutes.atividades),
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(AppRoutes.atividades),
               child: const Text('Ver Atividades'),
             ),
           ],

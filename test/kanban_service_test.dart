@@ -6,8 +6,18 @@ void main() {
   group('KanbanService', () {
     test('monta colunas e calcula próximo id', () {
       const cards = [
-        KanbanCardModel(id: 1, titulo: 'A', coluna: 'Backlog', prioridade: 'Alta'),
-        KanbanCardModel(id: 2, titulo: 'B', coluna: 'Concluído', prioridade: 'Baixa'),
+        KanbanCardModel(
+          id: 1,
+          titulo: 'A',
+          coluna: 'Backlog',
+          prioridade: 'Alta',
+        ),
+        KanbanCardModel(
+          id: 2,
+          titulo: 'B',
+          coluna: 'Concluído',
+          prioridade: 'Baixa',
+        ),
       ];
 
       final colunas = KanbanService.buildColunas(cards);

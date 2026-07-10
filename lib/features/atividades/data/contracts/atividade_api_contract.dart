@@ -19,40 +19,40 @@ class AtividadeDto {
   final String status;
 
   factory AtividadeDto.fromJson(Map<String, dynamic> json) => AtividadeDto(
-        id: json['id'] as String,
-        titulo: json['titulo'] as String,
-        descricao: json['descricao'] as String,
-        data: json['data'] as String,
-        responsavel: json['responsavel'] as String,
-        status: json['status'] as String,
-      );
+    id: json['id'] as String,
+    titulo: json['titulo'] as String,
+    descricao: json['descricao'] as String,
+    data: json['data'] as String,
+    responsavel: json['responsavel'] as String,
+    status: json['status'] as String,
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'titulo': titulo,
-        'descricao': descricao,
-        'data': data,
-        'responsavel': responsavel,
-        'status': status,
-      };
+    'id': id,
+    'titulo': titulo,
+    'descricao': descricao,
+    'data': data,
+    'responsavel': responsavel,
+    'status': status,
+  };
 
   Atividade toDomain() => Atividade(
-        id: id,
-        titulo: titulo,
-        descricao: descricao,
-        data: data,
-        responsavel: responsavel,
-        status: status,
-      );
+    id: id,
+    titulo: titulo,
+    descricao: descricao,
+    data: data,
+    responsavel: responsavel,
+    status: status,
+  );
 
   static AtividadeDto fromDomain(Atividade atividade) => AtividadeDto(
-        id: atividade.id,
-        titulo: atividade.titulo,
-        descricao: atividade.descricao,
-        data: atividade.data,
-        responsavel: atividade.responsavel,
-        status: atividade.status,
-      );
+    id: atividade.id,
+    titulo: atividade.titulo,
+    descricao: atividade.descricao,
+    data: atividade.data,
+    responsavel: atividade.responsavel,
+    status: atividade.status,
+  );
 }
 
 abstract final class AtividadeApiContract {

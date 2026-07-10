@@ -33,7 +33,9 @@ class AuthSessionRepository {
         email: raw['email'] as String,
         role: role,
         createdAt: DateTime.parse(raw['createdAt'] as String),
-        lastLogin: raw['lastLogin'] == null ? null : DateTime.parse(raw['lastLogin'] as String),
+        lastLogin: raw['lastLogin'] == null
+            ? null
+            : DateTime.parse(raw['lastLogin'] as String),
       );
 
       return AuthSessionData(

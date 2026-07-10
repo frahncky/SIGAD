@@ -16,9 +16,11 @@ class DemandaRepository implements EntityRepository<Demanda> {
     AppHttpClient? remoteClient,
     DataSourceMode? dataSourceMode,
     bool? enableRemoteFallback,
-  })  : _remoteClient = remoteClient ?? HttpPackageClient(httpClient: http.Client()),
-        _dataSourceMode = dataSourceMode ?? AppRuntimeConfig.dataSourceMode,
-        _enableRemoteFallback = enableRemoteFallback ?? AppRuntimeConfig.enableRemoteFallback;
+  }) : _remoteClient =
+           remoteClient ?? HttpPackageClient(httpClient: http.Client()),
+       _dataSourceMode = dataSourceMode ?? AppRuntimeConfig.dataSourceMode,
+       _enableRemoteFallback =
+           enableRemoteFallback ?? AppRuntimeConfig.enableRemoteFallback;
 
   final String storageKey;
   final AppHttpClient _remoteClient;
@@ -39,7 +41,11 @@ class DemandaRepository implements EntityRepository<Demanda> {
     try {
       return await _loadRemoteDemandas();
     } catch (error, stackTrace) {
-      AppEventLogger.error('demandas_remote_load_error', error, stackTrace: stackTrace);
+      AppEventLogger.error(
+        'demandas_remote_load_error',
+        error,
+        stackTrace: stackTrace,
+      );
       if (_enableRemoteFallback) {
         AppEventLogger.action('demandas_remote_load_fallback_local');
         return _loadLocalDemandas();
@@ -57,7 +63,11 @@ class DemandaRepository implements EntityRepository<Demanda> {
       await _saveRemoteDemandas(demandas);
       await _saveLocalDemandas(demandas);
     } catch (error, stackTrace) {
-      AppEventLogger.error('demandas_remote_save_error', error, stackTrace: stackTrace);
+      AppEventLogger.error(
+        'demandas_remote_save_error',
+        error,
+        stackTrace: stackTrace,
+      );
       if (_enableRemoteFallback) {
         AppEventLogger.action('demandas_remote_save_fallback_local');
         return _saveLocalDemandas(demandas);
@@ -108,7 +118,9 @@ class DemandaRepository implements EntityRepository<Demanda> {
   }
 
   Future<void> _saveRemoteDemandas(List<Demanda> demandas) {
-    final payload = demandas.map((item) => DemandaDto.fromDomain(item).toJson()).toList(growable: false);
+    final payload = demandas
+        .map((item) => DemandaDto.fromDomain(item).toJson())
+        .toList(growable: false);
     return _remoteClient.send(
       ApiRequest(
         path: DemandaApiContract.collectionPath,
@@ -120,7 +132,10 @@ class DemandaRepository implements EntityRepository<Demanda> {
 
   List<Map<String, dynamic>> _extractListPayload(Object? body) {
     if (body is List) {
-      return body.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList(growable: false);
+      return body
+          .whereType<Map>()
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList(growable: false);
     }
     if (body is Map<String, dynamic>) {
       final nested = body['items'] ?? body['data'];
@@ -135,22 +150,22 @@ class DemandaRepository implements EntityRepository<Demanda> {
   }
 
   Map<String, dynamic> _demandaToJson(Demanda d) => {
-        'id': d.id,
-        'titulo': d.titulo,
-        'descricao': d.descricao,
-        'prioridade': d.prioridade,
-        'statusLabel': d.statusLabel,
-        'proprietario': d.proprietario,
-        'prazo': d.prazo,
-      };
+    'id': d.id,
+    'titulo': d.titulo,
+    'descricao': d.descricao,
+    'prioridade': d.prioridade,
+    'statusLabel': d.statusLabel,
+    'proprietario': d.proprietario,
+    'prazo': d.prazo,
+  };
 
   Demanda _demandaFromJson(Map<String, dynamic> json) => Demanda(
-        id: json['id'] as String,
-        titulo: json['titulo'] as String,
-        descricao: json['descricao'] as String,
-        prioridade: json['prioridade'] as String,
-        statusLabel: json['statusLabel'] as String,
-        proprietario: json['proprietario'] as String,
-        prazo: json['prazo'] as String,
-      );
+    id: json['id'] as String,
+    titulo: json['titulo'] as String,
+    descricao: json['descricao'] as String,
+    prioridade: json['prioridade'] as String,
+    statusLabel: json['statusLabel'] as String,
+    proprietario: json['proprietario'] as String,
+    prazo: json['prazo'] as String,
+  );
 }

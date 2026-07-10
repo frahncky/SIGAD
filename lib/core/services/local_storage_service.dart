@@ -4,7 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Serviço simples de persistência local via SharedPreferences + JSON.
 class LocalStorageService {
   /// Salva uma lista de mapas serializada em JSON.
-  static Future<void> saveList(String key, List<Map<String, dynamic>> data) async {
+  static Future<void> saveList(
+    String key,
+    List<Map<String, dynamic>> data,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(key, jsonEncode(data));
   }

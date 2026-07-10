@@ -54,7 +54,11 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
         _isLoading = false;
       });
     } catch (error, stackTrace) {
-      AppEventLogger.error('relatorios_load_error', error, stackTrace: stackTrace);
+      AppEventLogger.error(
+        'relatorios_load_error',
+        error,
+        stackTrace: stackTrace,
+      );
       if (!mounted) return;
       setState(() {
         _isLoading = false;
@@ -69,7 +73,9 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
 
   void _atualizarRelatorio(Relatorio relatorioAtualizado) {
     setState(() {
-      final index = _relatorios.indexWhere((item) => item.id == relatorioAtualizado.id);
+      final index = _relatorios.indexWhere(
+        (item) => item.id == relatorioAtualizado.id,
+      );
       if (index >= 0) {
         _relatorios[index] = relatorioAtualizado;
       }
@@ -81,17 +87,24 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
     if (!_canAccessRelatorios()) return;
     final atualizado = RelatoriosService.registrarDownload(relatorio);
     _atualizarRelatorio(atualizado);
-    AppFeedbackService.success(context, 'Relatorio baixado: ${relatorio.titulo}');
+    AppFeedbackService.success(
+      context,
+      'Relatorio baixado: ${relatorio.titulo}',
+    );
   }
 
   void _compartilharRelatorio(Relatorio relatorio) {
     if (!_canAccessRelatorios()) return;
     final atualizado = RelatoriosService.registrarCompartilhamento(relatorio);
     _atualizarRelatorio(atualizado);
-    AppFeedbackService.info(context, 'Link de compartilhamento gerado para ${relatorio.titulo}');
+    AppFeedbackService.info(
+      context,
+      'Link de compartilhamento gerado para ${relatorio.titulo}',
+    );
   }
 
-  List<Relatorio> get _relatoriosFiltrados => RelatoriosService.filtrarRelatorios(
+  List<Relatorio> get _relatoriosFiltrados =>
+      RelatoriosService.filtrarRelatorios(
         relatorios: _relatorios,
         busca: _busca,
         filtroStatus: _filtroStatus,
@@ -113,8 +126,12 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
         children: [
           _RelatoriosSummaryBanner(
             totalRelatorios: _relatorios.length,
-            publicados: _relatorios.where((r) => r.status == 'Publicado').length,
-            emRevisao: _relatorios.where((r) => r.status.toLowerCase().contains('revis')).length,
+            publicados: _relatorios
+                .where((r) => r.status == 'Publicado')
+                .length,
+            emRevisao: _relatorios
+                .where((r) => r.status.toLowerCase().contains('revis'))
+                .length,
           ),
           const SizedBox(height: 16),
           TextField(
@@ -141,7 +158,8 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
                       child: FilterChip(
                         label: Text(status),
                         selected: _filtroStatus == status,
-                        onSelected: (_) => setState(() => _filtroStatus = status),
+                        onSelected: (_) =>
+                            setState(() => _filtroStatus = status),
                       ),
                     ),
                   )
@@ -154,7 +172,9 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
             decoration: BoxDecoration(
               color: SigadColors.brand.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: SigadColors.brand.withValues(alpha: 0.2)),
+              border: Border.all(
+                color: SigadColors.brand.withValues(alpha: 0.2),
+              ),
             ),
             child: Row(
               children: [
@@ -163,7 +183,9 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
                 Expanded(
                   child: Text(
                     '${relatoriosFiltrados.length} relatorios disponiveis para consulta',
-                    style: textTheme.bodySmall?.copyWith(color: SigadColors.brand),
+                    style: textTheme.bodySmall?.copyWith(
+                      color: SigadColors.brand,
+                    ),
                   ),
                 ),
               ],
@@ -194,15 +216,17 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
             )
           else
             ...relatoriosFiltrados.asMap().entries.map(
-                  (entry) => Padding(
-                    padding: EdgeInsets.only(bottom: entry.key < relatoriosFiltrados.length - 1 ? 12 : 0),
-                    child: _RelatorioCard(
-                      relatorio: entry.value,
-                      onBaixar: () => _baixarRelatorio(entry.value),
-                      onCompartilhar: () => _compartilharRelatorio(entry.value),
-                    ),
-                  ),
+              (entry) => Padding(
+                padding: EdgeInsets.only(
+                  bottom: entry.key < relatoriosFiltrados.length - 1 ? 12 : 0,
                 ),
+                child: _RelatorioCard(
+                  relatorio: entry.value,
+                  onBaixar: () => _baixarRelatorio(entry.value),
+                  onCompartilhar: () => _compartilharRelatorio(entry.value),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -212,7 +236,10 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
     final role = context.read<UserContextProvider>().userRole;
     final allowed = AuthorizationPolicy.canAccessRelatorios(role);
     if (!allowed && showFeedback) {
-      AppFeedbackService.warning(context, 'Seu perfil nao possui permissao para relatorios.');
+      AppFeedbackService.warning(
+        context,
+        'Seu perfil nao possui permissao para relatorios.',
+      );
     }
     return allowed;
   }
@@ -269,7 +296,9 @@ class _RelatoriosSummaryBanner extends StatelessWidget {
         children: [
           Text(
             'Central de relatorios',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 14),
           Row(
@@ -305,9 +334,19 @@ class _RelatoriosKpi extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted)),
+            Text(
+              label,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+            ),
             const SizedBox(height: 4),
-            Text(value, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+            Text(
+              value,
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+            ),
           ],
         ),
       ),
@@ -333,151 +372,185 @@ class _RelatorioCard extends StatelessWidget {
       button: true,
       label: 'Ver relatório ${relatorio.titulo}',
       child: GestureDetector(
-      onTap: () => _showDetalhes(context),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: SigadColors.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: SigadColors.divider),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: SigadColors.brand.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Center(
-                    child: Icon(Icons.description, color: SigadColors.brand, size: 20),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(relatorio.id, style: textTheme.labelSmall?.copyWith(color: SigadColors.muted)),
-                      const SizedBox(height: 4),
-                      Text(
-                        relatorio.titulo,
-                        style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(
-              relatorio.descricao,
-              style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: SigadColors.brand.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    relatorio.tipo,
-                    style: textTheme.labelSmall?.copyWith(color: SigadColors.brand, fontWeight: FontWeight.w600),
-                  ),
-                ),
-                const Spacer(),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: RelatoriosService.statusColor(relatorio.status).withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    relatorio.status,
-                    style: textTheme.labelSmall?.copyWith(
-                      color: RelatoriosService.statusColor(relatorio.status),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                PopupMenuButton<String>(
-                  tooltip: 'Mais ações do relatório',
-                  onSelected: (value) => _onMenuItemSelected(context, value),
-                  itemBuilder: (context) => const [
-                    PopupMenuItem(
-                      value: 'visualizar',
-                      child: Row(
-                        children: [
-                          Icon(Icons.visibility, size: 18),
-                          SizedBox(width: 8),
-                          Text('Visualizar'),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'baixar',
-                      child: Row(
-                        children: [
-                          Icon(Icons.download, size: 18),
-                          SizedBox(width: 8),
-                          Text('Baixar PDF'),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'compartilhar',
-                      child: Row(
-                        children: [
-                          Icon(Icons.share, size: 18),
-                          SizedBox(width: 8),
-                          Text('Compartilhar'),
-                        ],
-                      ),
-                    ),
-                  ],
-                  icon: const Icon(Icons.more_vert, size: 18),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(child: _InfoChip(icon: Icons.calendar_today, label: relatorio.data)),
-                const SizedBox(width: 8),
-                Flexible(child: _InfoChip(icon: Icons.person_outline, label: relatorio.autor)),
-              ],
-            ),
-            if (relatorio.ultimaAcao != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                relatorio.ultimaAcao!,
-                style: textTheme.labelSmall?.copyWith(color: SigadColors.muted),
+        onTap: () => _showDetalhes(context),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: SigadColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: SigadColors.divider),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
               ),
             ],
-          ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: SigadColors.brand.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.description,
+                        color: SigadColors.brand,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          relatorio.id,
+                          style: textTheme.labelSmall?.copyWith(
+                            color: SigadColors.muted,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          relatorio.titulo,
+                          style: textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                relatorio.descricao,
+                style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: SigadColors.brand.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      relatorio.tipo,
+                      style: textTheme.labelSmall?.copyWith(
+                        color: SigadColors.brand,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: RelatoriosService.statusColor(
+                        relatorio.status,
+                      ).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      relatorio.status,
+                      style: textTheme.labelSmall?.copyWith(
+                        color: RelatoriosService.statusColor(relatorio.status),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  PopupMenuButton<String>(
+                    tooltip: 'Mais ações do relatório',
+                    onSelected: (value) => _onMenuItemSelected(context, value),
+                    itemBuilder: (context) => const [
+                      PopupMenuItem(
+                        value: 'visualizar',
+                        child: Row(
+                          children: [
+                            Icon(Icons.visibility, size: 18),
+                            SizedBox(width: 8),
+                            Text('Visualizar'),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'baixar',
+                        child: Row(
+                          children: [
+                            Icon(Icons.download, size: 18),
+                            SizedBox(width: 8),
+                            Text('Baixar PDF'),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'compartilhar',
+                        child: Row(
+                          children: [
+                            Icon(Icons.share, size: 18),
+                            SizedBox(width: 8),
+                            Text('Compartilhar'),
+                          ],
+                        ),
+                      ),
+                    ],
+                    icon: const Icon(Icons.more_vert, size: 18),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: _InfoChip(
+                      icon: Icons.calendar_today,
+                      label: relatorio.data,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: _InfoChip(
+                      icon: Icons.person_outline,
+                      label: relatorio.autor,
+                    ),
+                  ),
+                ],
+              ),
+              if (relatorio.ultimaAcao != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  relatorio.ultimaAcao!,
+                  style: textTheme.labelSmall?.copyWith(
+                    color: SigadColors.muted,
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 
@@ -512,13 +585,21 @@ class _RelatorioCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(relatorio.id, style: textTheme.labelSmall?.copyWith(color: SigadColors.muted)),
+                        Text(
+                          relatorio.id,
+                          style: textTheme.labelSmall?.copyWith(
+                            color: SigadColors.muted,
+                          ),
+                        ),
                         const SizedBox(height: 8),
                         SizedBox(
-                          width: 260, // valor fixo ou ajuste conforme necessário
+                          width:
+                              260, // valor fixo ou ajuste conforme necessário
                           child: Text(
                             relatorio.titulo,
-                            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                            style: textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -539,8 +620,14 @@ class _RelatorioCard extends StatelessWidget {
               _DetailSection(label: 'Autor', value: relatorio.autor),
               _DetailSection(label: 'Data', value: relatorio.data),
               _DetailSection(label: 'Status', value: relatorio.status),
-              _DetailSection(label: 'Downloads', value: '${relatorio.downloads}'),
-              _DetailSection(label: 'Compartilhamentos', value: '${relatorio.compartilhamentos}'),
+              _DetailSection(
+                label: 'Downloads',
+                value: '${relatorio.downloads}',
+              ),
+              _DetailSection(
+                label: 'Compartilhamentos',
+                value: '${relatorio.compartilhamentos}',
+              ),
               const SizedBox(height: 24),
               Row(
                 children: [

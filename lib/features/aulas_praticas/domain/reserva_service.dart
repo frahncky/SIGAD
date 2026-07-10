@@ -69,7 +69,8 @@ abstract final class ReservaService {
     required String currentUserName,
     required ReservaLaboratorio reserva,
   }) {
-    return role == UserRole.chefeDepartamento || reserva.professor == currentUserName;
+    return role == UserRole.chefeDepartamento ||
+        reserva.professor == currentUserName;
   }
 
   static bool isSlotOccupied({
@@ -139,19 +140,21 @@ abstract final class ReservaService {
   }) {
     final totalSlots = 5 * gerarLinhasGrade().length;
 
-    return laboratorios.map((laboratorio) {
-      final reservados = reservas.where((reserva) {
-        return reserva.laboratorio == laboratorio &&
-            reserva.mes == mes &&
-            reserva.semanaDoMes == semanaDoMes;
-      }).length;
+    return laboratorios
+        .map((laboratorio) {
+          final reservados = reservas.where((reserva) {
+            return reserva.laboratorio == laboratorio &&
+                reserva.mes == mes &&
+                reserva.semanaDoMes == semanaDoMes;
+          }).length;
 
-      return IndicadorOcupacaoLaboratorio(
-        laboratorio: laboratorio,
-        totalSlots: totalSlots,
-        slotsReservados: reservados,
-      );
-    }).toList(growable: false);
+          return IndicadorOcupacaoLaboratorio(
+            laboratorio: laboratorio,
+            totalSlots: totalSlots,
+            slotsReservados: reservados,
+          );
+        })
+        .toList(growable: false);
   }
 
   static List<SugestaoReservaLaboratorio> sugerirSlotsLivres({
@@ -200,8 +203,8 @@ abstract final class ReservaService {
           final bonusTurno = linha.turno == Turno.matutino
               ? 0.12
               : linha.turno == Turno.vespertino
-                  ? 0.08
-                  : 0.04;
+              ? 0.08
+              : 0.04;
 
           final score = (1 - ocupacao) + bonusDia + bonusTurno;
           sugestoes.add(

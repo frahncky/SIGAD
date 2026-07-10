@@ -16,9 +16,11 @@ class AtividadeRepository implements EntityRepository<Atividade> {
     AppHttpClient? remoteClient,
     DataSourceMode? dataSourceMode,
     bool? enableRemoteFallback,
-  })  : _remoteClient = remoteClient ?? HttpPackageClient(httpClient: http.Client()),
-        _dataSourceMode = dataSourceMode ?? AppRuntimeConfig.dataSourceMode,
-        _enableRemoteFallback = enableRemoteFallback ?? AppRuntimeConfig.enableRemoteFallback;
+  }) : _remoteClient =
+           remoteClient ?? HttpPackageClient(httpClient: http.Client()),
+       _dataSourceMode = dataSourceMode ?? AppRuntimeConfig.dataSourceMode,
+       _enableRemoteFallback =
+           enableRemoteFallback ?? AppRuntimeConfig.enableRemoteFallback;
 
   final String storageKey;
   final AppHttpClient _remoteClient;
@@ -39,7 +41,11 @@ class AtividadeRepository implements EntityRepository<Atividade> {
     try {
       return await _loadRemoteAtividades();
     } catch (error, stackTrace) {
-      AppEventLogger.error('atividades_remote_load_error', error, stackTrace: stackTrace);
+      AppEventLogger.error(
+        'atividades_remote_load_error',
+        error,
+        stackTrace: stackTrace,
+      );
       if (_enableRemoteFallback) {
         AppEventLogger.action('atividades_remote_load_fallback_local');
         return _loadLocalAtividades();
@@ -57,7 +63,11 @@ class AtividadeRepository implements EntityRepository<Atividade> {
       await _saveRemoteAtividades(atividades);
       await _saveLocalAtividades(atividades);
     } catch (error, stackTrace) {
-      AppEventLogger.error('atividades_remote_save_error', error, stackTrace: stackTrace);
+      AppEventLogger.error(
+        'atividades_remote_save_error',
+        error,
+        stackTrace: stackTrace,
+      );
       if (_enableRemoteFallback) {
         AppEventLogger.action('atividades_remote_save_fallback_local');
         return _saveLocalAtividades(atividades);
@@ -108,7 +118,9 @@ class AtividadeRepository implements EntityRepository<Atividade> {
   }
 
   Future<void> _saveRemoteAtividades(List<Atividade> atividades) {
-    final payload = atividades.map((item) => AtividadeDto.fromDomain(item).toJson()).toList(growable: false);
+    final payload = atividades
+        .map((item) => AtividadeDto.fromDomain(item).toJson())
+        .toList(growable: false);
     return _remoteClient.send(
       ApiRequest(
         path: AtividadeApiContract.collectionPath,
@@ -120,7 +132,10 @@ class AtividadeRepository implements EntityRepository<Atividade> {
 
   List<Map<String, dynamic>> _extractListPayload(Object? body) {
     if (body is List) {
-      return body.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList(growable: false);
+      return body
+          .whereType<Map>()
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList(growable: false);
     }
     if (body is Map<String, dynamic>) {
       final nested = body['items'] ?? body['data'];
@@ -135,20 +150,20 @@ class AtividadeRepository implements EntityRepository<Atividade> {
   }
 
   Map<String, dynamic> _atividadeToJson(Atividade a) => {
-        'id': a.id,
-        'titulo': a.titulo,
-        'descricao': a.descricao,
-        'data': a.data,
-        'responsavel': a.responsavel,
-        'status': a.status,
-      };
+    'id': a.id,
+    'titulo': a.titulo,
+    'descricao': a.descricao,
+    'data': a.data,
+    'responsavel': a.responsavel,
+    'status': a.status,
+  };
 
   Atividade _atividadeFromJson(Map<String, dynamic> json) => Atividade(
-        id: json['id'] as String,
-        titulo: json['titulo'] as String,
-        descricao: json['descricao'] as String,
-        data: json['data'] as String,
-        responsavel: json['responsavel'] as String,
-        status: json['status'] as String,
-      );
+    id: json['id'] as String,
+    titulo: json['titulo'] as String,
+    descricao: json['descricao'] as String,
+    data: json['data'] as String,
+    responsavel: json['responsavel'] as String,
+    status: json['status'] as String,
+  );
 }

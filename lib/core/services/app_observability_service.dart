@@ -81,11 +81,16 @@ abstract final class AppObservabilityService {
     final normalized = endpoint.trim();
     if (normalized.isEmpty) return null;
     final parsed = Uri.tryParse(normalized);
-    if (parsed == null || !parsed.hasAuthority || !parsed.hasScheme) return null;
+    if (parsed == null || !parsed.hasAuthority || !parsed.hasScheme) {
+      return null;
+    }
     return parsed;
   }
 
-  static Future<void> _sendPayload(Uri endpoint, Map<String, Object?> payload) async {
+  static Future<void> _sendPayload(
+    Uri endpoint,
+    Map<String, Object?> payload,
+  ) async {
     try {
       await _client
           .post(

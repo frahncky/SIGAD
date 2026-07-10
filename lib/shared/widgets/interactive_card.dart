@@ -64,41 +64,43 @@ class _InteractiveCardState extends State<InteractiveCard>
     return Semantics(
       button: widget.onTap != null,
       child: GestureDetector(
-      onTap: widget.onTap,
-      onTapDown: (_) => _onPointerDown(),
-      onTapUp: (_) => _onPointerUp(),
-      onTapCancel: _onPointerUp,
-      child: MouseRegion(
-        onEnter: (_) => _onPointerDown(),
-        onExit: (_) => _onPointerUp(),
-        cursor: widget.onTap != null ? SystemMouseCursors.click : MouseCursor.defer,
-        child: ScaleTransition(
-          scale: _scaleAnimation,
-          child: AnimatedBuilder(
-            animation: _shadowAnimation,
-            builder: (context, child) => Container(
-              padding: widget.padding,
-              decoration: BoxDecoration(
-                color: SigadColors.surface,
-                borderRadius: BorderRadius.circular(widget.borderRadius),
-                border: Border.all(color: SigadColors.divider),
-                boxShadow: widget.showShadow
-                    ? [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.06),
-                          blurRadius: _shadowAnimation.value,
-                          offset: Offset(0, _shadowAnimation.value * 0.3),
-                        ),
-                      ]
-                    : null,
+        onTap: widget.onTap,
+        onTapDown: (_) => _onPointerDown(),
+        onTapUp: (_) => _onPointerUp(),
+        onTapCancel: _onPointerUp,
+        child: MouseRegion(
+          onEnter: (_) => _onPointerDown(),
+          onExit: (_) => _onPointerUp(),
+          cursor: widget.onTap != null
+              ? SystemMouseCursors.click
+              : MouseCursor.defer,
+          child: ScaleTransition(
+            scale: _scaleAnimation,
+            child: AnimatedBuilder(
+              animation: _shadowAnimation,
+              builder: (context, child) => Container(
+                padding: widget.padding,
+                decoration: BoxDecoration(
+                  color: SigadColors.surface,
+                  borderRadius: BorderRadius.circular(widget.borderRadius),
+                  border: Border.all(color: SigadColors.divider),
+                  boxShadow: widget.showShadow
+                      ? [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.06),
+                            blurRadius: _shadowAnimation.value,
+                            offset: Offset(0, _shadowAnimation.value * 0.3),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: child,
               ),
-              child: child,
+              child: widget.child,
             ),
-            child: widget.child,
           ),
         ),
       ),
-    ),
     );
   }
 }
@@ -170,61 +172,59 @@ class _InteractiveButtonState extends State<InteractiveButton>
       button: true,
       label: widget.label,
       child: GestureDetector(
-      onTapDown: (_) => _onPointerDown(),
-      onTapUp: (_) => _onPointerUp(),
-      onTapCancel: () => _animationController.reverse(),
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        child: ScaleTransition(
-          scale: _scaleAnimation,
-          child: AnimatedBuilder(
-            animation: _elevationAnimation,
-            builder: (context, child) => Container(
-              padding: padding,
-              decoration: BoxDecoration(
-                color: isDarkVariant ? SigadColors.brand : Colors.transparent,
-                borderRadius: BorderRadius.circular(14),
-                border: isDarkVariant
-                    ? null
-                    : Border.all(color: SigadColors.divider, width: 1.5),
-                boxShadow: isDarkVariant
-                    ? [
-                        BoxShadow(
-                          color: SigadColors.brand.withValues(alpha: 0.3),
-                          blurRadius: _elevationAnimation.value * 8,
-                          offset: Offset(0, _elevationAnimation.value),
-                        ),
-                      ]
-                    : null,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (widget.icon != null) ...[
-                    Icon(
-                      widget.icon,
-                      size: _getIconSize(),
-                      color: isDarkVariant
-                          ? Colors.white
-                          : SigadColors.brand,
+        onTapDown: (_) => _onPointerDown(),
+        onTapUp: (_) => _onPointerUp(),
+        onTapCancel: () => _animationController.reverse(),
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: ScaleTransition(
+            scale: _scaleAnimation,
+            child: AnimatedBuilder(
+              animation: _elevationAnimation,
+              builder: (context, child) => Container(
+                padding: padding,
+                decoration: BoxDecoration(
+                  color: isDarkVariant ? SigadColors.brand : Colors.transparent,
+                  borderRadius: BorderRadius.circular(14),
+                  border: isDarkVariant
+                      ? null
+                      : Border.all(color: SigadColors.divider, width: 1.5),
+                  boxShadow: isDarkVariant
+                      ? [
+                          BoxShadow(
+                            color: SigadColors.brand.withValues(alpha: 0.3),
+                            blurRadius: _elevationAnimation.value * 8,
+                            offset: Offset(0, _elevationAnimation.value),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (widget.icon != null) ...[
+                      Icon(
+                        widget.icon,
+                        size: _getIconSize(),
+                        color: isDarkVariant ? Colors.white : SigadColors.brand,
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                    Text(
+                      widget.label,
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: isDarkVariant ? Colors.white : SigadColors.brand,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                    const SizedBox(width: 8),
                   ],
-                  Text(
-                    widget.label,
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: isDarkVariant ? Colors.white : SigadColors.brand,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
         ),
       ),
-    ),
     );
   }
 
@@ -252,4 +252,5 @@ class _InteractiveButtonState extends State<InteractiveButton>
 }
 
 enum ButtonVariant { filled, outlined }
+
 enum ButtonSize { small, medium, large }

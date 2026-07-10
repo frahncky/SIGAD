@@ -32,7 +32,10 @@ void main() {
         filtroStatus: 'Novo',
         filtroPrioridade: 'Todas',
       );
-      final ordenadas = DemandasService.ordenarDemandas(filtradas, 'Prioridade');
+      final ordenadas = DemandasService.ordenarDemandas(
+        filtradas,
+        'Prioridade',
+      );
 
       expect(ordenadas.first.id, '#DEM-001');
     });
@@ -59,10 +62,13 @@ void main() {
     });
 
     test('remove opções repetidas preservando ordem e primeiro item', () {
-      final opcoes = DemandasService.opcoesUnicas(
-        const ['Todas', 'Novo', 'Novo', 'Revisão', ''],
-        primeiro: 'Todas',
-      );
+      final opcoes = DemandasService.opcoesUnicas(const [
+        'Todas',
+        'Novo',
+        'Novo',
+        'Revisão',
+        '',
+      ], primeiro: 'Todas');
 
       expect(opcoes, const ['Todas', 'Novo', 'Revisão']);
     });

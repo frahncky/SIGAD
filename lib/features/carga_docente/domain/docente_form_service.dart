@@ -84,7 +84,9 @@ abstract final class DocenteFormService {
     }
 
     if (diaSemana != null) {
-      for (final horario in horariosExistentes.where((item) => item.diaSemana == diaSemana)) {
+      for (final horario in horariosExistentes.where(
+        (item) => item.diaSemana == diaSemana,
+      )) {
         final inicioExistente = _horarioEmMinutos(horario.inicio);
         final fimExistente = _horarioEmMinutos(horario.fim);
         if (inicioExistente == null || fimExistente == null) continue;
@@ -164,7 +166,9 @@ abstract final class DocenteFormService {
     final fimCandidato = _horarioEmMinutos(candidato.fim);
     if (inicioCandidato == null || fimCandidato == null) return false;
 
-    for (final horario in horarios.where((item) => item.diaSemana == candidato.diaSemana)) {
+    for (final horario in horarios.where(
+      (item) => item.diaSemana == candidato.diaSemana,
+    )) {
       final inicioExistente = _horarioEmMinutos(horario.inicio);
       final fimExistente = _horarioEmMinutos(horario.fim);
       if (inicioExistente == null || fimExistente == null) continue;
@@ -196,13 +200,19 @@ abstract final class DocenteFormService {
       for (final docente in docentes) docente.id: docente.cargaHoraria,
     };
 
-    final docentesAlta = docentes.where((docente) {
-      return _ocupacao(docente.cargaHoraria, docente.cargaMaxima) >= limiarAlta;
-    }).toList(growable: false);
+    final docentesAlta = docentes
+        .where((docente) {
+          return _ocupacao(docente.cargaHoraria, docente.cargaMaxima) >=
+              limiarAlta;
+        })
+        .toList(growable: false);
 
-    final docentesBaixa = docentes.where((docente) {
-      return _ocupacao(docente.cargaHoraria, docente.cargaMaxima) <= limiarBaixa;
-    }).toList(growable: false);
+    final docentesBaixa = docentes
+        .where((docente) {
+          return _ocupacao(docente.cargaHoraria, docente.cargaMaxima) <=
+              limiarBaixa;
+        })
+        .toList(growable: false);
 
     for (final origem in docentesAlta) {
       for (final horario in origem.horariosAula) {
@@ -215,10 +225,19 @@ abstract final class DocenteFormService {
         for (final destino in docentesBaixa) {
           if (destino.id == origem.id) continue;
           if (!destino.disciplinas.contains(horario.disciplina)) continue;
-          if (existeConflitoHorario(horarios: destino.horariosAula, candidato: horario)) continue;
+          if (existeConflitoHorario(
+            horarios: destino.horariosAula,
+            candidato: horario,
+          )) {
+            continue;
+          }
 
-          final cargaDestinoProjetada = (cargasProjetadas[destino.id] ?? destino.cargaHoraria) + cargaHorario;
-          final cargaOrigemProjetada = (cargasProjetadas[origem.id] ?? origem.cargaHoraria) - cargaHorario;
+          final cargaDestinoProjetada =
+              (cargasProjetadas[destino.id] ?? destino.cargaHoraria) +
+              cargaHorario;
+          final cargaOrigemProjetada =
+              (cargasProjetadas[origem.id] ?? origem.cargaHoraria) -
+              cargaHorario;
           if (cargaDestinoProjetada > destino.cargaMaxima) continue;
           if (cargaOrigemProjetada < 0) continue;
 
@@ -303,7 +322,10 @@ abstract final class DocenteFormService {
     final raw = cargaHoraria?.trim();
     if (raw == null || raw.isEmpty) return null;
 
-    final match = RegExp(r'(\d+)\s*h\s*/\s*sem', caseSensitive: false).firstMatch(raw);
+    final match = RegExp(
+      r'(\d+)\s*h\s*/\s*sem',
+      caseSensitive: false,
+    ).firstMatch(raw);
     if (match == null) return null;
     return int.tryParse(match.group(1)!);
   }
@@ -336,7 +358,12 @@ abstract final class DocenteFormService {
   ) {
     if (docentes.isEmpty) return 0;
     final soma = docentes
-        .map((docente) => _ocupacao(cargasProjetadas[docente.id] ?? docente.cargaHoraria, docente.cargaMaxima))
+        .map(
+          (docente) => _ocupacao(
+            cargasProjetadas[docente.id] ?? docente.cargaHoraria,
+            docente.cargaMaxima,
+          ),
+        )
         .reduce((a, b) => a + b);
     return soma / docentes.length;
   }

@@ -18,14 +18,20 @@ abstract final class AppEventLogger {
     );
 
     if (!kReleaseMode || AppRuntimeConfig.verboseLogs) {
-      final payload = sanitizedDetails.entries.map((e) => '${e.key}=${e.value}').join(', ');
-      debugPrint('[SIGAD][ACTION] $name${payload.isEmpty ? '' : ' | $payload'}');
+      final payload = sanitizedDetails.entries
+          .map((e) => '${e.key}=${e.value}')
+          .join(', ');
+      debugPrint(
+        '[SIGAD][ACTION] $name${payload.isEmpty ? '' : ' | $payload'}',
+      );
     }
   }
 
   static void error(String name, Object error, {StackTrace? stackTrace}) {
     AppHealthService.registerError(name);
-    final sanitizedError = EventPayloadSanitizer.sanitizeDetails({'error': error.toString()});
+    final sanitizedError = EventPayloadSanitizer.sanitizeDetails({
+      'error': error.toString(),
+    });
 
     AppObservabilityService.dispatchError(
       eventName: name,

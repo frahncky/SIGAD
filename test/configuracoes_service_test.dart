@@ -29,7 +29,6 @@ void main() {
       final data = ConfiguracoesService.dataAtual();
       final dataFutura = ConfiguracoesService.dataFutura(1);
 
-
       expect(data.split('/'), hasLength(3));
       expect(dataFutura.split('/'), hasLength(3));
       expect(ConfiguracoesService.dataHoraAtual().contains(' às '), isTrue);
@@ -62,7 +61,10 @@ void main() {
       );
 
       expect(atualizado.agendaCompromissos, hasLength(1));
-      expect(atualizado.agendaCompromissos.first.titulo, 'Reunião de alinhamento');
+      expect(
+        atualizado.agendaCompromissos.first.titulo,
+        'Reunião de alinhamento',
+      );
     });
 
     test('atualiza status do convite na agenda', () {
@@ -87,7 +89,10 @@ void main() {
         status: StatusConviteAgenda.aceito,
       );
 
-      expect(atualizado.agendaCompromissos.first.statusConvite, StatusConviteAgenda.aceito);
+      expect(
+        atualizado.agendaCompromissos.first.statusConvite,
+        StatusConviteAgenda.aceito,
+      );
     });
 
     test('filtra agenda por período da semana', () {

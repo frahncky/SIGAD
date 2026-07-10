@@ -4,6 +4,12 @@ import 'docente_repository.dart';
 /// Executa uma carga inicial de docentes para testes manuais.
 Future<void> seedDocentes() async {
   final repo = DocenteRepository();
+  var fallbackId = 0;
+  final existentes = await repo.loadDocentes(
+    generateFallbackId: () => 'seed-fallback-${fallbackId++}',
+  );
+  if (existentes.isNotEmpty) return;
+
   final docentes = [
     Docente(
       id: '1',

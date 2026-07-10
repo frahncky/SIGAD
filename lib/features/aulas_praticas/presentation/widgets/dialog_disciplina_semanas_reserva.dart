@@ -4,10 +4,12 @@ class DialogDisciplinaSemanasReserva extends StatefulWidget {
   const DialogDisciplinaSemanasReserva({super.key});
 
   @override
-  State<DialogDisciplinaSemanasReserva> createState() => DialogDisciplinaSemanasReservaState();
+  State<DialogDisciplinaSemanasReserva> createState() =>
+      DialogDisciplinaSemanasReservaState();
 }
 
-class DialogDisciplinaSemanasReservaState extends State<DialogDisciplinaSemanasReserva> {
+class DialogDisciplinaSemanasReservaState
+    extends State<DialogDisciplinaSemanasReserva> {
   final TextEditingController _disciplinaController = TextEditingController();
   int _totalSemanas = 1;
 
@@ -26,7 +28,9 @@ class DialogDisciplinaSemanasReservaState extends State<DialogDisciplinaSemanasR
         children: [
           TextField(
             controller: _disciplinaController,
-            decoration: const InputDecoration(labelText: 'Disciplina (opcional)'),
+            decoration: const InputDecoration(
+              labelText: 'Disciplina (opcional)',
+            ),
           ),
           const SizedBox(height: 16),
           Row(
@@ -35,10 +39,11 @@ class DialogDisciplinaSemanasReservaState extends State<DialogDisciplinaSemanasR
               const SizedBox(width: 8),
               DropdownButton<int>(
                 value: _totalSemanas,
-                items: List.generate(6, (i) => DropdownMenuItem(
-                  value: i + 1,
-                  child: Text('${i + 1}'),
-                )),
+                items: List.generate(
+                  6,
+                  (i) =>
+                      DropdownMenuItem(value: i + 1, child: Text('${i + 1}')),
+                ),
                 onChanged: (v) {
                   if (v != null) setState(() => _totalSemanas = v);
                 },
@@ -55,7 +60,9 @@ class DialogDisciplinaSemanasReservaState extends State<DialogDisciplinaSemanasR
         ElevatedButton(
           onPressed: () {
             Navigator.of(context).pop({
-              'disciplina': _disciplinaController.text.trim().isEmpty ? null : _disciplinaController.text.trim(),
+              'disciplina': _disciplinaController.text.trim().isEmpty
+                  ? null
+                  : _disciplinaController.text.trim(),
               'totalSemanas': _totalSemanas,
             });
           },

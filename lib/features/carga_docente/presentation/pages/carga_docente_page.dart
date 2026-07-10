@@ -1,10 +1,7 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
-import '../../../configuracoes/data/configuracoes_repository.dart';
-import '../../../configuracoes/domain/configuracoes_models.dart';
-import '../../../configuracoes/domain/configuracoes_service.dart';
 import '../../../configuracoes/domain/agenda_convites_service.dart';
 import '../../data/docente_repository.dart';
 import '../../domain/docente_form_service.dart';
@@ -14,10 +11,6 @@ import '../../../../core/models/user_role.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
-
-
-
-
 
 class CargaDocentePage extends StatefulWidget {
   final Docente? docente;
@@ -55,7 +48,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   ];
 
   final DocenteRepository _docenteRepository = DocenteRepository();
-  final ConfiguracoesRepository _configuracoesRepository = ConfiguracoesRepository();
 
   final List<Docente> _docentes = [
     Docente(
@@ -66,11 +58,39 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       departamento: 'Engenharia de Software',
       cargaHoraria: 20,
       cargaMaxima: 20,
-      disciplinas: ['Programação I', 'Programação II', 'Engenharia de Software'],
+      disciplinas: [
+        'Programação I',
+        'Programação II',
+        'Engenharia de Software',
+      ],
       horariosAula: const [
-        HorarioAula(diaSemana: 'Segunda', inicio: '08:00', fim: '09:40', disciplina: 'Programação I', cargaHoraria: '2h/sem · 80h', turma: 'SI-2A', modalidade: 'Integral'),
-        HorarioAula(diaSemana: 'Quarta', inicio: '10:00', fim: '11:40', disciplina: 'Programação II', cargaHoraria: '2h/sem · 80h', turma: 'SI-2B', modalidade: 'Concomitante'),
-        HorarioAula(diaSemana: 'Sexta', inicio: '19:00', fim: '20:40', disciplina: 'Engenharia de Software', cargaHoraria: '4h/sem · 120h', turma: 'SI-3A', modalidade: 'Superior'),
+        HorarioAula(
+          diaSemana: 'Segunda',
+          inicio: '08:00',
+          fim: '09:40',
+          disciplina: 'Programação I',
+          cargaHoraria: '2h/sem · 80h',
+          turma: 'SI-2A',
+          modalidade: 'Integral',
+        ),
+        HorarioAula(
+          diaSemana: 'Quarta',
+          inicio: '10:00',
+          fim: '11:40',
+          disciplina: 'Programação II',
+          cargaHoraria: '2h/sem · 80h',
+          turma: 'SI-2B',
+          modalidade: 'Concomitante',
+        ),
+        HorarioAula(
+          diaSemana: 'Sexta',
+          inicio: '19:00',
+          fim: '20:40',
+          disciplina: 'Engenharia de Software',
+          cargaHoraria: '4h/sem · 120h',
+          turma: 'SI-3A',
+          modalidade: 'Superior',
+        ),
       ],
     ),
     Docente(
@@ -83,8 +103,24 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       cargaMaxima: 20,
       disciplinas: ['Banco de Dados', 'Web Design'],
       horariosAula: const [
-        HorarioAula(diaSemana: 'Terça', inicio: '08:00', fim: '09:40', disciplina: 'Banco de Dados', cargaHoraria: '4h/sem · 120h', turma: 'SI-3A', modalidade: 'Subsequente'),
-        HorarioAula(diaSemana: 'Quinta', inicio: '08:00', fim: '09:40', disciplina: 'Web Design', cargaHoraria: '2h/sem · 60h', turma: 'SI-2A', modalidade: 'EJA'),
+        HorarioAula(
+          diaSemana: 'Terça',
+          inicio: '08:00',
+          fim: '09:40',
+          disciplina: 'Banco de Dados',
+          cargaHoraria: '4h/sem · 120h',
+          turma: 'SI-3A',
+          modalidade: 'Subsequente',
+        ),
+        HorarioAula(
+          diaSemana: 'Quinta',
+          inicio: '08:00',
+          fim: '09:40',
+          disciplina: 'Web Design',
+          cargaHoraria: '2h/sem · 60h',
+          turma: 'SI-2A',
+          modalidade: 'EJA',
+        ),
       ],
     ),
     Docente(
@@ -97,8 +133,24 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       cargaMaxima: 20,
       disciplinas: ['Computação Gráfica'],
       horariosAula: const [
-        HorarioAula(diaSemana: 'Segunda', inicio: '14:00', fim: '15:40', disciplina: 'Computação Gráfica', cargaHoraria: '2h/sem · 60h', turma: 'ES-3B', modalidade: 'Integral'),
-        HorarioAula(diaSemana: 'Quarta', inicio: '14:00', fim: '15:40', disciplina: 'Computação Gráfica', cargaHoraria: '2h/sem · 60h', turma: 'ES-3B', modalidade: 'Integral'),
+        HorarioAula(
+          diaSemana: 'Segunda',
+          inicio: '14:00',
+          fim: '15:40',
+          disciplina: 'Computação Gráfica',
+          cargaHoraria: '2h/sem · 60h',
+          turma: 'ES-3B',
+          modalidade: 'Integral',
+        ),
+        HorarioAula(
+          diaSemana: 'Quarta',
+          inicio: '14:00',
+          fim: '15:40',
+          disciplina: 'Computação Gráfica',
+          cargaHoraria: '2h/sem · 60h',
+          turma: 'ES-3B',
+          modalidade: 'Integral',
+        ),
       ],
     ),
     Docente(
@@ -111,9 +163,33 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       cargaMaxima: 20,
       disciplinas: ['Redes I', 'Redes II', 'Segurança de Redes'],
       horariosAula: const [
-        HorarioAula(diaSemana: 'Terça', inicio: '19:00', fim: '20:40', disciplina: 'Redes I', cargaHoraria: '2h/sem · 60h', turma: 'RT-2A', modalidade: 'Subsequente'),
-        HorarioAula(diaSemana: 'Quinta', inicio: '19:00', fim: '20:40', disciplina: 'Redes II', cargaHoraria: '2h/sem · 80h', turma: 'RT-3A', modalidade: 'Concomitante'),
-        HorarioAula(diaSemana: 'Sexta', inicio: '21:00', fim: '22:40', disciplina: 'Segurança de Redes', cargaHoraria: '4h/sem · 120h', turma: 'RT-4A', modalidade: 'Superior'),
+        HorarioAula(
+          diaSemana: 'Terça',
+          inicio: '19:00',
+          fim: '20:40',
+          disciplina: 'Redes I',
+          cargaHoraria: '2h/sem · 60h',
+          turma: 'RT-2A',
+          modalidade: 'Subsequente',
+        ),
+        HorarioAula(
+          diaSemana: 'Quinta',
+          inicio: '19:00',
+          fim: '20:40',
+          disciplina: 'Redes II',
+          cargaHoraria: '2h/sem · 80h',
+          turma: 'RT-3A',
+          modalidade: 'Concomitante',
+        ),
+        HorarioAula(
+          diaSemana: 'Sexta',
+          inicio: '21:00',
+          fim: '22:40',
+          disciplina: 'Segurança de Redes',
+          cargaHoraria: '4h/sem · 120h',
+          turma: 'RT-4A',
+          modalidade: 'Superior',
+        ),
       ],
     ),
     Docente(
@@ -126,8 +202,24 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       cargaMaxima: 20,
       disciplinas: ['Qualidade de Software'],
       horariosAula: const [
-        HorarioAula(diaSemana: 'Terça', inicio: '10:00', fim: '11:40', disciplina: 'Qualidade de Software', cargaHoraria: '2h/sem · 60h', turma: 'ES-4A', modalidade: 'EJA'),
-        HorarioAula(diaSemana: 'Quinta', inicio: '10:00', fim: '11:40', disciplina: 'Qualidade de Software', cargaHoraria: '2h/sem · 60h', turma: 'ES-4B', modalidade: 'Integral'),
+        HorarioAula(
+          diaSemana: 'Terça',
+          inicio: '10:00',
+          fim: '11:40',
+          disciplina: 'Qualidade de Software',
+          cargaHoraria: '2h/sem · 60h',
+          turma: 'ES-4A',
+          modalidade: 'EJA',
+        ),
+        HorarioAula(
+          diaSemana: 'Quinta',
+          inicio: '10:00',
+          fim: '11:40',
+          disciplina: 'Qualidade de Software',
+          cargaHoraria: '2h/sem · 60h',
+          turma: 'ES-4B',
+          modalidade: 'Integral',
+        ),
       ],
     ),
   ];
@@ -200,14 +292,20 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
         }
 
         setState(() {
-          _docentes.insert(0, controller.buildNewDocente(_gerarProximoIdDocente()));
+          _docentes.insert(
+            0,
+            controller.buildNewDocente(_gerarProximoIdDocente()),
+          );
         });
         _saveData();
-        AppEventLogger.action('carga_docente_add_docente', details: {
-          'nome': controller.nomeController.text.trim(),
-          'qtdDisciplinas': controller.disciplinas.length,
-          'qtdHorarios': controller.horarios.length,
-        });
+        AppEventLogger.action(
+          'carga_docente_add_docente',
+          details: {
+            'nome': controller.nomeController.text.trim(),
+            'qtdDisciplinas': controller.disciplinas.length,
+            'qtdHorarios': controller.horarios.length,
+          },
+        );
         _mostrarFeedback('Docente adicionado com sucesso!');
         return true;
       },
@@ -244,7 +342,12 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(title, style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                        Text(
+                          title,
+                          style: textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                         IconButton(
                           tooltip: 'Fechar formulário do docente',
                           onPressed: () => Navigator.pop(context),
@@ -255,29 +358,43 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                     const SizedBox(height: 16),
                     TextField(
                       controller: controller.nomeController,
-                      decoration: const InputDecoration(labelText: 'Nome Completo', hintText: 'Digite o nome do docente'),
+                      decoration: const InputDecoration(
+                        labelText: 'Nome Completo',
+                        hintText: 'Digite o nome do docente',
+                      ),
                     ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: controller.emailController,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(labelText: 'Email de acesso', hintText: 'docente@univ.br'),
+                      decoration: const InputDecoration(
+                        labelText: 'Email de acesso',
+                        hintText: 'docente@univ.br',
+                      ),
                     ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: controller.departamentoController,
-                      decoration: const InputDecoration(labelText: 'Departamento', hintText: 'Digite o departamento'),
+                      decoration: const InputDecoration(
+                        labelText: 'Departamento',
+                        hintText: 'Digite o departamento',
+                      ),
                     ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: controller.cargaMaximaController,
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: 'Carga Horária Máxima Semanal (horas)', hintText: 'Ex: 20'),
+                      decoration: const InputDecoration(
+                        labelText: 'Carga Horária Máxima Semanal (horas)',
+                        hintText: 'Ex: 20',
+                      ),
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<RegimeTrabalhoEbtt>(
                       initialValue: controller.regimeTrabalho,
-                      decoration: const InputDecoration(labelText: 'Regime EBTT'),
+                      decoration: const InputDecoration(
+                        labelText: 'Regime EBTT',
+                      ),
                       items: RegimeTrabalhoEbtt.values
                           .map(
                             (regime) => DropdownMenuItem<RegimeTrabalhoEbtt>(
@@ -298,37 +415,56 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                       decoration: BoxDecoration(
                         color: SigadColors.info.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: SigadColors.info.withValues(alpha: 0.18)),
+                        border: Border.all(
+                          color: SigadColors.info.withValues(alpha: 0.18),
+                        ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Distribuição em aulas: ${DocenteFormService.calcularCargaHorariaSemanal(controller.horarios)}h/sem',
-                            style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+                            style: textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             'Regime ${controller.regimeTrabalho.code}: limite legal semanal de ${controller.regimeTrabalho.cargaSemanalLimite}h na carreira EBTT. Pesquisa, extensão e gestão continuam dependentes da normativa interna da instituição.',
-                            style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                            style: textTheme.bodySmall?.copyWith(
+                              color: SigadColors.muted,
+                            ),
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Text('Disciplinas', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
+                    Text(
+                      'Disciplinas',
+                      style: textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: [
-                        ...controller.disciplinas.map((d) => Chip(
-                              label: Text(d),
-                              onDeleted: () => setModalState(() => controller.removeDisciplina(d)),
-                            )),
+                        ...controller.disciplinas.map(
+                          (d) => Chip(
+                            label: Text(d),
+                            onDeleted: () => setModalState(
+                              () => controller.removeDisciplina(d),
+                            ),
+                          ),
+                        ),
                         ActionChip(
                           label: const Text('Adicionar'),
-                          onPressed: () => _showAdicionarDisciplina(context, controller, setModalState),
+                          onPressed: () => _showAdicionarDisciplina(
+                            context,
+                            controller,
+                            setModalState,
+                          ),
                         ),
                       ],
                     ),
@@ -336,23 +472,40 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Horários de Aula', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
+                        Text(
+                          'Horários de Aula',
+                          style: textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                         TextButton.icon(
                           icon: const Icon(Icons.add, size: 16),
                           label: const Text('Adicionar'),
-                          onPressed: () => _showAdicionarHorario(context, controller, setModalState),
+                          onPressed: () => _showAdicionarHorario(
+                            context,
+                            controller,
+                            setModalState,
+                          ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     if (controller.horarios.isEmpty)
-                      Text('Nenhum horário cadastrado', style: textTheme.bodySmall?.copyWith(color: SigadColors.muted))
+                      Text(
+                        'Nenhum horário cadastrado',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: SigadColors.muted,
+                        ),
+                      )
                     else
-                      ...controller.horarios.map((h) => _HorarioTile(
-                            horario: h,
-                            textTheme: textTheme,
-                            onDelete: () => setModalState(() => controller.removeHorario(h)),
-                          )),
+                      ...controller.horarios.map(
+                        (h) => _HorarioTile(
+                          horario: h,
+                          textTheme: textTheme,
+                          onDelete: () =>
+                              setModalState(() => controller.removeHorario(h)),
+                        ),
+                      ),
                     if (controller.horarios.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       Text(
@@ -395,7 +548,11 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     );
   }
 
-  void _showAdicionarDisciplina(BuildContext context, DocenteFormController controller, StateSetter setState) {
+  void _showAdicionarDisciplina(
+    BuildContext context,
+    DocenteFormController controller,
+    StateSetter setState,
+  ) {
     final disciplinaController = TextEditingController();
     showDialog(
       context: context,
@@ -431,7 +588,11 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     );
   }
 
-  void _showAdicionarHorario(BuildContext context, DocenteFormController controller, StateSetter setModalState) {
+  void _showAdicionarHorario(
+    BuildContext context,
+    DocenteFormController controller,
+    StateSetter setModalState,
+  ) {
     String diaSelecionado = _diasSemana.first;
     String modalidadeSelecionada = _modalidades.first;
     final inicioController = TextEditingController();
@@ -453,7 +614,9 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                 DropdownButtonFormField<String>(
                   initialValue: diaSelecionado,
                   decoration: const InputDecoration(labelText: 'Dia da Semana'),
-                  items: _diasSemana.map((d) => DropdownMenuItem(value: d, child: Text(d))).toList(),
+                  items: _diasSemana
+                      .map((d) => DropdownMenuItem(value: d, child: Text(d)))
+                      .toList(),
                   onChanged: (v) => setDialogState(() => diaSelecionado = v!),
                 ),
                 const SizedBox(height: 12),
@@ -462,14 +625,20 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                     Expanded(
                       child: TextField(
                         controller: inicioController,
-                        decoration: const InputDecoration(labelText: 'Início', hintText: '08:00'),
+                        decoration: const InputDecoration(
+                          labelText: 'Início',
+                          hintText: '08:00',
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: TextField(
                         controller: fimController,
-                        decoration: const InputDecoration(labelText: 'Fim', hintText: '09:40'),
+                        decoration: const InputDecoration(
+                          labelText: 'Fim',
+                          hintText: '09:40',
+                        ),
                       ),
                     ),
                   ],
@@ -477,24 +646,36 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                 const SizedBox(height: 12),
                 TextField(
                   controller: disciplinaController,
-                  decoration: const InputDecoration(labelText: 'Disciplina', hintText: 'Ex: Programação I'),
+                  decoration: const InputDecoration(
+                    labelText: 'Disciplina',
+                    hintText: 'Ex: Programação I',
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: cargaController,
-                  decoration: const InputDecoration(labelText: 'Carga Horária', hintText: 'Ex: 2h/sem · 80h'),
+                  decoration: const InputDecoration(
+                    labelText: 'Carga Horária',
+                    hintText: 'Ex: 2h/sem · 80h',
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: turmaController,
-                  decoration: const InputDecoration(labelText: 'Turma', hintText: 'Ex: ES-2A'),
+                  decoration: const InputDecoration(
+                    labelText: 'Turma',
+                    hintText: 'Ex: ES-2A',
+                  ),
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
                   initialValue: modalidadeSelecionada,
                   decoration: const InputDecoration(labelText: 'Modalidade'),
-                  items: _modalidades.map((m) => DropdownMenuItem(value: m, child: Text(m))).toList(),
-                  onChanged: (v) => setDialogState(() => modalidadeSelecionada = v!),
+                  items: _modalidades
+                      .map((m) => DropdownMenuItem(value: m, child: Text(m)))
+                      .toList(),
+                  onChanged: (v) =>
+                      setDialogState(() => modalidadeSelecionada = v!),
                 ),
               ],
             ),
@@ -518,20 +699,27 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                   return;
                 }
 
-                setModalState(() => controller.addHorario(controller.createHorario(
-                  diaSemana: diaSelecionado,
-                  inicio: inicio,
-                  fim: fim,
-                  disciplina: disciplinaController.text,
-                  cargaHoraria: cargaController.text,
-                  turma: turmaController.text,
-                  modalidade: modalidadeSelecionada,
-                )));
-                AppEventLogger.action('carga_docente_add_horario', details: {
-                  'diaSemana': diaSelecionado,
-                  'inicio': inicio,
-                  'fim': fim,
-                });
+                setModalState(
+                  () => controller.addHorario(
+                    controller.createHorario(
+                      diaSemana: diaSelecionado,
+                      inicio: inicio,
+                      fim: fim,
+                      disciplina: disciplinaController.text,
+                      cargaHoraria: cargaController.text,
+                      turma: turmaController.text,
+                      modalidade: modalidadeSelecionada,
+                    ),
+                  ),
+                );
+                AppEventLogger.action(
+                  'carga_docente_add_horario',
+                  details: {
+                    'diaSemana': diaSelecionado,
+                    'inicio': inicio,
+                    'fim': fim,
+                  },
+                );
                 Navigator.pop(context);
               },
               child: const Text('Adicionar'),
@@ -564,11 +752,14 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
           }
         });
         _saveData();
-        AppEventLogger.action('carga_docente_edit_docente', details: {
-          'docenteId': docente.id,
-          'nome': controller.nomeController.text.trim(),
-          'qtdHorarios': controller.horarios.length,
-        });
+        AppEventLogger.action(
+          'carga_docente_edit_docente',
+          details: {
+            'docenteId': docente.id,
+            'nome': controller.nomeController.text.trim(),
+            'qtdHorarios': controller.horarios.length,
+          },
+        );
         _mostrarFeedback('Docente atualizado com sucesso!');
         return true;
       },
@@ -592,10 +783,10 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                 _docentes.removeWhere((item) => item.id == docente.id);
               });
               _saveData();
-              AppEventLogger.action('carga_docente_remove_docente', details: {
-                'docenteId': docente.id,
-                'nome': docente.nome,
-              });
+              AppEventLogger.action(
+                'carga_docente_remove_docente',
+                details: {'docenteId': docente.id, 'nome': docente.nome},
+              );
               Navigator.pop(context);
               _mostrarFeedback('Docente excluído com sucesso!');
             },
@@ -607,255 +798,15 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   }
 
   void _abrirAgendaDocente(BuildContext context, Docente docente) {
+    final userContext = context.read<UserContextProvider>();
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => _AgendaDocentePage(docente: docente),
+        builder: (_) => ChangeNotifierProvider<UserContextProvider>.value(
+          value: userContext,
+          child: _AgendaDocentePage(docente: docente),
+        ),
       ),
     );
-  }
-
-  Future<void> _showNovoCompromissoAgenda(BuildContext context, String userId) async {
-    if (userId.trim().isEmpty) {
-      _mostrarFeedback('Faça login novamente para criar compromissos na agenda.');
-      return;
-    }
-
-    final tituloController = TextEditingController();
-    final descricaoController = TextEditingController();
-    final localController = TextEditingController();
-    final linkController = TextEditingController();
-
-    DateTime? dataSelecionada;
-    TimeOfDay? horarioSelecionado;
-    String plataforma = 'Sem link';
-
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) {
-          final dataHoraLabel = _formatarDataHoraSelecionada(dataSelecionada, horarioSelecionado);
-          return Padding(
-            padding: EdgeInsets.fromLTRB(
-              24,
-              12,
-              24,
-              MediaQuery.of(context).viewInsets.bottom + 24,
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Novo compromisso',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: tituloController,
-                    decoration: const InputDecoration(
-                      labelText: 'Título',
-                      hintText: 'Ex: Reunião de planejamento',
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: descricaoController,
-                    maxLines: 2,
-                    decoration: const InputDecoration(
-                      labelText: 'Descrição',
-                      hintText: 'Detalhes do compromisso',
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: localController,
-                    decoration: const InputDecoration(
-                      labelText: 'Local',
-                      hintText: 'Sala 12 ou Online',
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () async {
-                            final data = await showDatePicker(
-                              context: context,
-                              firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                              lastDate: DateTime.now().add(const Duration(days: 3650)),
-                              initialDate: dataSelecionada ?? DateTime.now(),
-                            );
-                            if (data == null) return;
-                            setModalState(() => dataSelecionada = data);
-                          },
-                          icon: const Icon(Icons.calendar_today_outlined),
-                          label: const Text('Data'),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () async {
-                            final horario = await showTimePicker(
-                              context: context,
-                              initialTime: horarioSelecionado ?? TimeOfDay.now(),
-                            );
-                            if (horario == null) return;
-                            setModalState(() => horarioSelecionado = horario);
-                          },
-                          icon: const Icon(Icons.access_time_outlined),
-                          label: const Text('Hora'),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    dataHoraLabel,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: SigadColors.muted,
-                        ),
-                  ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    initialValue: plataforma,
-                    decoration: const InputDecoration(labelText: 'Link de reunião'),
-                    items: const [
-                      DropdownMenuItem(value: 'Sem link', child: Text('Sem link')),
-                      DropdownMenuItem(value: 'Google Meet', child: Text('Google Meet')),
-                      DropdownMenuItem(value: 'Zoom', child: Text('Zoom')),
-                    ],
-                    onChanged: (value) => setModalState(() => plataforma = value ?? 'Sem link'),
-                  ),
-                  if (plataforma != 'Sem link') ...[
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: linkController,
-                      keyboardType: TextInputType.url,
-                      decoration: InputDecoration(
-                        labelText: 'URL da reunião',
-                        hintText: plataforma == 'Google Meet'
-                            ? 'https://meet.google.com/...'
-                            : 'https://zoom.us/j/...',
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 18),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () async {
-                        final titulo = tituloController.text.trim();
-                        final descricao = descricaoController.text.trim();
-                        final local = localController.text.trim();
-                        final link = linkController.text.trim();
-
-                        if (titulo.isEmpty) {
-                          _mostrarFeedback('Informe o título do compromisso.');
-                          return;
-                        }
-                        if (local.isEmpty) {
-                          _mostrarFeedback('Informe o local do compromisso.');
-                          return;
-                        }
-                        if (dataSelecionada == null || horarioSelecionado == null) {
-                          _mostrarFeedback('Selecione data e hora do compromisso.');
-                          return;
-                        }
-                        if (plataforma != 'Sem link') {
-                          final erro = _validarLinkReuniao(link, plataforma);
-                          if (erro != null) {
-                            _mostrarFeedback(erro);
-                            return;
-                          }
-                        }
-
-                        final dataHora = DateTime(
-                          dataSelecionada!.year,
-                          dataSelecionada!.month,
-                          dataSelecionada!.day,
-                          horarioSelecionado!.hour,
-                          horarioSelecionado!.minute,
-                        );
-
-                        final novoCompromisso = CompromissoAgenda(
-                          id: 'manual_${DateTime.now().microsecondsSinceEpoch}',
-                          titulo: titulo,
-                          descricao: descricao.isEmpty ? 'Compromisso criado manualmente.' : descricao,
-                          inicio: _formatarDataHora(dataHora),
-                          inicioIso: dataHora.toIso8601String(),
-                          local: local,
-                          origem: 'Agenda pessoal',
-                          destinatarioUserId: userId,
-                          linkReuniao: plataforma == 'Sem link' ? null : link,
-                          statusConvite: StatusConviteAgenda.aceito,
-                        );
-
-                        final atual = await _configuracoesRepository.load() ?? ConfiguracoesService.defaultData();
-                        final atualizado = ConfiguracoesService.adicionarConviteNaAgenda(
-                          data: atual,
-                          convite: novoCompromisso,
-                        );
-                        await _configuracoesRepository.save(atualizado);
-
-                        if (!context.mounted) return;
-                        Navigator.pop(context);
-                        _mostrarFeedback('Compromisso criado com sucesso na sua agenda.');
-                      },
-                      icon: const Icon(Icons.check_circle_outline),
-                      label: const Text('Salvar compromisso'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-  // Função _showNovoCompromissoAgenda removida por não ser utilizada.
-  String _formatarDataHoraSelecionada(DateTime? data, TimeOfDay? hora) {
-    if (data == null || hora == null) {
-      return 'Selecione data e hora';
-    }
-    final combinada = DateTime(data.year, data.month, data.day, hora.hour, hora.minute);
-    return _formatarDataHora(combinada);
-  }
-
-  String _formatarDataHora(DateTime dataHora) {
-    final dia = dataHora.day.toString().padLeft(2, '0');
-    final mes = dataHora.month.toString().padLeft(2, '0');
-    final ano = dataHora.year.toString();
-    final hora = dataHora.hour.toString().padLeft(2, '0');
-    final minuto = dataHora.minute.toString().padLeft(2, '0');
-    return '$dia/$mes/$ano às $hora:$minuto';
-  }
-
-  String? _validarLinkReuniao(String link, String plataforma) {
-    if (link.trim().isEmpty) {
-      return 'Informe o link da reunião.';
-    }
-    final uri = Uri.tryParse(link.trim());
-    if (uri == null || !(uri.hasScheme && uri.hasAuthority)) {
-      return 'Informe uma URL válida (https://...).';
-    }
-
-    final host = uri.host.toLowerCase();
-    if (plataforma == 'Google Meet' && !host.contains('meet.google.com')) {
-      return 'Use um link válido do Google Meet.';
-    }
-    if (plataforma == 'Zoom' && !(host == 'zoom.us' || host.endsWith('.zoom.us'))) {
-      return 'Use um link válido do Zoom.';
-    }
-
-    return null;
   }
 
   double _percentualOcupacao(Docente docente) {
@@ -864,11 +815,15 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   }
 
   List<Docente> _docentesComAltaCarga(List<Docente> docentes) {
-    return docentes.where((docente) => _percentualOcupacao(docente) >= 0.9).toList(growable: false);
+    return docentes
+        .where((docente) => _percentualOcupacao(docente) >= 0.9)
+        .toList(growable: false);
   }
 
   List<Docente> _docentesComBaixaCarga(List<Docente> docentes) {
-    return docentes.where((docente) => _percentualOcupacao(docente) <= 0.5).toList(growable: false);
+    return docentes
+        .where((docente) => _percentualOcupacao(docente) <= 0.5)
+        .toList(growable: false);
   }
 
   List<String> _gerarSugestoesDistribuicao(List<Docente> docentes) {
@@ -884,26 +839,36 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     final sugestoes = <String>[];
 
     if (altaCarga.isNotEmpty) {
-      final nomes = altaCarga.take(2).map((docente) => docente.nome.split(' ').first).join(', ');
+      final nomes = altaCarga
+          .take(2)
+          .map((docente) => docente.nome.split(' ').first)
+          .join(', ');
       sugestoes.add(
         'Docentes com maior pressão: $nomes. Considere redistribuir turmas práticas e orientações para reduzir risco de sobrecarga.',
       );
     }
 
     if (baixaCarga.isNotEmpty) {
-      final nomes = baixaCarga.take(2).map((docente) => docente.nome.split(' ').first).join(', ');
+      final nomes = baixaCarga
+          .take(2)
+          .map((docente) => docente.nome.split(' ').first)
+          .join(', ');
       sugestoes.add(
         'Há capacidade ociosa com $nomes. Priorize alocação de componentes compartilhados e reforço em horários de laboratório.',
       );
     }
 
-    sugestoes.add('Programe revisão semanal conjunta entre coordenação e laboratórios para reduzir conflitos de agenda e janelas vazias.');
+    sugestoes.add(
+      'Programe revisão semanal conjunta entre coordenação e laboratórios para reduzir conflitos de agenda e janelas vazias.',
+    );
 
     return sugestoes;
   }
 
   Future<void> _abrirSimulacaoRedistribuicao() async {
-    final simulacao = DocenteFormService.simularRedistribuicaoDocentes(_docentesVisiveis());
+    final simulacao = DocenteFormService.simularRedistribuicaoDocentes(
+      _docentesVisiveis(),
+    );
 
     await showModalBottomSheet(
       context: context,
@@ -927,27 +892,40 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     final atualizados = List<Docente>.from(_docentes);
 
     for (final proposta in propostas) {
-      final origemIndex = atualizados.indexWhere((docente) => docente.id == proposta.docenteOrigemId);
-      final destinoIndex = atualizados.indexWhere((docente) => docente.id == proposta.docenteDestinoId);
+      final origemIndex = atualizados.indexWhere(
+        (docente) => docente.id == proposta.docenteOrigemId,
+      );
+      final destinoIndex = atualizados.indexWhere(
+        (docente) => docente.id == proposta.docenteDestinoId,
+      );
       if (origemIndex < 0 || destinoIndex < 0) continue;
 
       final origem = atualizados[origemIndex];
       final destino = atualizados[destinoIndex];
 
-      final horario = _encontrarHorarioTransferencia(origem.horariosAula, proposta.horario);
+      final horario = _encontrarHorarioTransferencia(
+        origem.horariosAula,
+        proposta.horario,
+      );
       if (horario == null) continue;
 
-      final horariosOrigem = List<HorarioAula>.from(origem.horariosAula)..remove(horario);
-      final horariosDestino = List<HorarioAula>.from(destino.horariosAula)..add(horario);
+      final horariosOrigem = List<HorarioAula>.from(origem.horariosAula)
+        ..remove(horario);
+      final horariosDestino = List<HorarioAula>.from(destino.horariosAula)
+        ..add(horario);
 
       atualizados[origemIndex] = origem.copyWith(
         horariosAula: horariosOrigem,
-        cargaHoraria: DocenteFormService.calcularCargaHorariaSemanal(horariosOrigem),
+        cargaHoraria: DocenteFormService.calcularCargaHorariaSemanal(
+          horariosOrigem,
+        ),
       );
 
       atualizados[destinoIndex] = destino.copyWith(
         horariosAula: horariosDestino,
-        cargaHoraria: DocenteFormService.calcularCargaHorariaSemanal(horariosDestino),
+        cargaHoraria: DocenteFormService.calcularCargaHorariaSemanal(
+          horariosDestino,
+        ),
       );
     }
 
@@ -958,13 +936,19 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     });
 
     _saveData();
-    AppEventLogger.action('carga_docente_apply_redistribuicao', details: {
-      'qtdPropostas': propostas.length,
-    });
-    _mostrarFeedback('${propostas.length} redistribuições aplicadas com sucesso.');
+    AppEventLogger.action(
+      'carga_docente_apply_redistribuicao',
+      details: {'qtdPropostas': propostas.length},
+    );
+    _mostrarFeedback(
+      '${propostas.length} redistribuições aplicadas com sucesso.',
+    );
   }
 
-  HorarioAula? _encontrarHorarioTransferencia(List<HorarioAula> horarios, HorarioAula referencia) {
+  HorarioAula? _encontrarHorarioTransferencia(
+    List<HorarioAula> horarios,
+    HorarioAula referencia,
+  ) {
     for (final horario in horarios) {
       if (horario.diaSemana == referencia.diaSemana &&
           horario.inicio == referencia.inicio &&
@@ -992,16 +976,15 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     }
 
     // ...código original da agenda para o próprio usuário...
-    final podeGerenciar = role == UserRole.coordenador || role == UserRole.chefeDepartamento;
+    final podeGerenciar =
+        role == UserRole.coordenador || role == UserRole.chefeDepartamento;
     final podeVisualizarHorarios = true; // Todos podem visualizar
     final emailNormalizado = (user?.email ?? '').trim().toLowerCase();
     final docentesVisiveis = _docentesVisiveis();
     // Filtro de busca
     List<Docente> docentesFiltrados;
-    // Detecta se está no menu Professores (AppRoutes.professores) ou na Agenda individual (AppRoutes.cargaDocente)
-    final isProfessoresMenu = ModalRoute.of(context)?.settings.name == '/professores';
-    if (isProfessoresMenu && podeGerenciar) {
-      // No menu Professores: coordenador/chefe veem todos e podem editar
+    if (podeGerenciar) {
+      // Coordenador e chefe veem todos, independentemente da rota de entrada.
       docentesFiltrados = _busca.isEmpty
           ? docentesVisiveis
           : docentesVisiveis.where((d) {
@@ -1013,18 +996,30 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     } else {
       // Em qualquer outro menu (inclusive Agenda): só vê a própria agenda, outros só se pesquisar
       final isSearching = _busca.trim().isNotEmpty;
-      final self = docentesVisiveis.where((d) => (d.userEmail ?? '').trim().toLowerCase() == emailNormalizado).toList();
+      final self = docentesVisiveis
+          .where(
+            (d) => (d.userEmail ?? '').trim().toLowerCase() == emailNormalizado,
+          )
+          .toList();
       if (!isSearching) {
         docentesFiltrados = self;
       } else {
         final buscaLower = _busca.toLowerCase();
-        final outros = docentesVisiveis.where((d) =>
-          (d.nome.toLowerCase().contains(buscaLower) ||
-           (d.userEmail ?? '').toLowerCase().contains(buscaLower) ||
-           d.departamento.toLowerCase().contains(buscaLower))
-        ).toList();
+        final outros = docentesVisiveis
+            .where(
+              (d) =>
+                  (d.nome.toLowerCase().contains(buscaLower) ||
+                  (d.userEmail ?? '').toLowerCase().contains(buscaLower) ||
+                  d.departamento.toLowerCase().contains(buscaLower)),
+            )
+            .toList();
         // Garante que o próprio sempre aparece primeiro, sem duplicar
-        final outrosSemSelf = outros.where((d) => (d.userEmail ?? '').trim().toLowerCase() != emailNormalizado).toList();
+        final outrosSemSelf = outros
+            .where(
+              (d) =>
+                  (d.userEmail ?? '').trim().toLowerCase() != emailNormalizado,
+            )
+            .toList();
         docentesFiltrados = [...self, ...outrosSemSelf];
       }
     }
@@ -1034,12 +1029,12 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     final altaCarga = _docentesComAltaCarga(docentesBasePainel);
     final baixaCarga = _docentesComBaixaCarga(docentesBasePainel);
     final mediaOcupacao = docentesBasePainel.isEmpty
-      ? 0
-      : docentesBasePainel
-          .map(_percentualOcupacao)
-          .reduce((a, b) => a + b) /
-        docentesBasePainel.length;
-    final sugestoesDistribuicao = _gerarSugestoesDistribuicao(docentesBasePainel);
+        ? 0.0
+        : docentesBasePainel.map(_percentualOcupacao).reduce((a, b) => a + b) /
+              docentesBasePainel.length;
+    final sugestoesDistribuicao = _gerarSugestoesDistribuicao(
+      docentesBasePainel,
+    );
 
     // Identifica o próprio docente
     Docente? selfDocente;
@@ -1062,8 +1057,12 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                 canManage: podeGerenciar,
                 canViewSchedule: true,
                 onAbrirAgenda: () => _abrirAgendaDocente(context, selfDocente!),
-                onEditar: podeGerenciar ? () => _showEditarDocente(context, selfDocente!) : null,
-                onExcluir: podeGerenciar ? () => _showConfirmarExclusao(context, selfDocente!) : null,
+                onEditar: podeGerenciar
+                    ? () => _showEditarDocente(context, selfDocente!)
+                    : null,
+                onExcluir: podeGerenciar
+                    ? () => _showConfirmarExclusao(context, selfDocente!)
+                    : null,
                 somenteVisualizar: !podeGerenciar,
               ),
             ),
@@ -1093,34 +1092,57 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
               builder: (_) {
                 // Lista de outros docentes (exclui o próprio)
                 final outrosDocentes = selfDocente == null
-                  ? docentesOrdenados
-                  : docentesOrdenados.where((d) => d.id != selfDocente!.id).toList();
+                    ? docentesOrdenados
+                    : docentesOrdenados
+                          .where((d) => d.id != selfDocente!.id)
+                          .toList();
                 if (outrosDocentes.isEmpty) {
                   return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.person_outline, size: 64, color: SigadColors.muted.withValues(alpha: 0.3)),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Nenhum docente encontrado',
-                          style: textTheme.bodyLarge?.copyWith(color: SigadColors.muted),
-                        ),
-                      ],
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.person_outline,
+                            size: 64,
+                            color: SigadColors.muted.withValues(alpha: 0.3),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Nenhum docente encontrado',
+                            style: textTheme.bodyLarge?.copyWith(
+                              color: SigadColors.muted,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 }
                 return ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   itemCount: outrosDocentes.length,
                   separatorBuilder: (_, _) => const SizedBox(height: 12),
                   itemBuilder: (_, index) => _DocenteCard(
                     docente: outrosDocentes[index],
                     canManage: podeGerenciar,
                     canViewSchedule: podeVisualizarHorarios,
-                    onAbrirAgenda: () => _abrirAgendaDocente(context, outrosDocentes[index]),
-                    onEditar: podeGerenciar ? () => _showEditarDocente(context, outrosDocentes[index]) : null,
-                    onExcluir: podeGerenciar ? () => _showConfirmarExclusao(context, outrosDocentes[index]) : null,
+                    onAbrirAgenda: () =>
+                        _abrirAgendaDocente(context, outrosDocentes[index]),
+                    onEditar: podeGerenciar
+                        ? () =>
+                              _showEditarDocente(context, outrosDocentes[index])
+                        : null,
+                    onExcluir: podeGerenciar
+                        ? () => _showConfirmarExclusao(
+                            context,
+                            outrosDocentes[index],
+                          )
+                        : null,
                     somenteVisualizar: !podeGerenciar,
                   ),
                 );
@@ -1171,7 +1193,7 @@ class _DocenteCard extends StatelessWidget {
         border: Border.all(color: SigadColors.divider),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -1225,7 +1247,9 @@ class _DocenteCard extends StatelessWidget {
                   onTap: onAbrirAgenda,
                   child: Text(
                     docente.nome,
-                    style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -1246,19 +1270,24 @@ class _DocenteCard extends StatelessWidget {
             spacing: 6,
             runSpacing: 6,
             children: docente.disciplinas
-                .map((d) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: SigadColors.brand.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(6),
+                .map(
+                  (d) => Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: SigadColors.brand.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      d,
+                      style: textTheme.labelSmall?.copyWith(
+                        color: SigadColors.brand,
                       ),
-                      child: Text(
-                        d,
-                        style: textTheme.labelSmall?.copyWith(
-                          color: SigadColors.brand,
-                        ),
-                      ),
-                    ))
+                    ),
+                  ),
+                )
                 .toList(),
           ),
         ],
@@ -1285,7 +1314,9 @@ class _PainelDistribuicaoInteligente extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final mediaPercentual = (mediaOcupacao * 100).clamp(0, 999).toStringAsFixed(0);
+    final mediaPercentual = (mediaOcupacao * 100)
+        .clamp(0, 999)
+        .toStringAsFixed(0);
 
     return Container(
       width: double.infinity,
@@ -1300,11 +1331,17 @@ class _PainelDistribuicaoInteligente extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.tune_outlined, size: 18, color: SigadColors.brand),
+              const Icon(
+                Icons.tune_outlined,
+                size: 18,
+                color: SigadColors.brand,
+              ),
               const SizedBox(width: 6),
               Text(
                 'Otimização da distribuição',
-                style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                style: textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const Spacer(),
               TextButton.icon(
@@ -1320,17 +1357,27 @@ class _PainelDistribuicaoInteligente extends StatelessWidget {
             runSpacing: 8,
             children: [
               _KpiChip(label: 'Ocupação média', value: '$mediaPercentual%'),
-              _KpiChip(label: 'Alta carga (>=90%)', value: '$docentesAltaCarga'),
-              _KpiChip(label: 'Baixa carga (<=50%)', value: '$docentesBaixaCarga'),
+              _KpiChip(
+                label: 'Alta carga (>=90%)',
+                value: '$docentesAltaCarga',
+              ),
+              _KpiChip(
+                label: 'Baixa carga (<=50%)',
+                value: '$docentesBaixaCarga',
+              ),
             ],
           ),
           const SizedBox(height: 10),
-          ...sugestoes.take(3).map(
+          ...sugestoes
+              .take(3)
+              .map(
                 (sugestao) => Padding(
                   padding: const EdgeInsets.only(bottom: 6),
                   child: Text(
                     '• $sugestao',
-                    style: textTheme.bodySmall?.copyWith(color: SigadColors.ink),
+                    style: textTheme.bodySmall?.copyWith(
+                      color: SigadColors.ink,
+                    ),
                   ),
                 ),
               ),
@@ -1364,7 +1411,9 @@ class _SimulacaoRedistribuicaoSheet extends StatelessWidget {
           children: [
             Text(
               'Simulação de redistribuição',
-              style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -1479,7 +1528,9 @@ class _AccessDenied extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               'Acesso restrito',
-              style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -1506,21 +1557,28 @@ class _AgendaDocentePage extends StatelessWidget {
     final horizontalPadding = screenWidth >= 1200
         ? 8.0
         : screenWidth >= 900
-            ? 10.0
-            : 6.0;
+        ? 10.0
+        : 6.0;
 
     final userContext = context.watch<UserContextProvider>();
     final user = userContext.currentUser;
     final role = userContext.userRole;
-    final isSelf = user != null && (user.email.trim().toLowerCase() == (docente.userEmail ?? '').trim().toLowerCase());
-    final isCoordOrChefe = role == UserRole.coordenador || role == UserRole.chefeDepartamento;
+    final isSelf =
+        user != null &&
+        (user.email.trim().toLowerCase() ==
+            (docente.userEmail ?? '').trim().toLowerCase());
+    final isCoordOrChefe =
+        role == UserRole.coordenador || role == UserRole.chefeDepartamento;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Agenda do docente'),
-      ),
+      appBar: AppBar(title: const Text('Agenda do docente')),
       body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(horizontalPadding, 14, horizontalPadding, 24),
+        padding: EdgeInsets.fromLTRB(
+          horizontalPadding,
+          14,
+          horizontalPadding,
+          24,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1540,7 +1598,9 @@ class _AgendaDocentePage extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 'Regime EBTT: ${docente.regimeTrabalho.label} (${docente.regimeTrabalho.code})',
-                style: textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+                style: textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
@@ -1554,14 +1614,19 @@ class _AgendaDocentePage extends StatelessWidget {
                 children: docente.disciplinas
                     .map(
                       (d) => Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: SigadColors.brand.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
                           d,
-                          style: textTheme.labelSmall?.copyWith(color: SigadColors.brand),
+                          style: textTheme.labelSmall?.copyWith(
+                            color: SigadColors.brand,
+                          ),
                         ),
                       ),
                     )
@@ -1569,6 +1634,13 @@ class _AgendaDocentePage extends StatelessWidget {
               ),
             ],
             const SizedBox(height: 16),
+            Text(
+              'Distribuição semanal',
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 10),
             _MapaSemanalHorarios(
               horarios: docente.horariosAula,
               compacto: false,
@@ -1584,7 +1656,9 @@ class _AgendaDocentePage extends StatelessWidget {
     BuildContext pageContext,
     _AgendaCellTapData slot,
   ) async {
-    final tituloController = TextEditingController(text: 'Convite para reunião');
+    final tituloController = TextEditingController(
+      text: 'Convite para reunião',
+    );
     final descricaoController = TextEditingController(
       text: 'Convite enviado via agenda do SIGAD.',
     );
@@ -1609,16 +1683,16 @@ class _AgendaDocentePage extends StatelessWidget {
               children: [
                 Text(
                   'Enviar convite de reunião',
-                  style: Theme.of(modalContext).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                  style: Theme.of(
+                    modalContext,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   '${_formatarData(slot.data)} · ${slot.horarioFaixa} (${slot.turno.shortLabel}${slot.periodo})',
-                  style: Theme.of(modalContext).textTheme.bodySmall?.copyWith(
-                        color: SigadColors.muted,
-                      ),
+                  style: Theme.of(
+                    modalContext,
+                  ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -1652,7 +1726,10 @@ class _AgendaDocentePage extends StatelessWidget {
                     onPressed: () async {
                       final inicio = _inicioSlot(slot.data, slot.horarioFaixa);
                       if (inicio == null) {
-                        AppFeedbackService.info(pageContext, 'Não foi possível interpretar o horário da célula.');
+                        AppFeedbackService.info(
+                          pageContext,
+                          'Não foi possível interpretar o horário da célula.',
+                        );
                         return;
                       }
 
@@ -1660,11 +1737,17 @@ class _AgendaDocentePage extends StatelessWidget {
                       final descricao = descricaoController.text.trim();
                       final local = localController.text.trim();
                       if (titulo.isEmpty) {
-                        AppFeedbackService.info(pageContext, 'Informe o título do convite.');
+                        AppFeedbackService.info(
+                          pageContext,
+                          'Informe o título do convite.',
+                        );
                         return;
                       }
                       if (local.isEmpty) {
-                        AppFeedbackService.info(pageContext, 'Informe o local do convite.');
+                        AppFeedbackService.info(
+                          pageContext,
+                          'Informe o local do convite.',
+                        );
                         return;
                       }
 
@@ -1672,7 +1755,9 @@ class _AgendaDocentePage extends StatelessWidget {
                       await AgendaConvitesService.registrarConviteRecebido(
                         destinatarioUserId: destinatario,
                         titulo: titulo,
-                        descricao: descricao.isEmpty ? 'Convite enviado via agenda do SIGAD.' : descricao,
+                        descricao: descricao.isEmpty
+                            ? 'Convite enviado via agenda do SIGAD.'
+                            : descricao,
                         inicio: _formatarDataHora(inicio),
                         inicioDateTime: inicio,
                         local: local,
@@ -1681,7 +1766,10 @@ class _AgendaDocentePage extends StatelessWidget {
 
                       if (!pageContext.mounted) return;
                       Navigator.pop(modalContext);
-                      AppFeedbackService.info(pageContext, 'Convite enviado com sucesso para a agenda do docente.');
+                      AppFeedbackService.info(
+                        pageContext,
+                        'Convite enviado com sucesso para a agenda do docente.',
+                      );
                     },
                     icon: const Icon(Icons.send),
                     label: const Text('Enviar convite'),
@@ -1785,19 +1873,23 @@ class _MapaSemanalHorarios extends StatelessWidget {
       children: [
         Text(
           'Agenda semanal',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 4),
         Text(
           '$semanaLabel de $mesLabel',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
         ),
         const SizedBox(height: 2),
         Text(
           'Dia selecionado: ${hoje.day} ($diaSelecionadoAbreviado - $diaSelecionadoCompleto)',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
         ),
         const SizedBox(height: 14),
         LayoutBuilder(
@@ -1811,7 +1903,8 @@ class _MapaSemanalHorarios extends StatelessWidget {
               child: Column(
                 children: [
                   for (var index = 0; index < linhas.length; index++) ...[
-                    if (index == 0 || linhas[index - 1].turno != linhas[index].turno)
+                    if (index == 0 ||
+                        linhas[index - 1].turno != linhas[index].turno)
                       _TurnoAgendaDividerRow(turno: linhas[index].turno),
                     Row(
                       children: [
@@ -1826,12 +1919,16 @@ class _MapaSemanalHorarios extends StatelessWidget {
                               turno: linhas[index].turno,
                               periodo: linhas[index].periodo,
                               isLastDay: i == _diasOrdem.length - 1,
-                              aula: gradePorDiaTurnoPeriodo[_diasOrdem[i]]?[
-                                _turnoPeriodoKey(linhas[index].turno, linhas[index].periodo)
-                              ],
-                              onTap: gradePorDiaTurnoPeriodo[_diasOrdem[i]]?[
-                                        _turnoPeriodoKey(linhas[index].turno, linhas[index].periodo)
-                                      ] ==
+                              aula:
+                                  gradePorDiaTurnoPeriodo[_diasOrdem[i]]?[_turnoPeriodoKey(
+                                    linhas[index].turno,
+                                    linhas[index].periodo,
+                                  )],
+                              onTap:
+                                  gradePorDiaTurnoPeriodo[_diasOrdem[i]]?[_turnoPeriodoKey(
+                                        linhas[index].turno,
+                                        linhas[index].periodo,
+                                      )] ==
                                       null
                                   ? () async {
                                       final callback = onTapLivre;
@@ -1863,9 +1960,7 @@ class _MapaSemanalHorarios extends StatelessWidget {
   Map<String, Map<String, HorarioAula>> _buildGradePorDiaTurnoPeriodo(
     List<_AgendaGridRow> linhas,
   ) {
-    final grade = {
-      for (final dia in _diasOrdem) dia: <String, HorarioAula>{},
-    };
+    final grade = {for (final dia in _diasOrdem) dia: <String, HorarioAula>{}};
 
     for (final aula in horarios) {
       final dia = _abreviarDia(aula.diaSemana);
@@ -1895,7 +1990,8 @@ class _MapaSemanalHorarios extends StatelessWidget {
     ];
   }
 
-  String _turnoPeriodoKey(_AgendaTurno turno, int periodo) => '${turno.name}|$periodo';
+  String _turnoPeriodoKey(_AgendaTurno turno, int periodo) =>
+      '${turno.name}|$periodo';
 
   bool _aulaSobrepoeFaixa(HorarioAula aula, String faixa) {
     final inicioAula = _toMinutes(aula.inicio);
@@ -1905,7 +2001,10 @@ class _MapaSemanalHorarios extends StatelessWidget {
     final inicioFaixa = _toMinutes(partes[0].trim());
     final fimFaixa = _toMinutes(partes[1].trim());
 
-    if (inicioAula == null || fimAula == null || inicioFaixa == null || fimFaixa == null) {
+    if (inicioAula == null ||
+        fimAula == null ||
+        inicioFaixa == null ||
+        fimFaixa == null) {
       return false;
     }
     if (fimAula <= inicioAula || fimFaixa <= inicioFaixa) {
@@ -1929,13 +2028,20 @@ class _MapaSemanalHorarios extends StatelessWidget {
 
   List<DateTime> _datasDaSemanaAtual() {
     final hoje = DateTime.now();
-    final inicioDaSemana = hoje.subtract(Duration(days: hoje.weekday - DateTime.monday));
-    return List<DateTime>.generate(5, (index) => inicioDaSemana.add(Duration(days: index)));
+    final inicioDaSemana = hoje.subtract(
+      Duration(days: hoje.weekday - DateTime.monday),
+    );
+    return List<DateTime>.generate(
+      5,
+      (index) => inicioDaSemana.add(Duration(days: index)),
+    );
   }
 
   String _descricaoSemanaAtual() {
     final hoje = DateTime.now();
-    final inicioDaSemana = hoje.subtract(Duration(days: hoje.weekday - DateTime.monday));
+    final inicioDaSemana = hoje.subtract(
+      Duration(days: hoje.weekday - DateTime.monday),
+    );
     final fimDaSemana = inicioDaSemana.add(const Duration(days: 4));
     if (inicioDaSemana.month == fimDaSemana.month) {
       return '${_pad2(inicioDaSemana.day)} a ${_pad2(fimDaSemana.day)}';
@@ -2055,11 +2161,31 @@ enum _AgendaTurno {
   List<String> get horarios {
     switch (this) {
       case _AgendaTurno.matutino:
-        return const ['07:15-08:05', '08:05-08:55', '08:55-09:45', '09:45-10:35', '10:50-11:40', '11:40-12:30'];
+        return const [
+          '07:15-08:05',
+          '08:05-08:55',
+          '08:55-09:45',
+          '09:45-10:35',
+          '10:50-11:40',
+          '11:40-12:30',
+        ];
       case _AgendaTurno.vespertino:
-        return const ['13:10-14:00', '14:00-14:50', '14:50-15:40', '15:55-16:45', '16:45-17:35', '17:35-18:25'];
+        return const [
+          '13:10-14:00',
+          '14:00-14:50',
+          '14:50-15:40',
+          '15:55-16:45',
+          '16:45-17:35',
+          '17:35-18:25',
+        ];
       case _AgendaTurno.noturno:
-        return const ['18:30-19:20', '19:20-20:10', '20:30-21:15', '21:15-22:00', '22:00-22:45'];
+        return const [
+          '18:30-19:20',
+          '19:20-20:10',
+          '20:30-21:15',
+          '21:15-22:00',
+          '22:00-22:45',
+        ];
     }
   }
 
@@ -2070,9 +2196,7 @@ enum _AgendaTurno {
 }
 
 class _TurnoAgendaDividerRow extends StatelessWidget {
-  const _TurnoAgendaDividerRow({
-    required this.turno,
-  });
+  const _TurnoAgendaDividerRow({required this.turno});
 
   final _AgendaTurno turno;
 
@@ -2102,9 +2226,9 @@ class _TurnoAgendaDividerRow extends StatelessWidget {
           Text(
             turno.label,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: turno.chipTextColor,
-                ),
+              fontWeight: FontWeight.w700,
+              color: turno.chipTextColor,
+            ),
           ),
         ],
       ),
@@ -2153,34 +2277,34 @@ class _GradeAgendaCell extends StatelessWidget {
     final iconSize = compacto ? 12.0 : 14.0;
     final statusLabel = livre ? 'Livre' : (compacto ? 'Aula' : 'Ocupado');
     final headerTextStyle = Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: SigadColors.brandDark,
-          fontWeight: FontWeight.w700,
-          fontSize: compacto ? 9.5 : 10.5,
-        );
+      color: SigadColors.brandDark,
+      fontWeight: FontWeight.w700,
+      fontSize: compacto ? 9.5 : 10.5,
+    );
     final chipTextStyle = Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: turno.chipTextColor,
-          fontWeight: FontWeight.w700,
-          fontSize: compacto ? 8.5 : 9.5,
-        );
+      color: turno.chipTextColor,
+      fontWeight: FontWeight.w700,
+      fontSize: compacto ? 8.5 : 9.5,
+    );
     final horarioTextStyle = Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: SigadColors.muted,
-          fontWeight: FontWeight.w600,
-          fontSize: compacto ? 8.8 : 9.8,
-        );
+      color: SigadColors.muted,
+      fontWeight: FontWeight.w600,
+      fontSize: compacto ? 8.8 : 9.8,
+    );
     final statusTextStyle = Theme.of(context).textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w700,
-          color: tone,
-          fontSize: compacto ? 9.0 : 10.0,
-        );
-    final detailsPrimaryStyle = Theme.of(context).textTheme.labelSmall?.copyWith(
+      fontWeight: FontWeight.w700,
+      color: tone,
+      fontSize: compacto ? 9.0 : 10.0,
+    );
+    final detailsPrimaryStyle = Theme.of(context).textTheme.labelSmall
+        ?.copyWith(
           color: SigadColors.brandDark,
           fontWeight: FontWeight.w600,
           fontSize: 9.2,
         );
-    final detailsSecondaryStyle = Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: SigadColors.muted,
-          fontSize: 8.8,
-        );
+    final detailsSecondaryStyle = Theme.of(
+      context,
+    ).textTheme.labelSmall?.copyWith(color: SigadColors.muted, fontSize: 8.8);
 
     return Material(
       color: Colors.transparent,
@@ -2196,10 +2320,7 @@ class _GradeAgendaCell extends StatelessWidget {
               right: BorderSide(
                 color: isLastDay ? Colors.transparent : SigadColors.divider,
               ),
-              bottom: BorderSide(
-                color: tone.withValues(alpha: 0.35),
-                width: 2,
-              ),
+              bottom: BorderSide(color: tone.withValues(alpha: 0.35), width: 2),
             ),
           ),
           child: Column(
@@ -2236,17 +2357,16 @@ class _GradeAgendaCell extends StatelessWidget {
               FittedBox(
                 fit: BoxFit.scaleDown,
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  horario,
-                  style: horarioTextStyle,
-                ),
+                child: Text(horario, style: horarioTextStyle),
               ),
               const SizedBox(height: 1),
               Flexible(
                 child: Row(
                   children: [
                     Icon(
-                      livre ? Icons.check_circle_outline : Icons.event_busy_outlined,
+                      livre
+                          ? Icons.check_circle_outline
+                          : Icons.event_busy_outlined,
                       size: iconSize,
                       color: tone,
                     ),
@@ -2255,10 +2375,7 @@ class _GradeAgendaCell extends StatelessWidget {
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
                         alignment: Alignment.centerLeft,
-                        child: Text(
-                          statusLabel,
-                          style: statusTextStyle,
-                        ),
+                        child: Text(statusLabel, style: statusTextStyle),
                       ),
                     ),
                   ],
@@ -2266,7 +2383,9 @@ class _GradeAgendaCell extends StatelessWidget {
               ),
               if (!livre) ...[
                 const SizedBox(height: 1),
-                if (!compacto && aula!.disciplina != null && aula!.disciplina!.isNotEmpty)
+                if (!compacto &&
+                    aula!.disciplina != null &&
+                    aula!.disciplina!.isNotEmpty)
                   Flexible(
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
@@ -2282,10 +2401,7 @@ class _GradeAgendaCell extends StatelessWidget {
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       alignment: Alignment.centerLeft,
-                      child: Text(
-                        aula!.turma!,
-                        style: detailsSecondaryStyle,
-                      ),
+                      child: Text(aula!.turma!, style: detailsSecondaryStyle),
                     ),
                   ),
               ],
@@ -2312,7 +2428,11 @@ class _AgendaCellTapData {
 }
 
 class _HorarioTile extends StatelessWidget {
-  const _HorarioTile({required this.horario, required this.textTheme, required this.onDelete});
+  const _HorarioTile({
+    required this.horario,
+    required this.textTheme,
+    required this.onDelete,
+  });
   final HorarioAula horario;
   final TextTheme textTheme;
   final VoidCallback onDelete;
@@ -2335,17 +2455,33 @@ class _HorarioTile extends StatelessWidget {
               children: [
                 Text(
                   '${horario.diaSemana}  ${horario.inicio} – ${horario.fim}',
-                  style: textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: SigadColors.brand),
+                  style: textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: SigadColors.brand,
+                  ),
                 ),
                 if (horario.disciplina != null) ...[
                   const SizedBox(height: 2),
-                  Text(horario.disciplina!, style: textTheme.bodySmall?.copyWith(color: SigadColors.ink)),
+                  Text(
+                    horario.disciplina!,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: SigadColors.ink,
+                    ),
+                  ),
                 ],
-                if (horario.turma != null || horario.cargaHoraria != null || horario.modalidade != null) ...[
+                if (horario.turma != null ||
+                    horario.cargaHoraria != null ||
+                    horario.modalidade != null) ...[
                   const SizedBox(height: 2),
                   Text(
-                    [horario.turma, horario.cargaHoraria, horario.modalidade].whereType<String>().join(' · '),
-                    style: textTheme.labelSmall?.copyWith(color: SigadColors.muted),
+                    [
+                      horario.turma,
+                      horario.cargaHoraria,
+                      horario.modalidade,
+                    ].whereType<String>().join(' · '),
+                    style: textTheme.labelSmall?.copyWith(
+                      color: SigadColors.muted,
+                    ),
                   ),
                 ],
               ],
@@ -2363,4 +2499,3 @@ class _HorarioTile extends StatelessWidget {
     );
   }
 }
-

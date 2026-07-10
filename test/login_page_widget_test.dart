@@ -9,13 +9,8 @@ import 'package:sigad/features/login/presentation/pages/login_page.dart';
 
 Widget _buildApp() {
   return MultiProvider(
-    providers: [
-      ChangeNotifierProvider(create: (_) => UserContextProvider()),
-    ],
-    child: MaterialApp(
-      theme: AppTheme.light(),
-      home: const LoginPage(),
-    ),
+    providers: [ChangeNotifierProvider(create: (_) => UserContextProvider())],
+    child: MaterialApp(theme: AppTheme.light(), home: const LoginPage()),
   );
 }
 
@@ -59,7 +54,10 @@ void main() {
     await tester.pumpWidget(_buildApp());
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.byType(TextField).first, 'user@instituicao.edu.br');
+    await tester.enterText(
+      find.byType(TextField).first,
+      'user@instituicao.edu.br',
+    );
     await tester.enterText(find.byType(TextField).at(1), 'ab');
     await tester.tap(find.text('Entrar'));
     await tester.pumpAndSettle();
@@ -71,13 +69,17 @@ void main() {
     await tester.pumpWidget(_buildApp());
     await tester.pumpAndSettle();
 
-    final passwordField = tester.widget<TextField>(find.byType(TextField).at(1));
+    final passwordField = tester.widget<TextField>(
+      find.byType(TextField).at(1),
+    );
     expect(passwordField.obscureText, isTrue);
 
     await tester.tap(find.byIcon(Icons.visibility_outlined));
     await tester.pumpAndSettle();
 
-    final passwordFieldAfter = tester.widget<TextField>(find.byType(TextField).at(1));
+    final passwordFieldAfter = tester.widget<TextField>(
+      find.byType(TextField).at(1),
+    );
     expect(passwordFieldAfter.obscureText, isFalse);
   });
 

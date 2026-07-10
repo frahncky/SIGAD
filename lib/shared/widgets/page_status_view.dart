@@ -17,10 +17,10 @@ class PageStatusView extends StatelessWidget {
     super.key,
     this.title = 'Carregando dados...',
     this.subtitle,
-  })  : icon = Icons.hourglass_top_rounded,
-        actionLabel = null,
-        onAction = null,
-        showProgress = true;
+  }) : icon = Icons.hourglass_top_rounded,
+       actionLabel = null,
+       onAction = null,
+       showProgress = true;
 
   const PageStatusView.empty({
     super.key,
@@ -80,14 +80,18 @@ class PageStatusView extends StatelessWidget {
               Text(
                 title,
                 textAlign: TextAlign.center,
-                style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               if (subtitle != null && subtitle!.trim().isNotEmpty) ...[
                 const SizedBox(height: 6),
                 Text(
                   subtitle!,
                   textAlign: TextAlign.center,
-                  style: textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: SigadColors.muted,
+                  ),
                 ),
               ],
               if (actionLabel != null && onAction != null) ...[

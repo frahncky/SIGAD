@@ -16,9 +16,11 @@ class KanbanRepository implements EntityRepository<KanbanCardModel> {
     AppHttpClient? remoteClient,
     DataSourceMode? dataSourceMode,
     bool? enableRemoteFallback,
-  })  : _remoteClient = remoteClient ?? HttpPackageClient(httpClient: http.Client()),
-        _dataSourceMode = dataSourceMode ?? AppRuntimeConfig.dataSourceMode,
-        _enableRemoteFallback = enableRemoteFallback ?? AppRuntimeConfig.enableRemoteFallback;
+  }) : _remoteClient =
+           remoteClient ?? HttpPackageClient(httpClient: http.Client()),
+       _dataSourceMode = dataSourceMode ?? AppRuntimeConfig.dataSourceMode,
+       _enableRemoteFallback =
+           enableRemoteFallback ?? AppRuntimeConfig.enableRemoteFallback;
 
   final String storageKey;
   final AppHttpClient _remoteClient;
@@ -39,7 +41,11 @@ class KanbanRepository implements EntityRepository<KanbanCardModel> {
     try {
       return await _loadRemoteCards();
     } catch (error, stackTrace) {
-      AppEventLogger.error('kanban_remote_load_error', error, stackTrace: stackTrace);
+      AppEventLogger.error(
+        'kanban_remote_load_error',
+        error,
+        stackTrace: stackTrace,
+      );
       if (_enableRemoteFallback) {
         AppEventLogger.action('kanban_remote_load_fallback_local');
         return _loadLocalCards();
@@ -57,7 +63,11 @@ class KanbanRepository implements EntityRepository<KanbanCardModel> {
       await _saveRemoteCards(cards);
       await _saveLocalCards(cards);
     } catch (error, stackTrace) {
-      AppEventLogger.error('kanban_remote_save_error', error, stackTrace: stackTrace);
+      AppEventLogger.error(
+        'kanban_remote_save_error',
+        error,
+        stackTrace: stackTrace,
+      );
       if (_enableRemoteFallback) {
         AppEventLogger.action('kanban_remote_save_fallback_local');
         return _saveLocalCards(cards);
@@ -108,7 +118,9 @@ class KanbanRepository implements EntityRepository<KanbanCardModel> {
   }
 
   Future<void> _saveRemoteCards(List<KanbanCardModel> cards) {
-    final payload = cards.map((item) => KanbanCardDto.fromDomain(item).toJson()).toList(growable: false);
+    final payload = cards
+        .map((item) => KanbanCardDto.fromDomain(item).toJson())
+        .toList(growable: false);
     return _remoteClient.send(
       ApiRequest(
         path: KanbanApiContract.collectionPath,
@@ -120,7 +132,10 @@ class KanbanRepository implements EntityRepository<KanbanCardModel> {
 
   List<Map<String, dynamic>> _extractListPayload(Object? body) {
     if (body is List) {
-      return body.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList(growable: false);
+      return body
+          .whereType<Map>()
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList(growable: false);
     }
     if (body is Map<String, dynamic>) {
       final nested = body['items'] ?? body['data'];
@@ -135,16 +150,16 @@ class KanbanRepository implements EntityRepository<KanbanCardModel> {
   }
 
   Map<String, dynamic> _cardToJson(KanbanCardModel c) => {
-        'id': c.id,
-        'titulo': c.titulo,
-        'coluna': c.coluna,
-        'prioridade': c.prioridade,
-      };
+    'id': c.id,
+    'titulo': c.titulo,
+    'coluna': c.coluna,
+    'prioridade': c.prioridade,
+  };
 
   KanbanCardModel _cardFromJson(Map<String, dynamic> json) => KanbanCardModel(
-        id: json['id'] as int,
-        titulo: json['titulo'] as String,
-        coluna: json['coluna'] as String,
-        prioridade: json['prioridade'] as String,
-      );
+    id: json['id'] as int,
+    titulo: json['titulo'] as String,
+    coluna: json['coluna'] as String,
+    prioridade: json['prioridade'] as String,
+  );
 }

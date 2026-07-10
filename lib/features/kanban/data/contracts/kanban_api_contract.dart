@@ -15,32 +15,32 @@ class KanbanCardDto {
   final String prioridade;
 
   factory KanbanCardDto.fromJson(Map<String, dynamic> json) => KanbanCardDto(
-        id: json['id'] as int,
-        titulo: json['titulo'] as String,
-        coluna: json['coluna'] as String,
-        prioridade: json['prioridade'] as String,
-      );
+    id: json['id'] as int,
+    titulo: json['titulo'] as String,
+    coluna: json['coluna'] as String,
+    prioridade: json['prioridade'] as String,
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'titulo': titulo,
-        'coluna': coluna,
-        'prioridade': prioridade,
-      };
+    'id': id,
+    'titulo': titulo,
+    'coluna': coluna,
+    'prioridade': prioridade,
+  };
 
   KanbanCardModel toDomain() => KanbanCardModel(
-        id: id,
-        titulo: titulo,
-        coluna: coluna,
-        prioridade: prioridade,
-      );
+    id: id,
+    titulo: titulo,
+    coluna: coluna,
+    prioridade: prioridade,
+  );
 
   static KanbanCardDto fromDomain(KanbanCardModel card) => KanbanCardDto(
-        id: card.id,
-        titulo: card.titulo,
-        coluna: card.coluna,
-        prioridade: card.prioridade,
-      );
+    id: card.id,
+    titulo: card.titulo,
+    coluna: card.coluna,
+    prioridade: card.prioridade,
+  );
 }
 
 abstract final class KanbanApiContract {

@@ -59,7 +59,9 @@ class _LoginPageState extends State<LoginPage> {
                               Expanded(child: _buildIntro()),
                               Container(
                                 width: 1,
-                                margin: const EdgeInsets.symmetric(horizontal: 20),
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                ),
                                 color: Theme.of(context).dividerColor,
                               ),
                               Expanded(child: _buildForm(context)),
@@ -96,9 +98,9 @@ class _LoginPageState extends State<LoginPage> {
         const SizedBox(height: 18),
         Text(
           'Acesso por perfil',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 14),
         Wrap(
@@ -124,9 +126,9 @@ class _LoginPageState extends State<LoginPage> {
       children: [
         Text(
           'Entrar no SIGAD',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 16),
         AutofillGroup(
@@ -137,7 +139,10 @@ class _LoginPageState extends State<LoginPage> {
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
                 enableSuggestions: false,
-                autofillHints: const [AutofillHints.username, AutofillHints.email],
+                autofillHints: const [
+                  AutofillHints.username,
+                  AutofillHints.email,
+                ],
                 autocorrect: false,
                 decoration: const InputDecoration(
                   labelText: 'Email institucional',
@@ -158,10 +163,15 @@ class _LoginPageState extends State<LoginPage> {
                   labelText: 'Senha',
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
-                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                    tooltip: _obscurePassword ? 'Mostrar senha' : 'Ocultar senha',
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
+                    tooltip: _obscurePassword
+                        ? 'Mostrar senha'
+                        : 'Ocultar senha',
                     icon: Icon(
-                      _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                      _obscurePassword
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
                     ),
                   ),
                 ),
@@ -224,10 +234,10 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     final emailDomain = email.contains('@') ? email.split('@').last : 'invalid';
-    AppEventLogger.action('login_attempt', details: {
-      'emailDomain': emailDomain,
-      'role': _selectedRole!.name,
-    });
+    AppEventLogger.action(
+      'login_attempt',
+      details: {'emailDomain': emailDomain, 'role': _selectedRole!.name},
+    );
 
     setState(() => _isLoading = true);
 
@@ -250,10 +260,10 @@ class _LoginPageState extends State<LoginPage> {
         user,
         sessionToken: 'session_$normalizedEmail',
       );
-      AppEventLogger.action('login_success', details: {
-        'userRef': _userRef(user.id),
-        'role': user.role.name,
-      });
+      AppEventLogger.action(
+        'login_success',
+        details: {'userRef': _userRef(user.id), 'role': user.role.name},
+      );
       if (!mounted) return;
       await Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
     } catch (error, stackTrace) {
@@ -271,9 +281,10 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    AppEventLogger.action('demo_login_attempt', details: {
-      'role': _selectedRole!.name,
-    });
+    AppEventLogger.action(
+      'demo_login_attempt',
+      details: {'role': _selectedRole!.name},
+    );
 
     setState(() => _isLoading = true);
     try {
@@ -294,10 +305,10 @@ class _LoginPageState extends State<LoginPage> {
         user,
         sessionToken: 'session_demo_${role.name}',
       );
-      AppEventLogger.action('demo_login_success', details: {
-        'userRef': _userRef(user.id),
-        'role': user.role.name,
-      });
+      AppEventLogger.action(
+        'demo_login_success',
+        details: {'userRef': _userRef(user.id), 'role': user.role.name},
+      );
       if (!mounted) return;
       await Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
     } catch (error, stackTrace) {
@@ -377,7 +388,9 @@ class _RolePill extends StatelessWidget {
           duration: const Duration(milliseconds: 180),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
           decoration: BoxDecoration(
-            color: selected ? colorScheme.primary.withValues(alpha: 0.14) : colorScheme.surface,
+            color: selected
+                ? colorScheme.primary.withValues(alpha: 0.14)
+                : colorScheme.surface,
             borderRadius: BorderRadius.circular(22),
             border: Border.all(
               color: selected ? colorScheme.primary : dividerColor,
@@ -386,9 +399,9 @@ class _RolePill extends StatelessWidget {
           child: Text(
             role.displayName,
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-                  color: selected ? colorScheme.primary : colorScheme.onSurface,
-                ),
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+              color: selected ? colorScheme.primary : colorScheme.onSurface,
+            ),
           ),
         ),
       ),
@@ -440,7 +453,10 @@ class _LoginBackground extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: isDark
-              ? [colorScheme.surface, colorScheme.surface.withValues(alpha: 0.88)]
+              ? [
+                  colorScheme.surface,
+                  colorScheme.surface.withValues(alpha: 0.88),
+                ]
               : [SigadColors.canvas, SigadColors.surfaceAlt],
         ),
       ),
@@ -449,12 +465,22 @@ class _LoginBackground extends StatelessWidget {
           Positioned(
             top: -80,
             right: -80,
-            child: _blob(isDark ? colorScheme.secondary.withValues(alpha: 0.35) : SigadColors.accentSoft, 220),
+            child: _blob(
+              isDark
+                  ? colorScheme.secondary.withValues(alpha: 0.35)
+                  : SigadColors.accentSoft,
+              220,
+            ),
           ),
           Positioned(
             left: -50,
             bottom: -50,
-            child: _blob(isDark ? colorScheme.primary.withValues(alpha: 0.32) : SigadColors.mint, 190),
+            child: _blob(
+              isDark
+                  ? colorScheme.primary.withValues(alpha: 0.32)
+                  : SigadColors.mint,
+              190,
+            ),
           ),
         ],
       ),

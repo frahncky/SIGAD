@@ -29,16 +29,16 @@ class ReservaRepository {
   }
 
   Map<String, dynamic> _reservaToJson(ReservaLaboratorio r) => {
-        'id': r.id,
-        'professor': r.professor,
-        'laboratorio': r.laboratorio,
-        'mes': r.mes,
-        'semanaDoMes': r.semanaDoMes,
-        'diaSemana': r.diaSemana,
-        'turno': r.turno.name,
-        'periodo': r.periodo,
-        if (r.disciplina != null) 'disciplina': r.disciplina,
-      };
+    'id': r.id,
+    'professor': r.professor,
+    'laboratorio': r.laboratorio,
+    'mes': r.mes,
+    'semanaDoMes': r.semanaDoMes,
+    'diaSemana': r.diaSemana,
+    'turno': r.turno.name,
+    'periodo': r.periodo,
+    if (r.disciplina != null) 'disciplina': r.disciplina,
+  };
 
   ReservaLaboratorio _reservaFromJson(Map<String, dynamic> json) {
     return ReservaLaboratorio(

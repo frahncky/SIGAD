@@ -12,7 +12,9 @@ void main() {
     test('persiste e restaura sessão autenticada', () async {
       SharedPreferences.setMockInitialValues({});
 
-      final sessionRepo = AuthSessionRepository(storageKey: 'test_auth_session');
+      final sessionRepo = AuthSessionRepository(
+        storageKey: 'test_auth_session',
+      );
       final provider = UserContextProvider(sessionRepository: sessionRepo);
 
       final user = User(
@@ -26,7 +28,9 @@ void main() {
 
       await provider.login(user, sessionToken: 'token_abc');
 
-      final restoredProvider = UserContextProvider(sessionRepository: sessionRepo);
+      final restoredProvider = UserContextProvider(
+        sessionRepository: sessionRepo,
+      );
       await restoredProvider.restoreSession();
 
       expect(restoredProvider.isAuthenticated, isTrue);
@@ -39,7 +43,9 @@ void main() {
     test('limpa sessão no logout', () async {
       SharedPreferences.setMockInitialValues({});
 
-      final sessionRepo = AuthSessionRepository(storageKey: 'test_auth_session');
+      final sessionRepo = AuthSessionRepository(
+        storageKey: 'test_auth_session',
+      );
       final provider = UserContextProvider(sessionRepository: sessionRepo);
 
       final user = User(
@@ -53,7 +59,9 @@ void main() {
       await provider.login(user, sessionToken: 'token_logout');
       await provider.logout();
 
-      final restoredProvider = UserContextProvider(sessionRepository: sessionRepo);
+      final restoredProvider = UserContextProvider(
+        sessionRepository: sessionRepo,
+      );
       await restoredProvider.restoreSession();
 
       expect(restoredProvider.isAuthenticated, isFalse);
@@ -63,7 +71,9 @@ void main() {
     test('força reautenticação quando sessão está expirada', () async {
       SharedPreferences.setMockInitialValues({});
 
-      final sessionRepo = AuthSessionRepository(storageKey: 'test_auth_session');
+      final sessionRepo = AuthSessionRepository(
+        storageKey: 'test_auth_session',
+      );
       final provider = UserContextProvider(sessionRepository: sessionRepo);
 
       final user = User(

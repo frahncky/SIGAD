@@ -52,17 +52,17 @@ class CompromissoAgenda {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'titulo': titulo,
-        'descricao': descricao,
-        'inicio': inicio,
-        'inicioIso': inicioIso,
-        'local': local,
-        'origem': origem,
-        'destinatarioUserId': destinatarioUserId,
-        'linkReuniao': linkReuniao,
-        'statusConvite': statusConvite.name,
-      };
+    'id': id,
+    'titulo': titulo,
+    'descricao': descricao,
+    'inicio': inicio,
+    'inicioIso': inicioIso,
+    'local': local,
+    'origem': origem,
+    'destinatarioUserId': destinatarioUserId,
+    'linkReuniao': linkReuniao,
+    'statusConvite': statusConvite.name,
+  };
 
   factory CompromissoAgenda.fromMap(Map<String, dynamic> data) {
     final statusRaw = data['statusConvite'] as String?;
@@ -79,7 +79,8 @@ class CompromissoAgenda {
       titulo: data['titulo'] as String,
       descricao: data['descricao'] as String,
       inicio: data['inicio'] as String,
-      inicioIso: data['inicioIso'] as String? ?? DateTime.now().toIso8601String(),
+      inicioIso:
+          data['inicioIso'] as String? ?? DateTime.now().toIso8601String(),
       local: data['local'] as String,
       origem: data['origem'] as String,
       destinatarioUserId: data['destinatarioUserId'] as String? ?? '',
@@ -146,12 +147,14 @@ class ConfiguracoesData {
   }) {
     return ConfiguracoesData(
       notificacoesAtivas: notificacoesAtivas ?? this.notificacoesAtivas,
-      notificarAntesDaDisciplina: notificarAntesDaDisciplina ?? this.notificarAntesDaDisciplina,
+      notificarAntesDaDisciplina:
+          notificarAntesDaDisciplina ?? this.notificarAntesDaDisciplina,
       antecedenciaNotificacaoMinutos:
           antecedenciaNotificacaoMinutos ?? this.antecedenciaNotificacaoMinutos,
       modoDark: modoDark ?? this.modoDark,
       biometriaAtiva: biometriaAtiva ?? this.biometriaAtiva,
-      backupAutomaticoAtivo: backupAutomaticoAtivo ?? this.backupAutomaticoAtivo,
+      backupAutomaticoAtivo:
+          backupAutomaticoAtivo ?? this.backupAutomaticoAtivo,
       idioma: idioma ?? this.idioma,
       tamanhoFonte: tamanhoFonte ?? this.tamanhoFonte,
       nomePerfil: nomePerfil ?? this.nomePerfil,

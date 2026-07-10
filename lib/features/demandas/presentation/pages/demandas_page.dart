@@ -50,7 +50,11 @@ class _DemandasPageState extends State<DemandasPage> {
         _isLoading = false;
       });
     } catch (error, stackTrace) {
-      AppEventLogger.error('demandas_load_error', error, stackTrace: stackTrace);
+      AppEventLogger.error(
+        'demandas_load_error',
+        error,
+        stackTrace: stackTrace,
+      );
       if (!mounted) return;
       setState(() {
         _isLoading = false;
@@ -64,11 +68,11 @@ class _DemandasPageState extends State<DemandasPage> {
   }
 
   List<Demanda> get _demandasFiltradas => DemandasService.filtrarDemandas(
-        demandas: _demandas,
-        busca: _busca,
-        filtroStatus: _filtroStatus,
-        filtroPrioridade: _filtroPrioridade,
-      );
+    demandas: _demandas,
+    busca: _busca,
+    filtroStatus: _filtroStatus,
+    filtroPrioridade: _filtroPrioridade,
+  );
 
   int get _filtrosAtivos {
     return DemandasService.countFiltrosAtivos(
@@ -102,7 +106,8 @@ class _DemandasPageState extends State<DemandasPage> {
                       child: TextField(
                         onChanged: (value) => setState(() => _busca = value),
                         decoration: const InputDecoration(
-                          hintText: 'Buscar por título, descrição ou responsável',
+                          hintText:
+                              'Buscar por título, descrição ou responsável',
                           prefixIcon: Icon(Icons.search_outlined),
                         ),
                       ),
@@ -113,17 +118,17 @@ class _DemandasPageState extends State<DemandasPage> {
                           ? 'Filtros ativos: $_filtrosAtivos'
                           : 'Filtrar demandas',
                       child: SizedBox(
-                      width: 48,
-                      height: 48,
-                      child: OutlinedButton(
-                        onPressed: () => _showFiltros(context),
-                        style: OutlinedButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          minimumSize: const Size(48, 48),
+                        width: 48,
+                        height: 48,
+                        child: OutlinedButton(
+                          onPressed: () => _showFiltros(context),
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(48, 48),
+                          ),
+                          child: const Icon(Icons.filter_list),
                         ),
-                        child: const Icon(Icons.filter_list),
                       ),
-                    ),
                     ),
                   ],
                 ),
@@ -134,28 +139,36 @@ class _DemandasPageState extends State<DemandasPage> {
             child: _isLoading
                 ? const PageStatusView.loading(title: 'Carregando demandas...')
                 : _loadError != null
-                    ? PageStatusView.error(
-                        subtitle: _loadError,
-                        onAction: _loadData,
-                      )
-                    : demandasVisiveis.isEmpty
-                        ? PageStatusView.empty(
-                            icon: Icons.inbox_outlined,
-                            title: 'Nenhuma demanda encontrada',
-                            subtitle: _filtrosAtivos > 0
-                                ? 'Tente limpar os filtros ativos.'
-                                : 'Crie uma nova demanda para começar.',
-                            actionLabel: _filtrosAtivos > 0 ? 'Limpar filtros' : null,
-                            onAction: _filtrosAtivos > 0 ? _limparFiltros : null,
-                          )
+                ? PageStatusView.error(
+                    subtitle: _loadError,
+                    onAction: _loadData,
+                  )
+                : demandasVisiveis.isEmpty
+                ? PageStatusView.empty(
+                    icon: Icons.inbox_outlined,
+                    title: 'Nenhuma demanda encontrada',
+                    subtitle: _filtrosAtivos > 0
+                        ? 'Tente limpar os filtros ativos.'
+                        : 'Crie uma nova demanda para começar.',
+                    actionLabel: _filtrosAtivos > 0 ? 'Limpar filtros' : null,
+                    onAction: _filtrosAtivos > 0 ? _limparFiltros : null,
+                  )
                 : ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     itemCount: demandasVisiveis.length,
-                    separatorBuilder: (context, i) => const SizedBox(height: 12),
+                    separatorBuilder: (context, i) =>
+                        const SizedBox(height: 12),
                     itemBuilder: (_, index) => _DemandasCard(
                       demanda: demandasVisiveis[index],
-                      onEditar: () => _showEditarDemanda(context, demandasVisiveis[index]),
-                      onExcluir: () => _showConfirmarExclusao(context, demandasVisiveis[index]),
+                      onEditar: () =>
+                          _showEditarDemanda(context, demandasVisiveis[index]),
+                      onExcluir: () => _showConfirmarExclusao(
+                        context,
+                        demandasVisiveis[index],
+                      ),
                     ),
                   ),
           ),
@@ -185,7 +198,12 @@ class _DemandasPageState extends State<DemandasPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Filtros', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                  Text(
+                    'Filtros',
+                    style: textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                   IconButton(
                     tooltip: 'Fechar filtros',
                     onPressed: () => Navigator.pop(context),
@@ -194,37 +212,62 @@ class _DemandasPageState extends State<DemandasPage> {
                 ],
               ),
               const SizedBox(height: 24),
-              Text('Status', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
+              Text(
+                'Status',
+                style: textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
                 children: ['Todas', ...DemandasService.statusDisponiveis]
-                    .map((status) => FilterChip(
-                      label: Text(status),
-                      selected: _filtroStatus == status,
-                      onSelected: (selected) {
-                        setModalState(() => _filtroStatus = selected ? status : 'Todas');
-                      },
-                    ))
+                    .map(
+                      (status) => FilterChip(
+                        label: Text(status),
+                        selected: _filtroStatus == status,
+                        onSelected: (selected) {
+                          setModalState(
+                            () => _filtroStatus = selected ? status : 'Todas',
+                          );
+                        },
+                      ),
+                    )
                     .toList(),
               ),
               const SizedBox(height: 24),
-              Text('Prioridade', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
+              Text(
+                'Prioridade',
+                style: textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
                 children: ['Todas', ...DemandasService.prioridades]
-                    .map((prioridade) => FilterChip(
-                      label: Text(prioridade),
-                      selected: _filtroPrioridade == prioridade,
-                      onSelected: (selected) {
-                        setModalState(() => _filtroPrioridade = selected ? prioridade : 'Todas');
-                      },
-                    ))
+                    .map(
+                      (prioridade) => FilterChip(
+                        label: Text(prioridade),
+                        selected: _filtroPrioridade == prioridade,
+                        onSelected: (selected) {
+                          setModalState(
+                            () => _filtroPrioridade = selected
+                                ? prioridade
+                                : 'Todas',
+                          );
+                        },
+                      ),
+                    )
                     .toList(),
               ),
               const SizedBox(height: 24),
-              Text('Ordenação', style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700)),
+              Text(
+                'Ordenação',
+                style: textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
@@ -308,7 +351,12 @@ class _DemandasPageState extends State<DemandasPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Nova Demanda', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                    Text(
+                      'Nova Demanda',
+                      style: textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                     IconButton(
                       tooltip: 'Fechar formulário da demanda',
                       onPressed: () => Navigator.pop(context),
@@ -340,7 +388,8 @@ class _DemandasPageState extends State<DemandasPage> {
                   items: DemandasService.prioridades
                       .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                       .toList(),
-                  onChanged: (value) => setModalState(() => prioridadeSelecionada = value!),
+                  onChanged: (value) =>
+                      setModalState(() => prioridadeSelecionada = value!),
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
@@ -349,16 +398,25 @@ class _DemandasPageState extends State<DemandasPage> {
                   items: DemandasService.proprietarios
                       .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                       .toList(),
-                  onChanged: (value) => setModalState(() => proprietarioSelecionado = value!),
+                  onChanged: (value) =>
+                      setModalState(() => proprietarioSelecionado = value!),
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   initialValue: statusSelecionado,
-                  decoration: const InputDecoration(labelText: 'Status inicial'),
+                  decoration: const InputDecoration(
+                    labelText: 'Status inicial',
+                  ),
                   items: DemandasService.statusDisponiveis
-                      .map((status) => DropdownMenuItem(value: status, child: Text(status)))
+                      .map(
+                        (status) => DropdownMenuItem(
+                          value: status,
+                          child: Text(status),
+                        ),
+                      )
                       .toList(),
-                  onChanged: (value) => setModalState(() => statusSelecionado = value!),
+                  onChanged: (value) =>
+                      setModalState(() => statusSelecionado = value!),
                 ),
                 const Spacer(),
                 Row(
@@ -385,7 +443,9 @@ class _DemandasPageState extends State<DemandasPage> {
                             _demandas.insert(
                               0,
                               Demanda(
-                                id: DemandasService.gerarProximoIdDemanda(_demandas),
+                                id: DemandasService.gerarProximoIdDemanda(
+                                  _demandas,
+                                ),
                                 titulo: tituloController.text.trim(),
                                 descricao: descricaoController.text.trim(),
                                 prioridade: prioridadeSelecionada,
@@ -441,7 +501,12 @@ class _DemandasPageState extends State<DemandasPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Editar Demanda', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+                    Text(
+                      'Editar Demanda',
+                      style: textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                     IconButton(
                       tooltip: 'Fechar formulário da demanda',
                       onPressed: () => Navigator.pop(context),
@@ -473,7 +538,8 @@ class _DemandasPageState extends State<DemandasPage> {
                   items: DemandasService.prioridades
                       .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                       .toList(),
-                  onChanged: (value) => setModalState(() => prioridadeSelecionada = value!),
+                  onChanged: (value) =>
+                      setModalState(() => prioridadeSelecionada = value!),
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
@@ -482,16 +548,23 @@ class _DemandasPageState extends State<DemandasPage> {
                   items: DemandasService.proprietarios
                       .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                       .toList(),
-                  onChanged: (value) => setModalState(() => proprietarioSelecionado = value!),
+                  onChanged: (value) =>
+                      setModalState(() => proprietarioSelecionado = value!),
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   initialValue: statusSelecionado,
                   decoration: const InputDecoration(labelText: 'Status'),
                   items: DemandasService.statusDisponiveis
-                      .map((status) => DropdownMenuItem(value: status, child: Text(status)))
+                      .map(
+                        (status) => DropdownMenuItem(
+                          value: status,
+                          child: Text(status),
+                        ),
+                      )
                       .toList(),
-                  onChanged: (value) => setModalState(() => statusSelecionado = value!),
+                  onChanged: (value) =>
+                      setModalState(() => statusSelecionado = value!),
                 ),
                 const Spacer(),
                 Row(
@@ -515,7 +588,9 @@ class _DemandasPageState extends State<DemandasPage> {
                             return;
                           }
                           setState(() {
-                            final index = _demandas.indexWhere((item) => item.id == demanda.id);
+                            final index = _demandas.indexWhere(
+                              (item) => item.id == demanda.id,
+                            );
                             if (index >= 0) {
                               _demandas[index] = demanda.copyWith(
                                 titulo: tituloController.text.trim(),
@@ -577,7 +652,10 @@ class _DemandasPageState extends State<DemandasPage> {
     if (AuthorizationPolicy.canManageDemandas(role)) {
       return true;
     }
-    AppFeedbackService.warning(context, 'Seu perfil não possui permissão para $actionLabel.');
+    AppFeedbackService.warning(
+      context,
+      'Seu perfil não possui permissão para $actionLabel.',
+    );
     return false;
   }
 }
@@ -600,162 +678,172 @@ class _DemandasCard extends StatelessWidget {
       button: true,
       label: 'Abrir demanda ${demanda.titulo}',
       child: GestureDetector(
-      onTap: () => _showDetalhesDemanda(context),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: SigadColors.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: SigadColors.divider),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+        onTap: () => _showDetalhesDemanda(context),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: SigadColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: SigadColors.divider),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          demanda.id,
+                          style: textTheme.labelSmall?.copyWith(
+                            color: SigadColors.muted,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          demanda.titulo,
+                          style: textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Row(
                     children: [
-                      Text(
-                        demanda.id,
-                        style: textTheme.labelSmall?.copyWith(
-                          color: SigadColors.muted,
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _getPrioridadeColor(demanda.prioridade),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          demanda.prioridade,
+                          style: textTheme.labelSmall?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        demanda.titulo,
-                        style: textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
+                      PopupMenuButton<String>(
+                        onSelected: (value) =>
+                            _onMenuItemSelected(context, value, demanda),
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(
+                            value: 'editar',
+                            child: Row(
+                              children: [
+                                Icon(Icons.edit, size: 18),
+                                SizedBox(width: 8),
+                                Text('Editar'),
+                              ],
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 'excluir',
+                            child: Row(
+                              children: [
+                                Icon(Icons.delete, size: 18),
+                                SizedBox(width: 8),
+                                Text('Excluir'),
+                              ],
+                            ),
+                          ),
+                        ],
+                        icon: Icon(
+                          Icons.more_vert,
+                          color: SigadColors.muted,
+                          size: 20,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(width: 12),
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: _getPrioridadeColor(demanda.prioridade),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        demanda.prioridade,
-                        style: textTheme.labelSmall?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    PopupMenuButton<String>(
-                      onSelected: (value) => _onMenuItemSelected(context, value, demanda),
-                      itemBuilder: (context) => [
-                        const PopupMenuItem(
-                          value: 'editar',
-                          child: Row(
-                            children: [
-                              Icon(Icons.edit, size: 18),
-                              SizedBox(width: 8),
-                              Text('Editar'),
-                            ],
-                          ),
-                        ),
-                        const PopupMenuItem(
-                          value: 'excluir',
-                          child: Row(
-                            children: [
-                              Icon(Icons.delete, size: 18),
-                              SizedBox(width: 8),
-                              Text('Excluir'),
-                            ],
-                          ),
-                        ),
-                      ],
-                      icon: Icon(
-                        Icons.more_vert,
-                        color: SigadColors.muted,
-                        size: 20,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(
-              demanda.descricao,
-              style: textTheme.bodySmall?.copyWith(
-                color: SigadColors.muted,
+                ],
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: Text(
-                    demanda.proprietario,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: SigadColors.muted,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: DemandasService.toneStatus(demanda.statusLabel)
-                        .withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    demanda.statusLabel,
-                    style: textTheme.labelSmall?.copyWith(
-                      color: DemandasService.toneStatus(demanda.statusLabel),
-                      fontWeight: FontWeight.w600,
+              const SizedBox(height: 12),
+              Text(
+                demanda.descricao,
+                style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: Text(
+                      demanda.proprietario,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: SigadColors.muted,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(Icons.calendar_today, size: 16, color: SigadColors.muted),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    demanda.prazo,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: SigadColors.muted,
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    decoration: BoxDecoration(
+                      color: DemandasService.toneStatus(
+                        demanda.statusLabel,
+                      ).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      demanda.statusLabel,
+                      style: textTheme.labelSmall?.copyWith(
+                        color: DemandasService.toneStatus(demanda.statusLabel),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(
+                    Icons.calendar_today,
+                    size: 16,
+                    color: SigadColors.muted,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      demanda.prazo,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: SigadColors.muted,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 
@@ -763,7 +851,11 @@ class _DemandasCard extends StatelessWidget {
     return DemandasService.tonePrioridade(prioridade);
   }
 
-  void _onMenuItemSelected(BuildContext context, String value, Demanda demanda) {
+  void _onMenuItemSelected(
+    BuildContext context,
+    String value,
+    Demanda demanda,
+  ) {
     switch (value) {
       case 'editar':
         onEditar();
@@ -787,7 +879,12 @@ class _DemandasCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(demanda.id, style: textTheme.labelSmall?.copyWith(color: SigadColors.muted)),
+                  Text(
+                    demanda.id,
+                    style: textTheme.labelSmall?.copyWith(
+                      color: SigadColors.muted,
+                    ),
+                  ),
                   IconButton(
                     tooltip: 'Fechar detalhes da demanda',
                     onPressed: () => Navigator.pop(context),
@@ -800,7 +897,9 @@ class _DemandasCard extends StatelessWidget {
                 width: 260, // valor fixo ou ajuste conforme necessário
                 child: Text(
                   demanda.titulo,
-                  style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700), // fonte menor
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ), // fonte menor
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),

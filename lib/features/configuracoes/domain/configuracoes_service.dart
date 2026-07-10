@@ -1,7 +1,15 @@
 import 'configuracoes_models.dart';
 
 abstract final class ConfiguracoesService {
-  static const List<int> opcoesAntecedenciaMinutos = [5, 10, 15, 20, 30, 45, 60];
+  static const List<int> opcoesAntecedenciaMinutos = [
+    5,
+    10,
+    15,
+    20,
+    30,
+    45,
+    60,
+  ];
 
   static ConfiguracoesData defaultData() {
     return const ConfiguracoesData(
@@ -35,7 +43,8 @@ abstract final class ConfiguracoesService {
     required ConfiguracoesData data,
     required CompromissoAgenda convite,
   }) {
-    final compromissos = List<CompromissoAgenda>.from(data.agendaCompromissos)..add(convite);
+    final compromissos = List<CompromissoAgenda>.from(data.agendaCompromissos)
+      ..add(convite);
 
     return data.copyWith(agendaCompromissos: compromissos);
   }
@@ -47,7 +56,9 @@ abstract final class ConfiguracoesService {
   }) {
     final atualizados = data.agendaCompromissos
         .map(
-          (item) => item.id == compromissoId ? item.copyWith(statusConvite: status) : item,
+          (item) => item.id == compromissoId
+              ? item.copyWith(statusConvite: status)
+              : item,
         )
         .toList(growable: false);
 
@@ -61,25 +72,32 @@ abstract final class ConfiguracoesService {
   }) {
     if (periodo == 'Todos') return compromissos;
 
-    return compromissos.where((item) {
-      final inicio = DateTime.tryParse(item.inicioIso);
-      if (inicio == null) return false;
+    return compromissos
+        .where((item) {
+          final inicio = DateTime.tryParse(item.inicioIso);
+          if (inicio == null) return false;
 
-      if (periodo == 'Hoje') {
-        return inicio.year == agora.year && inicio.month == agora.month && inicio.day == agora.day;
-      }
+          if (periodo == 'Hoje') {
+            return inicio.year == agora.year &&
+                inicio.month == agora.month &&
+                inicio.day == agora.day;
+          }
 
-      if (periodo == 'Semana') {
-        final monday = agora.subtract(Duration(days: agora.weekday - DateTime.monday));
-        final sunday = monday.add(const Duration(days: 6));
-        final dayOnly = DateTime(inicio.year, inicio.month, inicio.day);
-        final mondayOnly = DateTime(monday.year, monday.month, monday.day);
-        final sundayOnly = DateTime(sunday.year, sunday.month, sunday.day);
-        return !dayOnly.isBefore(mondayOnly) && !dayOnly.isAfter(sundayOnly);
-      }
+          if (periodo == 'Semana') {
+            final monday = agora.subtract(
+              Duration(days: agora.weekday - DateTime.monday),
+            );
+            final sunday = monday.add(const Duration(days: 6));
+            final dayOnly = DateTime(inicio.year, inicio.month, inicio.day);
+            final mondayOnly = DateTime(monday.year, monday.month, monday.day);
+            final sundayOnly = DateTime(sunday.year, sunday.month, sunday.day);
+            return !dayOnly.isBefore(mondayOnly) &&
+                !dayOnly.isAfter(sundayOnly);
+          }
 
-      return true;
-    }).toList(growable: false);
+          return true;
+        })
+        .toList(growable: false);
   }
 
   static List<CompromissoAgenda> lembretesPendentesProfessor({
@@ -87,18 +105,25 @@ abstract final class ConfiguracoesService {
     required String userId,
     required DateTime agora,
   }) {
-    if (!data.notificacoesAtivas || !data.notificarAntesDaDisciplina) return const [];
+    if (!data.notificacoesAtivas || !data.notificarAntesDaDisciplina) {
+      return const [];
+    }
 
-    return data.agendaCompromissos.where((item) {
-      if (item.destinatarioUserId.isNotEmpty && item.destinatarioUserId != userId) return false;
-      if (item.statusConvite == StatusConviteAgenda.recusado) return false;
+    return data.agendaCompromissos
+        .where((item) {
+          if (item.destinatarioUserId.isNotEmpty &&
+              item.destinatarioUserId != userId) {
+            return false;
+          }
+          if (item.statusConvite == StatusConviteAgenda.recusado) return false;
 
-      final inicio = DateTime.tryParse(item.inicioIso);
-      if (inicio == null) return false;
+          final inicio = DateTime.tryParse(item.inicioIso);
+          if (inicio == null) return false;
 
-      final diff = inicio.difference(agora).inMinutes;
-      return diff >= 0 && diff <= data.antecedenciaNotificacaoMinutos;
-    }).toList(growable: false);
+          final diff = inicio.difference(agora).inMinutes;
+          return diff >= 0 && diff <= data.antecedenciaNotificacaoMinutos;
+        })
+        .toList(growable: false);
   }
 
   static String dataAtual() {
@@ -127,10 +152,7 @@ abstract final class ConfiguracoesService {
     return '$dia/$mes/$ano';
   }
 
-  static String? validarPerfil({
-    required String nome,
-    required String cargo,
-  }) {
+  static String? validarPerfil({required String nome, required String cargo}) {
     if (nome.trim().isEmpty || cargo.trim().isEmpty) {
       return 'Preencha nome e cargo';
     }

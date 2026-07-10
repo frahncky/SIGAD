@@ -48,18 +48,25 @@ void main() {
   group('DocenteVisibilityService.filterDocentesForRole', () {
     test('professor vê apenas docente vinculado', () {
       final docentes = [
-        const _DocenteFake(userId: 'user_email_prof@escola.br', userEmail: 'prof@escola.br'),
-        const _DocenteFake(userId: 'user_email_outro@escola.br', userEmail: 'outro@escola.br'),
+        const _DocenteFake(
+          userId: 'user_email_prof@escola.br',
+          userEmail: 'prof@escola.br',
+        ),
+        const _DocenteFake(
+          userId: 'user_email_outro@escola.br',
+          userEmail: 'outro@escola.br',
+        ),
       ];
 
-      final visiveis = DocenteVisibilityService.filterDocentesForRole<_DocenteFake>(
-        role: UserRole.professor,
-        docentes: docentes,
-        currentUserId: 'user_email_prof@escola.br',
-        currentUserEmail: 'prof@escola.br',
-        getUserId: (d) => d.userId,
-        getUserEmail: (d) => d.userEmail,
-      );
+      final visiveis =
+          DocenteVisibilityService.filterDocentesForRole<_DocenteFake>(
+            role: UserRole.professor,
+            docentes: docentes,
+            currentUserId: 'user_email_prof@escola.br',
+            currentUserEmail: 'prof@escola.br',
+            getUserId: (d) => d.userId,
+            getUserEmail: (d) => d.userEmail,
+          );
 
       expect(visiveis.length, 1);
       expect(visiveis.first.userEmail, 'prof@escola.br');
@@ -71,14 +78,15 @@ void main() {
         const _DocenteFake(userId: 'u2', userEmail: 'b@escola.br'),
       ];
 
-      final visiveis = DocenteVisibilityService.filterDocentesForRole<_DocenteFake>(
-        role: UserRole.coordenador,
-        docentes: docentes,
-        currentUserId: 'qualquer',
-        currentUserEmail: 'qualquer@escola.br',
-        getUserId: (d) => d.userId,
-        getUserEmail: (d) => d.userEmail,
-      );
+      final visiveis =
+          DocenteVisibilityService.filterDocentesForRole<_DocenteFake>(
+            role: UserRole.coordenador,
+            docentes: docentes,
+            currentUserId: 'qualquer',
+            currentUserEmail: 'qualquer@escola.br',
+            getUserId: (d) => d.userId,
+            getUserEmail: (d) => d.userEmail,
+          );
 
       expect(visiveis.length, 2);
     });

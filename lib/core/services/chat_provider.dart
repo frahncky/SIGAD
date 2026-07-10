@@ -67,7 +67,9 @@ class ChatProvider extends ChangeNotifier {
     final currentEmail = _normalizeEmail(currentUser.email);
     final contacts = List<ChatContact>.from(_baseContacts);
 
-    final known = contacts.any((contact) => _normalizeEmail(contact.email) == currentEmail);
+    final known = contacts.any(
+      (contact) => _normalizeEmail(contact.email) == currentEmail,
+    );
     if (!known) {
       contacts.add(
         ChatContact(
@@ -86,7 +88,9 @@ class ChatProvider extends ChangeNotifier {
 
   List<ChatMessage> messagesBetween(String emailA, String emailB) {
     final key = _conversationKey(emailA, emailB);
-    final messages = List<ChatMessage>.from(_messagesByConversation[key] ?? const []);
+    final messages = List<ChatMessage>.from(
+      _messagesByConversation[key] ?? const [],
+    );
     messages.sort((a, b) => a.sentAt.compareTo(b.sentAt));
     return messages;
   }
@@ -102,7 +106,8 @@ class ChatProvider extends ChangeNotifier {
       final lastReadAt = _lastReadByUserConversation[readKey];
 
       for (final message in messages) {
-        final isRecipient = _normalizeEmail(message.recipientEmail) == normalizedUser;
+        final isRecipient =
+            _normalizeEmail(message.recipientEmail) == normalizedUser;
         if (!isRecipient) continue;
         if (lastReadAt == null || message.sentAt.isAfter(lastReadAt)) {
           total++;
@@ -119,7 +124,8 @@ class ChatProvider extends ChangeNotifier {
   }) {
     final normalizedUser = _normalizeEmail(userEmail);
     final conversationKey = _conversationKey(userEmail, contactEmail);
-    final messages = _messagesByConversation[conversationKey] ?? const <ChatMessage>[];
+    final messages =
+        _messagesByConversation[conversationKey] ?? const <ChatMessage>[];
     if (messages.isEmpty) {
       return;
     }
@@ -127,7 +133,8 @@ class ChatProvider extends ChangeNotifier {
     DateTime? latestIncomingAt;
     for (final message in messages) {
       if (_normalizeEmail(message.recipientEmail) != normalizedUser) continue;
-      if (latestIncomingAt == null || message.sentAt.isAfter(latestIncomingAt)) {
+      if (latestIncomingAt == null ||
+          message.sentAt.isAfter(latestIncomingAt)) {
         latestIncomingAt = message.sentAt;
       }
     }
@@ -166,7 +173,9 @@ class ChatProvider extends ChangeNotifier {
     );
 
     final key = _conversationKey(sender.email, recipientEmail);
-    _messagesByConversation.putIfAbsent(key, () => <ChatMessage>[]).add(message);
+    _messagesByConversation
+        .putIfAbsent(key, () => <ChatMessage>[])
+        .add(message);
     notifyListeners();
     _saveData();
   }
@@ -187,15 +196,17 @@ class ChatProvider extends ChangeNotifier {
       final senderEmail = json['senderEmail'] as String;
       final recipientEmail = json['recipientEmail'] as String;
       final key = _conversationKey(senderEmail, recipientEmail);
-      _messagesByConversation.putIfAbsent(key, () => <ChatMessage>[]).add(
-        ChatMessage(
-          id: json['id'] as String,
-          senderEmail: senderEmail,
-          recipientEmail: recipientEmail,
-          content: json['content'] as String,
-          sentAt: DateTime.parse(json['sentAt'] as String),
-        ),
-      );
+      _messagesByConversation
+          .putIfAbsent(key, () => <ChatMessage>[])
+          .add(
+            ChatMessage(
+              id: json['id'] as String,
+              senderEmail: senderEmail,
+              recipientEmail: recipientEmail,
+              content: json['content'] as String,
+              sentAt: DateTime.parse(json['sentAt'] as String),
+            ),
+          );
     }
     await _loadReadState();
     notifyListeners();
@@ -224,7 +235,9 @@ class ChatProvider extends ChangeNotifier {
       final userEmail = json['userEmail'] as String?;
       final conversationKey = json['conversationKey'] as String?;
       final readAtRaw = json['readAt'] as String?;
-      if (userEmail == null || conversationKey == null || readAtRaw == null) continue;
+      if (userEmail == null || conversationKey == null || readAtRaw == null) {
+        continue;
+      }
       final readAt = DateTime.tryParse(readAtRaw);
       if (readAt == null) continue;
       final key = _userConversationReadKey(userEmail, conversationKey);
@@ -282,7 +295,10 @@ class ChatProvider extends ChangeNotifier {
     required DateTime sentAt,
   }) {
     final key = _conversationKey(senderEmail, recipientEmail);
-    final list = _messagesByConversation.putIfAbsent(key, () => <ChatMessage>[]);
+    final list = _messagesByConversation.putIfAbsent(
+      key,
+      () => <ChatMessage>[],
+    );
     list.add(
       ChatMessage(
         id: 'seed_${list.length}_${sentAt.microsecondsSinceEpoch}',
@@ -295,7 +311,8 @@ class ChatProvider extends ChangeNotifier {
   }
 
   String _conversationKey(String emailA, String emailB) {
-    final normalized = [_normalizeEmail(emailA), _normalizeEmail(emailB)]..sort();
+    final normalized = [_normalizeEmail(emailA), _normalizeEmail(emailB)]
+      ..sort();
     return '${normalized.first}|${normalized.last}';
   }
 

@@ -34,7 +34,9 @@ abstract final class AppRouter {
       case AppRoutes.batePapo:
         return _shell(routeName, const BatePapoPage());
       case AppRoutes.cargaDocente:
-        final docente = settings.arguments is Docente ? settings.arguments as Docente : null;
+        final docente = settings.arguments is Docente
+            ? settings.arguments as Docente
+            : null;
         return _shell(routeName, CargaDocentePage(docente: docente));
       case AppRoutes.demandas:
         return _shell(routeName, const DemandasPage());
@@ -66,10 +68,7 @@ abstract final class AppRouter {
   static MaterialPageRoute<void> _shell(String routeName, Widget page) {
     return MaterialPageRoute<void>(
       settings: RouteSettings(name: routeName),
-      builder: (_) => HomeShellPage(
-        currentRoute: routeName,
-        child: page,
-      ),
+      builder: (_) => HomeShellPage(currentRoute: routeName, child: page),
     );
   }
 }
@@ -82,9 +81,7 @@ class _NotFoundPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Página não encontrada')),
-      body: const Center(
-        child: Text('404 - Página não encontrada'),
-      ),
+      body: const Center(child: Text('404 - Página não encontrada')),
     );
   }
 }

@@ -13,7 +13,7 @@ class ProfessoresPage extends StatefulWidget {
 }
 
 class _ProfessoresPageState extends State<ProfessoresPage> {
-    bool _ordemCrescente = true;
+  bool _ordemCrescente = true;
   final TextEditingController _buscaController = TextEditingController();
   String _busca = '';
   final DocenteRepository _docenteRepository = DocenteRepository();
@@ -27,7 +27,8 @@ class _ProfessoresPageState extends State<ProfessoresPage> {
 
   Future<void> _loadData() async {
     final carregados = await _docenteRepository.loadDocentes(
-      generateFallbackId: () => DateTime.now().millisecondsSinceEpoch.toString(),
+      generateFallbackId: () =>
+          DateTime.now().millisecondsSinceEpoch.toString(),
     );
     setState(() {
       _docentes = carregados;
@@ -35,28 +36,28 @@ class _ProfessoresPageState extends State<ProfessoresPage> {
   }
 
   void _abrirAgendaDocente(Docente docente) {
-    Navigator.of(context).pushNamed(
-      '/carga-docente',
-      arguments: docente,
-    );
+    Navigator.of(context).pushNamed('/carga-docente', arguments: docente);
   }
 
   @override
   Widget build(BuildContext context) {
     final userContext = context.watch<UserContextProvider>();
     final role = userContext.userRole;
-    final podeGerenciar = role == UserRole.coordenador || role == UserRole.chefeDepartamento;
+    final podeGerenciar =
+        role == UserRole.coordenador || role == UserRole.chefeDepartamento;
     final docentesFiltrados = _busca.isEmpty
-      ? List<Docente>.from(_docentes)
-      : _docentes.where((d) {
-        final buscaLower = _busca.toLowerCase();
-        return d.nome.toLowerCase().contains(buscaLower) ||
-          (d.userEmail ?? '').toLowerCase().contains(buscaLower) ||
-          d.departamento.toLowerCase().contains(buscaLower);
-        }).toList();
-    docentesFiltrados.sort((a, b) => _ordemCrescente
-      ? a.nome.toLowerCase().compareTo(b.nome.toLowerCase())
-      : b.nome.toLowerCase().compareTo(a.nome.toLowerCase()));
+        ? List<Docente>.from(_docentes)
+        : _docentes.where((d) {
+            final buscaLower = _busca.toLowerCase();
+            return d.nome.toLowerCase().contains(buscaLower) ||
+                (d.userEmail ?? '').toLowerCase().contains(buscaLower) ||
+                d.departamento.toLowerCase().contains(buscaLower);
+          }).toList();
+    docentesFiltrados.sort(
+      (a, b) => _ordemCrescente
+          ? a.nome.toLowerCase().compareTo(b.nome.toLowerCase())
+          : b.nome.toLowerCase().compareTo(a.nome.toLowerCase()),
+    );
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
@@ -72,15 +73,20 @@ class _ProfessoresPageState extends State<ProfessoresPage> {
                     controller: _buscaController,
                     onChanged: (value) => setState(() => _busca = value),
                     decoration: const InputDecoration(
-                      hintText: 'Buscar docente por nome, e-mail ou departamento',
+                      hintText:
+                          'Buscar docente por nome, e-mail ou departamento',
                       prefixIcon: Icon(Icons.search_outlined),
                     ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 IconButton(
-                  tooltip: _ordemCrescente ? 'Ordem crescente' : 'Ordem decrescente',
-                  icon: Icon(_ordemCrescente ? Icons.arrow_downward : Icons.arrow_upward),
+                  tooltip: _ordemCrescente
+                      ? 'Ordem crescente'
+                      : 'Ordem decrescente',
+                  icon: Icon(
+                    _ordemCrescente ? Icons.arrow_downward : Icons.arrow_upward,
+                  ),
                   onPressed: () {
                     setState(() {
                       _ordemCrescente = !_ordemCrescente;
@@ -93,12 +99,19 @@ class _ProfessoresPageState extends State<ProfessoresPage> {
           Expanded(
             child: docentesFiltrados.isEmpty
                 ? Center(
-                    child: Text('Nenhum docente encontrado', style: textTheme.bodyLarge),
+                    child: Text(
+                      'Nenhum docente encontrado',
+                      style: textTheme.bodyLarge,
+                    ),
                   )
                 : ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     itemCount: docentesFiltrados.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 12),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final docente = docentesFiltrados[index];
                       return Card(

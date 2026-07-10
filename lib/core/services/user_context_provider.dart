@@ -7,7 +7,7 @@ import 'auth_session_repository.dart';
 /// Gerencia o estado do usuário autenticado da aplicação
 class UserContextProvider extends ChangeNotifier {
   UserContextProvider({AuthSessionRepository? sessionRepository})
-      : _sessionRepository = sessionRepository ?? AuthSessionRepository();
+    : _sessionRepository = sessionRepository ?? AuthSessionRepository();
 
   User? _currentUser;
   final AuthSessionRepository _sessionRepository;
@@ -28,17 +28,18 @@ class UserContextProvider extends ChangeNotifier {
   /// Realiza login do usuário
   Future<void> login(User user, {String? sessionToken}) async {
     _currentUser = user;
-    _sessionToken = sessionToken ?? 'local_${DateTime.now().millisecondsSinceEpoch}';
+    _sessionToken =
+        sessionToken ?? 'local_${DateTime.now().millisecondsSinceEpoch}';
     _sessionExpiresAt = DateTime.now().add(const Duration(hours: 8));
     await _sessionRepository.save(
       user: user,
       sessionToken: _sessionToken!,
       expiresAt: _sessionExpiresAt,
     );
-    AppEventLogger.action('session_login_persisted', details: {
-      'userRef': _userRef(user.id),
-      'role': user.role.name,
-    });
+    AppEventLogger.action(
+      'session_login_persisted',
+      details: {'userRef': _userRef(user.id), 'role': user.role.name},
+    );
     notifyListeners();
   }
 
@@ -65,7 +66,11 @@ class UserContextProvider extends ChangeNotifier {
           expiresAt: expiresAt,
         );
       } catch (error, stackTrace) {
-        AppEventLogger.error('session_update_persist_error', error, stackTrace: stackTrace);
+        AppEventLogger.error(
+          'session_update_persist_error',
+          error,
+          stackTrace: stackTrace,
+        );
       }
     }
     notifyListeners();
@@ -83,10 +88,13 @@ class UserContextProvider extends ChangeNotifier {
         _currentUser = data.user;
         _sessionToken = data.sessionToken;
         _sessionExpiresAt = data.expiresAt;
-        AppEventLogger.action('session_restore_success', details: {
-          'userRef': _userRef(data.user.id),
-          'role': data.user.role.name,
-        });
+        AppEventLogger.action(
+          'session_restore_success',
+          details: {
+            'userRef': _userRef(data.user.id),
+            'role': data.user.role.name,
+          },
+        );
       }
     }
 
@@ -105,7 +113,10 @@ class UserContextProvider extends ChangeNotifier {
       sessionToken: token,
       expiresAt: _sessionExpiresAt,
     );
-    AppEventLogger.action('session_refresh_success', details: {'userRef': _userRef(user.id)});
+    AppEventLogger.action(
+      'session_refresh_success',
+      details: {'userRef': _userRef(user.id)},
+    );
     notifyListeners();
   }
 

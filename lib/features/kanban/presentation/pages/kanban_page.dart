@@ -61,7 +61,8 @@ class _KanbanPageState extends State<KanbanPage> {
     _kanbanRepository.saveCards(_cards);
   }
 
-  Map<String, List<KanbanCardModel>> get _colunas => KanbanService.buildColunas(_cards);
+  Map<String, List<KanbanCardModel>> get _colunas =>
+      KanbanService.buildColunas(_cards);
 
   @override
   Widget build(BuildContext context) {
@@ -79,47 +80,48 @@ class _KanbanPageState extends State<KanbanPage> {
       body: _isLoading
           ? const PageStatusView.loading(title: 'Carregando quadro Kanban...')
           : _loadError != null
-              ? PageStatusView.error(
-                  subtitle: _loadError,
-                  onAction: _loadData,
-                )
-              : _cards.isEmpty
-                  ? PageStatusView.empty(
-                      icon: Icons.view_kanban_outlined,
-                      title: 'Nenhum card criado',
-                      subtitle: 'Toque no + para adicionar o primeiro card ao quadro.',
-                      actionLabel: 'Criar card',
-                      onAction: () => _showCriarCard(context),
-                    )
-                  : Column(
-                  children: [
-                    if (shouldShowScrollHint)
-                      const Padding(
-                        padding: EdgeInsets.fromLTRB(16, 12, 16, 0),
-                        child: HorizontalScrollHint(
-                          message: 'Arraste lateralmente para navegar entre as colunas do quadro.',
-                        ),
-                      ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        child: Row(
-                          children: [
-                            ..._colunas.entries.map(
-                              (entry) => _KanbanColuna(
-                                titulo: entry.key,
-                                cards: entry.value,
-                                onCardMoved: _moveCard,
-                                onCardDeleted: _deleteCard,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+          ? PageStatusView.error(subtitle: _loadError, onAction: _loadData)
+          : _cards.isEmpty
+          ? PageStatusView.empty(
+              icon: Icons.view_kanban_outlined,
+              title: 'Nenhum card criado',
+              subtitle: 'Toque no + para adicionar o primeiro card ao quadro.',
+              actionLabel: 'Criar card',
+              onAction: () => _showCriarCard(context),
+            )
+          : Column(
+              children: [
+                if (shouldShowScrollHint)
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(16, 12, 16, 0),
+                    child: HorizontalScrollHint(
+                      message:
+                          'Arraste lateralmente para navegar entre as colunas do quadro.',
                     ),
-                  ],
+                  ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    child: Row(
+                      children: [
+                        ..._colunas.entries.map(
+                          (entry) => _KanbanColuna(
+                            titulo: entry.key,
+                            cards: entry.value,
+                            onCardMoved: _moveCard,
+                            onCardDeleted: _deleteCard,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
+              ],
+            ),
     );
   }
 
@@ -151,7 +153,7 @@ class _KanbanPageState extends State<KanbanPage> {
         ],
       ),
     );
-    if (confirmed != true) return;
+    if (!mounted || confirmed != true) return;
     setState(() {
       _cards.removeWhere((c) => c.id == card.id);
     });
@@ -186,7 +188,8 @@ class _KanbanPageState extends State<KanbanPage> {
                 items: KanbanService.prioridades
                     .map((p) => DropdownMenuItem(value: p, child: Text(p)))
                     .toList(),
-                onChanged: (value) => setModalState(() => prioridadeSelecionada = value!),
+                onChanged: (value) =>
+                    setModalState(() => prioridadeSelecionada = value!),
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
@@ -195,7 +198,8 @@ class _KanbanPageState extends State<KanbanPage> {
                 items: KanbanService.colunas
                     .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                     .toList(),
-                onChanged: (value) => setModalState(() => colunaSelecionada = value!),
+                onChanged: (value) =>
+                    setModalState(() => colunaSelecionada = value!),
               ),
             ],
           ),
@@ -206,19 +210,26 @@ class _KanbanPageState extends State<KanbanPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                final erro = KanbanService.validateTitulo(tituloController.text);
+                final erro = KanbanService.validateTitulo(
+                  tituloController.text,
+                );
                 if (erro == null) {
                   setState(() {
                     final newId = KanbanService.nextId(_cards);
-                    _cards.add(KanbanCardModel(
-                      id: newId,
-                      titulo: tituloController.text.trim(),
-                      coluna: colunaSelecionada,
-                      prioridade: prioridadeSelecionada,
-                    ));
+                    _cards.add(
+                      KanbanCardModel(
+                        id: newId,
+                        titulo: tituloController.text.trim(),
+                        coluna: colunaSelecionada,
+                        prioridade: prioridadeSelecionada,
+                      ),
+                    );
                   });
                   Navigator.pop(context);
-                  AppFeedbackService.success(context, 'Card criado com sucesso!');
+                  AppFeedbackService.success(
+                    context,
+                    'Card criado com sucesso!',
+                  );
                   _saveData();
                 } else {
                   AppFeedbackService.warning(context, erro);
@@ -275,7 +286,10 @@ class _KanbanColuna extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: SigadColors.muted.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
@@ -315,7 +329,8 @@ class _KanbanColuna extends StatelessWidget {
                       : ListView.separated(
                           padding: const EdgeInsets.all(12),
                           itemCount: cards.length,
-                          separatorBuilder: (context, i) => const SizedBox(height: 12),
+                          separatorBuilder: (context, i) =>
+                              const SizedBox(height: 12),
                           itemBuilder: (_, index) => _KanbanCard(
                             card: cards[index],
                             onDeleted: onCardDeleted,
@@ -332,10 +347,7 @@ class _KanbanColuna extends StatelessWidget {
 }
 
 class _KanbanCard extends StatelessWidget {
-  const _KanbanCard({
-    required this.card,
-    required this.onDeleted,
-  });
+  const _KanbanCard({required this.card, required this.onDeleted});
 
   final KanbanCardModel card;
   final Function(KanbanCardModel) onDeleted;
@@ -377,82 +389,89 @@ class _KanbanCard extends StatelessWidget {
       button: true,
       label: 'Card: ${card.titulo}. Prioridade ${card.prioridade}.',
       child: GestureDetector(
-      onTap: () => _showDetalhes(context),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: SigadColors.surface,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: SigadColors.divider),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 6,
-              offset: const Offset(0, 1),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: 220, // valor fixo ou ajuste conforme necessário
-              child: Text(
-                card.titulo,
-                style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+        onTap: () => _showDetalhes(context),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: SigadColors.surface,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: SigadColors.divider),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 6,
+                offset: const Offset(0, 1),
               ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: _getPrioridadeColor(card.prioridade).withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(4),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: 220, // valor fixo ou ajuste conforme necessário
+                child: Text(
+                  card.titulo,
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
                   ),
-                  child: Text(
-                    card.prioridade,
-                    style: textTheme.labelSmall?.copyWith(
-                      color: _getPrioridadeColor(card.prioridade),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                PopupMenuButton<String>(
-                  tooltip: 'Mais ações do card',
-                  onSelected: (value) {
-                    if (value == 'excluir') {
-                      _showConfirmarExclusao(context);
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 'excluir',
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete, size: 18),
-                          SizedBox(width: 8),
-                          Text('Excluir'),
-                        ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _getPrioridadeColor(
+                        card.prioridade,
+                      ).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      card.prioridade,
+                      style: textTheme.labelSmall?.copyWith(
+                        color: _getPrioridadeColor(card.prioridade),
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ],
-                  icon: Icon(
-                    Icons.more_vert,
-                    size: 18,
-                    color: SigadColors.muted.withValues(alpha: 0.5),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  PopupMenuButton<String>(
+                    tooltip: 'Mais ações do card',
+                    onSelected: (value) {
+                      if (value == 'excluir') {
+                        _showConfirmarExclusao(context);
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'excluir',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete, size: 18),
+                            SizedBox(width: 8),
+                            Text('Excluir'),
+                          ],
+                        ),
+                      ),
+                    ],
+                    icon: Icon(
+                      Icons.more_vert,
+                      size: 18,
+                      color: SigadColors.muted.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 
@@ -470,7 +489,10 @@ class _KanbanCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('ID: ${card.id}', style: textTheme.bodySmall?.copyWith(color: SigadColors.muted)),
+            Text(
+              'ID: ${card.id}',
+              style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+            ),
             const SizedBox(height: 8),
             Text('Coluna: ${card.coluna}', style: textTheme.bodySmall),
             const SizedBox(height: 8),

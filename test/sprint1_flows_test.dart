@@ -35,57 +35,51 @@ void main() {
     expect(find.text('Informe um email válido.'), findsOneWidget);
   });
 
-  testWidgets('Coordenador consegue expandir distribuição semanal de qualquer docente', (tester) async {
-    final userContext = UserContextProvider();
-    await userContext.login(
-      User(
-        id: 'user_email_coordenador@univ.br',
-        name: 'Coordenador',
-        email: 'coordenador@univ.br',
-        role: UserRole.coordenador,
-        createdAt: DateTime.now(),
-      ),
-    );
-
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light(),
-        home: ChangeNotifierProvider<UserContextProvider>.value(
-          value: userContext,
-          child: const CargaDocentePage(),
+  testWidgets(
+    'Coordenador consegue expandir distribuição semanal de qualquer docente',
+    (tester) async {
+      final userContext = UserContextProvider();
+      await userContext.login(
+        User(
+          id: 'user_email_coordenador@univ.br',
+          name: 'Coordenador',
+          email: 'coordenador@univ.br',
+          role: UserRole.coordenador,
+          createdAt: DateTime.now(),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
 
-    expect(find.text('Distribuição semanal'), findsNothing);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light(),
+          home: ChangeNotifierProvider<UserContextProvider>.value(
+            value: userContext,
+            child: const CargaDocentePage(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
 
+      expect(find.text('Distribuição semanal'), findsNothing);
 
-    // Simula busca pelo nome do docente
-    final searchField = find.byType(TextField).last;
-    await tester.enterText(searchField, 'João Silva');
-    await tester.pumpAndSettle();
+      // Simula busca pelo nome do docente
+      final searchField = find.byType(TextField).last;
+      await tester.enterText(searchField, 'João Silva');
+      await tester.pumpAndSettle();
 
-    // Depuração: printa todos os textos encontrados na tela
-    final allTexts = find.byType(Text);
-    final textWidgets = allTexts.evaluate().map((e) => (e.widget as Text).data).toList();
-    // ignore: avoid_print
-    print('Textos na tela:');
-    for (final t in textWidgets) {
-      // ignore: avoid_print
-      print(t);
-    }
+      expect(find.text('Prof. Dr. João Silva'), findsOneWidget);
+      await tester.tap(find.text('Prof. Dr. João Silva'));
+      await tester.pumpAndSettle();
 
-    expect(find.text('Prof. Dr. João Silva'), findsOneWidget);
-    await tester.tap(find.text('Prof. Dr. João Silva'));
-    await tester.pumpAndSettle();
+      expect(find.text('Distribuição semanal'), findsOneWidget);
+      expect(find.textContaining('Ter ·'), findsWidgets);
+      expect(find.textContaining('Qui ·'), findsWidgets);
+    },
+  );
 
-    expect(find.text('Distribuição semanal'), findsOneWidget);
-    expect(find.text('Ter'), findsWidgets);
-    expect(find.text('Qui'), findsWidgets);
-  });
-
-  testWidgets('Professor consegue reservar horário em laboratório', (tester) async {
+  testWidgets('Professor consegue reservar horário em laboratório', (
+    tester,
+  ) async {
     final userContext = UserContextProvider();
     await userContext.login(
       User(
@@ -110,10 +104,20 @@ void main() {
 
     final livresAntes = find.text('Livre').evaluate().length;
 
-    await tester.tap(find.text('Livre').first);
+    final primeiraCelulaLivre = find.text('Livre').first;
+    final celulaInterativa = find
+        .ancestor(of: primeiraCelulaLivre, matching: find.byType(InkWell))
+        .first;
+    await Scrollable.ensureVisible(
+      tester.element(celulaInterativa),
+      alignment: 0.5,
+    );
+    await tester.pumpAndSettle();
+    expect(celulaInterativa.hitTestable(), findsOneWidget);
+    await tester.tap(celulaInterativa);
     await tester.pumpAndSettle();
 
-    expect(find.text('Disciplina da reserva'), findsOneWidget);
+    expect(find.text('Nova Reserva'), findsOneWidget);
 
     final campoDisciplina = find.descendant(
       of: find.byType(AlertDialog),
@@ -121,10 +125,10 @@ void main() {
     );
     await tester.enterText(campoDisciplina, 'Disciplina Teste');
     await tester.pump();
-    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.tap(find.text('Confirmar'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Disciplina da reserva'), findsNothing);
+    expect(find.text('Nova Reserva'), findsNothing);
     final livresDepois = find.text('Livre').evaluate().length;
     expect(livresDepois, lessThan(livresAntes));
   });

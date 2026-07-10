@@ -59,7 +59,9 @@ void main() {
     expect(find.byIcon(Icons.notifications_outlined), findsOneWidget);
   });
 
-  testWidgets('exibe side nav em desktop', (tester) async {
+  testWidgets('desktop exibe modulos permitidos para coordenador', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(1280, 900);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
@@ -81,6 +83,38 @@ void main() {
 
     expect(find.byType(AppBar), findsNothing);
     expect(find.text('Conteúdo'), findsOneWidget);
+    expect(find.text('Demandas'), findsOneWidget);
+    expect(find.text('Relatórios'), findsOneWidget);
+  });
+
+  testWidgets('drawer mobile exibe modulos permitidos para coordenador', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final userContext = UserContextProvider();
+    await userContext.login(
+      User(
+        id: 'u-drawer',
+        name: 'Marina',
+        email: 'marina@univ.br',
+        role: UserRole.coordenador,
+        createdAt: DateTime.now(),
+      ),
+    );
+
+    await tester.pumpWidget(_buildShell(userContext: userContext));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.menu));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(Drawer), findsOneWidget);
+    expect(find.text('Demandas'), findsOneWidget);
+    expect(find.text('Relatórios'), findsOneWidget);
   });
 
   testWidgets('exibe BottomNavigationBar em mobile', (tester) async {

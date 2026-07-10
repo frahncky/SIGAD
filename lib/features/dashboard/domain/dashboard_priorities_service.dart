@@ -25,7 +25,9 @@ abstract final class DashboardPrioritiesService {
     for (final demanda in demandas) {
       final prioridade = demanda.prioridade.toLowerCase();
       final status = demanda.statusLabel.toLowerCase();
-      if (prioridade == 'alta' && status != 'concluido' && status != 'concluído') {
+      if (prioridade == 'alta' &&
+          status != 'concluido' &&
+          status != 'concluído') {
         total++;
       }
     }
@@ -39,7 +41,11 @@ abstract final class DashboardPrioritiesService {
 
   static int countKanbanBacklogHigh(List<KanbanCardModel> cards) {
     return cards
-        .where((card) => card.coluna.toLowerCase() == 'backlog' && card.prioridade.toLowerCase() == 'alta')
+        .where(
+          (card) =>
+              card.coluna.toLowerCase() == 'backlog' &&
+              card.prioridade.toLowerCase() == 'alta',
+        )
         .length;
   }
 

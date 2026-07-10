@@ -12,14 +12,14 @@ import 'package:sigad/features/carga_docente/presentation/pages/carga_docente_pa
 Widget _buildApp(UserContextProvider userContext) {
   return ChangeNotifierProvider<UserContextProvider>.value(
     value: userContext,
-    child: MaterialApp(
-      theme: AppTheme.light(),
-      home: const CargaDocentePage(),
-    ),
+    child: MaterialApp(theme: AppTheme.light(), home: const CargaDocentePage()),
   );
 }
 
-Future<UserContextProvider> _loggedIn(UserRole role, {String email = 'user@univ.br'}) async {
+Future<UserContextProvider> _loggedIn(
+  UserRole role, {
+  String email = 'user@univ.br',
+}) async {
   final ctx = UserContextProvider();
   await ctx.login(
     User(
@@ -49,7 +49,10 @@ void main() {
   });
 
   testWidgets('professor ve apenas os proprios dados', (tester) async {
-    final ctx = await _loggedIn(UserRole.professor, email: 'maria.santos@univ.br');
+    final ctx = await _loggedIn(
+      UserRole.professor,
+      email: 'maria.santos@univ.br',
+    );
 
     await tester.pumpWidget(_buildApp(ctx));
     await tester.pumpAndSettle();

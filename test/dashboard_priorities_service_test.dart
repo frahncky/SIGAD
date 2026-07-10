@@ -31,7 +31,9 @@ void main() {
         demandas,
         now: DateTime(2026, 4, 20),
       );
-      final altas = DashboardPrioritiesService.countDemandasAltasAbertas(demandas);
+      final altas = DashboardPrioritiesService.countDemandasAltasAbertas(
+        demandas,
+      );
 
       expect(atrasadas, 1);
       expect(altas, 1);
@@ -39,11 +41,24 @@ void main() {
 
     test('conta cards por coluna e backlog alto', () {
       final cards = [
-        const KanbanCardModel(id: 1, titulo: 'A', coluna: 'Em Revisão', prioridade: 'Alta'),
-        const KanbanCardModel(id: 2, titulo: 'B', coluna: 'Backlog', prioridade: 'Alta'),
+        const KanbanCardModel(
+          id: 1,
+          titulo: 'A',
+          coluna: 'Em Revisão',
+          prioridade: 'Alta',
+        ),
+        const KanbanCardModel(
+          id: 2,
+          titulo: 'B',
+          coluna: 'Backlog',
+          prioridade: 'Alta',
+        ),
       ];
 
-      expect(DashboardPrioritiesService.countKanbanByColumn(cards, 'Em Revisão'), 1);
+      expect(
+        DashboardPrioritiesService.countKanbanByColumn(cards, 'Em Revisão'),
+        1,
+      );
       expect(DashboardPrioritiesService.countKanbanBacklogHigh(cards), 1);
     });
   });

@@ -27,56 +27,56 @@ class RelatorioDto {
   final String? ultimaAcao;
 
   factory RelatorioDto.fromJson(Map<String, dynamic> json) => RelatorioDto(
-        id: json['id'] as String,
-        titulo: json['titulo'] as String,
-        descricao: json['descricao'] as String,
-        tipo: json['tipo'] as String,
-        data: json['data'] as String,
-        autor: json['autor'] as String,
-        status: json['status'] as String,
-        downloads: json['downloads'] as int? ?? 0,
-        compartilhamentos: json['compartilhamentos'] as int? ?? 0,
-        ultimaAcao: json['ultimaAcao'] as String?,
-      );
+    id: json['id'] as String,
+    titulo: json['titulo'] as String,
+    descricao: json['descricao'] as String,
+    tipo: json['tipo'] as String,
+    data: json['data'] as String,
+    autor: json['autor'] as String,
+    status: json['status'] as String,
+    downloads: json['downloads'] as int? ?? 0,
+    compartilhamentos: json['compartilhamentos'] as int? ?? 0,
+    ultimaAcao: json['ultimaAcao'] as String?,
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'titulo': titulo,
-        'descricao': descricao,
-        'tipo': tipo,
-        'data': data,
-        'autor': autor,
-        'status': status,
-        'downloads': downloads,
-        'compartilhamentos': compartilhamentos,
-        if (ultimaAcao != null) 'ultimaAcao': ultimaAcao,
-      };
+    'id': id,
+    'titulo': titulo,
+    'descricao': descricao,
+    'tipo': tipo,
+    'data': data,
+    'autor': autor,
+    'status': status,
+    'downloads': downloads,
+    'compartilhamentos': compartilhamentos,
+    if (ultimaAcao != null) 'ultimaAcao': ultimaAcao,
+  };
 
   Relatorio toDomain() => Relatorio(
-        id: id,
-        titulo: titulo,
-        descricao: descricao,
-        tipo: tipo,
-        data: data,
-        autor: autor,
-        status: status,
-        downloads: downloads,
-        compartilhamentos: compartilhamentos,
-        ultimaAcao: ultimaAcao,
-      );
+    id: id,
+    titulo: titulo,
+    descricao: descricao,
+    tipo: tipo,
+    data: data,
+    autor: autor,
+    status: status,
+    downloads: downloads,
+    compartilhamentos: compartilhamentos,
+    ultimaAcao: ultimaAcao,
+  );
 
   static RelatorioDto fromDomain(Relatorio relatorio) => RelatorioDto(
-        id: relatorio.id,
-        titulo: relatorio.titulo,
-        descricao: relatorio.descricao,
-        tipo: relatorio.tipo,
-        data: relatorio.data,
-        autor: relatorio.autor,
-        status: relatorio.status,
-        downloads: relatorio.downloads,
-        compartilhamentos: relatorio.compartilhamentos,
-        ultimaAcao: relatorio.ultimaAcao,
-      );
+    id: relatorio.id,
+    titulo: relatorio.titulo,
+    descricao: relatorio.descricao,
+    tipo: relatorio.tipo,
+    data: relatorio.data,
+    autor: relatorio.autor,
+    status: relatorio.status,
+    downloads: relatorio.downloads,
+    compartilhamentos: relatorio.compartilhamentos,
+    ultimaAcao: relatorio.ultimaAcao,
+  );
 }
 
 abstract final class RelatorioApiContract {

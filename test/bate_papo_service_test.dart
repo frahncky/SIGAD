@@ -7,8 +7,16 @@ import 'package:sigad/features/bate_papo/domain/conversation_summary.dart';
 void main() {
   group('BatePapoService', () {
     test('ordena conversas por data da ultima mensagem', () {
-      final contatoA = const ChatContact(name: 'Ana', email: 'ana@u.br', role: UserRole.professor);
-      final contatoB = const ChatContact(name: 'Bruno', email: 'bruno@u.br', role: UserRole.coordenador);
+      final contatoA = const ChatContact(
+        name: 'Ana',
+        email: 'ana@u.br',
+        role: UserRole.professor,
+      );
+      final contatoB = const ChatContact(
+        name: 'Bruno',
+        email: 'bruno@u.br',
+        role: UserRole.coordenador,
+      );
 
       final conversaAntiga = ConversationSummary(
         contact: contatoA,
@@ -36,7 +44,10 @@ void main() {
         ],
       );
 
-      final ordenadas = BatePapoService.buildConversations([conversaAntiga, conversaNova]);
+      final ordenadas = BatePapoService.buildConversations([
+        conversaAntiga,
+        conversaNova,
+      ]);
       expect(ordenadas.first.contact.email, 'bruno@u.br');
     });
 
@@ -50,9 +61,18 @@ void main() {
         messages: const [],
       );
 
-      expect(BatePapoService.matchesConversationSearch(conversa, 'maria'), isTrue);
-      expect(BatePapoService.matchesConversationSearch(conversa, 'coordenador'), isTrue);
-      expect(BatePapoService.matchesConversationSearch(conversa, 'xyz'), isFalse);
+      expect(
+        BatePapoService.matchesConversationSearch(conversa, 'maria'),
+        isTrue,
+      );
+      expect(
+        BatePapoService.matchesConversationSearch(conversa, 'coordenador'),
+        isTrue,
+      );
+      expect(
+        BatePapoService.matchesConversationSearch(conversa, 'xyz'),
+        isFalse,
+      );
     });
   });
 }

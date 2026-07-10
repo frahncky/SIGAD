@@ -54,7 +54,9 @@ void main() {
       );
 
       final baixado = RelatoriosService.registrarDownload(relatorio);
-      final compartilhado = RelatoriosService.registrarCompartilhamento(relatorio);
+      final compartilhado = RelatoriosService.registrarCompartilhamento(
+        relatorio,
+      );
 
       expect(baixado.downloads, 3);
       expect(compartilhado.compartilhamentos, 4);

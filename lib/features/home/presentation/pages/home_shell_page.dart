@@ -30,9 +30,15 @@ class HomeShellPage extends StatelessWidget {
 
         final availableItems = userRole == null
             ? kNavigationItems
-            : kNavigationItems.where((item) => item.isAvailableFor(userRole)).toList();
-        final currentItem = availableItems.where((item) => item.route == currentRoute).firstOrNull;
-        final selectedIndex = availableItems.indexWhere((item) => item.route == currentRoute);
+            : kNavigationItems
+                  .where((item) => item.isAvailableFor(userRole))
+                  .toList();
+        final currentItem = availableItems
+            .where((item) => item.route == currentRoute)
+            .firstOrNull;
+        final selectedIndex = availableItems.indexWhere(
+          (item) => item.route == currentRoute,
+        );
 
         return Scaffold(
           drawer: isWide
@@ -40,7 +46,8 @@ class HomeShellPage extends StatelessWidget {
               : _AppDrawer(
                   selectedIndex: selectedIndex,
                   availableItems: availableItems,
-                  onSelected: (index) => _navigate(context, availableItems[index].route),
+                  onSelected: (index) =>
+                      _navigate(context, availableItems[index].route),
                   onLogout: () => _confirmLogout(context, userContext),
                 ),
           appBar: isWide
@@ -59,7 +66,9 @@ class HomeShellPage extends StatelessWidget {
                       tooltip: 'Notificações',
                       icon: notifCount > 0
                           ? Badge(
-                              label: Text(notifCount > 99 ? '99+' : '$notifCount'),
+                              label: Text(
+                                notifCount > 99 ? '99+' : '$notifCount',
+                              ),
                               child: const Icon(Icons.notifications_outlined),
                             )
                           : const Icon(Icons.notifications_outlined),
@@ -74,20 +83,30 @@ class HomeShellPage extends StatelessWidget {
                 ),
           bottomNavigationBar: isWide
               ? null
-              : NavigationBar(
-                  selectedIndex: _bottomNavIndex(),
-                  onDestinationSelected: (index) {
-                    final item = _bottomNavItems[index];
-                    _navigate(context, item['route'] as String);
-                  },
-                  destinations: _bottomNavItems
-                      .map(
+              : Builder(
+                  builder: (navigationContext) => NavigationBar(
+                    selectedIndex: _bottomNavIndex(),
+                    onDestinationSelected: (index) {
+                      if (index == _bottomNavItems.length) {
+                        Scaffold.of(navigationContext).openDrawer();
+                        return;
+                      }
+                      final item = _bottomNavItems[index];
+                      _navigate(context, item['route'] as String);
+                    },
+                    destinations: [
+                      ..._bottomNavItems.map(
                         (item) => NavigationDestination(
                           icon: Icon(item['icon'] as IconData),
                           label: item['label'] as String,
                         ),
-                      )
-                      .toList(),
+                      ),
+                      const NavigationDestination(
+                        icon: Icon(Icons.grid_view_rounded),
+                        label: 'Mais',
+                      ),
+                    ],
+                  ),
                 ),
           body: isWide
               ? Row(
@@ -96,8 +115,10 @@ class HomeShellPage extends StatelessWidget {
                       selectedIndex: selectedIndex,
                       availableItems: availableItems,
                       userContext: userContext,
-                      onSelected: (index) => _navigate(context, availableItems[index].route),
-                      onQuickAccess: () => _showQuickAccess(context, availableItems),
+                      onSelected: (index) =>
+                          _navigate(context, availableItems[index].route),
+                      onQuickAccess: () =>
+                          _showQuickAccess(context, availableItems),
                       onLogout: () => _confirmLogout(context, userContext),
                     ),
                     Expanded(
@@ -106,11 +127,15 @@ class HomeShellPage extends StatelessWidget {
                           alignment: Alignment.topCenter,
                           child: ConstrainedBox(
                             constraints: BoxConstraints(
-                              maxWidth: currentRoute == AppRoutes.dashboard ? 1720 : 1480,
+                              maxWidth: currentRoute == AppRoutes.dashboard
+                                  ? 1720
+                                  : 1480,
                             ),
                             child: Padding(
                               padding: EdgeInsets.symmetric(
-                                horizontal: currentRoute == AppRoutes.dashboard ? 8 : 20,
+                                horizontal: currentRoute == AppRoutes.dashboard
+                                    ? 8
+                                    : 20,
                               ),
                               child: child,
                             ),
@@ -151,8 +176,10 @@ class HomeShellPage extends StatelessWidget {
   ];
 
   int _bottomNavIndex() {
-    final idx = _bottomNavItems.indexWhere((item) => item['route'] == currentRoute);
-    return idx >= 0 ? idx : 0;
+    final idx = _bottomNavItems.indexWhere(
+      (item) => item['route'] == currentRoute,
+    );
+    return idx >= 0 ? idx : _bottomNavItems.length;
   }
 
   void _navigate(BuildContext context, String route) {
@@ -183,7 +210,10 @@ class HomeShellPage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Notificações', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+              const Text(
+                'Notificações',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+              ),
               const SizedBox(height: 8),
               if (notificacoes.isEmpty)
                 const Padding(
@@ -206,7 +236,10 @@ class HomeShellPage extends StatelessWidget {
     );
   }
 
-  void _showQuickAccess(BuildContext context, List<NavigationItem> availableItems) {
+  void _showQuickAccess(
+    BuildContext context,
+    List<NavigationItem> availableItems,
+  ) {
     var query = '';
     showModalBottomSheet(
       context: context,
@@ -215,19 +248,27 @@ class HomeShellPage extends StatelessWidget {
       builder: (context) => StatefulBuilder(
         builder: (context, setModalState) {
           final filteredItems = availableItems.where((item) {
-            final haystack = '${item.label} ${item.subtitle ?? ''}'.toLowerCase();
+            final haystack = '${item.label} ${item.subtitle ?? ''}'
+                .toLowerCase();
             return haystack.contains(query.toLowerCase());
           }).toList();
           return SafeArea(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(20, 8, 20, MediaQuery.of(context).viewInsets.bottom + 20),
+              padding: EdgeInsets.fromLTRB(
+                20,
+                8,
+                20,
+                MediaQuery.of(context).viewInsets.bottom + 20,
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Acesso rápido',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   TextField(
@@ -247,22 +288,37 @@ class HomeShellPage extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(vertical: 32),
                               child: Text(
                                 'Nenhum módulo encontrado.',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                                    ),
                               ),
                             ),
                           )
                         : ListView.separated(
                             shrinkWrap: true,
                             itemCount: filteredItems.length,
-                            separatorBuilder: (_, _) => const SizedBox(height: 8),
+                            separatorBuilder: (_, _) =>
+                                const SizedBox(height: 8),
                             itemBuilder: (context, index) {
                               final item = filteredItems[index];
                               return ListTile(
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                                tileColor: SigadColors.surfaceAlt,
-                                leading: Icon(item.icon, color: SigadColors.brand),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                tileColor: Theme.of(
+                                  context,
+                                ).colorScheme.surfaceContainerHighest,
+                                leading: Icon(
+                                  item.icon,
+                                  color: SigadColors.brand,
+                                ),
                                 title: Text(item.label),
-                                subtitle: item.subtitle == null ? null : Text(item.subtitle!),
+                                subtitle: item.subtitle == null
+                                    ? null
+                                    : Text(item.subtitle!),
                                 onTap: () {
                                   Navigator.pop(context);
                                   _navigate(context, item.route);
@@ -280,8 +336,6 @@ class HomeShellPage extends StatelessWidget {
     );
   }
 }
-
-
 
 class _SideNav extends StatelessWidget {
   const _SideNav({
@@ -302,13 +356,12 @@ class _SideNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Container(
       width: 290,
-      decoration: const BoxDecoration(
-        color: SigadColors.surface,
-        border: Border(
-          right: BorderSide(color: SigadColors.divider),
-        ),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        border: Border(right: BorderSide(color: colors.outlineVariant)),
       ),
       child: Column(
         children: [
@@ -323,12 +376,38 @@ class _SideNav extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: _UserCard(userContext: userContext),
             ),
-          const Spacer(),
+          const SizedBox(height: 14),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: OutlinedButton.icon(
+              onPressed: onQuickAccess,
+              icon: const Icon(Icons.search_rounded, size: 19),
+              label: const Text('Acesso rápido'),
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size.fromHeight(44),
+                alignment: Alignment.centerLeft,
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              itemCount: availableItems.length,
+              itemBuilder: (context, index) => _NavigationTile(
+                item: availableItems[index],
+                selected: index == selectedIndex,
+                onTap: () => onSelected(index),
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
             child: ListTile(
               onTap: onLogout,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               leading: const Icon(Icons.logout, color: SigadColors.risk),
               title: const Text('Sair'),
             ),
@@ -368,7 +447,21 @@ class _AppDrawer extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: _UserCard(userContext: userContext),
               ),
-            const Spacer(),
+            const SizedBox(height: 14),
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                itemCount: availableItems.length,
+                itemBuilder: (context, index) => _NavigationTile(
+                  item: availableItems[index],
+                  selected: index == selectedIndex,
+                  onTap: () {
+                    Navigator.pop(context);
+                    onSelected(index);
+                  },
+                ),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
               child: ListTile(
@@ -376,7 +469,9 @@ class _AppDrawer extends StatelessWidget {
                   Navigator.pop(context);
                   onLogout();
                 },
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 leading: const Icon(Icons.logout, color: SigadColors.risk),
                 title: const Text('Sair'),
               ),
@@ -388,7 +483,44 @@ class _AppDrawer extends StatelessWidget {
   }
 }
 
+class _NavigationTile extends StatelessWidget {
+  const _NavigationTile({
+    required this.item,
+    required this.selected,
+    required this.onTap,
+  });
 
+  final NavigationItem item;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: ListTile(
+        selected: selected,
+        selectedColor: colors.primary,
+        selectedTileColor: colors.primaryContainer.withValues(alpha: 0.55),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        leading: Icon(item.icon, size: 22),
+        title: Text(
+          item.label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+          ),
+        ),
+        trailing: selected
+            ? const Icon(Icons.chevron_right_rounded, size: 18)
+            : null,
+        onTap: onTap,
+      ),
+    );
+  }
+}
 
 class _UserCard extends StatelessWidget {
   const _UserCard({required this.userContext});
@@ -399,6 +531,7 @@ class _UserCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = userContext.currentUser;
     if (user == null) return const SizedBox.shrink();
+    final colors = Theme.of(context).colorScheme;
 
     return Container(
       width: double.infinity,
@@ -407,10 +540,13 @@ class _UserCard extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [SigadColors.surfaceAlt, SigadColors.brand.withValues(alpha: 0.08)],
+          colors: [
+            colors.surfaceContainerHighest,
+            SigadColors.brand.withValues(alpha: 0.08),
+          ],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: SigadColors.divider),
+        border: Border.all(color: colors.outlineVariant),
       ),
       child: Row(
         children: [
@@ -418,7 +554,10 @@ class _UserCard extends StatelessWidget {
             backgroundColor: SigadColors.brand.withValues(alpha: 0.18),
             child: Text(
               user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
-              style: const TextStyle(color: SigadColors.brand, fontWeight: FontWeight.w700),
+              style: const TextStyle(
+                color: SigadColors.brand,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
           const SizedBox(width: 10),
@@ -437,11 +576,15 @@ class _UserCard extends StatelessWidget {
                 ),
                 Text(
                   user.role.displayName,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
                 ),
                 Text(
                   user.email,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -455,10 +598,7 @@ class _UserCard extends StatelessWidget {
 }
 
 class _MobileTopBarTitle extends StatelessWidget {
-  const _MobileTopBarTitle({
-    required this.title,
-    this.subtitle,
-  });
+  const _MobileTopBarTitle({required this.title, this.subtitle});
 
   final String title;
   final String? subtitle;
@@ -473,7 +613,9 @@ class _MobileTopBarTitle extends StatelessWidget {
           width: 180,
           child: Text(
             title,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -481,7 +623,9 @@ class _MobileTopBarTitle extends StatelessWidget {
         if (subtitle != null)
           Text(
             subtitle!,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -489,8 +633,6 @@ class _MobileTopBarTitle extends StatelessWidget {
     );
   }
 }
-
-
 
 class _ProfileMenu extends StatelessWidget {
   const _ProfileMenu({required this.userContext});
@@ -505,7 +647,12 @@ class _ProfileMenu extends StatelessWidget {
     return SafeArea(
       child: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.of(context).viewInsets.bottom),
+          padding: EdgeInsets.fromLTRB(
+            16,
+            16,
+            16,
+            16 + MediaQuery.of(context).viewInsets.bottom,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -515,9 +662,9 @@ class _ProfileMenu extends StatelessWidget {
                 child: Text(
                   user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: SigadColors.brand,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    color: SigadColors.brand,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ],

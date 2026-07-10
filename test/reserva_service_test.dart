@@ -143,11 +143,17 @@ void main() {
       );
 
       expect(
-        ReservaService.canChangeReservation(user: user, role: UserRole.professor),
+        ReservaService.canChangeReservation(
+          user: user,
+          role: UserRole.professor,
+        ),
         isTrue,
       );
       expect(
-        ReservaService.canChangeReservation(user: null, role: UserRole.professor),
+        ReservaService.canChangeReservation(
+          user: null,
+          role: UserRole.professor,
+        ),
         isFalse,
       );
     });
@@ -184,40 +190,47 @@ void main() {
       );
 
       expect(indicadores, hasLength(2));
-      final labA = indicadores.firstWhere((item) => item.laboratorio == 'Lab A');
-      final labB = indicadores.firstWhere((item) => item.laboratorio == 'Lab B');
+      final labA = indicadores.firstWhere(
+        (item) => item.laboratorio == 'Lab A',
+      );
+      final labB = indicadores.firstWhere(
+        (item) => item.laboratorio == 'Lab B',
+      );
       expect(labA.slotsReservados, 2);
       expect(labB.slotsReservados, 0);
       expect(labA.taxaOcupacao, greaterThan(labB.taxaOcupacao));
     });
 
-    test('sugere slots livres priorizando laboratório menos ocupado e dia preferencial', () {
-      final reservas = [
-        const ReservaLaboratorio(
-          id: '1',
-          professor: 'Ana',
-          laboratorio: 'Lab A',
+    test(
+      'sugere slots livres priorizando laboratório menos ocupado e dia preferencial',
+      () {
+        final reservas = [
+          const ReservaLaboratorio(
+            id: '1',
+            professor: 'Ana',
+            laboratorio: 'Lab A',
+            mes: 4,
+            semanaDoMes: 2,
+            diaSemana: 'Seg',
+            turno: Turno.matutino,
+            periodo: 1,
+          ),
+        ];
+
+        final sugestoes = ReservaService.sugerirSlotsLivres(
+          reservas: reservas,
+          laboratorios: const ['Lab A', 'Lab B'],
           mes: 4,
           semanaDoMes: 2,
-          diaSemana: 'Seg',
-          turno: Turno.matutino,
-          periodo: 1,
-        ),
-      ];
+          diaSemanaPreferencial: 'Seg',
+          limite: 3,
+        );
 
-      final sugestoes = ReservaService.sugerirSlotsLivres(
-        reservas: reservas,
-        laboratorios: const ['Lab A', 'Lab B'],
-        mes: 4,
-        semanaDoMes: 2,
-        diaSemanaPreferencial: 'Seg',
-        limite: 3,
-      );
-
-      expect(sugestoes, hasLength(3));
-      expect(sugestoes.first.laboratorio, 'Lab B');
-      expect(sugestoes.first.diaSemana, 'Seg');
-      expect(sugestoes.first.score, greaterThan(0));
-    });
+        expect(sugestoes, hasLength(3));
+        expect(sugestoes.first.laboratorio, 'Lab B');
+        expect(sugestoes.first.diaSemana, 'Seg');
+        expect(sugestoes.first.score, greaterThan(0));
+      },
+    );
   });
 }

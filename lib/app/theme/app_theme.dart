@@ -7,17 +7,20 @@ abstract final class AppTheme {
   /// Tema claro do aplicativo.
   static ThemeData light() {
     final base = ThemeData.light(useMaterial3: true);
-    final textTheme = GoogleFonts.spaceGroteskTextTheme(base.textTheme);
+    final textTheme = GoogleFonts.config.allowRuntimeFetching
+        ? GoogleFonts.spaceGroteskTextTheme(base.textTheme)
+        : base.textTheme;
 
     return base.copyWith(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: SigadColors.brand,
-        brightness: Brightness.light,
-      ).copyWith(
-        surface: SigadColors.surface,
-        primary: SigadColors.brand,
-        secondary: SigadColors.accent,
-      ),
+      colorScheme:
+          ColorScheme.fromSeed(
+            seedColor: SigadColors.brand,
+            brightness: Brightness.light,
+          ).copyWith(
+            surface: SigadColors.surface,
+            primary: SigadColors.brand,
+            secondary: SigadColors.accent,
+          ),
       scaffoldBackgroundColor: SigadColors.canvas,
       textTheme: textTheme.apply(
         bodyColor: SigadColors.ink,
@@ -35,13 +38,19 @@ abstract final class AppTheme {
         indicatorColor: SigadColors.brand.withValues(alpha: 0.14),
         iconTheme: WidgetStateProperty.resolveWith(
           (states) => IconThemeData(
-            color: states.contains(WidgetState.selected) ? SigadColors.brand : SigadColors.muted,
+            color: states.contains(WidgetState.selected)
+                ? SigadColors.brand
+                : SigadColors.muted,
           ),
         ),
         labelTextStyle: WidgetStateProperty.resolveWith(
           (states) => textTheme.labelSmall?.copyWith(
-            fontWeight: states.contains(WidgetState.selected) ? FontWeight.w700 : FontWeight.w600,
-            color: states.contains(WidgetState.selected) ? SigadColors.brand : SigadColors.muted,
+            fontWeight: states.contains(WidgetState.selected)
+                ? FontWeight.w700
+                : FontWeight.w600,
+            color: states.contains(WidgetState.selected)
+                ? SigadColors.brand
+                : SigadColors.muted,
           ),
         ),
       ),
@@ -49,15 +58,11 @@ abstract final class AppTheme {
         color: SigadColors.surface,
         elevation: 2,
         shadowColor: Colors.black.withValues(alpha: 0.08),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       dividerColor: SigadColors.divider,
       chipTheme: base.chipTheme.copyWith(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         side: const BorderSide(color: SigadColors.divider),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -123,22 +128,22 @@ abstract final class AppTheme {
     const dividerDark = Color(0xFF2C3E3A);
 
     final base = ThemeData.dark(useMaterial3: true);
-    final textTheme = GoogleFonts.spaceGroteskTextTheme(base.textTheme);
+    final textTheme = GoogleFonts.config.allowRuntimeFetching
+        ? GoogleFonts.spaceGroteskTextTheme(base.textTheme)
+        : base.textTheme;
 
     return base.copyWith(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: SigadColors.brand,
-        brightness: Brightness.dark,
-      ).copyWith(
-        surface: surfaceDark,
-        primary: SigadColors.brand,
-        secondary: SigadColors.accent,
-      ),
+      colorScheme:
+          ColorScheme.fromSeed(
+            seedColor: SigadColors.brand,
+            brightness: Brightness.dark,
+          ).copyWith(
+            surface: surfaceDark,
+            primary: SigadColors.brand,
+            secondary: SigadColors.accent,
+          ),
       scaffoldBackgroundColor: canvasDark,
-      textTheme: textTheme.apply(
-        bodyColor: inkDark,
-        displayColor: inkDark,
-      ),
+      textTheme: textTheme.apply(bodyColor: inkDark, displayColor: inkDark),
       appBarTheme: const AppBarTheme(
         backgroundColor: surfaceDark,
         elevation: 2,
@@ -151,13 +156,19 @@ abstract final class AppTheme {
         indicatorColor: SigadColors.brand.withValues(alpha: 0.22),
         iconTheme: WidgetStateProperty.resolveWith(
           (states) => IconThemeData(
-            color: states.contains(WidgetState.selected) ? SigadColors.brand : mutedDark,
+            color: states.contains(WidgetState.selected)
+                ? SigadColors.brand
+                : mutedDark,
           ),
         ),
         labelTextStyle: WidgetStateProperty.resolveWith(
           (states) => textTheme.labelSmall?.copyWith(
-            fontWeight: states.contains(WidgetState.selected) ? FontWeight.w700 : FontWeight.w600,
-            color: states.contains(WidgetState.selected) ? SigadColors.brand : mutedDark,
+            fontWeight: states.contains(WidgetState.selected)
+                ? FontWeight.w700
+                : FontWeight.w600,
+            color: states.contains(WidgetState.selected)
+                ? SigadColors.brand
+                : mutedDark,
           ),
         ),
       ),
@@ -165,15 +176,11 @@ abstract final class AppTheme {
         color: surfaceDark,
         elevation: 2,
         shadowColor: Colors.black.withValues(alpha: 0.3),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       dividerColor: dividerDark,
       chipTheme: base.chipTheme.copyWith(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         side: const BorderSide(color: dividerDark),
       ),
       inputDecorationTheme: InputDecorationTheme(

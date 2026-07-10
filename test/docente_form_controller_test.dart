@@ -66,9 +66,16 @@ void main() {
       final controller = DocenteFormController.createNew();
       controller.addDisciplina('Algoritmos');
 
-      expect(controller.validateDisciplina('Algoritmos'), 'Disciplina já adicionada.');
       expect(
-        controller.validateHorario(diaSemana: 'Segunda', inicio: '8:00', fim: '09:40'),
+        controller.validateDisciplina('Algoritmos'),
+        'Disciplina já adicionada.',
+      );
+      expect(
+        controller.validateHorario(
+          diaSemana: 'Segunda',
+          inicio: '8:00',
+          fim: '09:40',
+        ),
         'Use o formato HH:MM para os horários.',
       );
 
@@ -81,7 +88,11 @@ void main() {
         ),
       );
       expect(
-        controller.validateHorario(diaSemana: 'Segunda', inicio: '08:30', fim: '09:00'),
+        controller.validateHorario(
+          diaSemana: 'Segunda',
+          inicio: '08:30',
+          fim: '09:00',
+        ),
         'Já existe horário cadastrado em conflito para Segunda.',
       );
       controller.dispose();

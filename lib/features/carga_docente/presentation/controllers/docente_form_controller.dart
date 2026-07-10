@@ -5,15 +5,17 @@ import '../../domain/docente_models.dart';
 
 class DocenteFormController {
   DocenteFormController._({Docente? docente})
-      : nomeController = TextEditingController(text: docente?.nome ?? ''),
-        emailController = TextEditingController(text: docente?.userEmail ?? ''),
-        departamentoController = TextEditingController(text: docente?.departamento ?? ''),
-        cargaMaximaController = TextEditingController(
-          text: docente?.cargaMaxima.toString() ?? '',
-        ),
-        disciplinas = List<String>.from(docente?.disciplinas ?? const []),
-        regimeTrabalho = docente?.regimeTrabalho ?? RegimeTrabalhoEbtt.vinteHoras,
-        horarios = List<HorarioAula>.from(docente?.horariosAula ?? const []);
+    : nomeController = TextEditingController(text: docente?.nome ?? ''),
+      emailController = TextEditingController(text: docente?.userEmail ?? ''),
+      departamentoController = TextEditingController(
+        text: docente?.departamento ?? '',
+      ),
+      cargaMaximaController = TextEditingController(
+        text: docente?.cargaMaxima.toString() ?? '',
+      ),
+      disciplinas = List<String>.from(docente?.disciplinas ?? const []),
+      regimeTrabalho = docente?.regimeTrabalho ?? RegimeTrabalhoEbtt.vinteHoras,
+      horarios = List<HorarioAula>.from(docente?.horariosAula ?? const []);
 
   factory DocenteFormController.createNew() => DocenteFormController._();
 

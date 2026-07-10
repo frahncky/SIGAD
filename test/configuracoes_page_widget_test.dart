@@ -87,7 +87,9 @@ void main() {
     expect(find.text('Informe um email válido'), findsOneWidget);
   });
 
-  testWidgets('professor vê configuração de lembrete de disciplina', (tester) async {
+  testWidgets('professor vê configuração de lembrete de disciplina', (
+    tester,
+  ) async {
     final userContext = UserContextProvider();
     await userContext.login(
       User(
@@ -121,7 +123,9 @@ void main() {
     expect(find.text('Antecedência do lembrete'), findsOneWidget);
   });
 
-  testWidgets('coordenador vê configuração de lembrete de disciplina', (tester) async {
+  testWidgets('coordenador vê configuração de lembrete de disciplina', (
+    tester,
+  ) async {
     final userContext = UserContextProvider();
     await userContext.login(
       User(
@@ -155,7 +159,9 @@ void main() {
     expect(find.text('Antecedência do lembrete'), findsOneWidget);
   });
 
-  testWidgets('chefe vê configuração de lembrete de disciplina', (tester) async {
+  testWidgets('chefe vê configuração de lembrete de disciplina', (
+    tester,
+  ) async {
     final userContext = UserContextProvider();
     await userContext.login(
       User(
@@ -198,12 +204,14 @@ void main() {
             'titulo': 'Reunião de coordenação',
             'descricao': 'Planejamento semanal',
             'inicio': 'Hoje, 16:30',
-            'inicioIso': DateTime.now().add(const Duration(minutes: 20)).toIso8601String(),
+            'inicioIso': DateTime.now()
+                .add(const Duration(minutes: 20))
+                .toIso8601String(),
             'local': 'Sala A',
             'origem': 'Convite de reunião',
             'destinatarioUserId': 'cfg-prof-2',
             'statusConvite': 'pendente',
-          }
+          },
         ],
       }),
     });

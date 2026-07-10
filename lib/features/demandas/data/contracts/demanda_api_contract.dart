@@ -21,44 +21,44 @@ class DemandaDto {
   final String prazo;
 
   factory DemandaDto.fromJson(Map<String, dynamic> json) => DemandaDto(
-        id: json['id'] as String,
-        titulo: json['titulo'] as String,
-        descricao: json['descricao'] as String,
-        prioridade: json['prioridade'] as String,
-        statusLabel: json['statusLabel'] as String,
-        proprietario: json['proprietario'] as String,
-        prazo: json['prazo'] as String,
-      );
+    id: json['id'] as String,
+    titulo: json['titulo'] as String,
+    descricao: json['descricao'] as String,
+    prioridade: json['prioridade'] as String,
+    statusLabel: json['statusLabel'] as String,
+    proprietario: json['proprietario'] as String,
+    prazo: json['prazo'] as String,
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'titulo': titulo,
-        'descricao': descricao,
-        'prioridade': prioridade,
-        'statusLabel': statusLabel,
-        'proprietario': proprietario,
-        'prazo': prazo,
-      };
+    'id': id,
+    'titulo': titulo,
+    'descricao': descricao,
+    'prioridade': prioridade,
+    'statusLabel': statusLabel,
+    'proprietario': proprietario,
+    'prazo': prazo,
+  };
 
   Demanda toDomain() => Demanda(
-        id: id,
-        titulo: titulo,
-        descricao: descricao,
-        prioridade: prioridade,
-        statusLabel: statusLabel,
-        proprietario: proprietario,
-        prazo: prazo,
-      );
+    id: id,
+    titulo: titulo,
+    descricao: descricao,
+    prioridade: prioridade,
+    statusLabel: statusLabel,
+    proprietario: proprietario,
+    prazo: prazo,
+  );
 
   static DemandaDto fromDomain(Demanda demanda) => DemandaDto(
-        id: demanda.id,
-        titulo: demanda.titulo,
-        descricao: demanda.descricao,
-        prioridade: demanda.prioridade,
-        statusLabel: demanda.statusLabel,
-        proprietario: demanda.proprietario,
-        prazo: demanda.prazo,
-      );
+    id: demanda.id,
+    titulo: demanda.titulo,
+    descricao: demanda.descricao,
+    prioridade: demanda.prioridade,
+    statusLabel: demanda.statusLabel,
+    proprietario: demanda.proprietario,
+    prazo: demanda.prazo,
+  );
 }
 
 abstract final class DemandaApiContract {

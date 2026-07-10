@@ -6,14 +6,18 @@ class DocenteRepository {
 
   final String storageKey;
 
-  Future<List<Docente>> loadDocentes({required String Function() generateFallbackId}) async {
+  Future<List<Docente>> loadDocentes({
+    required String Function() generateFallbackId,
+  }) async {
     final list = await LocalStorageService.loadList(storageKey);
     if (list.isEmpty) return const [];
 
     final carregados = <Docente>[];
     for (final item in list) {
       try {
-        carregados.add(_docenteFromJson(item, generateFallbackId: generateFallbackId));
+        carregados.add(
+          _docenteFromJson(item, generateFallbackId: generateFallbackId),
+        );
       } catch (_) {
         // Ignora entradas inválidas para evitar falha ao abrir a tela.
       }
@@ -29,35 +33,39 @@ class DocenteRepository {
   }
 
   Map<String, dynamic> _docenteToJson(Docente d) => {
-        'id': d.id,
-        'nome': d.nome,
-        if (d.userId != null) 'userId': d.userId,
-        if (d.userEmail != null) 'userEmail': d.userEmail,
-        'departamento': d.departamento,
-        'cargaHoraria': d.cargaHoraria,
-        'cargaMaxima': d.cargaMaxima,
-        'regimeTrabalho': d.regimeTrabalho.code,
-        'disciplinas': d.disciplinas,
-        'horariosAula': d.horariosAula
-            .map(
-              (h) => {
-                'diaSemana': h.diaSemana,
-                'inicio': h.inicio,
-                'fim': h.fim,
-                if (h.disciplina != null) 'disciplina': h.disciplina,
-                if (h.cargaHoraria != null) 'cargaHoraria': h.cargaHoraria,
-                if (h.turma != null) 'turma': h.turma,
-                if (h.modalidade != null) 'modalidade': h.modalidade,
-              },
-            )
-            .toList(growable: false),
-      };
+    'id': d.id,
+    'nome': d.nome,
+    if (d.userId != null) 'userId': d.userId,
+    if (d.userEmail != null) 'userEmail': d.userEmail,
+    'departamento': d.departamento,
+    'cargaHoraria': d.cargaHoraria,
+    'cargaMaxima': d.cargaMaxima,
+    'regimeTrabalho': d.regimeTrabalho.code,
+    'disciplinas': d.disciplinas,
+    'horariosAula': d.horariosAula
+        .map(
+          (h) => {
+            'diaSemana': h.diaSemana,
+            'inicio': h.inicio,
+            'fim': h.fim,
+            if (h.disciplina != null) 'disciplina': h.disciplina,
+            if (h.cargaHoraria != null) 'cargaHoraria': h.cargaHoraria,
+            if (h.turma != null) 'turma': h.turma,
+            if (h.modalidade != null) 'modalidade': h.modalidade,
+          },
+        )
+        .toList(growable: false),
+  };
 
   Docente _docenteFromJson(
     Map<String, dynamic> json, {
     required String Function() generateFallbackId,
   }) {
-    final cargaMaxima = _toInt(json['cargaMaxima'], defaultValue: 20, minValue: 0);
+    final cargaMaxima = _toInt(
+      json['cargaMaxima'],
+      defaultValue: 20,
+      minValue: 0,
+    );
 
     return Docente(
       id: json['id']?.toString().trim().isNotEmpty == true

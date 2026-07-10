@@ -46,7 +46,10 @@ class _BatePapoPageState extends State<BatePapoPage> {
           .map(
             (contact) => ConversationSummary(
               contact: contact,
-              messages: repository.messagesBetween(currentUser.email, contact.email),
+              messages: repository.messagesBetween(
+                currentUser.email,
+                contact.email,
+              ),
             ),
           )
           .toList(),
@@ -54,13 +57,20 @@ class _BatePapoPageState extends State<BatePapoPage> {
     // Only show conversations that have at least one message
     final conversations = allSummaries
         .where((item) => item.lastMessage != null)
-        .where((item) => BatePapoService.matchesConversationSearch(item, _conversationSearch))
+        .where(
+          (item) => BatePapoService.matchesConversationSearch(
+            item,
+            _conversationSearch,
+          ),
+        )
         .toList();
     // Selected contact can be any contact (including one without messages)
     final selectedContact = _resolveSelectedContact(allContacts);
 
     if (allContacts.isEmpty) {
-      return const Center(child: Text('Nenhum usuário disponível para conversa.'));
+      return const Center(
+        child: Text('Nenhum usuário disponível para conversa.'),
+      );
     }
 
     final messages = selectedContact == null
@@ -106,21 +116,29 @@ class _BatePapoPageState extends State<BatePapoPage> {
                   conversations: conversations,
                   selectedContactEmail: selectedContact?.email,
                   searchValue: _conversationSearch,
-                  onSearchChanged: (value) => setState(() => _conversationSearch = value),
-                  onSelect: (email) => setState(() => _selectedContactEmail = email),
+                  onSearchChanged: (value) =>
+                      setState(() => _conversationSearch = value),
+                  onSelect: (email) =>
+                      setState(() => _selectedContactEmail = email),
                   onNewConversation: openNewConversation,
                 ),
               ),
               const SizedBox(width: 14),
               Expanded(
                 child: selectedContact == null
-                    ? _EmptyChatPlaceholder(onNewConversation: openNewConversation)
+                    ? _EmptyChatPlaceholder(
+                        onNewConversation: openNewConversation,
+                      )
                     : _ChatPanel(
                         currentUserEmail: currentUser.email,
                         selectedContact: selectedContact,
                         messages: messages,
                         controller: _messageController,
-                        onSend: () => _sendMessage(repository, currentUser, selectedContact.email),
+                        onSend: () => _sendMessage(
+                          repository,
+                          currentUser,
+                          selectedContact.email,
+                        ),
                         onBack: null,
                       ),
               ),
@@ -133,7 +151,8 @@ class _BatePapoPageState extends State<BatePapoPage> {
             conversations: conversations,
             selectedContactEmail: selectedContact?.email,
             searchValue: _conversationSearch,
-            onSearchChanged: (value) => setState(() => _conversationSearch = value),
+            onSearchChanged: (value) =>
+                setState(() => _conversationSearch = value),
             onSelect: (email) {
               setState(() {
                 _selectedContactEmail = email;
@@ -151,7 +170,8 @@ class _BatePapoPageState extends State<BatePapoPage> {
           selectedContact: selectedContact,
           messages: messages,
           controller: _messageController,
-          onSend: () => _sendMessage(repository, currentUser, selectedContact.email),
+          onSend: () =>
+              _sendMessage(repository, currentUser, selectedContact.email),
           onBack: () {
             setState(() => _mobileConversationOpen = false);
           },
@@ -184,10 +204,16 @@ class _BatePapoPageState extends State<BatePapoPage> {
 
   ChatContact? _resolveSelectedContact(List<ChatContact> allContacts) {
     if (allContacts.isEmpty) return null;
-    return allContacts.where((c) => c.email == _selectedContactEmail).firstOrNull;
+    return allContacts
+        .where((c) => c.email == _selectedContactEmail)
+        .firstOrNull;
   }
 
-  void _sendMessage(BatePapoRepository repository, User currentUser, String recipientEmail) {
+  void _sendMessage(
+    BatePapoRepository repository,
+    User currentUser,
+    String recipientEmail,
+  ) {
     final content = _messageController.text.trim();
     if (content.isEmpty) {
       return;
@@ -240,7 +266,8 @@ class _ConversationListPanel extends StatelessWidget {
                     Expanded(
                       child: Text(
                         'Conversas',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w700),
                       ),
                     ),
                     IconButton(
@@ -277,14 +304,19 @@ class _ConversationListPanel extends StatelessWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.forum_outlined, size: 40, color: SigadColors.muted),
+                          Icon(
+                            Icons.forum_outlined,
+                            size: 40,
+                            color: SigadColors.muted,
+                          ),
                           const SizedBox(height: 12),
                           Text(
                             searchValue.trim().isNotEmpty
                                 ? 'Nenhuma conversa encontrada.'
                                 : 'Nenhuma conversa ainda.\nToque em ✏️ para iniciar.',
                             textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: SigadColors.muted),
                           ),
                         ],
                       ),
@@ -320,7 +352,9 @@ class _ConversationTile extends StatelessWidget {
     final hasMessages = lastMessage != null;
 
     return Material(
-      color: selected ? SigadColors.brand.withValues(alpha: 0.10) : Colors.transparent,
+      color: selected
+          ? SigadColors.brand.withValues(alpha: 0.10)
+          : Colors.transparent,
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
@@ -337,7 +371,10 @@ class _ConversationTile extends StatelessWidget {
                     backgroundColor: SigadColors.surfaceAlt,
                     child: Text(
                       _initials(conversation.contact.name),
-                      style: const TextStyle(color: SigadColors.brandDark, fontWeight: FontWeight.w700),
+                      style: const TextStyle(
+                        color: SigadColors.brandDark,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                   if (selected)
@@ -350,7 +387,10 @@ class _ConversationTile extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: SigadColors.brand,
                           shape: BoxShape.circle,
-                          border: Border.all(color: SigadColors.surface, width: 2),
+                          border: Border.all(
+                            color: SigadColors.surface,
+                            width: 2,
+                          ),
                         ),
                       ),
                     ),
@@ -377,7 +417,9 @@ class _ConversationTile extends StatelessWidget {
                         if (hasMessages)
                           Text(
                             _conversationTimeLabel(lastMessage.sentAt),
-                            style: textTheme.labelSmall?.copyWith(color: SigadColors.muted),
+                            style: textTheme.labelSmall?.copyWith(
+                              color: SigadColors.muted,
+                            ),
                           ),
                       ],
                     ),
@@ -386,7 +428,9 @@ class _ConversationTile extends StatelessWidget {
                       conversation.contact.role.displayName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: textTheme.labelSmall?.copyWith(color: SigadColors.brand.withValues(alpha: 0.75)),
+                      style: textTheme.labelSmall?.copyWith(
+                        color: SigadColors.brand.withValues(alpha: 0.75),
+                      ),
                     ),
                     if (hasMessages) ...[
                       const SizedBox(height: 2),
@@ -394,7 +438,9 @@ class _ConversationTile extends StatelessWidget {
                         lastMessage.content,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                        style: textTheme.bodySmall?.copyWith(
+                          color: SigadColors.muted,
+                        ),
                       ),
                     ],
                   ],
@@ -451,14 +497,20 @@ class _ChatPanel extends StatelessWidget {
                 if (onBack != null)
                   IconButton(
                     onPressed: onBack,
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+                    icon: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      size: 18,
+                    ),
                     visualDensity: VisualDensity.compact,
                   ),
                 CircleAvatar(
                   backgroundColor: SigadColors.surfaceAlt,
                   child: Text(
                     _initials(selectedContact.name),
-                    style: const TextStyle(color: SigadColors.brandDark, fontWeight: FontWeight.w700),
+                    style: const TextStyle(
+                      color: SigadColors.brandDark,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -468,11 +520,14 @@ class _ChatPanel extends StatelessWidget {
                     children: [
                       Text(
                         selectedContact.name,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w700),
                       ),
                       Text(
                         selectedContact.role.displayName,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: SigadColors.muted,
+                        ),
                       ),
                     ],
                   ),
@@ -485,7 +540,9 @@ class _ChatPanel extends StatelessWidget {
                 ? Center(
                     child: Text(
                       'Nenhuma mensagem ainda.',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: SigadColors.muted,
+                      ),
                     ),
                   )
                 : ListView.builder(
@@ -493,15 +550,24 @@ class _ChatPanel extends StatelessWidget {
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
                       final message = messages[index];
-                      final ownMessage = _normalizeEmail(message.senderEmail) == _normalizeEmail(currentUserEmail);
+                      final ownMessage =
+                          _normalizeEmail(message.senderEmail) ==
+                          _normalizeEmail(currentUserEmail);
                       return Align(
-                        alignment: ownMessage ? Alignment.centerRight : Alignment.centerLeft,
+                        alignment: ownMessage
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
                         child: Container(
                           margin: const EdgeInsets.only(bottom: 8),
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
                           constraints: const BoxConstraints(maxWidth: 540),
                           decoration: BoxDecoration(
-                            color: ownMessage ? SigadColors.brand.withValues(alpha: 0.14) : SigadColors.surfaceAlt,
+                            color: ownMessage
+                                ? SigadColors.brand.withValues(alpha: 0.14)
+                                : SigadColors.surfaceAlt,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Column(
@@ -511,7 +577,8 @@ class _ChatPanel extends StatelessWidget {
                               const SizedBox(height: 4),
                               Text(
                                 _timeLabel(message.sentAt),
-                                style: Theme.of(context).textTheme.labelSmall?.copyWith(color: SigadColors.muted),
+                                style: Theme.of(context).textTheme.labelSmall
+                                    ?.copyWith(color: SigadColors.muted),
                               ),
                             ],
                           ),
@@ -570,11 +637,13 @@ class _ConversationListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = conversations
-        .map<Widget>((c) => _ConversationTile(
-              conversation: c,
-              selected: c.contact.email == selectedContactEmail,
-              onTap: () => onSelect(c.contact.email),
-            ))
+        .map<Widget>(
+          (c) => _ConversationTile(
+            conversation: c,
+            selected: c.contact.email == selectedContactEmail,
+            onTap: () => onSelect(c.contact.email),
+          ),
+        )
         .toList();
 
     return ListView.separated(
@@ -607,7 +676,9 @@ class _EmptyChatPlaceholder extends StatelessWidget {
             Text(
               'Selecione uma conversa\nou inicie uma nova',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
             ),
             const SizedBox(height: 20),
             FilledButton.icon(
@@ -623,10 +694,7 @@ class _EmptyChatPlaceholder extends StatelessWidget {
 }
 
 class _NewConversationSheet extends StatefulWidget {
-  const _NewConversationSheet({
-    required this.contacts,
-    required this.onSelect,
-  });
+  const _NewConversationSheet({required this.contacts, required this.onSelect});
 
   final List<ChatContact> contacts;
   final ValueChanged<String> onSelect;
@@ -647,14 +715,16 @@ class _NewConversationSheetState extends State<_NewConversationSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final filtered = widget.contacts.where((c) {
-      final q = _query.trim().toLowerCase();
-      if (q.isEmpty) return true;
-      return c.name.toLowerCase().contains(q) ||
-          c.email.toLowerCase().contains(q) ||
-          c.role.displayName.toLowerCase().contains(q);
-    }).toList()
-      ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    final filtered =
+        widget.contacts.where((c) {
+          final q = _query.trim().toLowerCase();
+          if (q.isEmpty) return true;
+          return c.name.toLowerCase().contains(q) ||
+              c.email.toLowerCase().contains(q) ||
+              c.role.displayName.toLowerCase().contains(q);
+        }).toList()..sort(
+          (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+        );
 
     return DraggableScrollableSheet(
       initialChildSize: 0.7,
@@ -682,7 +752,9 @@ class _NewConversationSheetState extends State<_NewConversationSheet> {
                   ),
                   Text(
                     'Nova conversa',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   TextField(
@@ -716,31 +788,49 @@ class _NewConversationSheetState extends State<_NewConversationSheet> {
                         padding: const EdgeInsets.all(24),
                         child: Text(
                           'Nenhum contato encontrado.',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: SigadColors.muted),
                         ),
                       ),
                     )
                   : ListView.builder(
                       controller: scrollController,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                       itemCount: filtered.length,
                       itemBuilder: (context, index) {
                         final contact = filtered[index];
                         return ListTile(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           leading: CircleAvatar(
                             backgroundColor: SigadColors.surfaceAlt,
                             child: Text(
                               _initials(contact.name),
-                              style: const TextStyle(color: SigadColors.brandDark, fontWeight: FontWeight.w700),
+                              style: const TextStyle(
+                                color: SigadColors.brandDark,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
-                          title: Text(contact.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                          title: Text(
+                            contact.name,
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
                           subtitle: Text(
                             contact.role.displayName,
-                            style: TextStyle(color: SigadColors.brand.withValues(alpha: 0.8), fontSize: 12),
+                            style: TextStyle(
+                              color: SigadColors.brand.withValues(alpha: 0.8),
+                              fontSize: 12,
+                            ),
                           ),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                           onTap: () => widget.onSelect(contact.email),
                         );
                       },
@@ -756,14 +846,19 @@ class _NewConversationSheetState extends State<_NewConversationSheet> {
 // ──────────────────────────────────────────────────────────────────────────
 
 String _initials(String name) {
-  final parts = name.trim().split(' ').where((part) => part.isNotEmpty).toList();
+  final parts = name
+      .trim()
+      .split(' ')
+      .where((part) => part.isNotEmpty)
+      .toList();
   if (parts.isEmpty) {
     return '?';
   }
   if (parts.length == 1) {
     return parts.first.substring(0, 1).toUpperCase();
   }
-  return '${parts.first.substring(0, 1)}${parts.last.substring(0, 1)}'.toUpperCase();
+  return '${parts.first.substring(0, 1)}${parts.last.substring(0, 1)}'
+      .toUpperCase();
 }
 
 String _timeLabel(DateTime dateTime) {
@@ -774,7 +869,10 @@ String _timeLabel(DateTime dateTime) {
 
 String _conversationTimeLabel(DateTime dateTime) {
   final now = DateTime.now();
-  final isSameDay = now.year == dateTime.year && now.month == dateTime.month && now.day == dateTime.day;
+  final isSameDay =
+      now.year == dateTime.year &&
+      now.month == dateTime.month &&
+      now.day == dateTime.day;
   if (isSameDay) {
     return _timeLabel(dateTime);
   }

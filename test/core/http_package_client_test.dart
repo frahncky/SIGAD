@@ -13,13 +13,15 @@ void main() {
         httpClient: MockClient((request) async {
           expect(request.url.path, '/atividades');
           expect(request.method, 'GET');
-          return http.Response('[{"id":"1"}]', 200, headers: {'content-type': 'application/json'});
+          return http.Response(
+            '[{"id":"1"}]',
+            200,
+            headers: {'content-type': 'application/json'},
+          );
         }),
       );
 
-      final response = await client.send(
-        const ApiRequest(path: '/atividades'),
-      );
+      final response = await client.send(const ApiRequest(path: '/atividades'));
 
       expect(response.isSuccess, isTrue);
       expect(response.body, isA<List<dynamic>>());
@@ -28,14 +30,14 @@ void main() {
     test('lança ApiError para status não 2xx', () async {
       final client = HttpPackageClient(
         baseUrl: 'https://api.sigad.local',
-        httpClient: MockClient((_) async => http.Response('{"error":"fail"}', 500)),
+        httpClient: MockClient(
+          (_) async => http.Response('{"error":"fail"}', 500),
+        ),
       );
 
       expect(
         () => client.send(const ApiRequest(path: '/demandas')),
-        throwsA(
-          isA<ApiError>().having((e) => e.statusCode, 'statusCode', 500),
-        ),
+        throwsA(isA<ApiError>().having((e) => e.statusCode, 'statusCode', 500)),
       );
     });
 
@@ -55,7 +57,13 @@ void main() {
             timeout: Duration(milliseconds: 5),
           ),
         ),
-        throwsA(isA<ApiError>().having((e) => e.message, 'message', contains('Tempo limite'))),
+        throwsA(
+          isA<ApiError>().having(
+            (e) => e.message,
+            'message',
+            contains('Tempo limite'),
+          ),
+        ),
       );
     });
   });

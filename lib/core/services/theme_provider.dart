@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 /// Use [setDark] para alternar o tema ao mudar a configuracao.
 class ThemeProvider extends ChangeNotifier {
   ThemeProvider({bool isDark = false})
-      : _mode = isDark ? ThemeMode.dark : ThemeMode.light;
+    : _mode = isDark ? ThemeMode.dark : ThemeMode.light;
 
   ThemeMode _mode;
 
