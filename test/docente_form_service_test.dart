@@ -172,7 +172,7 @@ void main() {
           id: '#DOC-301',
           nome: 'Profa. Alta',
           departamento: 'Computação',
-          cargaHoraria: 18,
+          cargaHoraria: 14,
           cargaMaxima: 20,
           disciplinas: ['Algoritmos'],
           horariosAula: [
@@ -203,6 +203,206 @@ void main() {
         resultado.mediaOcupacaoDepois,
         lessThanOrEqualTo(resultado.mediaOcupacaoAntes),
       );
+    });
+
+    test(
+      'respeita carga minima da origem e limite maximo de ensino no destino',
+      () {
+        final resultadoLimiteDestino =
+            DocenteFormService.simularRedistribuicaoDocentes([
+              const Docente(
+                id: '#DOC-401',
+                nome: 'Profa. Origem',
+                departamento: 'Computação',
+                cargaHoraria: 16,
+                cargaMaxima: 20,
+                disciplinas: ['Algoritmos'],
+                horariosAula: [
+                  HorarioAula(
+                    diaSemana: 'Segunda',
+                    inicio: '08:00',
+                    fim: '09:40',
+                    disciplina: 'Algoritmos',
+                    cargaHoraria: '4h/sem · 60h',
+                  ),
+                ],
+              ),
+              const Docente(
+                id: '#DOC-402',
+                nome: 'Prof. Destino',
+                departamento: 'Computação',
+                cargaHoraria: 9,
+                cargaMaxima: 20,
+                disciplinas: ['Algoritmos'],
+                horariosAula: [],
+              ),
+            ]);
+
+        final resultadoMinimoOrigem =
+            DocenteFormService.simularRedistribuicaoDocentes([
+              const Docente(
+                id: '#DOC-403',
+                nome: 'Profa. Origem no mínimo',
+                departamento: 'Computação',
+                cargaHoraria: 12,
+                cargaMaxima: 20,
+                disciplinas: ['Algoritmos'],
+                horariosAula: [
+                  HorarioAula(
+                    diaSemana: 'Terça',
+                    inicio: '08:00',
+                    fim: '09:40',
+                    disciplina: 'Algoritmos',
+                    cargaHoraria: '4h/sem · 60h',
+                  ),
+                ],
+              ),
+              const Docente(
+                id: '#DOC-404',
+                nome: 'Prof. Destino abaixo do mínimo',
+                departamento: 'Computação',
+                cargaHoraria: 6,
+                cargaMaxima: 20,
+                disciplinas: ['Algoritmos'],
+              ),
+            ]);
+
+        expect(resultadoLimiteDestino.propostas, isEmpty);
+        expect(resultadoMinimoOrigem.propostas, isEmpty);
+      },
+    );
+
+    test('aplica limites de aulas do IFMA por regime de trabalho', () {
+      const regras = RegrasDistribuicaoCarga.ifma();
+
+      final parcial = regras.limitesAulasPara(RegimeTrabalhoEbtt.vinteHoras);
+      final integral = regras.limitesAulasPara(
+        RegimeTrabalhoEbtt.dedicacaoExclusiva,
+      );
+
+      expect((parcial.minima, parcial.maxima), (8, 10));
+      expect((integral.minima, integral.maxima), (10, 20));
+      expect(regras.referenciaInstitucional, contains('67/2019'));
+      expect(regras.referenciaFederal, contains('750/2024'));
+    });
+
+    test('reduz minima integral para 8h somente quando RAP foi atingida', () {
+      const semRap = RegrasDistribuicaoCarga.ifma();
+      const comRap = RegrasDistribuicaoCarga.ifma(rapCampusAtingida: true);
+
+      expect(
+        semRap.limitesAulasPara(RegimeTrabalhoEbtt.quarentaHoras).minima,
+        10,
+      );
+      expect(
+        comRap.limitesAulasPara(RegimeTrabalhoEbtt.quarentaHoras).minima,
+        8,
+      );
+    });
+
+    test('converte hora-aula do IFMA em minutos para o PIT', () {
+      final minutos =
+          DocenteFormService.calcularCargaAulasSemanalMinutos(const [
+            HorarioAula(
+              diaSemana: 'Segunda',
+              inicio: '08:00',
+              fim: '09:40',
+              cargaHoraria: '6h/sem · 90h',
+            ),
+            HorarioAula(diaSemana: 'Terça', inicio: '10:00', fim: '11:40'),
+          ]);
+
+      expect(minutos, 400);
+    });
+
+    test('valida PIT integral completo conforme fluxo do IFMA', () {
+      const docente = Docente(
+        id: '#DOC-PIT-1',
+        nome: 'Profa. PIT',
+        departamento: 'Construção Civil',
+        cargaHoraria: 12,
+        cargaMaxima: 40,
+        disciplinas: ['Materiais'],
+        regimeTrabalho: RegimeTrabalhoEbtt.dedicacaoExclusiva,
+      );
+      const plano = PlanoTrabalhoDocente(
+        docenteId: '#DOC-PIT-1',
+        periodoLetivo: '2026.2',
+        avaliadorId: '#CHEFIA-DCC',
+        atividades: [
+          AtividadePlanoDocente(
+            tipo: TipoAtividadePlanoDocente.preparacaoManutencaoApoioEnsino,
+            descricao: 'Preparação e apoio às aulas',
+            cargaSemanalMinutos: 480,
+          ),
+          AtividadePlanoDocente(
+            tipo: TipoAtividadePlanoDocente.reunioesPedagogicas,
+            descricao: 'Reuniões pedagógicas',
+            cargaSemanalMinutos: 120,
+          ),
+          AtividadePlanoDocente(
+            tipo: TipoAtividadePlanoDocente.pesquisa,
+            descricao: 'Projeto de pesquisa registrado',
+            cargaSemanalMinutos: 600,
+          ),
+          AtividadePlanoDocente(
+            tipo: TipoAtividadePlanoDocente.gestaoRepresentacao,
+            descricao: 'Gestão departamental',
+            cargaSemanalMinutos: 600,
+          ),
+        ],
+      );
+
+      final resultado = DocenteFormService.validarPlanoTrabalho(
+        docente: docente,
+        plano: plano,
+      );
+
+      expect(resultado.podeSubmeter, isTrue);
+      expect(resultado.pendencias, isEmpty);
+    });
+
+    test('exige justificativa e respeita limites das atividades do PIT', () {
+      const docente = Docente(
+        id: '#DOC-PIT-2',
+        nome: 'Prof. PIT',
+        departamento: 'Construção Civil',
+        cargaHoraria: 10,
+        cargaMaxima: 40,
+        disciplinas: ['Estruturas'],
+        regimeTrabalho: RegimeTrabalhoEbtt.quarentaHoras,
+      );
+      const plano = PlanoTrabalhoDocente(
+        docenteId: '#DOC-PIT-2',
+        periodoLetivo: '2026.2',
+        avaliadorId: '#CHEFIA-DCC',
+        atividades: [
+          AtividadePlanoDocente(
+            tipo: TipoAtividadePlanoDocente.reunioesPedagogicas,
+            descricao: 'Reuniões',
+            cargaSemanalMinutos: 300,
+          ),
+          AtividadePlanoDocente(
+            tipo: TipoAtividadePlanoDocente.pesquisa,
+            descricao: 'Pesquisa',
+            cargaSemanalMinutos: 1500,
+          ),
+        ],
+      );
+
+      final resultado = DocenteFormService.validarPlanoTrabalho(
+        docente: docente,
+        plano: plano,
+      );
+      final codigos = resultado.pendencias
+          .map((pendencia) => pendencia.codigo)
+          .toSet();
+
+      expect(resultado.podeSubmeter, isFalse);
+      expect(codigos, contains('justificativa_carga_aulas_obrigatoria'));
+      expect(codigos, contains('reunioes_pedagogicas_excedidas'));
+      expect(codigos, contains('justificativa_outras_atividades_obrigatoria'));
+      expect(codigos, contains('carga_total_insuficiente'));
     });
 
     test('detecta conflito ao tentar encaixar horario existente', () {

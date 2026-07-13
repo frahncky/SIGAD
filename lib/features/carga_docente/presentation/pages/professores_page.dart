@@ -43,8 +43,7 @@ class _ProfessoresPageState extends State<ProfessoresPage> {
   Widget build(BuildContext context) {
     final userContext = context.watch<UserContextProvider>();
     final role = userContext.userRole;
-    final podeGerenciar =
-        role == UserRole.coordenador || role == UserRole.chefeDepartamento;
+    final podeGerenciar = role == UserRole.chefeDepartamento;
     final docentesFiltrados = _busca.isEmpty
         ? List<Docente>.from(_docentes)
         : _docentes.where((d) {

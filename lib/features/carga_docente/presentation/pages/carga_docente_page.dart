@@ -3,10 +3,15 @@ import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../configuracoes/domain/agenda_convites_service.dart';
+import '../../data/catalogo_docentes_ifma.dart';
 import '../../data/docente_repository.dart';
+import '../../data/distribuicao_historico_repository.dart';
+import '../../data/plano_trabalho_repository.dart';
+import '../../domain/afinidade_historica_service.dart';
 import '../../domain/docente_form_service.dart';
 import '../../domain/docente_models.dart';
 import '../controllers/docente_form_controller.dart';
+import 'plano_trabalho_docente_page.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
@@ -48,6 +53,9 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   ];
 
   final DocenteRepository _docenteRepository = DocenteRepository();
+  final PlanoTrabalhoRepository _planoRepository = PlanoTrabalhoRepository();
+  final DistribuicaoHistoricoRepository _historicoDistribuicaoRepository =
+      DistribuicaoHistoricoRepository();
 
   final List<Docente> _docentes = [
     Docente(
@@ -240,7 +248,10 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     final carregados = await _docenteRepository.loadDocentes(
       generateFallbackId: _gerarProximoIdDocente,
     );
-    if (carregados.isEmpty) return;
+    if (carregados.isEmpty) {
+      setState(_docentes.clear);
+      return;
+    }
 
     setState(() {
       _docentes
@@ -288,6 +299,18 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
         final erro = controller.validate();
         if (erro != null) {
           _mostrarFeedback(erro);
+          return false;
+        }
+
+        final nomeNormalizado = CatalogoDocentesIfma.normalizar(
+          controller.nomeController.text,
+        );
+        final jaCadastrado = _docentes.any(
+          (docente) =>
+              CatalogoDocentesIfma.normalizar(docente.nome) == nomeNormalizado,
+        );
+        if (jaCadastrado) {
+          _mostrarFeedback('Este docente já está cadastrado.');
           return false;
         }
 
@@ -356,12 +379,38 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    TextField(
-                      controller: controller.nomeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Nome Completo',
-                        hintText: 'Digite o nome do docente',
+                    Autocomplete<ReferenciaDocenteIfma>(
+                      initialValue: TextEditingValue(
+                        text: controller.nomeController.text,
                       ),
+                      displayStringForOption: (option) => option.nome,
+                      optionsBuilder: (value) =>
+                          CatalogoDocentesIfma.buscar(value.text),
+                      onSelected: (referencia) {
+                        setModalState(() {
+                          controller.nomeController.text = referencia.nome;
+                          controller.departamentoController.text = referencia
+                              .areas
+                              .join(' / ');
+                        });
+                      },
+                      fieldViewBuilder:
+                          (context, textController, focusNode, onSubmitted) {
+                            return TextField(
+                              controller: textController,
+                              focusNode: focusNode,
+                              onChanged: (value) =>
+                                  controller.nomeController.text = value,
+                              onSubmitted: (_) => onSubmitted(),
+                              decoration: const InputDecoration(
+                                labelText: 'Nome completo',
+                                hintText:
+                                    'Selecione da comissão ou digite outro nome',
+                                helperText:
+                                    'Sugestões da Comissão de Horários 2026.2',
+                              ),
+                            );
+                          },
                     ),
                     const SizedBox(height: 16),
                     TextField(
@@ -376,8 +425,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                     TextField(
                       controller: controller.departamentoController,
                       decoration: const InputDecoration(
-                        labelText: 'Departamento',
-                        hintText: 'Digite o departamento',
+                        labelText: 'Área/Comissão',
+                        hintText: 'Informe a área de atuação',
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -809,6 +858,18 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     );
   }
 
+  void _abrirPlanoTrabalho(BuildContext context, Docente docente) {
+    final userContext = context.read<UserContextProvider>();
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ChangeNotifierProvider<UserContextProvider>.value(
+          value: userContext,
+          child: PlanoTrabalhoDocentePage(docente: docente),
+        ),
+      ),
+    );
+  }
+
   double _percentualOcupacao(Docente docente) {
     if (docente.cargaMaxima <= 0) return 0;
     return docente.cargaHoraria / docente.cargaMaxima;
@@ -866,24 +927,70 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   }
 
   Future<void> _abrirSimulacaoRedistribuicao() async {
+    final role = context.read<UserContextProvider>().userRole;
+    final podeSimular = role == UserRole.chefeDepartamento;
+    if (!podeSimular) {
+      _mostrarFeedback(
+        'Somente o Chefe de Departamento pode rodar o algoritmo de distribuição.',
+      );
+      return;
+    }
+
+    final planos = await _planoRepository.loadPlanos();
+    final historico = await _historicoDistribuicaoRepository.load();
+    if (!mounted) return;
+    final planosAprovados = <String, PlanoTrabalhoDocente>{};
+    for (final plano in planos.where(
+      (item) => item.status == StatusPlanoTrabalhoDocente.aprovado,
+    )) {
+      final atual = planosAprovados[plano.docenteId];
+      if (atual == null ||
+          (plano.atualizadoEm ?? DateTime(0)).isAfter(
+            atual.atualizadoEm ?? DateTime(0),
+          )) {
+        planosAprovados[plano.docenteId] = plano;
+      }
+    }
+    const afinidadeService = AfinidadeHistoricaService();
     final simulacao = DocenteFormService.simularRedistribuicaoDocentes(
       _docentesVisiveis(),
+      regrasLegais: const RegrasDistribuicaoCarga.ifma(),
+      planosAprovados: planosAprovados,
+      avaliarAfinidade: (destino, horario) {
+        final resultado = afinidadeService.avaliar(
+          docenteDestinoId: destino.id,
+          disciplina: horario.disciplina ?? '',
+          diaSemana: horario.diaSemana,
+          registros: historico,
+        );
+        return AvaliacaoAfinidadeRedistribuicao(
+          pontuacao: resultado.pontuacao,
+          explicacao: resultado.explicacao,
+        );
+      },
     );
 
-    await showModalBottomSheet(
+    final decisao = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      builder: (context) => _SimulacaoRedistribuicaoSheet(
-        resultado: simulacao,
-        onAplicar: simulacao.propostas.isEmpty
-            ? null
-            : () {
-                _aplicarRedistribuicao(simulacao.propostas);
-                Navigator.pop(context);
-              },
-      ),
+      builder: (context) => _SimulacaoRedistribuicaoSheet(resultado: simulacao),
     );
+    if (decisao == null || simulacao.propostas.isEmpty) return;
+    await _historicoDistribuicaoRepository.registrarDecisao(
+      propostas: simulacao.propostas,
+      resultado: decisao
+          ? ResultadoDecisaoRedistribuicao.aceita
+          : ResultadoDecisaoRedistribuicao.rejeitada,
+    );
+    if (!mounted) return;
+    if (decisao) {
+      _aplicarRedistribuicao(simulacao.propostas);
+    } else {
+      _mostrarFeedback(
+        'Sugestão descartada. A decisão foi registrada para melhorar os próximos desempates.',
+      );
+    }
   }
 
   void _aplicarRedistribuicao(List<PropostaRedistribuicao> propostas) {
@@ -976,14 +1083,16 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     }
 
     // ...código original da agenda para o próprio usuário...
-    final podeGerenciar =
+    final podeVisualizarTodos =
         role == UserRole.coordenador || role == UserRole.chefeDepartamento;
+    final podeGerenciar = role == UserRole.chefeDepartamento;
+    final podeSimularRedistribuicao = role == UserRole.chefeDepartamento;
     final podeVisualizarHorarios = true; // Todos podem visualizar
     final emailNormalizado = (user?.email ?? '').trim().toLowerCase();
     final docentesVisiveis = _docentesVisiveis();
     // Filtro de busca
     List<Docente> docentesFiltrados;
-    if (podeGerenciar) {
+    if (podeVisualizarTodos) {
       // Coordenador e chefe veem todos, independentemente da rota de entrada.
       docentesFiltrados = _busca.isEmpty
           ? docentesVisiveis
@@ -1057,6 +1166,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                 canManage: podeGerenciar,
                 canViewSchedule: true,
                 onAbrirAgenda: () => _abrirAgendaDocente(context, selfDocente!),
+                onAbrirPlano: () => _abrirPlanoTrabalho(context, selfDocente!),
                 onEditar: podeGerenciar
                     ? () => _showEditarDocente(context, selfDocente!)
                     : null,
@@ -1085,6 +1195,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
               docentesBaixaCarga: baixaCarga.length,
               sugestoes: sugestoesDistribuicao,
               onSimularRedistribuicao: _abrirSimulacaoRedistribuicao,
+              canSimularRedistribuicao: podeSimularRedistribuicao,
             ),
           ),
           Expanded(
@@ -1133,6 +1244,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                     canViewSchedule: podeVisualizarHorarios,
                     onAbrirAgenda: () =>
                         _abrirAgendaDocente(context, outrosDocentes[index]),
+                    onAbrirPlano: () =>
+                        _abrirPlanoTrabalho(context, outrosDocentes[index]),
                     onEditar: podeGerenciar
                         ? () =>
                               _showEditarDocente(context, outrosDocentes[index])
@@ -1169,6 +1282,7 @@ class _DocenteCard extends StatelessWidget {
     required this.canManage,
     required this.canViewSchedule,
     required this.onAbrirAgenda,
+    required this.onAbrirPlano,
     this.onEditar,
     this.onExcluir,
     this.somenteVisualizar = false,
@@ -1178,6 +1292,7 @@ class _DocenteCard extends StatelessWidget {
   final bool canManage;
   final bool canViewSchedule;
   final VoidCallback? onAbrirAgenda;
+  final VoidCallback onAbrirPlano;
   final VoidCallback? onEditar;
   final VoidCallback? onExcluir;
   final bool somenteVisualizar;
@@ -1265,6 +1380,15 @@ class _DocenteCard extends StatelessWidget {
             'Distribuição em aulas: ${docente.cargaHoraria}h/${docente.cargaMaxima}h',
             style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
           ),
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: onAbrirPlano,
+              icon: const Icon(Icons.assignment_outlined, size: 18),
+              label: const Text('Plano de trabalho (PIT)'),
+            ),
+          ),
           const SizedBox(height: 12),
           Wrap(
             spacing: 6,
@@ -1303,6 +1427,7 @@ class _PainelDistribuicaoInteligente extends StatelessWidget {
     required this.docentesBaixaCarga,
     required this.sugestoes,
     required this.onSimularRedistribuicao,
+    required this.canSimularRedistribuicao,
   });
 
   final double mediaOcupacao;
@@ -1310,6 +1435,7 @@ class _PainelDistribuicaoInteligente extends StatelessWidget {
   final int docentesBaixaCarga;
   final List<String> sugestoes;
   final VoidCallback onSimularRedistribuicao;
+  final bool canSimularRedistribuicao;
 
   @override
   Widget build(BuildContext context) {
@@ -1345,9 +1471,13 @@ class _PainelDistribuicaoInteligente extends StatelessWidget {
               ),
               const Spacer(),
               TextButton.icon(
-                onPressed: onSimularRedistribuicao,
+                onPressed: canSimularRedistribuicao
+                    ? onSimularRedistribuicao
+                    : null,
                 icon: const Icon(Icons.auto_graph_outlined, size: 16),
-                label: const Text('Simular'),
+                label: Text(
+                  canSimularRedistribuicao ? 'Simular' : 'Somente chefe',
+                ),
               ),
             ],
           ),
@@ -1388,13 +1518,9 @@ class _PainelDistribuicaoInteligente extends StatelessWidget {
 }
 
 class _SimulacaoRedistribuicaoSheet extends StatelessWidget {
-  const _SimulacaoRedistribuicaoSheet({
-    required this.resultado,
-    this.onAplicar,
-  });
+  const _SimulacaoRedistribuicaoSheet({required this.resultado});
 
   final ResultadoSimulacaoRedistribuicao resultado;
-  final VoidCallback? onAplicar;
 
   @override
   Widget build(BuildContext context) {
@@ -1435,9 +1561,23 @@ class _SimulacaoRedistribuicaoSheet extends StatelessWidget {
                   separatorBuilder: (_, _) => const Divider(height: 16),
                   itemBuilder: (_, index) {
                     final proposta = resultado.propostas[index];
-                    return Text(
-                      '${index + 1}. ${proposta.docenteOrigemNome} -> ${proposta.docenteDestinoNome} · ${proposta.horario.disciplina ?? 'Disciplina'} · ${proposta.horario.diaSemana} ${proposta.horario.inicio}-${proposta.horario.fim} (${proposta.cargaSemanal}h/sem)',
-                      style: textTheme.bodySmall,
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${index + 1}. ${proposta.docenteOrigemNome} -> ${proposta.docenteDestinoNome} · ${proposta.horario.disciplina ?? 'Disciplina'} · ${proposta.horario.diaSemana} ${proposta.horario.inicio}-${proposta.horario.fim} (${proposta.cargaSemanal}h/sem)',
+                          style: textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Aderência ${proposta.pontuacao.toStringAsFixed(0)}/100 · ${proposta.justificativas.join(' ')}',
+                          style: textTheme.bodySmall?.copyWith(
+                            color: SigadColors.muted,
+                          ),
+                        ),
+                      ],
                     );
                   },
                 ),
@@ -1447,14 +1587,20 @@ class _SimulacaoRedistribuicaoSheet extends StatelessWidget {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Fechar'),
+                    onPressed: resultado.propostas.isEmpty
+                        ? () => Navigator.pop(context)
+                        : () => Navigator.pop(context, false),
+                    child: Text(
+                      resultado.propostas.isEmpty ? 'Fechar' : 'Descartar',
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: onAplicar,
+                    onPressed: resultado.propostas.isEmpty
+                        ? null
+                        : () => Navigator.pop(context, true),
                     child: const Text('Aplicar sugestão'),
                   ),
                 ),

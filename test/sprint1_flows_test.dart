@@ -9,11 +9,38 @@ import 'package:sigad/core/models/user_role.dart';
 import 'package:sigad/core/services/user_context_provider.dart';
 import 'package:sigad/features/aulas_praticas/presentation/pages/aulas_praticas_page.dart';
 import 'package:sigad/features/carga_docente/presentation/pages/carga_docente_page.dart';
+import 'package:sigad/features/carga_docente/data/docente_repository.dart';
+import 'package:sigad/features/carga_docente/domain/docente_models.dart';
 import 'package:sigad/features/login/presentation/pages/login_page.dart';
 
 void main() {
-  setUp(() {
+  setUp(() async {
     SharedPreferences.setMockInitialValues({});
+    await DocenteRepository().saveDocentes(const [
+      Docente(
+        id: '#DOC-002',
+        nome: 'Prof. Dr. João Silva',
+        userEmail: 'joao.silva@univ.br',
+        departamento: 'Telecomunicações',
+        cargaHoraria: 4,
+        cargaMaxima: 20,
+        disciplinas: ['Redes I', 'Redes II'],
+        horariosAula: [
+          HorarioAula(
+            diaSemana: 'Terça',
+            inicio: '08:00',
+            fim: '09:40',
+            disciplina: 'Redes I',
+          ),
+          HorarioAula(
+            diaSemana: 'Quinta',
+            inicio: '08:00',
+            fim: '09:40',
+            disciplina: 'Redes II',
+          ),
+        ],
+      ),
+    ]);
   });
 
   testWidgets('Login mostra validação para email inválido', (tester) async {
