@@ -41,31 +41,6 @@ void main() {
     disciplinas: ['Algoritmos'],
   );
 
-  test('PIT aprovado bloqueia candidato em horário indisponível', () {
-    final resultado = DocenteFormService.simularRedistribuicaoDocentes(
-      const [origem, destino1, destino2],
-      planosAprovados: const {
-        'd1': PlanoTrabalhoDocente(
-          docenteId: 'd1',
-          periodoLetivo: '2026.2',
-          status: StatusPlanoTrabalhoDocente.aprovado,
-          indisponibilidades: [
-            IndisponibilidadeDocente(
-              diaSemana: 'Segunda',
-              inicio: '07:30',
-              fim: '10:00',
-            ),
-          ],
-        ),
-      },
-    );
-
-    expect(resultado.propostas, hasLength(1));
-    expect(resultado.propostas.single.docenteDestinoId, 'd2');
-    expect(resultado.propostas.single.requerAtualizacaoPit, isTrue);
-    expect(resultado.propostas.single.justificativas, isNotEmpty);
-  });
-
   test('afinidade histórica desempata candidatos válidos', () {
     final resultado = DocenteFormService.simularRedistribuicaoDocentes(
       const [origem, destino1, destino2],

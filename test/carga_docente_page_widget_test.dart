@@ -96,31 +96,6 @@ void main() {
     expect(find.textContaining('João Silva'), findsNothing);
   });
 
-  testWidgets('professor abre o próprio PIT para preencher e submeter', (
-    tester,
-  ) async {
-    final ctx = await _loggedIn(
-      UserRole.professor,
-      email: 'maria.santos@univ.br',
-    );
-
-    await tester.pumpWidget(_buildApp(ctx));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Plano de trabalho (PIT)'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Plano Individual de Trabalho'), findsOneWidget);
-    expect(find.text('Atividades semanais'), findsOneWidget);
-    await tester.fling(find.byType(ListView), const Offset(0, -3000), 2500);
-    await tester.pumpAndSettle();
-    expect(find.text('Salvar rascunho'), findsOneWidget);
-    expect(find.text('Submeter à chefia'), findsOneWidget);
-    expect(
-      find.text('Indisponibilidades validadas com a chefia'),
-      findsOneWidget,
-    );
-  });
-
   testWidgets('chefe ve todos os docentes', (tester) async {
     final ctx = await _loggedIn(UserRole.chefeDepartamento);
 

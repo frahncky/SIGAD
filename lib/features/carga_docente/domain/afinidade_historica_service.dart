@@ -16,7 +16,7 @@ class ResultadoAfinidadeHistorica {
 ///
 /// Enquanto não há volume suficiente para um modelo estatístico treinado, usa
 /// suavização de Laplace. Assim, o histórico influencia o desempate sem jamais
-/// ultrapassar as restrições legais, de horário e do PIT.
+/// ultrapassar as restrições legais e de horário.
 class AfinidadeHistoricaService {
   const AfinidadeHistoricaService();
 

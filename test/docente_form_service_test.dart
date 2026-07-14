@@ -300,7 +300,7 @@ void main() {
       );
     });
 
-    test('converte hora-aula do IFMA em minutos para o PIT', () {
+    test('converte hora-aula do IFMA em minutos', () {
       final minutos =
           DocenteFormService.calcularCargaAulasSemanalMinutos(const [
             HorarioAula(
@@ -313,96 +313,6 @@ void main() {
           ]);
 
       expect(minutos, 400);
-    });
-
-    test('valida PIT integral completo conforme fluxo do IFMA', () {
-      const docente = Docente(
-        id: '#DOC-PIT-1',
-        nome: 'Profa. PIT',
-        departamento: 'Construção Civil',
-        cargaHoraria: 12,
-        cargaMaxima: 40,
-        disciplinas: ['Materiais'],
-        regimeTrabalho: RegimeTrabalhoEbtt.dedicacaoExclusiva,
-      );
-      const plano = PlanoTrabalhoDocente(
-        docenteId: '#DOC-PIT-1',
-        periodoLetivo: '2026.2',
-        avaliadorId: '#CHEFIA-DCC',
-        atividades: [
-          AtividadePlanoDocente(
-            tipo: TipoAtividadePlanoDocente.preparacaoManutencaoApoioEnsino,
-            descricao: 'Preparação e apoio às aulas',
-            cargaSemanalMinutos: 480,
-          ),
-          AtividadePlanoDocente(
-            tipo: TipoAtividadePlanoDocente.reunioesPedagogicas,
-            descricao: 'Reuniões pedagógicas',
-            cargaSemanalMinutos: 120,
-          ),
-          AtividadePlanoDocente(
-            tipo: TipoAtividadePlanoDocente.pesquisa,
-            descricao: 'Projeto de pesquisa registrado',
-            cargaSemanalMinutos: 600,
-          ),
-          AtividadePlanoDocente(
-            tipo: TipoAtividadePlanoDocente.gestaoRepresentacao,
-            descricao: 'Gestão departamental',
-            cargaSemanalMinutos: 600,
-          ),
-        ],
-      );
-
-      final resultado = DocenteFormService.validarPlanoTrabalho(
-        docente: docente,
-        plano: plano,
-      );
-
-      expect(resultado.podeSubmeter, isTrue);
-      expect(resultado.pendencias, isEmpty);
-    });
-
-    test('exige justificativa e respeita limites das atividades do PIT', () {
-      const docente = Docente(
-        id: '#DOC-PIT-2',
-        nome: 'Prof. PIT',
-        departamento: 'Construção Civil',
-        cargaHoraria: 10,
-        cargaMaxima: 40,
-        disciplinas: ['Estruturas'],
-        regimeTrabalho: RegimeTrabalhoEbtt.quarentaHoras,
-      );
-      const plano = PlanoTrabalhoDocente(
-        docenteId: '#DOC-PIT-2',
-        periodoLetivo: '2026.2',
-        avaliadorId: '#CHEFIA-DCC',
-        atividades: [
-          AtividadePlanoDocente(
-            tipo: TipoAtividadePlanoDocente.reunioesPedagogicas,
-            descricao: 'Reuniões',
-            cargaSemanalMinutos: 300,
-          ),
-          AtividadePlanoDocente(
-            tipo: TipoAtividadePlanoDocente.pesquisa,
-            descricao: 'Pesquisa',
-            cargaSemanalMinutos: 1500,
-          ),
-        ],
-      );
-
-      final resultado = DocenteFormService.validarPlanoTrabalho(
-        docente: docente,
-        plano: plano,
-      );
-      final codigos = resultado.pendencias
-          .map((pendencia) => pendencia.codigo)
-          .toSet();
-
-      expect(resultado.podeSubmeter, isFalse);
-      expect(codigos, contains('justificativa_carga_aulas_obrigatoria'));
-      expect(codigos, contains('reunioes_pedagogicas_excedidas'));
-      expect(codigos, contains('justificativa_outras_atividades_obrigatoria'));
-      expect(codigos, contains('carga_total_insuficiente'));
     });
 
     test('detecta conflito ao tentar encaixar horario existente', () {

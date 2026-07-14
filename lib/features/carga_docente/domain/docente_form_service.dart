@@ -27,9 +27,6 @@ class RegrasDistribuicaoCarga {
     this.referenciaInstitucional = 'Resolução CONSUP/IFMA nº 67/2019',
     this.referenciaFederal = 'Portaria MEC nº 750/2024',
     this.duracaoHoraAulaMinutos = 50,
-    this.cargaMaximaReunioesPedagogicasMinutos = 240,
-    this.cargaMaximaPesquisaExtensaoGestao20hMinutos = 240,
-    this.cargaMaximaPesquisaExtensaoGestaoIntegralMinutos = 1200,
   });
 
   const RegrasDistribuicaoCarga.ifma({this.rapCampusAtingida = false})
@@ -41,10 +38,7 @@ class RegrasDistribuicaoCarga {
       instituicao = 'IFMA',
       referenciaInstitucional = 'Resolução CONSUP/IFMA nº 67/2019',
       referenciaFederal = 'Portaria MEC nº 750/2024',
-      duracaoHoraAulaMinutos = 50,
-      cargaMaximaReunioesPedagogicasMinutos = 240,
-      cargaMaximaPesquisaExtensaoGestao20hMinutos = 240,
-      cargaMaximaPesquisaExtensaoGestaoIntegralMinutos = 1200;
+      duracaoHoraAulaMinutos = 50;
 
   final int cargaMinimaAulas20h;
   final int cargaMaximaAulas20h;
@@ -56,9 +50,6 @@ class RegrasDistribuicaoCarga {
   final String referenciaInstitucional;
   final String referenciaFederal;
   final int duracaoHoraAulaMinutos;
-  final int cargaMaximaReunioesPedagogicasMinutos;
-  final int cargaMaximaPesquisaExtensaoGestao20hMinutos;
-  final int cargaMaximaPesquisaExtensaoGestaoIntegralMinutos;
 
   LimitesCargaAulas limitesAulasPara(RegimeTrabalhoEbtt regime) {
     switch (regime) {
@@ -76,12 +67,6 @@ class RegrasDistribuicaoCarga {
           maxima: cargaMaximaAulasIntegral,
         );
     }
-  }
-
-  int cargaMaximaPesquisaExtensaoGestaoMinutosPara(RegimeTrabalhoEbtt regime) {
-    return regime == RegimeTrabalhoEbtt.vinteHoras
-        ? cargaMaximaPesquisaExtensaoGestao20hMinutos
-        : cargaMaximaPesquisaExtensaoGestaoIntegralMinutos;
   }
 }
 
@@ -267,140 +252,6 @@ abstract final class DocenteFormService {
     return docente.cargaHoraria * regras.duracaoHoraAulaMinutos;
   }
 
-  static ResultadoValidacaoPlanoTrabalho validarPlanoTrabalho({
-    required Docente docente,
-    required PlanoTrabalhoDocente plano,
-    RegrasDistribuicaoCarga regras = const RegrasDistribuicaoCarga.ifma(),
-  }) {
-    final pendencias = <PendenciaPlanoTrabalho>[];
-
-    void adicionar(
-      String codigo,
-      String mensagem, {
-      SeveridadePendenciaPlano severidade = SeveridadePendenciaPlano.bloqueio,
-    }) {
-      pendencias.add(
-        PendenciaPlanoTrabalho(
-          codigo: codigo,
-          mensagem: mensagem,
-          severidade: severidade,
-        ),
-      );
-    }
-
-    if (plano.docenteId != docente.id) {
-      adicionar(
-        'docente_incompativel',
-        'O PIT não pertence ao docente informado.',
-      );
-    }
-    if (plano.periodoLetivo.trim().isEmpty) {
-      adicionar('periodo_obrigatorio', 'Informe o período letivo do PIT.');
-    }
-    if ((plano.avaliadorId ?? '').trim().isEmpty) {
-      adicionar(
-        'avaliador_obrigatorio',
-        'Informe a chefia imediata responsável pela avaliação do PIT.',
-      );
-    }
-
-    for (final atividade in plano.atividades) {
-      if (atividade.descricao.trim().isEmpty) {
-        adicionar(
-          'descricao_atividade_obrigatoria',
-          'Todas as atividades do PIT devem possuir descrição.',
-        );
-      }
-      if (atividade.cargaSemanalMinutos < 0) {
-        adicionar(
-          'carga_atividade_invalida',
-          'A carga semanal de uma atividade não pode ser negativa.',
-        );
-      }
-    }
-    for (final indisponibilidade in plano.indisponibilidades) {
-      final inicio = _horarioEmMinutos(indisponibilidade.inicio);
-      final fim = _horarioEmMinutos(indisponibilidade.fim);
-      if (indisponibilidade.diaSemana.trim().isEmpty ||
-          inicio == null ||
-          fim == null ||
-          fim <= inicio) {
-        adicionar(
-          'indisponibilidade_invalida',
-          'Revise os dias e horários informados nas indisponibilidades.',
-        );
-      }
-    }
-
-    final cargaAulasMinutos = cargaAulasDocenteMinutos(docente, regras: regras);
-    final limitesAulas = regras.limitesAulasPara(docente.regimeTrabalho);
-    final cargaMinimaAulasMinutos = limitesAulas.minima * 60;
-    final cargaMaximaAulasMinutos = limitesAulas.maxima * 60;
-    final aulasForaDosLimites =
-        cargaAulasMinutos < cargaMinimaAulasMinutos ||
-        cargaAulasMinutos > cargaMaximaAulasMinutos;
-    final justificativaCargaAulas = plano.justificativaCargaAulas?.trim() ?? '';
-    if (aulasForaDosLimites && justificativaCargaAulas.isEmpty) {
-      adicionar(
-        'justificativa_carga_aulas_obrigatoria',
-        'A carga semanal de aulas está fora dos limites do IFMA e exige justificativa.',
-      );
-    } else if (aulasForaDosLimites) {
-      adicionar(
-        'carga_aulas_excepcional',
-        'A carga semanal de aulas está fora da faixa de referência e será submetida com justificativa.',
-        severidade: SeveridadePendenciaPlano.aviso,
-      );
-    }
-
-    if (plano.cargaOutrasAtividadesEnsinoMinutos > cargaAulasMinutos) {
-      adicionar(
-        'outras_atividades_ensino_excedidas',
-        'As demais atividades de ensino não podem superar a carga semanal total de aulas.',
-      );
-    }
-
-    final cargaReunioes = plano.cargaMinutosPorTipo(
-      TipoAtividadePlanoDocente.reunioesPedagogicas,
-    );
-    if (cargaReunioes > regras.cargaMaximaReunioesPedagogicasMinutos) {
-      adicionar(
-        'reunioes_pedagogicas_excedidas',
-        'Reuniões pedagógicas, de grupo e afins estão limitadas a 4 horas semanais.',
-      );
-    }
-
-    final limitePesquisaExtensaoGestao = regras
-        .cargaMaximaPesquisaExtensaoGestaoMinutosPara(docente.regimeTrabalho);
-    final outrasAtividadesExcedidas =
-        plano.cargaPesquisaExtensaoGestaoMinutos > limitePesquisaExtensaoGestao;
-    final justificativaOutrasAtividades =
-        plano.justificativaExtrapolacaoOutrasAtividades?.trim() ?? '';
-    if (outrasAtividadesExcedidas && justificativaOutrasAtividades.isEmpty) {
-      adicionar(
-        'justificativa_outras_atividades_obrigatoria',
-        'A carga de pesquisa, extensão, gestão e representação excede a referência e exige justificativa.',
-      );
-    } else if (outrasAtividadesExcedidas) {
-      adicionar(
-        'outras_atividades_excepcionais',
-        'A carga de pesquisa, extensão, gestão e representação será submetida como exceção justificada.',
-        severidade: SeveridadePendenciaPlano.aviso,
-      );
-    }
-
-    final cargaTotalMinutos = cargaAulasMinutos + plano.cargaAtividadesMinutos;
-    final cargaRegimeMinutos = docente.regimeTrabalho.cargaSemanalLimite * 60;
-    if (cargaTotalMinutos < cargaRegimeMinutos) {
-      adicionar(
-        'carga_total_insuficiente',
-        'A carga total do PIT deve completar ao menos ${docente.regimeTrabalho.cargaSemanalLimite} horas semanais.',
-      );
-    }
-
-    return ResultadoValidacaoPlanoTrabalho(pendencias: pendencias);
-  }
-
   static bool existeConflitoHorario({
     required List<HorarioAula> horarios,
     required HorarioAula candidato,
@@ -423,32 +274,12 @@ abstract final class DocenteFormService {
     return false;
   }
 
-  static bool existeConflitoIndisponibilidade({
-    required List<IndisponibilidadeDocente> indisponibilidades,
-    required HorarioAula candidato,
-  }) {
-    final inicioCandidato = _horarioEmMinutos(candidato.inicio);
-    final fimCandidato = _horarioEmMinutos(candidato.fim);
-    if (inicioCandidato == null || fimCandidato == null) return false;
-
-    for (final item in indisponibilidades.where(
-      (restricao) => restricao.diaSemana == candidato.diaSemana,
-    )) {
-      final inicio = _horarioEmMinutos(item.inicio);
-      final fim = _horarioEmMinutos(item.fim);
-      if (inicio == null || fim == null) continue;
-      if (inicioCandidato < fim && fimCandidato > inicio) return true;
-    }
-    return false;
-  }
-
   static ResultadoSimulacaoRedistribuicao simularRedistribuicaoDocentes(
     List<Docente> docentes, {
     double limiarAlta = 0.9,
     double limiarBaixa = 0.5,
     int limitePropostas = 6,
     RegrasDistribuicaoCarga? regrasLegais,
-    Map<String, PlanoTrabalhoDocente> planosAprovados = const {},
     AvaliadorAfinidadeRedistribuicao? avaliarAfinidade,
   }) {
     if (docentes.isEmpty || limitePropostas <= 0) {
@@ -517,15 +348,6 @@ abstract final class DocenteFormService {
             continue;
           }
 
-          final planoDestino = planosAprovados[destino.id];
-          if (planoDestino?.status == StatusPlanoTrabalhoDocente.aprovado &&
-              existeConflitoIndisponibilidade(
-                indisponibilidades: planoDestino!.indisponibilidades,
-                candidato: horario,
-              )) {
-            continue;
-          }
-
           final cargaDestinoProjetada =
               (cargasProjetadas[destino.id] ??
                   _cargaAulasAtuaisMinutos(destino, regras)) +
@@ -568,10 +390,6 @@ abstract final class DocenteFormService {
               'Compatível com a disciplina e sem conflito de horário.',
               'Carga projetada dentro dos limites do regime ${destino.regimeTrabalho.label}.',
               afinidade.explicacao,
-              if (planoDestino?.status == StatusPlanoTrabalhoDocente.aprovado)
-                'Indisponibilidades do PIT aprovado respeitadas.'
-              else
-                'PIT deverá ser criado ou atualizado antes da efetivação.',
             ];
           }
         }
@@ -598,7 +416,6 @@ abstract final class DocenteFormService {
               cargaSemanal: cargaHorario,
               pontuacao: melhorPontuacao,
               justificativas: melhoresJustificativas,
-              requerAtualizacaoPit: true,
             ),
           );
         }

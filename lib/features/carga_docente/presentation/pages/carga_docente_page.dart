@@ -6,12 +6,10 @@ import '../../../configuracoes/domain/agenda_convites_service.dart';
 import '../../data/catalogo_docentes_ifma.dart';
 import '../../data/docente_repository.dart';
 import '../../data/distribuicao_historico_repository.dart';
-import '../../data/plano_trabalho_repository.dart';
 import '../../domain/afinidade_historica_service.dart';
 import '../../domain/docente_form_service.dart';
 import '../../domain/docente_models.dart';
 import '../controllers/docente_form_controller.dart';
-import 'plano_trabalho_docente_page.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
@@ -53,7 +51,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   ];
 
   final DocenteRepository _docenteRepository = DocenteRepository();
-  final PlanoTrabalhoRepository _planoRepository = PlanoTrabalhoRepository();
   final DistribuicaoHistoricoRepository _historicoDistribuicaoRepository =
       DistribuicaoHistoricoRepository();
 
@@ -858,18 +855,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     );
   }
 
-  void _abrirPlanoTrabalho(BuildContext context, Docente docente) {
-    final userContext = context.read<UserContextProvider>();
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => ChangeNotifierProvider<UserContextProvider>.value(
-          value: userContext,
-          child: PlanoTrabalhoDocentePage(docente: docente),
-        ),
-      ),
-    );
-  }
-
   double _percentualOcupacao(Docente docente) {
     if (docente.cargaMaxima <= 0) return 0;
     return docente.cargaHoraria / docente.cargaMaxima;
@@ -936,26 +921,12 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       return;
     }
 
-    final planos = await _planoRepository.loadPlanos();
     final historico = await _historicoDistribuicaoRepository.load();
     if (!mounted) return;
-    final planosAprovados = <String, PlanoTrabalhoDocente>{};
-    for (final plano in planos.where(
-      (item) => item.status == StatusPlanoTrabalhoDocente.aprovado,
-    )) {
-      final atual = planosAprovados[plano.docenteId];
-      if (atual == null ||
-          (plano.atualizadoEm ?? DateTime(0)).isAfter(
-            atual.atualizadoEm ?? DateTime(0),
-          )) {
-        planosAprovados[plano.docenteId] = plano;
-      }
-    }
     const afinidadeService = AfinidadeHistoricaService();
     final simulacao = DocenteFormService.simularRedistribuicaoDocentes(
       _docentesVisiveis(),
       regrasLegais: const RegrasDistribuicaoCarga.ifma(),
-      planosAprovados: planosAprovados,
       avaliarAfinidade: (destino, horario) {
         final resultado = afinidadeService.avaliar(
           docenteDestinoId: destino.id,
@@ -1166,7 +1137,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                 canManage: podeGerenciar,
                 canViewSchedule: true,
                 onAbrirAgenda: () => _abrirAgendaDocente(context, selfDocente!),
-                onAbrirPlano: () => _abrirPlanoTrabalho(context, selfDocente!),
                 onEditar: podeGerenciar
                     ? () => _showEditarDocente(context, selfDocente!)
                     : null,
@@ -1244,8 +1214,6 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                     canViewSchedule: podeVisualizarHorarios,
                     onAbrirAgenda: () =>
                         _abrirAgendaDocente(context, outrosDocentes[index]),
-                    onAbrirPlano: () =>
-                        _abrirPlanoTrabalho(context, outrosDocentes[index]),
                     onEditar: podeGerenciar
                         ? () =>
                               _showEditarDocente(context, outrosDocentes[index])
@@ -1282,7 +1250,6 @@ class _DocenteCard extends StatelessWidget {
     required this.canManage,
     required this.canViewSchedule,
     required this.onAbrirAgenda,
-    required this.onAbrirPlano,
     this.onEditar,
     this.onExcluir,
     this.somenteVisualizar = false,
@@ -1292,7 +1259,6 @@ class _DocenteCard extends StatelessWidget {
   final bool canManage;
   final bool canViewSchedule;
   final VoidCallback? onAbrirAgenda;
-  final VoidCallback onAbrirPlano;
   final VoidCallback? onEditar;
   final VoidCallback? onExcluir;
   final bool somenteVisualizar;
@@ -1379,15 +1345,6 @@ class _DocenteCard extends StatelessWidget {
           Text(
             'Distribuição em aulas: ${docente.cargaHoraria}h/${docente.cargaMaxima}h',
             style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-          ),
-          const SizedBox(height: 8),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton.icon(
-              onPressed: onAbrirPlano,
-              icon: const Icon(Icons.assignment_outlined, size: 18),
-              label: const Text('Plano de trabalho (PIT)'),
-            ),
           ),
           const SizedBox(height: 12),
           Wrap(
