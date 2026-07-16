@@ -1,10 +1,12 @@
 import '../../features/calendario/presentation/pages/calendario_page.dart';
 import '../../features/notas/presentation/pages/notas_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../core/navigation/navigation_items.dart';
+import '../../core/services/user_context_provider.dart';
 import '../../features/atividades/presentation/pages/atividades_page.dart';
 import '../../features/carga_docente/presentation/pages/carga_docente_page.dart';
 import '../../features/carga_docente/domain/docente_models.dart';
-import '../../features/carga_docente/presentation/pages/professores_page.dart';
 import '../../features/configuracoes/presentation/pages/configuracoes_page.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/demandas/presentation/pages/demandas_page.dart';
@@ -45,7 +47,9 @@ abstract final class AppRouter {
       case AppRoutes.aulasPraticas:
         return _shell(routeName, const AulasPraticasPage());
       case AppRoutes.professores:
-        return _shell(routeName, const ProfessoresPage());
+        // Compatibilidade com favoritos e links antigos. A gestão de docentes
+        // agora possui uma única entrada no módulo Carga Docente.
+        return _shell(AppRoutes.cargaDocente, const CargaDocentePage());
       case AppRoutes.atividades:
         return _shell(routeName, const AtividadesPage());
       case AppRoutes.relatorios:
@@ -68,7 +72,64 @@ abstract final class AppRouter {
   static MaterialPageRoute<void> _shell(String routeName, Widget page) {
     return MaterialPageRoute<void>(
       settings: RouteSettings(name: routeName),
-      builder: (_) => HomeShellPage(currentRoute: routeName, child: page),
+      builder: (context) {
+        final userContext = context.watch<UserContextProvider>();
+        final userRole = userContext.userRole;
+        if (!userContext.isAuthenticated ||
+            userContext.requiresReauthentication ||
+            userRole == null) {
+          return const LoginPage();
+        }
+
+        final canAccess = kNavigationItems.any(
+          (item) => item.route == routeName && item.isAvailableFor(userRole),
+        );
+
+        return HomeShellPage(
+          currentRoute: routeName,
+          child: canAccess ? page : const _RouteAccessDenied(),
+        );
+      },
+    );
+  }
+}
+
+class _RouteAccessDenied extends StatelessWidget {
+  const _RouteAccessDenied();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.lock_outline,
+              size: 48,
+              color: Theme.of(context).colorScheme.error,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Acesso não autorizado',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Seu perfil não possui permissão para acessar este módulo.',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            FilledButton(
+              onPressed: () => Navigator.of(
+                context,
+              ).pushReplacementNamed(AppRoutes.dashboard),
+              child: const Text('Voltar para a visão geral'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

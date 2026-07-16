@@ -535,6 +535,23 @@ class _ChatPanel extends StatelessWidget {
               ],
             ),
           ),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            color: SigadColors.warning.withValues(alpha: 0.12),
+            child: const Row(
+              children: [
+                Icon(Icons.cloud_off_outlined, size: 18),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Modo local: as mensagens ficam neste dispositivo e não '
+                    'são entregues ao destinatário.',
+                  ),
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: messages.isEmpty
                 ? Center(
@@ -600,7 +617,7 @@ class _ChatPanel extends StatelessWidget {
                     minLines: 1,
                     maxLines: 4,
                     decoration: const InputDecoration(
-                      hintText: 'Digite sua mensagem',
+                      hintText: 'Digite uma anotação local',
                       prefixIcon: Icon(Icons.chat_bubble_outline),
                     ),
                     onSubmitted: (_) => onSend(),
@@ -609,8 +626,8 @@ class _ChatPanel extends StatelessWidget {
                 const SizedBox(width: 8),
                 FilledButton.icon(
                   onPressed: onSend,
-                  icon: const Icon(Icons.send_rounded),
-                  label: const Text('Enviar'),
+                  icon: const Icon(Icons.save_outlined),
+                  label: const Text('Salvar localmente'),
                 ),
               ],
             ),

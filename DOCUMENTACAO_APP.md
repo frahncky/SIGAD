@@ -70,6 +70,7 @@ Referencia complementar:
 - listagem de conversas
 - mensagens por contato
 - marcacao de leitura
+- modo demonstrativo local; nao entrega mensagens a outro usuario
 
 ### Demandas
 - criar, editar, excluir e filtrar
@@ -84,8 +85,9 @@ Referencia complementar:
 - reservas por laboratorio, dia e periodo
 - regras de alteracao por role
 
-### Agenda Docente
-- gerenciamento de docentes e horarios
+### Carga Docente
+- cadastro de docentes pela chefia com nomes/areas de referencia do IFMA
+- validacao de carga EBTT/IFMA, conflitos e redistribuicao assistida
 - visibilidade por perfil
 
 ### Atividades
@@ -94,12 +96,11 @@ Referencia complementar:
 
 ### Relatorios
 - listagem e filtro
-- acoes de download/compartilhamento (registro local de acao)
+- exportacao e compartilhamento aguardam integracao institucional
 
 ### Configuracoes
-- preferencias de conta
-- opcoes de notificacao
-- dados operacionais e suporte
+- perfil, tema e tamanho de fonte locais
+- email, senha, backup, notificacoes e suporte aguardam integracao institucional
 
 ## 7. Fluxo de Navegacao
 
@@ -114,6 +115,8 @@ Rotas principais:
 - /atividades
 - /relatorios
 - /configuracoes
+- /calendario
+- /notas
 
 Roteamento:
 - lib/app/routes/app_routes.dart

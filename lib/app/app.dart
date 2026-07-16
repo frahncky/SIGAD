@@ -56,15 +56,25 @@ class SigadApp extends StatelessWidget {
           onGenerateRoute: AppRouter.onGenerateRoute,
           builder: (context, child) {
             final isDark = Theme.of(context).brightness == Brightness.dark;
+            final mediaQuery = MediaQuery.of(context);
+            final systemScale = mediaQuery.textScaler.scale(1);
+            final effectiveScale = (systemScale * themeCtrl.fontScale)
+                .clamp(0.8, 2.0)
+                .toDouble();
             final overlayStyle =
                 (isDark
                         ? SystemUiOverlayStyle.light
                         : SystemUiOverlayStyle.dark)
                     .copyWith(statusBarColor: Colors.transparent);
 
-            return AnnotatedRegion<SystemUiOverlayStyle>(
-              value: overlayStyle,
-              child: _FlavorBanner(child: child ?? const SizedBox.shrink()),
+            return MediaQuery(
+              data: mediaQuery.copyWith(
+                textScaler: TextScaler.linear(effectiveScale),
+              ),
+              child: AnnotatedRegion<SystemUiOverlayStyle>(
+                value: overlayStyle,
+                child: _FlavorBanner(child: child ?? const SizedBox.shrink()),
+              ),
             );
           },
         ),

@@ -9,6 +9,7 @@ import '../../../../shared/widgets/page_status_view.dart';
 import '../../data/demanda_repository.dart';
 import '../../domain/demanda_models.dart';
 import '../../domain/demandas_service.dart';
+import '../demandas_visuals.dart';
 
 class DemandasPage extends StatefulWidget {
   const DemandasPage({super.key});
@@ -25,7 +26,7 @@ class _DemandasPageState extends State<DemandasPage> {
   bool _isLoading = true;
   String? _loadError;
   final DemandaRepository _demandaRepository = DemandaRepository();
-  final List<Demanda> _demandas = DemandasService.defaultDemandas();
+  final List<Demanda> _demandas = [];
 
   @override
   void initState() {
@@ -39,14 +40,14 @@ class _DemandasPageState extends State<DemandasPage> {
       _loadError = null;
     });
     try {
-      final list = await _demandaRepository.loadDemandas();
+      final list = await _demandaRepository.loadDemandas(
+        initialData: DemandasService.defaultDemandas(),
+      );
       if (!mounted) return;
       setState(() {
-        if (list.isNotEmpty) {
-          _demandas
-            ..clear()
-            ..addAll(list);
-        }
+        _demandas
+          ..clear()
+          ..addAll(list);
         _isLoading = false;
       });
     } catch (error, stackTrace) {
@@ -63,8 +64,28 @@ class _DemandasPageState extends State<DemandasPage> {
     }
   }
 
-  void _saveData() {
-    _demandaRepository.saveDemandas(_demandas);
+  Future<bool> _saveData(List<Demanda> previous) async {
+    try {
+      await _demandaRepository.saveDemandas(_demandas);
+      return true;
+    } catch (error, stackTrace) {
+      AppEventLogger.error(
+        'demandas_save_error',
+        error,
+        stackTrace: stackTrace,
+      );
+      if (!mounted) return false;
+      setState(() {
+        _demandas
+          ..clear()
+          ..addAll(previous);
+      });
+      AppFeedbackService.error(
+        context,
+        'Não foi possível salvar as demandas. Tente novamente.',
+      );
+      return false;
+    }
   }
 
   List<Demanda> get _demandasFiltradas => DemandasService.filtrarDemandas(
@@ -430,7 +451,7 @@ class _DemandasPageState extends State<DemandasPage> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           final erro = DemandasService.validarDemanda(
                             titulo: tituloController.text,
                             descricao: descricaoController.text,
@@ -439,6 +460,7 @@ class _DemandasPageState extends State<DemandasPage> {
                             _mostrarFeedback(erro);
                             return;
                           }
+                          final previous = List<Demanda>.of(_demandas);
                           setState(() {
                             _demandas.insert(
                               0,
@@ -455,7 +477,8 @@ class _DemandasPageState extends State<DemandasPage> {
                               ),
                             );
                           });
-                          _saveData();
+                          if (!await _saveData(previous)) return;
+                          if (!context.mounted) return;
                           Navigator.pop(context);
                           _mostrarFeedback('Demanda criada com sucesso!');
                         },
@@ -578,7 +601,7 @@ class _DemandasPageState extends State<DemandasPage> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           final erro = DemandasService.validarDemanda(
                             titulo: tituloController.text,
                             descricao: descricaoController.text,
@@ -587,6 +610,7 @@ class _DemandasPageState extends State<DemandasPage> {
                             _mostrarFeedback(erro);
                             return;
                           }
+                          final previous = List<Demanda>.of(_demandas);
                           setState(() {
                             final index = _demandas.indexWhere(
                               (item) => item.id == demanda.id,
@@ -601,7 +625,8 @@ class _DemandasPageState extends State<DemandasPage> {
                               );
                             }
                           });
-                          _saveData();
+                          if (!await _saveData(previous)) return;
+                          if (!context.mounted) return;
                           Navigator.pop(context);
                           _mostrarFeedback('Demanda atualizada com sucesso!');
                         },
@@ -632,11 +657,13 @@ class _DemandasPageState extends State<DemandasPage> {
             child: const Text('Cancelar'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
+              final previous = List<Demanda>.of(_demandas);
               setState(() {
                 _demandas.removeWhere((item) => item.id == demanda.id);
               });
-              _saveData();
+              if (!await _saveData(previous)) return;
+              if (!context.mounted) return;
               Navigator.pop(context);
               _mostrarFeedback('Demanda excluída com sucesso!');
             },
@@ -804,7 +831,7 @@ class _DemandasCard extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: DemandasService.toneStatus(
+                      color: DemandasVisuals.toneStatus(
                         demanda.statusLabel,
                       ).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(8),
@@ -812,7 +839,7 @@ class _DemandasCard extends StatelessWidget {
                     child: Text(
                       demanda.statusLabel,
                       style: textTheme.labelSmall?.copyWith(
-                        color: DemandasService.toneStatus(demanda.statusLabel),
+                        color: DemandasVisuals.toneStatus(demanda.statusLabel),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -848,7 +875,7 @@ class _DemandasCard extends StatelessWidget {
   }
 
   Color _getPrioridadeColor(String prioridade) {
-    return DemandasService.tonePrioridade(prioridade);
+    return DemandasVisuals.tonePrioridade(prioridade);
   }
 
   void _onMenuItemSelected(

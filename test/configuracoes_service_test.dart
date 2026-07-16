@@ -131,6 +131,8 @@ void main() {
 
     test('retorna lembretes pendentes conforme antecedência configurada', () {
       final data = ConfiguracoesService.defaultData().copyWith(
+        notificacoesAtivas: true,
+        notificarAntesDaDisciplina: true,
         antecedenciaNotificacaoMinutos: 30,
         agendaCompromissos: const [
           CompromissoAgenda(

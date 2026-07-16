@@ -1,4 +1,5 @@
-import 'package:flutter/foundation.dart';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'app/app.dart';
 import 'app/routes/app_routes.dart';
@@ -8,15 +9,10 @@ import 'core/services/app_observability_service.dart';
 import 'core/services/theme_provider.dart';
 import 'core/services/user_context_provider.dart';
 import 'features/configuracoes/data/configuracoes_repository.dart';
-import 'features/carga_docente/data/seed_docentes.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (kDebugMode) {
-    // Carrega docentes de exemplo para testes (apenas em desenvolvimento)
-    await seedDocentes();
-  }
   AppObservabilityService.configure(
     enabled: AppRuntimeConfig.enableObservability,
     endpoint: AppRuntimeConfig.observabilityEndpoint,
@@ -46,7 +42,10 @@ Future<void> main() async {
       : AppRoutes.login;
 
   final savedConfig = await ConfiguracoesRepository().load();
-  final themeProvider = ThemeProvider(isDark: savedConfig?.modoDark ?? false);
+  final themeProvider = ThemeProvider(
+    isDark: savedConfig?.modoDark ?? false,
+    fontSizePreference: savedConfig?.tamanhoFonte ?? 'Médio',
+  );
 
   runApp(
     SigadApp(

@@ -1,8 +1,80 @@
+import 'dart:math' as math;
+
 import 'docente_models.dart';
+import 'normalizador_texto.dart';
+
+typedef AvaliadorAfinidadeRedistribuicao =
+    AvaliacaoAfinidadeRedistribuicao Function(
+      Docente docenteDestino,
+      HorarioAula horario,
+    );
+
+class LimitesCargaAulas {
+  const LimitesCargaAulas({required this.minima, required this.maxima});
+
+  final int minima;
+  final int maxima;
+}
+
+class RegrasDistribuicaoCarga {
+  const RegrasDistribuicaoCarga({
+    required this.cargaMinimaAulas20h,
+    required this.cargaMaximaAulas20h,
+    required this.cargaMinimaAulasIntegral,
+    required this.cargaMaximaAulasIntegral,
+    this.rapCampusAtingida = false,
+    this.cargaMinimaAulasIntegralComRap = 8,
+    this.instituicao = 'IFMA',
+    this.referenciaInstitucional = 'Resolução CONSUP/IFMA nº 67/2019',
+    this.referenciaFederal = 'Portaria MEC nº 750/2024',
+    this.duracaoHoraAulaMinutos = 50,
+  });
+
+  const RegrasDistribuicaoCarga.ifma({this.rapCampusAtingida = false})
+    : cargaMinimaAulas20h = 8,
+      cargaMaximaAulas20h = 10,
+      cargaMinimaAulasIntegral = 10,
+      cargaMaximaAulasIntegral = 20,
+      cargaMinimaAulasIntegralComRap = 8,
+      instituicao = 'IFMA',
+      referenciaInstitucional = 'Resolução CONSUP/IFMA nº 67/2019',
+      referenciaFederal = 'Portaria MEC nº 750/2024',
+      duracaoHoraAulaMinutos = 50;
+
+  final int cargaMinimaAulas20h;
+  final int cargaMaximaAulas20h;
+  final int cargaMinimaAulasIntegral;
+  final int cargaMaximaAulasIntegral;
+  final bool rapCampusAtingida;
+  final int cargaMinimaAulasIntegralComRap;
+  final String instituicao;
+  final String referenciaInstitucional;
+  final String referenciaFederal;
+  final int duracaoHoraAulaMinutos;
+
+  LimitesCargaAulas limitesAulasPara(RegimeTrabalhoEbtt regime) {
+    switch (regime) {
+      case RegimeTrabalhoEbtt.vinteHoras:
+        return LimitesCargaAulas(
+          minima: cargaMinimaAulas20h,
+          maxima: cargaMaximaAulas20h,
+        );
+      case RegimeTrabalhoEbtt.quarentaHoras:
+      case RegimeTrabalhoEbtt.dedicacaoExclusiva:
+        return LimitesCargaAulas(
+          minima: rapCampusAtingida
+              ? cargaMinimaAulasIntegralComRap
+              : cargaMinimaAulasIntegral,
+          maxima: cargaMaximaAulasIntegral,
+        );
+    }
+  }
+}
 
 abstract final class DocenteFormService {
   static String? validateDocente({
     required String nome,
+    required String email,
     required String departamento,
     required String cargaMaxima,
     required List<String> disciplinas,
@@ -12,6 +84,9 @@ abstract final class DocenteFormService {
     if (nome.trim().isEmpty) {
       return 'Informe o nome do docente';
     }
+
+    final erroEmail = validateEmail(email);
+    if (erroEmail != null) return erroEmail;
 
     if (departamento.trim().isEmpty) {
       return 'Informe o departamento';
@@ -38,6 +113,19 @@ abstract final class DocenteFormService {
     return null;
   }
 
+  static String? validateEmail(String? email) {
+    final normalized = normalizeEmail(email);
+    if (normalized == null) {
+      return 'Informe o email de acesso';
+    }
+
+    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(normalized)) {
+      return 'Informe um email de acesso válido';
+    }
+
+    return null;
+  }
+
   static String? validateDisciplina({
     required String disciplina,
     required List<String> disciplinasExistentes,
@@ -47,7 +135,10 @@ abstract final class DocenteFormService {
       return 'Informe o nome da disciplina.';
     }
 
-    if (disciplinasExistentes.contains(normalized)) {
+    final chaveDisciplina = NormalizadorTexto.paraComparacao(normalized);
+    if (disciplinasExistentes.any(
+      (item) => NormalizadorTexto.paraComparacao(item) == chaveDisciplina,
+    )) {
       return 'Disciplina já adicionada.';
     }
 
@@ -158,6 +249,30 @@ abstract final class DocenteFormService {
     return _cargaSemanalDoHorario(horario);
   }
 
+  static int calcularCargaAulasSemanalMinutos(
+    List<HorarioAula> horarios, {
+    RegrasDistribuicaoCarga regras = const RegrasDistribuicaoCarga.ifma(),
+  }) {
+    return horarios.fold(
+      0,
+      (total, horario) =>
+          total + _cargaSemanalMinutosDoHorario(horario, regras),
+    );
+  }
+
+  static int cargaAulasDocenteMinutos(
+    Docente docente, {
+    RegrasDistribuicaoCarga regras = const RegrasDistribuicaoCarga.ifma(),
+  }) {
+    if (docente.horariosAula.isNotEmpty) {
+      return calcularCargaAulasSemanalMinutos(
+        docente.horariosAula,
+        regras: regras,
+      );
+    }
+    return docente.cargaHoraria * regras.duracaoHoraAulaMinutos;
+  }
+
   static bool existeConflitoHorario({
     required List<HorarioAula> horarios,
     required HorarioAula candidato,
@@ -185,6 +300,8 @@ abstract final class DocenteFormService {
     double limiarAlta = 0.9,
     double limiarBaixa = 0.5,
     int limitePropostas = 6,
+    RegrasDistribuicaoCarga? regrasLegais,
+    AvaliadorAfinidadeRedistribuicao? avaliarAfinidade,
   }) {
     if (docentes.isEmpty || limitePropostas <= 0) {
       return const ResultadoSimulacaoRedistribuicao(
@@ -194,55 +311,129 @@ abstract final class DocenteFormService {
       );
     }
 
-    final ocupacaoAntes = _mediaOcupacao(docentes);
+    final regras = regrasLegais ?? const RegrasDistribuicaoCarga.ifma();
+    final ocupacaoAntes = _mediaOcupacaoEnsino(docentes, regras);
     final propostas = <PropostaRedistribuicao>[];
     final cargasProjetadas = {
-      for (final docente in docentes) docente.id: docente.cargaHoraria,
+      for (final docente in docentes)
+        docente.id: _cargaAulasAtuaisMinutos(docente, regras),
+    };
+    final horariosProjetados = {
+      for (final docente in docentes)
+        docente.id: List<HorarioAula>.from(docente.horariosAula),
     };
 
     final docentesAlta = docentes
         .where((docente) {
-          return _ocupacao(docente.cargaHoraria, docente.cargaMaxima) >=
-              limiarAlta;
+          final cargaAtual = _cargaAulasAtuaisMinutos(docente, regras);
+          final limiteEnsino = _cargaMaximaAulasMinutos(docente, regras);
+          return _ocupacao(cargaAtual, limiteEnsino) >= limiarAlta ||
+              cargaAtual > limiteEnsino;
         })
         .toList(growable: false);
 
     final docentesBaixa = docentes
         .where((docente) {
-          return _ocupacao(docente.cargaHoraria, docente.cargaMaxima) <=
-              limiarBaixa;
+          final cargaAtual = _cargaAulasAtuaisMinutos(docente, regras);
+          final cargaMinima = _cargaMinimaAulasMinutos(docente, regras);
+          final cargaMaxima = _cargaMaximaAulasMinutos(docente, regras);
+          return _ocupacao(cargaAtual, cargaMaxima) <= limiarBaixa ||
+              cargaAtual < cargaMinima;
         })
         .toList(growable: false);
 
     for (final origem in docentesAlta) {
       for (final horario in origem.horariosAula) {
         if (propostas.length >= limitePropostas) break;
-        if ((horario.disciplina ?? '').trim().isEmpty) continue;
+        final disciplina = horario.disciplina;
+        if (disciplina == null || disciplina.trim().isEmpty) continue;
+        final disciplinaNormalizada = NormalizadorTexto.paraComparacao(
+          disciplina,
+        );
 
         final cargaHorario = _cargaSemanalDoHorario(horario);
         if (cargaHorario <= 0) continue;
+        final cargaHorarioMinutos = _cargaSemanalMinutosDoHorario(
+          horario,
+          regras,
+        );
+        if (cargaHorarioMinutos <= 0) continue;
+
+        Docente? melhorDestino;
+        double melhorPontuacao = -1;
+        List<String> melhoresJustificativas = const [];
 
         for (final destino in docentesBaixa) {
           if (destino.id == origem.id) continue;
-          if (!destino.disciplinas.contains(horario.disciplina)) continue;
+          final possuiDisciplina = destino.disciplinas.any(
+            (item) =>
+                NormalizadorTexto.paraComparacao(item) == disciplinaNormalizada,
+          );
+          if (!possuiDisciplina) continue;
           if (existeConflitoHorario(
-            horarios: destino.horariosAula,
+            horarios: horariosProjetados[destino.id] ?? destino.horariosAula,
             candidato: horario,
           )) {
             continue;
           }
 
           final cargaDestinoProjetada =
-              (cargasProjetadas[destino.id] ?? destino.cargaHoraria) +
-              cargaHorario;
+              (cargasProjetadas[destino.id] ??
+                  _cargaAulasAtuaisMinutos(destino, regras)) +
+              cargaHorarioMinutos;
           final cargaOrigemProjetada =
-              (cargasProjetadas[origem.id] ?? origem.cargaHoraria) -
-              cargaHorario;
-          if (cargaDestinoProjetada > destino.cargaMaxima) continue;
-          if (cargaOrigemProjetada < 0) continue;
+              (cargasProjetadas[origem.id] ??
+                  _cargaAulasAtuaisMinutos(origem, regras)) -
+              cargaHorarioMinutos;
+          final cargaMinimaOrigem = _cargaMinimaAulasMinutos(origem, regras);
+          final cargaMaximaEnsinoDestino = _cargaMaximaAulasMinutos(
+            destino,
+            regras,
+          );
+          if (cargaDestinoProjetada > cargaMaximaEnsinoDestino) continue;
+          if (cargaOrigemProjetada < cargaMinimaOrigem) continue;
 
-          cargasProjetadas[destino.id] = cargaDestinoProjetada;
-          cargasProjetadas[origem.id] = cargaOrigemProjetada;
+          final ocupacaoProjetada = _ocupacao(
+            cargaDestinoProjetada,
+            cargaMaximaEnsinoDestino,
+          );
+          final equilibrio = (1 - (ocupacaoProjetada - 0.7).abs()).clamp(
+            0.0,
+            1.0,
+          );
+          final afinidade =
+              avaliarAfinidade?.call(destino, horario) ??
+              const AvaliacaoAfinidadeRedistribuicao(
+                pontuacao: 0.5,
+                explicacao: 'Afinidade histórica neutra.',
+              );
+          final pontuacao =
+              ((equilibrio * 0.75) +
+                  (afinidade.pontuacao.clamp(0.0, 1.0) * 0.25)) *
+              100;
+
+          if (pontuacao > melhorPontuacao) {
+            melhorDestino = destino;
+            melhorPontuacao = pontuacao;
+            melhoresJustificativas = [
+              'Compatível com a disciplina e sem conflito de horário.',
+              'Carga projetada dentro dos limites do regime ${destino.regimeTrabalho.label}.',
+              afinidade.explicacao,
+            ];
+          }
+        }
+
+        if (melhorDestino != null) {
+          final destino = melhorDestino;
+          cargasProjetadas[destino.id] =
+              (cargasProjetadas[destino.id] ??
+                  _cargaAulasAtuaisMinutos(destino, regras)) +
+              cargaHorarioMinutos;
+          cargasProjetadas[origem.id] =
+              (cargasProjetadas[origem.id] ??
+                  _cargaAulasAtuaisMinutos(origem, regras)) -
+              cargaHorarioMinutos;
+          horariosProjetados[destino.id]?.add(horario);
 
           propostas.add(
             PropostaRedistribuicao(
@@ -252,15 +443,20 @@ abstract final class DocenteFormService {
               docenteDestinoNome: destino.nome,
               horario: horario,
               cargaSemanal: cargaHorario,
+              pontuacao: melhorPontuacao,
+              justificativas: melhoresJustificativas,
             ),
           );
-          break;
         }
       }
       if (propostas.length >= limitePropostas) break;
     }
 
-    final ocupacaoDepois = _mediaOcupacaoProjetada(docentes, cargasProjetadas);
+    final ocupacaoDepois = _mediaOcupacaoEnsinoProjetada(
+      docentes,
+      cargasProjetadas,
+      regras,
+    );
 
     return ResultadoSimulacaoRedistribuicao(
       propostas: propostas,
@@ -301,6 +497,20 @@ abstract final class DocenteFormService {
     return normalized;
   }
 
+  static bool emailJaCadastrado({
+    required String email,
+    required Iterable<Docente> docentes,
+    String? ignorarDocenteId,
+  }) {
+    final normalized = normalizeEmail(email);
+    if (normalized == null) return false;
+
+    return docentes.any((docente) {
+      if (docente.id == ignorarDocenteId) return false;
+      return normalizeEmail(docente.userEmail) == normalized;
+    });
+  }
+
   static int _cargaSemanalDoHorario(HorarioAula horario) {
     final cargaDeclarada = _parseCargaHorariaSemanal(horario.cargaHoraria);
     if (cargaDeclarada != null && cargaDeclarada > 0) {
@@ -316,6 +526,23 @@ abstract final class DocenteFormService {
     final duracao = fim - inicio;
     final blocos = (duracao / 50).round();
     return blocos < 1 ? 1 : blocos;
+  }
+
+  static int _cargaSemanalMinutosDoHorario(
+    HorarioAula horario,
+    RegrasDistribuicaoCarga regras,
+  ) {
+    final cargaDeclarada = _parseCargaHorariaSemanal(horario.cargaHoraria);
+    if (cargaDeclarada != null && cargaDeclarada > 0) {
+      return cargaDeclarada * regras.duracaoHoraAulaMinutos;
+    }
+
+    final inicio = _horarioEmMinutos(horario.inicio);
+    final fim = _horarioEmMinutos(horario.fim);
+    if (inicio == null || fim == null || fim <= inicio) {
+      return 0;
+    }
+    return fim - inicio;
   }
 
   static int? _parseCargaHorariaSemanal(String? cargaHoraria) {
@@ -344,28 +571,63 @@ abstract final class DocenteFormService {
     return cargaHoraria / cargaMaxima;
   }
 
-  static double _mediaOcupacao(List<Docente> docentes) {
-    if (docentes.isEmpty) return 0;
-    final soma = docentes
-        .map((docente) => _ocupacao(docente.cargaHoraria, docente.cargaMaxima))
-        .reduce((a, b) => a + b);
-    return soma / docentes.length;
-  }
-
-  static double _mediaOcupacaoProjetada(
+  static double _mediaOcupacaoEnsino(
     List<Docente> docentes,
-    Map<String, int> cargasProjetadas,
+    RegrasDistribuicaoCarga regras,
   ) {
     if (docentes.isEmpty) return 0;
     final soma = docentes
         .map(
           (docente) => _ocupacao(
-            cargasProjetadas[docente.id] ?? docente.cargaHoraria,
-            docente.cargaMaxima,
+            _cargaAulasAtuaisMinutos(docente, regras),
+            _cargaMaximaAulasMinutos(docente, regras),
           ),
         )
         .reduce((a, b) => a + b);
     return soma / docentes.length;
+  }
+
+  static double _mediaOcupacaoEnsinoProjetada(
+    List<Docente> docentes,
+    Map<String, int> cargasProjetadas,
+    RegrasDistribuicaoCarga regras,
+  ) {
+    if (docentes.isEmpty) return 0;
+    final soma = docentes
+        .map(
+          (docente) => _ocupacao(
+            cargasProjetadas[docente.id] ??
+                _cargaAulasAtuaisMinutos(docente, regras),
+            _cargaMaximaAulasMinutos(docente, regras),
+          ),
+        )
+        .reduce((a, b) => a + b);
+    return soma / docentes.length;
+  }
+
+  static int _cargaAulasAtuaisMinutos(
+    Docente docente,
+    RegrasDistribuicaoCarga regras,
+  ) {
+    return math.max(0, docente.cargaHoraria) * regras.duracaoHoraAulaMinutos;
+  }
+
+  static int _cargaMinimaAulasMinutos(
+    Docente docente,
+    RegrasDistribuicaoCarga regras,
+  ) {
+    final limites = regras.limitesAulasPara(docente.regimeTrabalho);
+    final limiteRegime = math.min(docente.cargaMaxima, limites.minima);
+    return math.max(0, limiteRegime) * regras.duracaoHoraAulaMinutos;
+  }
+
+  static int _cargaMaximaAulasMinutos(
+    Docente docente,
+    RegrasDistribuicaoCarga regras,
+  ) {
+    final limites = regras.limitesAulasPara(docente.regimeTrabalho);
+    final limiteRegime = math.min(docente.cargaMaxima, limites.maxima);
+    return math.max(0, limiteRegime) * regras.duracaoHoraAulaMinutos;
   }
 
   static String? _normalizeNullable(String? value) {

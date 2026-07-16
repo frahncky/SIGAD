@@ -8,48 +8,56 @@ O aplicativo SIGAD foi configurado com um sistema de múltiplos perfis de usuár
 
 ### 1. **Professor (PR)**
   - ✅ Dashboard (Visão Geral)
-  - ✅ Bate-papo
+  - ✅ Bate-papo local demonstrativo
   - ✅ Quadro de Tarefas
-  - ✅ Agenda
+  - ✅ Laboratórios
+  - ✅ Carga docente (consulta dos próprios dados)
   - ✅ Atividades
+  - ✅ Calendário e Anotações
   - ❌ Demandas
   - ❌ Relatórios
-  - ❌ Configurações
+  - ✅ Configurações
 
 ### 2. **Coordenador de Curso (CC)**
   - ✅ Dashboard (Visão Geral)
   - ✅ Bate-papo
   - ✅ Demandas
   - ✅ Quadro de Tarefas
-  - ✅ Agenda
+  - ✅ Laboratórios
+  - ✅ Carga docente
   - ✅ Atividades
+  - ✅ Calendário e Anotações
   - ✅ Relatórios
-  - ❌ Configurações
+  - ✅ Configurações
 
 ### 3. **Servidor Administrativo (SA)**
   - ✅ Dashboard (Visão Geral)
   - ✅ Bate-papo
   - ✅ Quadro de Tarefas
   - ✅ Atividades
+  - ✅ Calendário e Anotações
   - ✅ Relatórios
   - ❌ Demandas
-  - ❌ Agenda
-  - ❌ Configurações
+  - ❌ Laboratórios
+  - ❌ Carga docente
+  - ✅ Configurações
 
 ### 4. **Chefe do Departamento (CD)**
   - ✅ Dashboard (Visão Geral)
   - ✅ Bate-papo
   - ✅ Demandas
   - ✅ Quadro de Tarefas
-  - ✅ Agenda
+  - ✅ Laboratórios
+  - ✅ Carga docente (gestão e redistribuição)
   - ✅ Atividades
+  - ✅ Calendário e Anotações
   - ✅ Relatórios
   - ✅ Configurações
 
 ## Funcionalidades Gerais (Disponíveis para Todos)
 
 - **Dashboard**: Visão geral do sistema
-- **Bate-papo**: Conversa direta entre usuários do sistema
+- **Bate-papo**: Histórico local de demonstração; sem entrega ao destinatário
 - **Quadro de Tarefas**: Visualização de tarefas em quadro de fluxo
 - **Atividades**: Registro estruturado de entregas e eventos
 
@@ -59,8 +67,8 @@ O aplicativo SIGAD foi configurado com um sistema de múltiplos perfis de usuár
 
 1. Usuário acessa a aplicação
 2. Se não autenticado, é redirecionado para a página de login (`/login`)
-3. Insere email e senha
-4. Seleciona seu perfil (role)
+3. Em ambiente demonstrativo, insere dados locais e seleciona seu perfil
+4. Em produção, o acesso permanece bloqueado até a integração institucional
 5. Após login bem-sucedido:
    - Usuário é redirecionado ao Dashboard
    - Menu de navegação é filtrado conforme seu role
@@ -143,12 +151,11 @@ Navigator.pushReplacementNamed(context, AppRoutes.login);
 3. **Servidor Administrativo**: Carlos Admin (carlos.admin@univ.br)
 4. **Chefe do Departamento**: Ana Chefe (ana.chefe@univ.br)
 
-Use o botão "Usar conta demo" para fazer login com uma conta aleatória.
+As contas e a seleção de perfil existem apenas quando o acesso demo está habilitado em `dev`, `test` ou `staging`.
 
 ## Próximos Passos
 
-1. Integrar com backend real para autenticação
-2. Adicionar persistência de sessão (SharedPreferences)
-3. Implementar controlos de acesso granulares por função
-4. Adicionar logs de auditoria
-5. Personalizar conteúdo das páginas por role
+1. Integrar autenticação e diretório institucional do IFMA
+2. Substituir persistência local por backend multiusuário
+3. Integrar mensagens, notificações, convites, relatórios e backup
+4. Enviar logs de auditoria para infraestrutura institucional

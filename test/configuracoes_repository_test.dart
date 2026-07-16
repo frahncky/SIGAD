@@ -23,7 +23,7 @@ void main() {
       expect(data!.nomePerfil, 'Maria');
       expect(data.emailUsuario, 'maria@uni.edu.br');
       expect(data.modoDark, isFalse);
-      expect(data.notificarAntesDaDisciplina, isTrue);
+      expect(data.notificarAntesDaDisciplina, isFalse);
       expect(data.antecedenciaNotificacaoMinutos, 15);
       expect(data.agendaCompromissos, isEmpty);
     });

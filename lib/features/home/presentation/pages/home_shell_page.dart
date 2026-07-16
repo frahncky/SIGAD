@@ -4,7 +4,6 @@ import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/models/navigation_item.dart';
 import '../../../../core/navigation/navigation_items.dart';
-import '../../../../core/services/notificacoes_service.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../../../../shared/widgets/brand_title.dart';
 
@@ -25,14 +24,15 @@ class HomeShellPage extends StatelessWidget {
         final isWide = constraints.maxWidth >= 1024;
         final userContext = context.watch<UserContextProvider>();
         final userRole = userContext.userRole;
-        // unreadChatCount removido pois não é mais utilizado
-        final notifCount = NotificacoesService.porRole(userRole).length;
-
         final availableItems = userRole == null
             ? kNavigationItems
             : kNavigationItems
                   .where((item) => item.isAvailableFor(userRole))
                   .toList();
+        final bottomNavItems = availableItems
+            .where((item) => _bottomNavRoutes.contains(item.route))
+            .toList(growable: false);
+        final childProvidesAppBar = _routesWithOwnAppBar.contains(currentRoute);
         final currentItem = availableItems
             .where((item) => item.route == currentRoute)
             .firstOrNull;
@@ -50,7 +50,7 @@ class HomeShellPage extends StatelessWidget {
                       _navigate(context, availableItems[index].route),
                   onLogout: () => _confirmLogout(context, userContext),
                 ),
-          appBar: isWide
+          appBar: isWide || childProvidesAppBar
               ? null
               : AppBar(
                   titleSpacing: 0,
@@ -64,14 +64,7 @@ class HomeShellPage extends StatelessWidget {
                     IconButton(
                       onPressed: () => _showNotifications(context),
                       tooltip: 'Notificações',
-                      icon: notifCount > 0
-                          ? Badge(
-                              label: Text(
-                                notifCount > 99 ? '99+' : '$notifCount',
-                              ),
-                              child: const Icon(Icons.notifications_outlined),
-                            )
-                          : const Icon(Icons.notifications_outlined),
+                      icon: const Icon(Icons.notifications_outlined),
                     ),
                     IconButton(
                       onPressed: () => _showProfileMenu(context, userContext),
@@ -85,20 +78,19 @@ class HomeShellPage extends StatelessWidget {
               ? null
               : Builder(
                   builder: (navigationContext) => NavigationBar(
-                    selectedIndex: _bottomNavIndex(),
+                    selectedIndex: _bottomNavIndex(bottomNavItems),
                     onDestinationSelected: (index) {
-                      if (index == _bottomNavItems.length) {
+                      if (index == bottomNavItems.length) {
                         Scaffold.of(navigationContext).openDrawer();
                         return;
                       }
-                      final item = _bottomNavItems[index];
-                      _navigate(context, item['route'] as String);
+                      _navigate(context, bottomNavItems[index].route);
                     },
                     destinations: [
-                      ..._bottomNavItems.map(
+                      ...bottomNavItems.map(
                         (item) => NavigationDestination(
-                          icon: Icon(item['icon'] as IconData),
-                          label: item['label'] as String,
+                          icon: Icon(item.icon),
+                          label: item.label,
                         ),
                       ),
                       const NavigationDestination(
@@ -156,30 +148,21 @@ class HomeShellPage extends StatelessWidget {
     );
   }
 
-  // Menu inferior fixo e independente
-  static const _bottomNavItems = [
-    {
-      'route': AppRoutes.dashboard,
-      'label': 'Visão geral',
-      'icon': Icons.dashboard_outlined,
-    },
-    {
-      'route': AppRoutes.calendario,
-      'label': 'Calendário',
-      'icon': Icons.calendar_month_outlined,
-    },
-    {
-      'route': AppRoutes.notas,
-      'label': 'Anotações',
-      'icon': Icons.sticky_note_2_outlined,
-    },
+  static const _bottomNavRoutes = [
+    AppRoutes.dashboard,
+    AppRoutes.calendario,
+    AppRoutes.notas,
   ];
 
-  int _bottomNavIndex() {
-    final idx = _bottomNavItems.indexWhere(
-      (item) => item['route'] == currentRoute,
-    );
-    return idx >= 0 ? idx : _bottomNavItems.length;
+  static const _routesWithOwnAppBar = {
+    AppRoutes.kanban,
+    AppRoutes.calendario,
+    AppRoutes.notas,
+  };
+
+  int _bottomNavIndex(List<NavigationItem> items) {
+    final idx = items.indexWhere((item) => item.route == currentRoute);
+    return idx >= 0 ? idx : items.length;
   }
 
   void _navigate(BuildContext context, String route) {
@@ -192,14 +175,21 @@ class HomeShellPage extends StatelessWidget {
       context: context,
       showDragHandle: true,
       isScrollControlled: true,
-      builder: (_) => _ProfileMenu(userContext: userContext),
+      builder: (sheetContext) => _ProfileMenu(
+        userContext: userContext,
+        onOpenSettings: () {
+          Navigator.of(sheetContext).pop();
+          _navigate(context, AppRoutes.configuracoes);
+        },
+        onLogout: () {
+          Navigator.of(sheetContext).pop();
+          _confirmLogout(context, userContext);
+        },
+      ),
     );
   }
 
   void _showNotifications(BuildContext context) {
-    final userRole = context.read<UserContextProvider>().userRole;
-    final notificacoes = NotificacoesService.porRole(userRole);
-
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
@@ -215,20 +205,16 @@ class HomeShellPage extends StatelessWidget {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 8),
-              if (notificacoes.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 24),
-                  child: Center(child: Text('Nenhuma notificação no momento.')),
-                )
-              else
-                ...notificacoes.map(
-                  (n) => ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: Icon(n.icone),
-                    title: Text(n.titulo),
-                    subtitle: Text(n.subtitulo),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: Center(
+                  child: Text(
+                    'As notificações estarão disponíveis após a integração '
+                    'com o servidor institucional.',
+                    textAlign: TextAlign.center,
                   ),
                 ),
+              ),
             ],
           ),
         );
@@ -635,14 +621,21 @@ class _MobileTopBarTitle extends StatelessWidget {
 }
 
 class _ProfileMenu extends StatelessWidget {
-  const _ProfileMenu({required this.userContext});
+  const _ProfileMenu({
+    required this.userContext,
+    required this.onOpenSettings,
+    required this.onLogout,
+  });
 
   final UserContextProvider userContext;
+  final VoidCallback onOpenSettings;
+  final VoidCallback onLogout;
 
   @override
   Widget build(BuildContext context) {
     final user = userContext.currentUser;
     if (user == null) return const SizedBox.shrink();
+    final colors = Theme.of(context).colorScheme;
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -658,14 +651,50 @@ class _ProfileMenu extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 38,
-                backgroundColor: SigadColors.brand.withValues(alpha: 0.14),
+                backgroundColor: colors.primaryContainer,
                 child: Text(
                   user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: SigadColors.brand,
+                    color: colors.onPrimaryContainer,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                user.name,
+                textAlign: TextAlign.center,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                user.email,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                user.role.displayName,
+                style: Theme.of(
+                  context,
+                ).textTheme.labelLarge?.copyWith(color: colors.primary),
+              ),
+              const SizedBox(height: 16),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.settings_outlined),
+                title: const Text('Configurações'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: onOpenSettings,
+              ),
+              ListTile(
+                leading: Icon(Icons.logout, color: colors.error),
+                title: Text('Sair', style: TextStyle(color: colors.error)),
+                onTap: onLogout,
               ),
             ],
           ),

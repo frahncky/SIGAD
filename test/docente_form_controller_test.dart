@@ -32,6 +32,23 @@ void main() {
       controller.dispose();
     });
 
+    test('valida email de acesso antes de montar o docente', () {
+      final controller = DocenteFormController.createNew();
+      controller.nomeController.text = 'Profa. Ana';
+      controller.departamentoController.text = 'Computação';
+      controller.cargaMaximaController.text = '20';
+      controller.addDisciplina('Algoritmos');
+
+      expect(controller.validate(), 'Informe o email de acesso');
+
+      controller.emailController.text = 'email-invalido';
+      expect(controller.validate(), 'Informe um email de acesso válido');
+
+      controller.emailController.text = 'ana@ifma.edu.br';
+      expect(controller.validate(), isNull);
+      controller.dispose();
+    });
+
     test('carrega docente existente e atualiza dados', () {
       const docente = Docente(
         id: '#DOC-101',

@@ -33,9 +33,11 @@ class RelatorioRepository implements EntityRepository<Relatorio> {
   @override
   Future<void> save(List<Relatorio> entities) => saveRelatorios(entities);
 
-  Future<List<Relatorio>> loadRelatorios() async {
+  Future<List<Relatorio>> loadRelatorios({
+    List<Relatorio> initialData = const [],
+  }) async {
     if (_dataSourceMode == DataSourceMode.local) {
-      return _loadLocalRelatorios();
+      return _loadLocalRelatorios(initialData: initialData);
     }
 
     try {
@@ -48,7 +50,7 @@ class RelatorioRepository implements EntityRepository<Relatorio> {
       );
       if (_enableRemoteFallback) {
         AppEventLogger.action('relatorios_remote_load_fallback_local');
-        return _loadLocalRelatorios();
+        return _loadLocalRelatorios(initialData: initialData);
       }
       rethrow;
     }
@@ -76,8 +78,16 @@ class RelatorioRepository implements EntityRepository<Relatorio> {
     }
   }
 
-  Future<List<Relatorio>> _loadLocalRelatorios() async {
-    final list = await LocalStorageService.loadList(storageKey);
+  Future<List<Relatorio>> _loadLocalRelatorios({
+    List<Relatorio> initialData = const [],
+  }) async {
+    final list = await LocalStorageService.loadListOrNull(storageKey);
+    if (list == null) {
+      if (initialData.isNotEmpty) {
+        await _saveLocalRelatorios(initialData);
+      }
+      return List<Relatorio>.of(initialData, growable: false);
+    }
     if (list.isEmpty) return const [];
 
     final relatorios = <Relatorio>[];

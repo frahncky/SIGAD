@@ -7,6 +7,7 @@ import '../../../../shared/widgets/page_status_view.dart';
 import '../../data/kanban_repository.dart';
 import '../../domain/kanban_models.dart';
 import '../../domain/kanban_service.dart';
+import '../kanban_visuals.dart';
 
 class KanbanPage extends StatefulWidget {
   const KanbanPage({super.key});
@@ -17,10 +18,7 @@ class KanbanPage extends StatefulWidget {
 
 class _KanbanPageState extends State<KanbanPage> {
   final KanbanRepository _kanbanRepository = KanbanRepository();
-  final List<KanbanCardModel> _cards = List<KanbanCardModel>.of(
-    KanbanService.defaultCards(),
-    growable: true,
-  );
+  final List<KanbanCardModel> _cards = [];
   bool _isLoading = true;
   String? _loadError;
 
@@ -37,14 +35,14 @@ class _KanbanPageState extends State<KanbanPage> {
       _loadError = null;
     });
     try {
-      final list = await _kanbanRepository.loadCards();
+      final list = await _kanbanRepository.loadCards(
+        initialData: KanbanService.defaultCards(),
+      );
       if (!mounted) return;
       setState(() {
-        if (list.isNotEmpty) {
-          _cards
-            ..clear()
-            ..addAll(list);
-        }
+        _cards
+          ..clear()
+          ..addAll(list);
         _isLoading = false;
       });
     } catch (error, stackTrace) {
@@ -57,8 +55,24 @@ class _KanbanPageState extends State<KanbanPage> {
     }
   }
 
-  void _saveData() {
-    _kanbanRepository.saveCards(_cards);
+  Future<bool> _saveData(List<KanbanCardModel> previous) async {
+    try {
+      await _kanbanRepository.saveCards(_cards);
+      return true;
+    } catch (error, stackTrace) {
+      AppEventLogger.error('kanban_save_error', error, stackTrace: stackTrace);
+      if (!mounted) return false;
+      setState(() {
+        _cards
+          ..clear()
+          ..addAll(previous);
+      });
+      AppFeedbackService.error(
+        context,
+        'Não foi possível salvar o quadro. Tente novamente.',
+      );
+      return false;
+    }
   }
 
   Map<String, List<KanbanCardModel>> get _colunas =>
@@ -125,14 +139,15 @@ class _KanbanPageState extends State<KanbanPage> {
     );
   }
 
-  void _moveCard(KanbanCardModel card, String novaColuna) {
+  Future<void> _moveCard(KanbanCardModel card, String novaColuna) async {
+    final previous = List<KanbanCardModel>.of(_cards);
     setState(() {
       final index = _cards.indexWhere((c) => c.id == card.id);
       if (index != -1) {
         _cards[index] = KanbanService.moverCard(card, novaColuna);
       }
     });
-    _saveData();
+    await _saveData(previous);
   }
 
   Future<void> _deleteCard(KanbanCardModel card) async {
@@ -154,11 +169,12 @@ class _KanbanPageState extends State<KanbanPage> {
       ),
     );
     if (!mounted || confirmed != true) return;
+    final previous = List<KanbanCardModel>.of(_cards);
     setState(() {
       _cards.removeWhere((c) => c.id == card.id);
     });
+    if (!await _saveData(previous) || !mounted) return;
     AppFeedbackService.info(context, 'Card "${card.titulo}" removido');
-    _saveData();
   }
 
   void _showCriarCard(BuildContext context) {
@@ -209,11 +225,12 @@ class _KanbanPageState extends State<KanbanPage> {
               child: const Text('Cancelar'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 final erro = KanbanService.validateTitulo(
                   tituloController.text,
                 );
                 if (erro == null) {
+                  final previous = List<KanbanCardModel>.of(_cards);
                   setState(() {
                     final newId = KanbanService.nextId(_cards);
                     _cards.add(
@@ -225,12 +242,13 @@ class _KanbanPageState extends State<KanbanPage> {
                       ),
                     );
                   });
+                  if (!await _saveData(previous) || !mounted) return;
+                  if (!context.mounted) return;
                   Navigator.pop(context);
                   AppFeedbackService.success(
-                    context,
+                    this.context,
                     'Card criado com sucesso!',
                   );
-                  _saveData();
                 } else {
                   AppFeedbackService.warning(context, erro);
                 }
@@ -476,7 +494,7 @@ class _KanbanCard extends StatelessWidget {
   }
 
   Color _getPrioridadeColor(String prioridade) {
-    return KanbanService.prioridadeColor(prioridade);
+    return KanbanVisuals.prioridadeColor(prioridade);
   }
 
   void _showDetalhes(BuildContext context) {

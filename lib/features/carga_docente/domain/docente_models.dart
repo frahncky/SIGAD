@@ -105,6 +105,8 @@ class PropostaRedistribuicao {
     required this.docenteDestinoNome,
     required this.horario,
     required this.cargaSemanal,
+    this.pontuacao = 0,
+    this.justificativas = const [],
   });
 
   final String docenteOrigemId;
@@ -113,6 +115,18 @@ class PropostaRedistribuicao {
   final String docenteDestinoNome;
   final HorarioAula horario;
   final int cargaSemanal;
+  final double pontuacao;
+  final List<String> justificativas;
+}
+
+class AvaliacaoAfinidadeRedistribuicao {
+  const AvaliacaoAfinidadeRedistribuicao({
+    required this.pontuacao,
+    required this.explicacao,
+  });
+
+  final double pontuacao;
+  final String explicacao;
 }
 
 class ResultadoSimulacaoRedistribuicao {
@@ -125,4 +139,22 @@ class ResultadoSimulacaoRedistribuicao {
   final List<PropostaRedistribuicao> propostas;
   final double mediaOcupacaoAntes;
   final double mediaOcupacaoDepois;
+}
+
+enum ResultadoDecisaoRedistribuicao { aceita, rejeitada }
+
+class RegistroDecisaoRedistribuicao {
+  const RegistroDecisaoRedistribuicao({
+    required this.docenteDestinoId,
+    required this.disciplina,
+    required this.diaSemana,
+    required this.resultado,
+    required this.ocorridoEm,
+  });
+
+  final String docenteDestinoId;
+  final String disciplina;
+  final String diaSemana;
+  final ResultadoDecisaoRedistribuicao resultado;
+  final DateTime ocorridoEm;
 }

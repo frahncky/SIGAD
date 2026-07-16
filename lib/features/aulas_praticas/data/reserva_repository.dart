@@ -6,8 +6,16 @@ class ReservaRepository {
 
   final String storageKey;
 
-  Future<List<ReservaLaboratorio>> loadReservas() async {
-    final list = await LocalStorageService.loadList(storageKey);
+  Future<List<ReservaLaboratorio>> loadReservas({
+    List<ReservaLaboratorio> initialData = const [],
+  }) async {
+    final list = await LocalStorageService.loadListOrNull(storageKey);
+    if (list == null) {
+      if (initialData.isNotEmpty) {
+        await saveReservas(initialData);
+      }
+      return List<ReservaLaboratorio>.of(initialData, growable: false);
+    }
     if (list.isEmpty) return const [];
 
     final reservas = <ReservaLaboratorio>[];

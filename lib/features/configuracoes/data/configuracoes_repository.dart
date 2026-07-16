@@ -43,24 +43,23 @@ class ConfiguracoesRepository {
   };
 
   ConfiguracoesData _fromMap(Map<String, dynamic> data) => ConfiguracoesData(
-    notificacoesAtivas: data['notificacoesAtivas'] as bool? ?? true,
+    notificacoesAtivas: data['notificacoesAtivas'] as bool? ?? false,
     notificarAntesDaDisciplina:
-        data['notificarAntesDaDisciplina'] as bool? ?? true,
+        data['notificarAntesDaDisciplina'] as bool? ?? false,
     antecedenciaNotificacaoMinutos:
         data['antecedenciaNotificacaoMinutos'] as int? ?? 15,
     modoDark: data['modoDark'] as bool? ?? false,
     biometriaAtiva: data['biometriaAtiva'] as bool? ?? false,
-    backupAutomaticoAtivo: data['backupAutomaticoAtivo'] as bool? ?? true,
+    backupAutomaticoAtivo: data['backupAutomaticoAtivo'] as bool? ?? false,
     idioma: data['idioma'] as String? ?? 'Português (Brasil)',
     tamanhoFonte: data['tamanhoFonte'] as String? ?? 'Médio',
-    nomePerfil: data['nomePerfil'] as String? ?? 'João Silva',
-    cargoPerfil: data['cargoPerfil'] as String? ?? 'Coordenador Acadêmico',
-    emailUsuario:
-        data['emailUsuario'] as String? ?? 'joao.silva@universidade.edu.br',
+    nomePerfil: data['nomePerfil'] as String? ?? 'Usuário',
+    cargoPerfil: data['cargoPerfil'] as String? ?? 'Perfil institucional',
+    emailUsuario: data['emailUsuario'] as String? ?? '',
     ultimaAlteracaoSenha:
-        data['ultimaAlteracaoSenha'] as String? ?? '20/02/2026',
-    proximoBackup: data['proximoBackup'] as String? ?? '25/04/2026',
-    ultimoBackup: data['ultimoBackup'] as String? ?? '20/04/2026 às 14:30',
+        data['ultimaAlteracaoSenha'] as String? ?? 'Indisponível',
+    proximoBackup: data['proximoBackup'] as String? ?? 'Indisponível',
+    ultimoBackup: data['ultimoBackup'] as String? ?? 'Indisponível',
     problemasReportados: data['problemasReportados'] as int? ?? 0,
     agendaCompromissos:
         (data['agendaCompromissos'] as List<dynamic>? ?? const [])

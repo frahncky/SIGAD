@@ -33,9 +33,11 @@ class DemandaRepository implements EntityRepository<Demanda> {
   @override
   Future<void> save(List<Demanda> entities) => saveDemandas(entities);
 
-  Future<List<Demanda>> loadDemandas() async {
+  Future<List<Demanda>> loadDemandas({
+    List<Demanda> initialData = const [],
+  }) async {
     if (_dataSourceMode == DataSourceMode.local) {
-      return _loadLocalDemandas();
+      return _loadLocalDemandas(initialData: initialData);
     }
 
     try {
@@ -48,7 +50,7 @@ class DemandaRepository implements EntityRepository<Demanda> {
       );
       if (_enableRemoteFallback) {
         AppEventLogger.action('demandas_remote_load_fallback_local');
-        return _loadLocalDemandas();
+        return _loadLocalDemandas(initialData: initialData);
       }
       rethrow;
     }
@@ -76,8 +78,16 @@ class DemandaRepository implements EntityRepository<Demanda> {
     }
   }
 
-  Future<List<Demanda>> _loadLocalDemandas() async {
-    final list = await LocalStorageService.loadList(storageKey);
+  Future<List<Demanda>> _loadLocalDemandas({
+    List<Demanda> initialData = const [],
+  }) async {
+    final list = await LocalStorageService.loadListOrNull(storageKey);
+    if (list == null) {
+      if (initialData.isNotEmpty) {
+        await _saveLocalDemandas(initialData);
+      }
+      return List<Demanda>.of(initialData, growable: false);
+    }
     if (list.isEmpty) return const [];
 
     final demandas = <Demanda>[];

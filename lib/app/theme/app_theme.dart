@@ -139,7 +139,7 @@ abstract final class AppTheme {
             brightness: Brightness.dark,
           ).copyWith(
             surface: surfaceDark,
-            primary: SigadColors.brand,
+            primary: SigadColors.brandOnDark,
             secondary: SigadColors.accent,
           ),
       scaffoldBackgroundColor: canvasDark,
@@ -153,11 +153,11 @@ abstract final class AppTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: surfaceDark,
-        indicatorColor: SigadColors.brand.withValues(alpha: 0.22),
+        indicatorColor: SigadColors.brandOnDark.withValues(alpha: 0.22),
         iconTheme: WidgetStateProperty.resolveWith(
           (states) => IconThemeData(
             color: states.contains(WidgetState.selected)
-                ? SigadColors.brand
+                ? SigadColors.brandOnDark
                 : mutedDark,
           ),
         ),
@@ -167,7 +167,7 @@ abstract final class AppTheme {
                 ? FontWeight.w700
                 : FontWeight.w600,
             color: states.contains(WidgetState.selected)
-                ? SigadColors.brand
+                ? SigadColors.brandOnDark
                 : mutedDark,
           ),
         ),

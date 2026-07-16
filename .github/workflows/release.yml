@@ -37,6 +37,9 @@ jobs:
           flutter analyze
           flutter test --coverage
 
+      - name: Validate production demo access lock
+        run: flutter test test/login_production_mode_widget_test.dart --dart-define=SIGAD_FLAVOR=prod --dart-define=SIGAD_ENABLE_DEMO_ACCESS=true
+
       - name: Bump version and changelog
         run: |
           bash .github/scripts/bump_version_and_changelog.sh "${{ github.event.inputs.version }}" "${{ github.event.inputs.release_notes }}"
@@ -55,7 +58,7 @@ jobs:
           git push origin "v${{ github.event.inputs.version }}"
 
       - name: Build Android AAB
-        run: flutter build appbundle --release
+        run: flutter build appbundle --release --dart-define=SIGAD_FLAVOR=prod --dart-define=SIGAD_ENABLE_DEMO_ACCESS=false
 
       - name: Upload AAB artifact
         uses: actions/upload-artifact@v4
