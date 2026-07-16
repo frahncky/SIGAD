@@ -29,6 +29,7 @@ void main() {
 
     await tester.enterText(find.byType(TextField).first, 'email-invalido');
     await tester.enterText(find.byType(TextField).at(1), '1234');
+    await tester.ensureVisible(find.text('Entrar'));
     await tester.tap(find.text('Entrar'));
     await tester.pump();
 

@@ -102,7 +102,10 @@ class _PageHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final label = DateFormat("EEEE, d 'de' MMMM", 'pt_BR').format(diaSelecionado);
+    final label = DateFormat(
+      "EEEE, d 'de' MMMM",
+      'pt_BR',
+    ).format(diaSelecionado);
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -124,7 +127,10 @@ class _PageHeader extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: Colors.white.withValues(alpha: 0.20)),
             ),
-            child: const Icon(Icons.calendar_month_rounded, color: Colors.white),
+            child: const Icon(
+              Icons.calendar_month_rounded,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -235,7 +241,12 @@ class _AgendaDoDia extends StatelessWidget {
       _Evento('09:00', '10:30', 'Reunião com coordenadores', 'Reunião'),
       _Evento('10:50', '11:40', 'Reserva do Lab. de Eletrônica', 'Laboratório'),
       _Evento('14:00', '15:00', 'Publicar comunicado no mural', 'Comunicação'),
-      _Evento('16:00', '17:00', 'Fechamento da distribuição de carga', 'Administrativo'),
+      _Evento(
+        '16:00',
+        '17:00',
+        'Fechamento da distribuição de carga',
+        'Administrativo',
+      ),
     ];
   }
 }
@@ -271,7 +282,10 @@ class _EventoTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(evento.inicio, style: const TextStyle(fontWeight: FontWeight.w700)),
+                Text(
+                  evento.inicio,
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
                 Text(evento.fim, style: Theme.of(context).textTheme.bodySmall),
               ],
             ),
@@ -282,7 +296,10 @@ class _EventoTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(evento.titulo, style: const TextStyle(fontWeight: FontWeight.w700)),
+                Text(
+                  evento.titulo,
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
                 const SizedBox(height: 3),
                 Text(
                   evento.categoria,
@@ -356,9 +373,16 @@ class _EmptyAgenda extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(Icons.event_available_rounded, size: 40, color: Theme.of(context).colorScheme.primary),
+          Icon(
+            Icons.event_available_rounded,
+            size: 40,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           const SizedBox(height: 10),
-          const Text('Nenhum compromisso neste dia.', style: TextStyle(fontWeight: FontWeight.w700)),
+          const Text(
+            'Nenhum compromisso neste dia.',
+            style: TextStyle(fontWeight: FontWeight.w700),
+          ),
         ],
       ),
     );

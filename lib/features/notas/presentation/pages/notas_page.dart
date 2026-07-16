@@ -18,10 +18,10 @@ class Nota {
   final DateTime data;
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'texto': texto,
-        'data': data.toIso8601String(),
-      };
+    'id': id,
+    'texto': texto,
+    'data': data.toIso8601String(),
+  };
 
   static Nota? fromMap(Map<String, dynamic> map) {
     final texto = map['texto'] as String?;
@@ -75,9 +75,9 @@ class _NotasPageState extends State<NotasPage> {
   }
 
   Future<void> _salvarNotas() => LocalStorageService.saveList(
-        _storageKey,
-        _notas.map((nota) => nota.toMap()).toList(growable: false),
-      );
+    _storageKey,
+    _notas.map((nota) => nota.toMap()).toList(growable: false),
+  );
 
   Future<void> _criarOuEditarNota({Nota? nota}) async {
     var textoEditado = nota?.texto ?? '';
@@ -239,7 +239,11 @@ class _NotasPageState extends State<NotasPage> {
               padding: const EdgeInsets.symmetric(vertical: 56),
               child: Column(
                 children: [
-                  Icon(Icons.search_off_rounded, size: 48, color: colors.outline),
+                  Icon(
+                    Icons.search_off_rounded,
+                    size: 48,
+                    color: colors.outline,
+                  ),
                   const SizedBox(height: 12),
                   const Text('Nenhuma anotação encontrada.'),
                 ],
@@ -295,8 +299,8 @@ class _EmptyNotes extends StatelessWidget {
           Text(
             'Use este espaço para registrar encaminhamentos, ideias e lembretes rápidos.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 18),
@@ -356,8 +360,14 @@ class _NoteCard extends StatelessWidget {
                     if (value == 'delete') onDelete();
                   },
                   itemBuilder: (_) => const [
-                    PopupMenuItem(value: 'edit', child: Text('Editar anotação')),
-                    PopupMenuItem(value: 'delete', child: Text('Excluir anotação')),
+                    PopupMenuItem(
+                      value: 'edit',
+                      child: Text('Editar anotação'),
+                    ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: Text('Excluir anotação'),
+                    ),
                   ],
                 ),
               ],
@@ -365,13 +375,17 @@ class _NoteCard extends StatelessWidget {
             const SizedBox(height: 12),
             Row(
               children: [
-                Icon(Icons.schedule_rounded, size: 16, color: colors.onSurfaceVariant),
+                Icon(
+                  Icons.schedule_rounded,
+                  size: 16,
+                  color: colors.onSurfaceVariant,
+                ),
                 const SizedBox(width: 6),
                 Text(
                   _formatDate(nota.data),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
+                    color: colors.onSurfaceVariant,
+                  ),
                 ),
                 const Spacer(),
                 IconButton(
