@@ -1,0 +1,57 @@
+name: Executa contexto IFMA v2
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - reopened
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.head_ref == 'institucionalizacao-ifma-v2'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: institucionalizacao-ifma-v2
+          fetch-depth: 0
+
+      - name: Extrair e executar atualização institucional
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          source = Path('.github/workflows/institucionaliza-ifma-v2.yml').read_text(encoding='utf-8').splitlines()
+          start = next(i for i, line in enumerate(source) if "python3 - <<'PY'" in line) + 1
+          end = next(i for i in range(start, len(source)) if source[i].strip() == 'PY')
+          script = '\n'.join(line[10:] if line.startswith('          ') else line for line in source[start:end])
+          Path('/tmp/aplica_contexto_ifma.py').write_text(script, encoding='utf-8')
+          PY
+          python3 /tmp/aplica_contexto_ifma.py
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+
+      - name: Formatar e validar
+        run: |
+          dart format lib test
+          flutter pub get
+          flutter analyze
+          flutter test
+
+      - name: Commitar atualização
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          if git diff --cached --quiet; then
+            echo "Sem alterações pendentes."
+          else
+            git commit -m "feat: institucionaliza SIGAD para o IFMA Monte Castelo [skip ci]"
+            git push origin HEAD:institucionalizacao-ifma-v2
+          fi
