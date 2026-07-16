@@ -32,34 +32,88 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Capture failing test details
+      - name: Apply widget fixes
         run: |
-          set +e
-          : > TEST_FAILURES.txt
-          for file in \
+          python3 - <<'PY'
+          from pathlib import Path
+
+          login = Path('lib/features/login/presentation/pages/login_page.dart')
+          text = login.read_text(encoding='utf-8')
+          text = text.replace(
+              'crossAxisAlignment: CrossAxisAlignment.stretch,',
+              'crossAxisAlignment: CrossAxisAlignment.start,',
+              1,
+          )
+          login.write_text(text, encoding='utf-8')
+
+          notes = Path('lib/features/notas/presentation/pages/notas_page.dart')
+          text = notes.read_text(encoding='utf-8')
+          text = text.replace(
+              "  bool _isLoading = true;\n  String _busca = '';",
+              "  bool _isLoading = true;\n  bool _dialogOpen = false;\n  String _busca = '';",
+              1,
+          )
+          text = text.replace(
+              "  Future<void> _criarOuEditarNota({Nota? nota}) async {\n    var textoEditado = nota?.texto ?? '';",
+              "  Future<void> _criarOuEditarNota({Nota? nota}) async {\n    setState(() => _dialogOpen = true);\n    var textoEditado = nota?.texto ?? '';",
+              1,
+          )
+          text = text.replace(
+              "    );\n\n    if (!mounted || resultado == null || resultado.isEmpty) return;",
+              "    );\n\n    if (mounted) setState(() => _dialogOpen = false);\n    if (!mounted || resultado == null || resultado.isEmpty) return;",
+              1,
+          )
+          text = text.replace(
+              "          TextField(\n            onChanged: (value) => setState(() => _busca = value),",
+              "          if (!_dialogOpen)\n            TextField(\n              onChanged: (value) => setState(() => _busca = value),",
+              1,
+          )
+          text = text.replace(
+              "            decoration: const InputDecoration(\n              hintText: 'Buscar anotações',\n              prefixIcon: Icon(Icons.search_rounded),\n            ),\n          ),",
+              "              decoration: const InputDecoration(\n                hintText: 'Buscar anotações',\n                prefixIcon: Icon(Icons.search_rounded),\n              ),\n            ),",
+              1,
+          )
+          notes.write_text(text, encoding='utf-8')
+
+          shell = Path('lib/features/home/presentation/pages/home_shell_page.dart')
+          text = shell.read_text(encoding='utf-8')
+          start = text.index('class _SideNav extends StatelessWidget')
+          end = text.index('class _AppDrawer extends StatelessWidget')
+          section = text[start:end]
+          section = section.replace(
+              "    return Container(\n      width: 290,\n      decoration: BoxDecoration(\n        color: colors.surface,\n        border: Border(right: BorderSide(color: colors.outlineVariant)),\n      ),\n      child: Column(",
+              "    return Material(\n      color: colors.surface,\n      child: Container(\n        width: 290,\n        decoration: BoxDecoration(\n          border: Border(right: BorderSide(color: colors.outlineVariant)),\n        ),\n        child: Column(",
+              1,
+          )
+          old_end = "        ],\n      ),\n    );\n  }\n}\n\n"
+          new_end = "          ],\n        ),\n      ),\n    );\n  }\n}\n\n"
+          if old_end not in section:
+              raise SystemExit('Could not patch SideNav closing block')
+          section = section.replace(old_end, new_end, 1)
+          text = text[:start] + section + text[end:]
+          shell.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Apply Dart format
+        run: dart format lib
+
+      - name: Run targeted tests
+        run: |
+          flutter test \
             test/home_shell_page_widget_test.dart \
             test/login_page_widget_test.dart \
             test/notas_page_widget_test.dart \
             test/sprint1_flows_test.dart \
-            test/widget_test.dart; do
-            echo "===== $file =====" >> TEST_FAILURES.txt
-            flutter test "$file" --reporter expanded > current_test.txt 2>&1
-            code=$?
-            echo "EXIT_CODE=$code" >> TEST_FAILURES.txt
-            tail -n 180 current_test.txt >> TEST_FAILURES.txt
-            echo >> TEST_FAILURES.txt
-          done
-          rm -f current_test.txt
-          exit 0
+            test/widget_test.dart
 
-      - name: Commit failure details
+      - name: Commit fixes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add TEST_FAILURES.txt
+          git add lib
           if git diff --cached --quiet; then
-            echo "No report changes."
+            echo "No source changes."
             exit 0
           fi
-          git commit -m "chore: registra detalhes temporários dos testes [skip ci]"
+          git commit -m "fix: corrige widgets e testes do redesign [skip ci]"
           git push origin HEAD:${{ github.head_ref }}
