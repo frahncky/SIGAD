@@ -1,46 +1,143 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import 'sigad_colors.dart';
 
-/// Responsável por fornecer os temas claro e escuro do app SIGAD.
 abstract final class AppTheme {
-  /// Tema claro do aplicativo.
   static ThemeData light() {
     final base = ThemeData.light(useMaterial3: true);
-    final textTheme = GoogleFonts.config.allowRuntimeFetching
-        ? GoogleFonts.spaceGroteskTextTheme(base.textTheme)
-        : base.textTheme;
+    final textTheme = _textTheme(base.textTheme).apply(
+      bodyColor: SigadColors.ink,
+      displayColor: SigadColors.ink,
+    );
 
+    final colors = ColorScheme.fromSeed(
+      seedColor: SigadColors.brand,
+      brightness: Brightness.light,
+      surface: SigadColors.surface,
+    ).copyWith(
+      primary: SigadColors.brand,
+      onPrimary: Colors.white,
+      primaryContainer: SigadColors.brandLight,
+      onPrimaryContainer: SigadColors.brandDark,
+      secondary: SigadColors.accent,
+      secondaryContainer: SigadColors.accentSoft,
+      error: SigadColors.risk,
+      surface: SigadColors.surface,
+      surfaceContainerLowest: SigadColors.surface,
+      surfaceContainerLow: SigadColors.surfaceWarm,
+      surfaceContainer: SigadColors.surfaceAlt,
+      surfaceContainerHigh: SigadColors.brandLight,
+      outline: SigadColors.divider,
+      outlineVariant: SigadColors.divider,
+      onSurface: SigadColors.ink,
+      onSurfaceVariant: SigadColors.muted,
+    );
+
+    return _buildTheme(
+      base: base,
+      colors: colors,
+      textTheme: textTheme,
+      canvas: SigadColors.canvas,
+      surface: SigadColors.surface,
+      divider: SigadColors.divider,
+      muted: SigadColors.muted,
+      dark: false,
+    );
+  }
+
+  static ThemeData dark() {
+    const canvas = Color(0xFF0D1715);
+    const surface = Color(0xFF162521);
+    const surfaceAlt = Color(0xFF20332E);
+    const ink = Color(0xFFE8F0ED);
+    const muted = Color(0xFF9AAEA8);
+    const divider = Color(0xFF31453F);
+
+    final base = ThemeData.dark(useMaterial3: true);
+    final textTheme = _textTheme(base.textTheme).apply(
+      bodyColor: ink,
+      displayColor: ink,
+    );
+
+    final colors = ColorScheme.fromSeed(
+      seedColor: SigadColors.brand,
+      brightness: Brightness.dark,
+      surface: surface,
+    ).copyWith(
+      primary: const Color(0xFF63C8B4),
+      onPrimary: SigadColors.brandDeep,
+      primaryContainer: const Color(0xFF174F45),
+      secondary: const Color(0xFFFFBE70),
+      surface: surface,
+      surfaceContainerLowest: canvas,
+      surfaceContainerLow: surface,
+      surfaceContainer: surfaceAlt,
+      surfaceContainerHigh: const Color(0xFF29413A),
+      outline: divider,
+      outlineVariant: divider,
+      onSurface: ink,
+      onSurfaceVariant: muted,
+      error: const Color(0xFFFFB4AB),
+    );
+
+    return _buildTheme(
+      base: base,
+      colors: colors,
+      textTheme: textTheme,
+      canvas: canvas,
+      surface: surface,
+      divider: divider,
+      muted: muted,
+      dark: true,
+    );
+  }
+
+  static ThemeData _buildTheme({
+    required ThemeData base,
+    required ColorScheme colors,
+    required TextTheme textTheme,
+    required Color canvas,
+    required Color surface,
+    required Color divider,
+    required Color muted,
+    required bool dark,
+  }) {
     return base.copyWith(
-      colorScheme:
-          ColorScheme.fromSeed(
-            seedColor: SigadColors.brand,
-            brightness: Brightness.light,
-          ).copyWith(
-            surface: SigadColors.surface,
-            primary: SigadColors.brand,
-            secondary: SigadColors.accent,
-          ),
-      scaffoldBackgroundColor: SigadColors.canvas,
-      textTheme: textTheme.apply(
-        bodyColor: SigadColors.ink,
-        displayColor: SigadColors.ink,
-      ),
+      colorScheme: colors,
+      scaffoldBackgroundColor: canvas,
+      textTheme: textTheme,
+      dividerColor: divider,
+      visualDensity: VisualDensity.standard,
       appBarTheme: AppBarTheme(
-        backgroundColor: SigadColors.surface,
-        elevation: 2,
+        backgroundColor: surface,
+        foregroundColor: colors.onSurface,
+        elevation: 0,
+        scrolledUnderElevation: 1,
         centerTitle: false,
-        surfaceTintColor: SigadColors.surface,
-        shadowColor: Colors.black12,
+        surfaceTintColor: surface,
+        shadowColor: Colors.black.withValues(alpha: dark ? 0.24 : 0.06),
+        titleTextStyle: textTheme.titleMedium?.copyWith(
+          color: colors.onSurface,
+          fontWeight: FontWeight.w700,
+        ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: SigadColors.surface,
-        indicatorColor: SigadColors.brand.withValues(alpha: 0.14),
+        height: 74,
+        elevation: 8,
+        backgroundColor: surface,
+        surfaceTintColor: Colors.transparent,
+        shadowColor: Colors.black.withValues(alpha: dark ? 0.22 : 0.08),
+        indicatorColor: colors.primaryContainer,
+        indicatorShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
         iconTheme: WidgetStateProperty.resolveWith(
           (states) => IconThemeData(
+            size: states.contains(WidgetState.selected) ? 25 : 23,
             color: states.contains(WidgetState.selected)
-                ? SigadColors.brand
-                : SigadColors.muted,
+                ? colors.primary
+                : muted,
           ),
         ),
         labelTextStyle: WidgetStateProperty.resolveWith(
@@ -49,191 +146,165 @@ abstract final class AppTheme {
                 ? FontWeight.w700
                 : FontWeight.w600,
             color: states.contains(WidgetState.selected)
-                ? SigadColors.brand
-                : SigadColors.muted,
+                ? colors.primary
+                : muted,
           ),
         ),
       ),
       cardTheme: CardThemeData(
-        color: SigadColors.surface,
-        elevation: 2,
-        shadowColor: Colors.black.withValues(alpha: 0.08),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        margin: EdgeInsets.zero,
+        color: surface,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        shadowColor: Colors.black.withValues(alpha: dark ? 0.20 : 0.07),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+          side: BorderSide(color: divider),
+        ),
       ),
-      dividerColor: SigadColors.divider,
       chipTheme: base.chipTheme.copyWith(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        side: const BorderSide(color: SigadColors.divider),
+        backgroundColor: surface,
+        selectedColor: colors.primaryContainer,
+        labelStyle: textTheme.labelMedium?.copyWith(
+          color: muted,
+          fontWeight: FontWeight.w600,
+        ),
+        secondaryLabelStyle: textTheme.labelMedium?.copyWith(
+          color: colors.onPrimaryContainer,
+          fontWeight: FontWeight.w700,
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        side: BorderSide(color: divider),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: SigadColors.surface,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide.none,
+        fillColor: surface,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+        prefixIconColor: muted,
+        suffixIconColor: muted,
+        labelStyle: textTheme.bodyMedium?.copyWith(color: muted),
+        hintStyle: textTheme.bodyMedium?.copyWith(color: muted),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: divider),
         ),
-        hintStyle: textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
-      ),
-      snackBarTheme: SnackBarThemeData(
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: SigadColors.ink,
-        contentTextStyle: textTheme.bodyMedium?.copyWith(color: Colors.white),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      ),
-      bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: SigadColors.surface,
-        surfaceTintColor: SigadColors.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: colors.primary, width: 1.6),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: colors.error),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: colors.error, width: 1.6),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-          elevation: 2,
+          minimumSize: const Size(0, 48),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
           textStyle: textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+          minimumSize: const Size(0, 48),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
-          side: const BorderSide(color: SigadColors.divider, width: 1.5),
+          side: BorderSide(color: divider, width: 1.2),
           textStyle: textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
           ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: colors.primary,
+          textStyle: textTheme.labelLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: colors.primary,
+        foregroundColor: colors.onPrimary,
+        elevation: 4,
+        shape: const CircleBorder(),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: colors.onSurface,
+        contentTextStyle: textTheme.bodyMedium?.copyWith(color: surface),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: surface,
+        surfaceTintColor: surface,
+        showDragHandle: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
         ),
       ),
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(
-          highlightColor: SigadColors.brand.withValues(alpha: 0.1),
+          foregroundColor: colors.onSurface,
+          highlightColor: colors.primaryContainer,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
+      ),
+      listTileTheme: ListTileThemeData(
+        iconColor: muted,
+        textColor: colors.onSurface,
+        minVerticalPadding: 10,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
       ),
     );
   }
 
-  /// Tema escuro do aplicativo.
-  static ThemeData dark() {
-    const canvasDark = Color(0xFF0F1A18);
-    const surfaceDark = Color(0xFF1A2B28);
-    const inkDark = Color(0xFFE4EDE9);
-    const mutedDark = Color(0xFF8BA39C);
-    const dividerDark = Color(0xFF2C3E3A);
+  static TextTheme _textTheme(TextTheme base) {
+    final source = GoogleFonts.config.allowRuntimeFetching
+        ? GoogleFonts.spaceGroteskTextTheme(base)
+        : base;
 
-    final base = ThemeData.dark(useMaterial3: true);
-    final textTheme = GoogleFonts.config.allowRuntimeFetching
-        ? GoogleFonts.spaceGroteskTextTheme(base.textTheme)
-        : base.textTheme;
-
-    return base.copyWith(
-      colorScheme:
-          ColorScheme.fromSeed(
-            seedColor: SigadColors.brand,
-            brightness: Brightness.dark,
-          ).copyWith(
-            surface: surfaceDark,
-            primary: SigadColors.brand,
-            secondary: SigadColors.accent,
-          ),
-      scaffoldBackgroundColor: canvasDark,
-      textTheme: textTheme.apply(bodyColor: inkDark, displayColor: inkDark),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: surfaceDark,
-        elevation: 2,
-        centerTitle: false,
-        surfaceTintColor: surfaceDark,
-        shadowColor: Colors.black26,
+    return source.copyWith(
+      displayLarge: source.displayLarge?.copyWith(
+        fontWeight: FontWeight.w700,
+        letterSpacing: -1.2,
       ),
-      navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: surfaceDark,
-        indicatorColor: SigadColors.brand.withValues(alpha: 0.22),
-        iconTheme: WidgetStateProperty.resolveWith(
-          (states) => IconThemeData(
-            color: states.contains(WidgetState.selected)
-                ? SigadColors.brand
-                : mutedDark,
-          ),
-        ),
-        labelTextStyle: WidgetStateProperty.resolveWith(
-          (states) => textTheme.labelSmall?.copyWith(
-            fontWeight: states.contains(WidgetState.selected)
-                ? FontWeight.w700
-                : FontWeight.w600,
-            color: states.contains(WidgetState.selected)
-                ? SigadColors.brand
-                : mutedDark,
-          ),
-        ),
+      headlineLarge: source.headlineLarge?.copyWith(
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.7,
       ),
-      cardTheme: CardThemeData(
-        color: surfaceDark,
-        elevation: 2,
-        shadowColor: Colors.black.withValues(alpha: 0.3),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      headlineMedium: source.headlineMedium?.copyWith(
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.5,
       ),
-      dividerColor: dividerDark,
-      chipTheme: base.chipTheme.copyWith(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        side: const BorderSide(color: dividerDark),
+      headlineSmall: source.headlineSmall?.copyWith(
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.35,
       ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: surfaceDark,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide.none,
-        ),
-        hintStyle: textTheme.bodyMedium?.copyWith(color: mutedDark),
+      titleLarge: source.titleLarge?.copyWith(
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.25,
       ),
-      snackBarTheme: SnackBarThemeData(
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: inkDark,
-        contentTextStyle: textTheme.bodyMedium?.copyWith(color: canvasDark),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      ),
-      bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: surfaceDark,
-        surfaceTintColor: surfaceDark,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        ),
-      ),
-      filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-          textStyle: textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-          side: const BorderSide(color: dividerDark, width: 1.5),
-          textStyle: textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-      iconButtonTheme: IconButtonThemeData(
-        style: IconButton.styleFrom(
-          highlightColor: SigadColors.brand.withValues(alpha: 0.18),
-        ),
-      ),
+      titleMedium: source.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+      labelLarge: source.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+      bodyLarge: source.bodyLarge?.copyWith(height: 1.35),
+      bodyMedium: source.bodyMedium?.copyWith(height: 1.35),
+      bodySmall: source.bodySmall?.copyWith(height: 1.3),
     );
   }
 }
