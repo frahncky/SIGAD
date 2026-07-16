@@ -95,7 +95,9 @@ class _LoginPageState extends State<LoginPage> {
       children: [
         Text(
           'Entrar no SIGAD',
-          style: compact ? theme.textTheme.titleLarge : theme.textTheme.headlineSmall,
+          style: compact
+              ? theme.textTheme.titleLarge
+              : theme.textTheme.headlineSmall,
         ),
         const SizedBox(height: 4),
         Text(
@@ -125,8 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                           overflow: TextOverflow.ellipsis,
                         ),
                         selected: _selectedRole == role,
-                        onSelected: (_) =>
-                            setState(() => _selectedRole = role),
+                        onSelected: (_) => setState(() => _selectedRole = role),
                         visualDensity: VisualDensity.compact,
                       ),
                     ),
@@ -170,9 +171,8 @@ class _LoginPageState extends State<LoginPage> {
                     tooltip: _obscurePassword
                         ? 'Mostrar senha'
                         : 'Ocultar senha',
-                    onPressed: () => setState(
-                      () => _obscurePassword = !_obscurePassword,
-                    ),
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
                     icon: Icon(
                       _obscurePassword
                           ? Icons.visibility_outlined
@@ -406,9 +406,9 @@ class _CompactBrandHeader extends StatelessWidget {
               const BrandTitle(compact: true),
               Text(
                 'Gestão acadêmica e departamental',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: colors.onSurfaceVariant,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
               ),
             ],
           ),
