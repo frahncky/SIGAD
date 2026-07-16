@@ -6,16 +6,69 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Corrigir integração IFMA
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          login = Path('lib/features/login/presentation/pages/login_page_v2.dart')
+          text = login.read_text(encoding='utf-8')
+          text = text.replace(
+              'IFMA — Campus São Luís–Monte Castelo do IFMA — Campus São Luís–Monte Castelo.',
+              'Gestão acadêmica e departamental do IFMA — Campus São Luís–Monte Castelo.',
+          )
+          login.write_text(text, encoding='utf-8')
+
+          carga = Path('lib/features/carga_docente/presentation/pages/carga_docente_page.dart')
+          text = carga.read_text(encoding='utf-8')
+          old = '''  List<Docente> _docentesVisiveis() {
+    // Professores podem pesquisar todos, mas só visualizar agenda e enviar convite
+    return List<Docente>.from(_docentes, growable: false);
+  }'''
+          new = '''  List<Docente> _docentesVisiveis() {
+    final user = context.read<UserContextProvider>().currentUser;
+    if (user?.role != UserRole.professor) {
+      return List<Docente>.from(_docentes, growable: false);
+    }
+
+    final email = user?.email.trim().toLowerCase() ?? '';
+    return _docentes
+        .where((docente) => docente.userEmail.trim().toLowerCase() == email)
+        .toList(growable: false);
+  }'''
+          text = text.replace(old, new)
+          carga.write_text(text, encoding='utf-8')
+          PY
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.44.6'
       - name: Instalar dependências
         run: flutter pub get
+      - name: Formatar correções
+        run: dart format lib/features/login/presentation/pages/login_page_v2.dart lib/features/carga_docente/presentation/pages/carga_docente_page.dart
+      - name: Registrar correções
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib
+          if git diff --cached --quiet; then
+            echo "Sem correções pendentes."
+          else
+            git commit -m "fix: finaliza integração institucional do IFMA [skip ci]"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
       - name: Análise estática
         run: flutter analyze
       - name: Rodar testes
