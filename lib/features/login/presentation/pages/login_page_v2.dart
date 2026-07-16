@@ -405,7 +405,7 @@ class _CompactBrandHeader extends StatelessWidget {
             children: [
               const BrandTitle(compact: true),
               Text(
-                'Gestão acadêmica e departamental',
+                'IFMA — Campus São Luís–Monte Castelo',
                 style: Theme.of(
                   context,
                 ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
@@ -441,7 +441,7 @@ class _InstitutionPanel extends StatelessWidget {
           const BrandTitle(compact: true),
           const SizedBox(height: 24),
           Text(
-            'Gestão acadêmica e departamental em um único ambiente.',
+            'IFMA — Campus São Luís–Monte Castelo do IFMA — Campus São Luís–Monte Castelo.',
             style: textTheme.headlineSmall?.copyWith(color: Colors.white),
           ),
           const SizedBox(height: 10),

@@ -40,22 +40,22 @@ class ChatProvider extends ChangeNotifier {
   final List<ChatContact> _baseContacts = const [
     ChatContact(
       name: 'João Silva',
-      email: 'joao.silva@univ.br',
+      email: 'joao.silva@ifma.edu.br',
       role: UserRole.professor,
     ),
     ChatContact(
       name: 'Maria Santos',
-      email: 'maria.santos@univ.br',
+      email: 'maria.santos@ifma.edu.br',
       role: UserRole.coordenador,
     ),
     ChatContact(
       name: 'Carlos Oliveira',
-      email: 'carlos.oliveira@univ.br',
+      email: 'carlos.oliveira@ifma.edu.br',
       role: UserRole.servidorAdministrativo,
     ),
     ChatContact(
       name: 'Ana Pereira',
-      email: 'ana.pereira@univ.br',
+      email: 'ana.pereira@ifma.edu.br',
       role: UserRole.chefeDepartamento,
     ),
   ];
@@ -263,26 +263,26 @@ class ChatProvider extends ChangeNotifier {
 
   void _seedMessages() {
     _addSeedMessage(
-      senderEmail: 'maria.santos@univ.br',
-      recipientEmail: 'joao.silva@univ.br',
+      senderEmail: 'maria.santos@ifma.edu.br',
+      recipientEmail: 'joao.silva@ifma.edu.br',
       content: 'João, conseguiu fechar o relatório da turma de laboratório?',
       sentAt: DateTime.now().subtract(const Duration(hours: 3, minutes: 15)),
     );
     _addSeedMessage(
-      senderEmail: 'joao.silva@univ.br',
-      recipientEmail: 'maria.santos@univ.br',
+      senderEmail: 'joao.silva@ifma.edu.br',
+      recipientEmail: 'maria.santos@ifma.edu.br',
       content: 'Sim, envio em 20 minutos com os ajustes finais.',
       sentAt: DateTime.now().subtract(const Duration(hours: 2, minutes: 58)),
     );
     _addSeedMessage(
-      senderEmail: 'ana.pereira@univ.br',
-      recipientEmail: 'carlos.oliveira@univ.br',
+      senderEmail: 'ana.pereira@ifma.edu.br',
+      recipientEmail: 'carlos.oliveira@ifma.edu.br',
       content: 'Carlos, precisamos validar os protocolos até 16h.',
       sentAt: DateTime.now().subtract(const Duration(hours: 1, minutes: 42)),
     );
     _addSeedMessage(
-      senderEmail: 'carlos.oliveira@univ.br',
-      recipientEmail: 'ana.pereira@univ.br',
+      senderEmail: 'carlos.oliveira@ifma.edu.br',
+      recipientEmail: 'ana.pereira@ifma.edu.br',
       content: 'Perfeito. Já estou finalizando a conferência.',
       sentAt: DateTime.now().subtract(const Duration(hours: 1, minutes: 30)),
     );

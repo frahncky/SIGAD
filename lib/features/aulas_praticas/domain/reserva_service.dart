@@ -8,7 +8,7 @@ abstract final class ReservaService {
       ReservaLaboratorio(
         id: 'RES-101',
         professor: 'Ismael',
-        laboratorio: 'Lab Química 1',
+        laboratorio: 'Lab. de Eletrônica Analógica',
         mes: currentMonth,
         semanaDoMes: 2,
         diaSemana: 'Seg',
@@ -18,7 +18,7 @@ abstract final class ReservaService {
       ReservaLaboratorio(
         id: 'RES-102',
         professor: 'PEE - Cláudio Leão',
-        laboratorio: 'Lab Química 1',
+        laboratorio: 'Lab. de Eletrônica Analógica',
         mes: currentMonth,
         semanaDoMes: 2,
         diaSemana: 'Ter',
@@ -28,7 +28,7 @@ abstract final class ReservaService {
       ReservaLaboratorio(
         id: 'RES-103',
         professor: 'Jean Mark',
-        laboratorio: 'Lab Química 1',
+        laboratorio: 'Lab. de Eletrônica Analógica',
         mes: currentMonth,
         semanaDoMes: 3,
         diaSemana: 'Sex',
@@ -38,7 +38,7 @@ abstract final class ReservaService {
       ReservaLaboratorio(
         id: 'RES-104',
         professor: 'Lima',
-        laboratorio: 'Lab Química 1',
+        laboratorio: 'Lab. de Eletrônica Analógica',
         mes: currentMonth,
         semanaDoMes: 3,
         diaSemana: 'Seg',

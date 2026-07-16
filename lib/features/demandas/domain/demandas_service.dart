@@ -23,7 +23,7 @@ abstract final class DemandasService {
   static const List<String> proprietarios = [
     'Coordenação',
     'Secretaria Acadêmica',
-    'Lab. Biologia',
+    'Lab. de Máquinas Elétricas',
     'TI',
     'RH',
     'Gestão',
@@ -59,11 +59,11 @@ abstract final class DemandasService {
     return const [
       Demanda(
         id: '#DEM-001',
-        titulo: 'Revisar inventário de microscópios',
-        descricao: 'Auditoria completa do laboratório de biologia',
+        titulo: 'Revisar inventário de instrumentos de medição',
+        descricao: 'Auditoria completa do Laboratório de Máquinas Elétricas',
         prioridade: 'Alta',
         statusLabel: 'Em andamento',
-        proprietario: 'Lab. Biologia',
+        proprietario: 'Lab. de Máquinas Elétricas',
         prazo: '15/04/2026',
       ),
       Demanda(

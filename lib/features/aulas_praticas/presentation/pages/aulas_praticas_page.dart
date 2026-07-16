@@ -21,9 +21,9 @@ class AulasPraticasPage extends StatefulWidget {
 
 class _AulasPraticasPageState extends State<AulasPraticasPage> {
   static const List<String> _laboratoriosDefault = [
-    'Lab Química 1',
-    'Lab Biologia 2',
-    'Lab Física 1',
+    'Lab. de Eletrônica Analógica',
+    'Lab. de Máquinas Elétricas',
+    'Lab. de Medidas Elétricas',
     'Lab Automação',
   ];
 
@@ -1129,7 +1129,7 @@ class _DialogDisciplinaReservaState extends State<_DialogDisciplinaReserva> {
         textInputAction: TextInputAction.done,
         decoration: InputDecoration(
           labelText: 'Disciplina',
-          hintText: 'Ex.: Química Orgânica',
+          hintText: 'Ex.: Eletrônica Analógica',
           errorText: _erro,
         ),
         onChanged: (_) {
