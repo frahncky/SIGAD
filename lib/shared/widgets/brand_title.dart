@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../app/theme/sigad_colors.dart';
 import '../../core/config/institutional_context.dart';
 
@@ -42,6 +43,7 @@ class BrandTitle extends StatelessWidget {
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 'SIGAD',
@@ -55,18 +57,19 @@ class BrandTitle extends StatelessWidget {
                           letterSpacing: 0.8,
                         ),
               ),
-              if (!compact)
-                Text(
-                  'Gestão Acadêmica',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: light
-                        ? Colors.white.withValues(alpha: 0.72)
-                        : SigadColors.muted,
-                    fontWeight: FontWeight.w500,
-                  ),
+              Text(
+                compact
+                    ? '${InstitutionalContext.acronym} • Monte Castelo'
+                    : '${InstitutionalContext.acronym} — ${InstitutionalContext.campus}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: textTheme.bodySmall?.copyWith(
+                  color: light
+                      ? Colors.white.withValues(alpha: 0.72)
+                      : SigadColors.muted,
+                  fontWeight: FontWeight.w600,
                 ),
+              ),
             ],
           ),
         ),
