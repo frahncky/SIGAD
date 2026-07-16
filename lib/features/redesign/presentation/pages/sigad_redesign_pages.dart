@@ -224,7 +224,7 @@ class _SigadChatPageState extends State<SigadChatPage> {
         .toList();
     final selectedConversation = filtered.isEmpty
         ? null
-        : filtered[_selected.clamp(0, filtered.length - 1) as int];
+        : filtered[_selected.clamp(0, filtered.length - 1)];
 
     return _PageFrame(
       header: _PageHeader(
@@ -1515,8 +1515,7 @@ class _ResponsiveGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final count =
-            (constraints.maxWidth / minItemWidth).floor().clamp(1, 4) as int;
+        final count = (constraints.maxWidth / minItemWidth).floor().clamp(1, 4);
         final width = (constraints.maxWidth - (count - 1) * 12) / count;
         return Wrap(
           spacing: 12,
@@ -1811,7 +1810,7 @@ class _DropdownFilter extends StatelessWidget {
     return SizedBox(
       width: 190,
       child: DropdownButtonFormField<String>(
-        value: value,
+        initialValue: value,
         decoration: InputDecoration(labelText: label),
         items: items
             .map((item) => DropdownMenuItem(value: item, child: Text(item)))
