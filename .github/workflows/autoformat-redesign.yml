@@ -32,6 +32,27 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Apply analyzer fixes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('lib/features/redesign/presentation/pages/sigad_redesign_pages.dart')
+          text = path.read_text(encoding='utf-8')
+          text = text.replace(
+              "filtered[_selected.clamp(0, filtered.length - 1) as int]",
+              "filtered[_selected.clamp(0, filtered.length - 1)]",
+          )
+          text = text.replace(
+              ".floor().clamp(1, 4) as int;",
+              ".floor().clamp(1, 4);",
+          )
+          text = text.replace(
+              "child: DropdownButtonFormField<String>(\n        value: value,",
+              "child: DropdownButtonFormField<String>(\n        initialValue: value,",
+          )
+          path.write_text(text, encoding='utf-8')
+          PY
+
       - name: Apply Dart format
         run: dart format lib test
 
@@ -39,7 +60,7 @@ jobs:
         continue-on-error: true
         run: flutter analyze > ANALYZE_OUTPUT.txt 2>&1
 
-      - name: Commit formatting and analyzer report
+      - name: Commit fixes and analyzer report
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -48,5 +69,5 @@ jobs:
             echo "No changes to commit."
             exit 0
           fi
-          git commit -m "chore: registra análise estática do redesign [skip ci]"
+          git commit -m "fix: corrige análise estática do redesign [skip ci]"
           git push origin HEAD:${{ github.head_ref }}
