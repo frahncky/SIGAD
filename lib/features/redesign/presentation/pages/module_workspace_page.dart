@@ -74,10 +74,7 @@ class _ModuleWorkspacePageState extends State<ModuleWorkspacePage> {
         Expanded(
           child: IndexedStack(
             index: _selectedIndex,
-            children: [
-              widget.overview,
-              widget.operation,
-            ],
+            children: [widget.overview, widget.operation],
           ),
         ),
       ],
