@@ -1,0 +1,49 @@
+name: Test report redesign
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: write
+
+jobs:
+  report:
+    if: github.head_ref == 'redesign-ui-completo'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run tests and capture output
+        continue-on-error: true
+        run: flutter test --reporter expanded > TEST_OUTPUT.txt 2>&1
+
+      - name: Commit test report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add TEST_OUTPUT.txt
+          if git diff --cached --quiet; then
+            echo "No report changes."
+            exit 0
+          fi
+          git commit -m "chore: registra relatório temporário de testes [skip ci]"
+          git push origin HEAD:${{ github.head_ref }}
