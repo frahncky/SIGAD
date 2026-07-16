@@ -1,0 +1,42 @@
+name: Detalha testes IFMA
+
+on:
+  push:
+    branches:
+      - institucionalizacao-ifma-monte-castelo
+
+permissions:
+  contents: write
+
+jobs:
+  details:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: institucionalizacao-ifma-monte-castelo
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+      - run: flutter pub get
+      - name: Capturar falhas
+        run: |
+          set +e
+          : > TEST_IFMA_FAILURES.txt
+          for file in test/bate_papo_page_widget_test.dart test/carga_docente_page_widget_test.dart test/sprint1_flows_test.dart; do
+            echo "===== $file =====" >> TEST_IFMA_FAILURES.txt
+            flutter test "$file" --reporter expanded > current.txt 2>&1
+            echo "EXIT_CODE=$?" >> TEST_IFMA_FAILURES.txt
+            tail -n 220 current.txt >> TEST_IFMA_FAILURES.txt
+            echo >> TEST_IFMA_FAILURES.txt
+          done
+          rm -f current.txt
+          exit 0
+      - name: Commitar relatório
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add TEST_IFMA_FAILURES.txt
+          git commit -m "chore: registra detalhes temporários dos testes IFMA [skip ci]" || exit 0
+          git push origin HEAD:institucionalizacao-ifma-monte-castelo
