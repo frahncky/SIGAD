@@ -1,0 +1,347 @@
+name: Institucionaliza SIGAD para IFMA Monte Castelo
+
+on:
+  push:
+    branches:
+      - institucionalizacao-ifma-v2
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: institucionalizacao-ifma-v2
+          fetch-depth: 0
+
+      - name: Aplicar contexto institucional
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace(path_name, mapping):
+              path = Path(path_name)
+              text = path.read_text(encoding='utf-8')
+              for old, new in mapping.items():
+                  text = text.replace(old, new)
+              path.write_text(text, encoding='utf-8')
+
+          context = Path('lib/core/config/institutional_context.dart')
+          context.parent.mkdir(parents=True, exist_ok=True)
+          context.write_text("""abstract final class InstitutionalContext {
+            static const institution = 'Instituto Federal do Maranhão';
+            static const acronym = 'IFMA';
+            static const campus = 'Campus São Luís–Monte Castelo';
+            static const city = 'São Luís';
+            static const state = 'Maranhão';
+            static const department = 'Departamento de Eletroeletrônica';
+            static const departmentAcronym = 'DEE';
+            static const emailDomain = 'ifma.edu.br';
+
+            static const courses = <String>[
+              'Engenharia Elétrica',
+              'Técnico em Eletrônica',
+              'Técnico em Eletrotécnica',
+              'Técnico em Telecomunicações',
+            ];
+
+            static const laboratories = <String>[
+              'Laboratório de Medidas Elétricas',
+              'Laboratório de Eletrônica Analógica',
+              'Laboratório de Eletrônica Digital',
+              'Laboratório de Máquinas Elétricas',
+              'Laboratório de Automação',
+              'Laboratório de Telecomunicações',
+            ];
+          }
+          """, encoding='utf-8')
+
+          brand = Path('lib/shared/widgets/brand_title.dart')
+          text = brand.read_text(encoding='utf-8')
+          if 'institutional_context.dart' not in text:
+              text = text.replace(
+                  "import '../../app/theme/sigad_colors.dart';",
+                  "import '../../app/theme/sigad_colors.dart';\nimport '../../core/config/institutional_context.dart';",
+              )
+          start = text.index('class BrandTitle')
+          prefix = text[:start]
+          text = prefix + """class BrandTitle extends StatelessWidget {
+            const BrandTitle({super.key, this.compact = false, this.light = false});
+
+            final bool compact;
+            final bool light;
+
+            @override
+            Widget build(BuildContext context) {
+              final textTheme = Theme.of(context).textTheme;
+              return Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Container(
+                    width: compact ? 38 : 46,
+                    height: compact ? 38 : 46,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [SigadColors.brand, SigadColors.brandDeep],
+                      ),
+                      borderRadius: BorderRadius.circular(compact ? 12 : 15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: SigadColors.brand.withValues(alpha: 0.18),
+                          blurRadius: 12,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      Icons.school_rounded,
+                      color: Colors.white,
+                      size: compact ? 21 : 25,
+                    ),
+                  ),
+                  const SizedBox(width: 13),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'SIGAD',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: (compact
+                                  ? textTheme.titleMedium
+                                  : textTheme.headlineSmall)
+                              ?.copyWith(
+                            color: light ? Colors.white : SigadColors.brandDark,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.8,
+                          ),
+                        ),
+                        Text(
+                          compact
+                              ? '${InstitutionalContext.acronym} • Monte Castelo'
+                              : '${InstitutionalContext.acronym} — ${InstitutionalContext.campus}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: textTheme.bodySmall?.copyWith(
+                            color: light
+                                ? Colors.white.withValues(alpha: 0.72)
+                                : SigadColors.muted,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }
+          }
+          """
+          brand.write_text(text, encoding='utf-8')
+
+          replace('lib/features/login/presentation/pages/login_page_v2.dart', {
+              'Use suas credenciais institucionais para acessar o ambiente.': 'Use suas credenciais do IFMA para acessar o Campus São Luís–Monte Castelo.',
+              'Gestão acadêmica e departamental em um único ambiente.': 'Gestão acadêmica e departamental do IFMA — Campus São Luís–Monte Castelo.',
+              'Planeje carga docente, laboratórios, reuniões, demandas e atividades com mais clareza.': 'Planeje as atividades do DEE: carga docente, laboratórios, reuniões e demandas.',
+              "return 'João Silva';": "return 'Professor Demonstrativo';",
+              "return 'Maria Santos';": "return 'Coordenação Demonstrativa';",
+              "return 'Carlos Oliveira';": "return 'Servidor Demonstrativo';",
+              "return 'Ana Pereira';": "return 'Chefia Demonstrativa';",
+              "return 'joao.silva@ifma.edu.br';": "return 'professor.demo@ifma.edu.br';",
+              "return 'maria.santos@ifma.edu.br';": "return 'coordenacao.demo@ifma.edu.br';",
+              "return 'carlos.oliveira@ifma.edu.br';": "return 'servidor.demo@ifma.edu.br';",
+              "return 'ana.pereira@ifma.edu.br';": "return 'chefia.demo@ifma.edu.br';",
+          })
+
+          replace('lib/features/redesign/presentation/pages/sigad_redesign_pages.dart', {
+              'Acompanhe a operação acadêmica e administrativa em um só lugar.': 'Acompanhe a gestão acadêmica do IFMA — Campus São Luís–Monte Castelo.',
+              'Conversas, grupos e avisos internos do departamento.': 'Conversas, grupos e avisos internos do DEE — Campus Monte Castelo.',
+              'Equipe do departamento': 'Equipe do DEE',
+              'Coordenação de curso': 'Coordenação dos cursos do DEE',
+              'Secretaria acadêmica': 'Secretaria Acadêmica do Campus',
+              'Comissão de laboratórios': 'Comissão de Laboratórios do DEE',
+          })
+
+          replace('lib/features/aulas_praticas/presentation/pages/aulas_praticas_page.dart', {
+              'Lab Química 1': 'Lab. de Eletrônica Analógica',
+              'Lab Biologia 2': 'Lab. de Máquinas Elétricas',
+              'Lab Física 1': 'Lab. de Medidas Elétricas',
+              'Lab Automação': 'Lab. de Automação',
+          })
+          replace('lib/features/aulas_praticas/domain/reserva_service.dart', {
+              'Lab Química 1': 'Lab. de Eletrônica Analógica',
+              "professor: 'Ismael'": "professor: 'Docente 01'",
+              "professor: 'PEE - Cláudio Leão'": "professor: 'Docente 02'",
+              "professor: 'Jean Mark'": "professor: 'Docente 03'",
+              "professor: 'Lima'": "professor: 'Docente 04'",
+          })
+
+          replace('lib/features/demandas/domain/demandas_service.dart', {
+              "'Coordenação',": "'Coordenação dos Cursos do DEE',",
+              "'Lab. Biologia',": "'Lab. de Máquinas Elétricas',",
+              "'TI',": "'DTI do Campus',",
+              "'RH',": "'Gestão de Pessoas',",
+              "'Gestão',": "'Chefia do DEE',",
+              'Revisar inventário de microscópios': 'Revisar inventário de instrumentos de medição',
+              'Auditoria completa do laboratório de biologia': 'Conferência dos instrumentos do Laboratório de Medidas Elétricas',
+              "proprietario: 'Lab. Biologia'": "proprietario: 'Lab. de Medidas Elétricas'",
+              "proprietario: 'Coordenação'": "proprietario: 'Coordenação dos Cursos do DEE'",
+              "proprietario: 'Gestão'": "proprietario: 'Chefia do DEE'",
+          })
+
+          replace('lib/features/configuracoes/data/configuracoes_repository.dart', {
+              "'João Silva'": "'Usuário Demonstrativo'",
+              "'Coordenador Acadêmico'": "'Coordenação dos Cursos do DEE'",
+              "'joao.silva@universidade.edu.br'": "'usuario.demo@ifma.edu.br'",
+          })
+          replace('lib/features/configuracoes/domain/configuracoes_service.dart', {
+              "nomePerfil: 'João Silva'": "nomePerfil: 'Usuário Demonstrativo'",
+              "cargoPerfil: 'Coordenador Acadêmico'": "cargoPerfil: 'Coordenação dos Cursos do DEE'",
+              "emailUsuario: 'joao.silva@universidade.edu.br'": "emailUsuario: 'usuario.demo@ifma.edu.br'",
+          })
+
+          replace('lib/core/services/chat_provider.dart', {
+              "name: 'João Silva'": "name: 'Professor Demo'",
+              "name: 'Maria Santos'": "name: 'Coordenação Demo'",
+              "name: 'Carlos Oliveira'": "name: 'Servidor Demo'",
+              "name: 'Ana Pereira'": "name: 'Chefia Demo'",
+              "'joao.silva@univ.br'": "'professor.demo@ifma.edu.br'",
+              "'maria.santos@univ.br'": "'coordenacao.demo@ifma.edu.br'",
+              "'carlos.oliveira@univ.br'": "'servidor.demo@ifma.edu.br'",
+              "'ana.pereira@univ.br'": "'chefia.demo@ifma.edu.br'",
+              "'joao.silva@ifma.edu.br'": "'professor.demo@ifma.edu.br'",
+              "'maria.santos@ifma.edu.br'": "'coordenacao.demo@ifma.edu.br'",
+              "'carlos.oliveira@ifma.edu.br'": "'servidor.demo@ifma.edu.br'",
+              "'ana.pereira@ifma.edu.br'": "'chefia.demo@ifma.edu.br'",
+          })
+
+          seed = Path('lib/features/carga_docente/data/seed_docentes.dart')
+          seed.write_text("""import '../domain/docente_models.dart';
+          import 'docente_repository.dart';
+
+          /// Dados fictícios para testes manuais no contexto do DEE/IFMA.
+          Future<void> seedDocentes() async {
+            final repo = DocenteRepository();
+            var fallbackId = 0;
+            final existentes = await repo.loadDocentes(
+              generateFallbackId: () => 'seed-fallback-${fallbackId++}',
+            );
+            if (existentes.isNotEmpty) return;
+
+            final docentes = [
+              Docente(id: 'DOC-DEE-01', nome: 'Docente 01', userId: 'docente01', userEmail: 'docente01@ifma.edu.br', departamento: 'DEE — Engenharia Elétrica', cargaHoraria: 20, cargaMaxima: 20, disciplinas: ['Circuitos Elétricos', 'Medidas Elétricas'], horariosAula: const []),
+              Docente(id: 'DOC-DEE-02', nome: 'Docente 02', userId: 'docente02', userEmail: 'docente02@ifma.edu.br', departamento: 'DEE — Eletrônica', cargaHoraria: 18, cargaMaxima: 20, disciplinas: ['Eletrônica Analógica', 'Eletrônica Digital'], horariosAula: const []),
+              Docente(id: 'DOC-DEE-03', nome: 'Docente 03', userId: 'docente03', userEmail: 'docente03@ifma.edu.br', departamento: 'DEE — Eletrotécnica', cargaHoraria: 16, cargaMaxima: 20, disciplinas: ['Máquinas Elétricas', 'Instalações Elétricas'], horariosAula: const []),
+              Docente(id: 'DOC-DEE-04', nome: 'Docente 04', userId: 'docente04', userEmail: 'docente04@ifma.edu.br', departamento: 'DEE — Telecomunicações', cargaHoraria: 14, cargaMaxima: 20, disciplinas: ['Sistemas de Comunicação', 'Redes de Telecomunicações'], horariosAula: const []),
+              Docente(id: 'DOC-DEE-05', nome: 'Docente 05', userId: 'docente05', userEmail: 'docente05@ifma.edu.br', departamento: 'DEE — Automação', cargaHoraria: 12, cargaMaxima: 20, disciplinas: ['Automação Industrial', 'Sistemas Embarcados'], horariosAula: const []),
+            ];
+            await repo.saveDocentes(docentes);
+          }
+          """, encoding='utf-8')
+
+          replace('lib/features/carga_docente/presentation/pages/carga_docente_page.dart', {
+              'Profa. Dra. Maria Silva': 'Docente 01',
+              'maria.santos@ifma.edu.br': 'docente01@ifma.edu.br',
+              "disciplinas: ['Programação I', 'Programação II', 'Engenharia Elétrica'],": "disciplinas: ['Circuitos Elétricos I', 'Circuitos Elétricos II', 'Medidas Elétricas'],",
+              "disciplina: 'Programação I'": "disciplina: 'Circuitos Elétricos I'",
+              "disciplina: 'Programação II'": "disciplina: 'Circuitos Elétricos II'",
+              "disciplina: 'Engenharia Elétrica'": "disciplina: 'Medidas Elétricas'",
+              "turma: 'SI-2A'": "turma: 'EE-2A'",
+              "turma: 'SI-2B'": "turma: 'EE-2B'",
+              "turma: 'SI-3A'": "turma: 'EE-3A'",
+              'Prof. Dr. João Silva': 'Docente 02',
+              'joao.silva@ifma.edu.br': 'docente02@ifma.edu.br',
+              "disciplinas: ['Banco de Dados', 'Web Design']": "disciplinas: ['Sistemas de Comunicação', 'Redes de Telecomunicações']",
+              "disciplina: 'Banco de Dados'": "disciplina: 'Sistemas de Comunicação'",
+              "disciplina: 'Web Design'": "disciplina: 'Redes de Telecomunicações'",
+              'Profa. Ana Costa': 'Docente 03',
+              'ana.pereira@ifma.edu.br': 'docente03@ifma.edu.br',
+              "disciplinas: ['Computação Gráfica']": "disciplinas: ['Máquinas Elétricas']",
+              "disciplina: 'Computação Gráfica'": "disciplina: 'Máquinas Elétricas'",
+              "turma: 'ES-3B'": "turma: 'ELET-3B'",
+              'Prof. Carlos Oliveira': 'Docente 04',
+              'carlos.oliveira@ifma.edu.br': 'docente04@ifma.edu.br',
+              "departamento: 'Redes e Telecomunicações'": "departamento: 'Telecomunicações'",
+              'Profa. Beatriz Mendes': 'Docente 05',
+              'beatriz.mendes@ifma.edu.br': 'docente05@ifma.edu.br',
+              "disciplinas: ['Qualidade de Software']": "disciplinas: ['Eletrônica de Potência']",
+              "disciplina: 'Qualidade de Software'": "disciplina: 'Eletrônica de Potência'",
+              "turma: 'ES-4A'": "turma: 'ELE-4A'",
+              "turma: 'ES-4B'": "turma: 'ELE-4B'",
+          })
+
+          carga = Path('lib/features/carga_docente/presentation/pages/carga_docente_page.dart')
+          text = carga.read_text(encoding='utf-8')
+          text = text.replace(
+              '''  List<Docente> _docentesVisiveis() {
+            // Professores podem pesquisar todos, mas só visualizar agenda e enviar convite
+            return List<Docente>.from(_docentes, growable: false);
+          }''',
+              '''  List<Docente> _docentesVisiveis() {
+            final user = context.read<UserContextProvider>().currentUser;
+            if (user?.role != UserRole.professor) {
+              return List<Docente>.from(_docentes, growable: false);
+            }
+
+            final email = user?.email.trim().toLowerCase() ?? '';
+            return _docentes
+                .where((docente) => docente.userEmail.trim().toLowerCase() == email)
+                .toList(growable: false);
+          }''',
+          )
+          carga.write_text(text, encoding='utf-8')
+
+          replace('test/bate_papo_page_widget_test.dart', {
+              'João Silva': 'Professor Demo',
+              'Maria Santos': 'Coordenação Demo',
+              'joao.silva@univ.br': 'professor.demo@ifma.edu.br',
+              'joao.silva@ifma.edu.br': 'professor.demo@ifma.edu.br',
+          })
+          replace('test/carga_docente_page_widget_test.dart', {
+              'Maria Silva': 'Docente 01',
+              'João Silva': 'Docente 02',
+              'maria.santos@ifma.edu.br': 'docente01@ifma.edu.br',
+          })
+          replace('test/sprint1_flows_test.dart', {
+              'João Silva': 'Docente 02',
+              'Prof. Dr. Docente 02': 'Docente 02',
+          })
+
+          for root in [Path('lib'), Path('test'), Path('ROLES_AND_PERMISSIONS.md')]:
+              paths = [root] if root.is_file() else list(root.rglob('*.dart'))
+              for path in paths:
+                  text = path.read_text(encoding='utf-8')
+                  text = text.replace('@univ.br', '@ifma.edu.br')
+                  text = text.replace('@universidade.edu.br', '@ifma.edu.br')
+                  path.write_text(text, encoding='utf-8')
+          PY
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+      - run: dart format lib test
+
+      - name: Commitar atualização
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          if git diff --cached --quiet; then
+            echo "Sem alterações pendentes."
+          else
+            git commit -m "feat: institucionaliza SIGAD para o IFMA Monte Castelo [skip ci]"
+            git push origin HEAD:institucionalizacao-ifma-v2
+          fi
+
+      - name: Validar código
+        run: |
+          flutter pub get
+          flutter analyze
+          flutter test
