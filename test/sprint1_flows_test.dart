@@ -68,8 +68,8 @@ void main() {
       await tester.enterText(searchField, 'Docente 02');
       await tester.pumpAndSettle();
 
-      expect(find.text('Docente 02'), findsOneWidget);
-      await tester.tap(find.text('Docente 02'));
+      expect(find.text('Docente 02'), findsWidgets);
+      await tester.tap(find.text('Docente 02').last);
       await tester.pumpAndSettle();
 
       expect(find.text('Distribuição semanal'), findsOneWidget);

@@ -548,10 +548,16 @@ class _FiltroLabRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
+      isExpanded: true,
       initialValue: laboratorioSelecionado,
       decoration: const InputDecoration(labelText: 'Laboratório'),
       items: laboratorios
-          .map((lab) => DropdownMenuItem(value: lab, child: Text(lab)))
+          .map(
+            (lab) => DropdownMenuItem(
+              value: lab,
+              child: Text(lab, maxLines: 1, overflow: TextOverflow.ellipsis),
+            ),
+          )
           .toList(),
       onChanged: (value) {
         if (value != null) onChanged(value);
