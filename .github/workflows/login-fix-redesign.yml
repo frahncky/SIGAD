@@ -1,26 +1,21 @@
 name: Login fix redesign
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
-    types:
-      - opened
-      - synchronize
-      - reopened
+      - redesign-ui-completo
 
 permissions:
   contents: write
 
 jobs:
   fix:
-    if: github.head_ref == 'redesign-ui-completo'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
+          ref: redesign-ui-completo
           fetch-depth: 0
 
       - name: Patch login layout
@@ -121,4 +116,4 @@ jobs:
             exit 0
           fi
           git commit -m "fix: ajusta responsividade da tela de login [skip ci]"
-          git push origin HEAD:${{ github.head_ref }}
+          git push origin HEAD:redesign-ui-completo
