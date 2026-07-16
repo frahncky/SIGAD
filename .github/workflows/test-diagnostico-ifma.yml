@@ -1,0 +1,39 @@
+name: Diagnóstico de testes IFMA
+
+on:
+  push:
+    branches:
+      - institucionalizacao-ifma-monte-castelo
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: institucionalizacao-ifma-monte-castelo
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+      - run: flutter pub get
+      - name: Executar testes individualmente
+        run: |
+          set +e
+          : > TEST_IFMA_SUMMARY.txt
+          while IFS= read -r file; do
+            flutter test "$file" >/dev/null 2>&1
+            code=$?
+            echo "$code $file" >> TEST_IFMA_SUMMARY.txt
+          done < <(find test -type f -name '*_test.dart' ! -path 'test/goldens/*' | sort)
+          exit 0
+      - name: Commitar diagnóstico
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add TEST_IFMA_SUMMARY.txt
+          git commit -m "chore: registra diagnóstico temporário dos testes IFMA [skip ci]" || exit 0
+          git push origin HEAD:institucionalizacao-ifma-monte-castelo
