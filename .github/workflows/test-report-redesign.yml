@@ -32,23 +32,25 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Run tests and capture output
+      - name: Run tests individually
         run: |
           set +e
-          flutter test --reporter expanded > TEST_OUTPUT.txt 2>&1
-          code=$?
-          echo >> TEST_OUTPUT.txt
-          echo "EXIT_CODE=$code" >> TEST_OUTPUT.txt
+          : > TEST_SUMMARY.txt
+          while IFS= read -r file; do
+            flutter test "$file" >/dev/null 2>&1
+            code=$?
+            echo "$code $file" >> TEST_SUMMARY.txt
+          done < <(find test -type f -name '*_test.dart' ! -path 'test/goldens/*' | sort)
           exit 0
 
-      - name: Commit test report
+      - name: Commit test summary
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add TEST_OUTPUT.txt
+          git add TEST_SUMMARY.txt
           if git diff --cached --quiet; then
             echo "No report changes."
             exit 0
           fi
-          git commit -m "chore: atualiza relatório temporário de testes [skip ci]"
+          git commit -m "chore: registra resumo temporário de testes [skip ci]"
           git push origin HEAD:${{ github.head_ref }}
