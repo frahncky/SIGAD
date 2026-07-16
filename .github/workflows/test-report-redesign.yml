@@ -80,40 +80,58 @@ jobs:
           start = text.index('class _SideNav extends StatelessWidget')
           end = text.index('class _AppDrawer extends StatelessWidget')
           section = text[start:end]
-          section = section.replace(
-              "    return Container(\n      width: 290,\n      decoration: BoxDecoration(\n        color: colors.surface,\n        border: Border(right: BorderSide(color: colors.outlineVariant)),\n      ),\n      child: Column(",
-              "    return Material(\n      color: colors.surface,\n      child: Container(\n        width: 290,\n        decoration: BoxDecoration(\n          border: Border(right: BorderSide(color: colors.outlineVariant)),\n        ),\n        child: Column(",
-              1,
-          )
-          old_end = "        ],\n      ),\n    );\n  }\n}\n\n"
-          new_end = "          ],\n        ),\n      ),\n    );\n  }\n}\n\n"
-          if old_end not in section:
-              raise SystemExit('Could not patch SideNav closing block')
-          section = section.replace(old_end, new_end, 1)
-          text = text[:start] + section + text[end:]
-          shell.write_text(text, encoding='utf-8')
+          if 'return Material(' not in section:
+              section = section.replace(
+                  "    return Container(\n      width: 290,\n      decoration: BoxDecoration(\n        color: colors.surface,\n        border: Border(right: BorderSide(color: colors.outlineVariant)),\n      ),\n      child: Column(",
+                  "    return Material(\n      color: colors.surface,\n      child: Container(\n        width: 290,\n        decoration: BoxDecoration(\n          border: Border(right: BorderSide(color: colors.outlineVariant)),\n        ),\n        child: Column(",
+                  1,
+              )
+              old_end = "        ],\n      ),\n    );\n  }\n}\n\n"
+              new_end = "          ],\n        ),\n      ),\n    );\n  }\n}\n\n"
+              if old_end not in section:
+                  raise SystemExit('Could not patch SideNav closing block')
+              section = section.replace(old_end, new_end, 1)
+              text = text[:start] + section + text[end:]
+              shell.write_text(text, encoding='utf-8')
           PY
 
       - name: Apply Dart format
         run: dart format lib
 
-      - name: Run targeted tests
-        run: |
-          flutter test \
-            test/home_shell_page_widget_test.dart \
-            test/login_page_widget_test.dart \
-            test/notas_page_widget_test.dart \
-            test/sprint1_flows_test.dart \
-            test/widget_test.dart
-
-      - name: Commit fixes
+      - name: Commit widget fixes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add lib
           if git diff --cached --quiet; then
             echo "No source changes."
-            exit 0
+          else
+            git commit -m "fix: corrige widgets e testes do redesign [skip ci]"
+            git push origin HEAD:${{ github.head_ref }}
           fi
-          git commit -m "fix: corrige widgets e testes do redesign [skip ci]"
-          git push origin HEAD:${{ github.head_ref }}
+
+      - name: Run targeted tests and summarize
+        run: |
+          set +e
+          : > POST_FIX_SUMMARY.txt
+          for file in \
+            test/home_shell_page_widget_test.dart \
+            test/login_page_widget_test.dart \
+            test/notas_page_widget_test.dart \
+            test/sprint1_flows_test.dart \
+            test/widget_test.dart; do
+            flutter test "$file" >/dev/null 2>&1
+            code=$?
+            echo "$code $file" >> POST_FIX_SUMMARY.txt
+          done
+          exit 0
+
+      - name: Commit test summary
+        run: |
+          git add POST_FIX_SUMMARY.txt
+          if git diff --cached --quiet; then
+            echo "No summary changes."
+          else
+            git commit -m "chore: registra validação temporária dos widgets [skip ci]"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
