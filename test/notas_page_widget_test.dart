@@ -35,7 +35,13 @@ void main() {
 
     await tester.tap(find.byTooltip('Nova anotação'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), textoNota);
+    final noteField = find.byWidgetPredicate(
+      (widget) =>
+          widget is TextField &&
+          widget.decoration?.hintText ==
+              'Registre uma ideia, encaminhamento ou lembrete...',
+    );
+    await tester.enterText(noteField, textoNota);
     await tester.tap(find.widgetWithText(ElevatedButton, 'Salvar'));
     await tester.pumpAndSettle();
 

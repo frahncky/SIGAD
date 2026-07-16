@@ -32,6 +32,7 @@ void main() {
     await tester.pumpWidget(_buildApp());
     await tester.pumpAndSettle();
 
+    await tester.ensureVisible(find.text('Entrar'));
     await tester.tap(find.text('Entrar'));
     await tester.pumpAndSettle();
 
@@ -44,6 +45,7 @@ void main() {
 
     await tester.enterText(find.byType(TextField).first, 'email-invalido');
     await tester.enterText(find.byType(TextField).at(1), '1234');
+    await tester.ensureVisible(find.text('Entrar'));
     await tester.tap(find.text('Entrar'));
     await tester.pumpAndSettle();
 
@@ -59,6 +61,7 @@ void main() {
       'user@instituicao.edu.br',
     );
     await tester.enterText(find.byType(TextField).at(1), 'ab');
+    await tester.ensureVisible(find.text('Entrar'));
     await tester.tap(find.text('Entrar'));
     await tester.pumpAndSettle();
 
