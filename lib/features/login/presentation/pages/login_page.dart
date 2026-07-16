@@ -49,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
                       return _LoginPanel(
                         child: wide
                             ? Row(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Expanded(child: _InstitutionPanel()),
                                   const SizedBox(width: 32),
