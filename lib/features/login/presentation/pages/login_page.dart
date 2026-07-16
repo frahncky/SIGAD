@@ -114,7 +114,10 @@ class _LoginPageState extends State<LoginPage> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
-                autofillHints: const [AutofillHints.username, AutofillHints.email],
+                autofillHints: const [
+                  AutofillHints.username,
+                  AutofillHints.email,
+                ],
                 autocorrect: false,
                 decoration: const InputDecoration(
                   labelText: 'Email institucional',
@@ -135,10 +138,11 @@ class _LoginPageState extends State<LoginPage> {
                   labelText: 'Senha',
                   prefixIcon: const Icon(Icons.lock_outline_rounded),
                   suffixIcon: IconButton(
-                    tooltip: _obscurePassword ? 'Mostrar senha' : 'Ocultar senha',
-                    onPressed: () => setState(
-                      () => _obscurePassword = !_obscurePassword,
-                    ),
+                    tooltip: _obscurePassword
+                        ? 'Mostrar senha'
+                        : 'Ocultar senha',
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
                     icon: Icon(
                       _obscurePassword
                           ? Icons.visibility_outlined
@@ -336,7 +340,8 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _showWarning(String message) => AppFeedbackService.warning(context, message);
+  void _showWarning(String message) =>
+      AppFeedbackService.warning(context, message);
   void _showError(String message) => AppFeedbackService.error(context, message);
 }
 
@@ -377,9 +382,18 @@ class _InstitutionPanel extends StatelessWidget {
           ),
           if (!compact) ...[
             const SizedBox(height: 28),
-            const _FeatureLine(Icons.schedule_rounded, 'Planejamento integrado'),
-            const _FeatureLine(Icons.science_outlined, 'Gestão de laboratórios'),
-            const _FeatureLine(Icons.analytics_outlined, 'Indicadores e relatórios'),
+            const _FeatureLine(
+              Icons.schedule_rounded,
+              'Planejamento integrado',
+            ),
+            const _FeatureLine(
+              Icons.science_outlined,
+              'Gestão de laboratórios',
+            ),
+            const _FeatureLine(
+              Icons.analytics_outlined,
+              'Indicadores e relatórios',
+            ),
           ],
         ],
       ),
@@ -404,9 +418,9 @@ class _FeatureLine extends StatelessWidget {
           Text(
             label,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
@@ -455,8 +469,16 @@ class _LoginBackground extends StatelessWidget {
       ),
       child: Stack(
         children: const [
-          Positioned(top: -90, right: -70, child: _Glow(SigadColors.accentSoft, 240)),
-          Positioned(bottom: -80, left: -60, child: _Glow(SigadColors.mint, 210)),
+          Positioned(
+            top: -90,
+            right: -70,
+            child: _Glow(SigadColors.accentSoft, 240),
+          ),
+          Positioned(
+            bottom: -80,
+            left: -60,
+            child: _Glow(SigadColors.mint, 210),
+          ),
         ],
       ),
     );

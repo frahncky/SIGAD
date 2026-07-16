@@ -19,7 +19,8 @@ class SigadDashboardPage extends StatelessWidget {
       header: _PageHeader(
         eyebrow: 'VISÃO GERAL',
         title: 'Olá, $firstName',
-        subtitle: 'Acompanhe a operação acadêmica e administrativa em um só lugar.',
+        subtitle:
+            'Acompanhe a operação acadêmica e administrativa em um só lugar.',
         actions: [
           _HeaderAction(
             icon: Icons.refresh_rounded,
@@ -151,10 +152,8 @@ class SigadDashboardPage extends StatelessWidget {
               _QuickAction(
                 icon: Icons.assignment_outlined,
                 label: 'Demandas',
-                onTap: () => Navigator.pushReplacementNamed(
-                  context,
-                  AppRoutes.demandas,
-                ),
+                onTap: () =>
+                    Navigator.pushReplacementNamed(context, AppRoutes.demandas),
               ),
               _QuickAction(
                 icon: Icons.analytics_outlined,
@@ -239,7 +238,8 @@ class _SigadChatPageState extends State<SigadChatPage> {
             onPressed: () => _showActionDialog(
               context,
               title: 'Nova conversa',
-              message: 'Selecione usuários ou grupos para iniciar uma conversa.',
+              message:
+                  'Selecione usuários ou grupos para iniciar uma conversa.',
             ),
           ),
         ],
@@ -313,7 +313,8 @@ class _SigadCargaDocentePageState extends State<SigadCargaDocentePage> {
       header: _PageHeader(
         eyebrow: 'GESTÃO ACADÊMICA',
         title: 'Carga docente',
-        subtitle: 'Distribuição, limites, conflitos e validação das atividades.',
+        subtitle:
+            'Distribuição, limites, conflitos e validação das atividades.',
         actions: [
           _HeaderAction(
             icon: Icons.add_rounded,
@@ -452,7 +453,13 @@ class _SigadProfessoresPageState extends State<SigadProfessoresPage> {
     final docentes = const [
       _TeacherData('Docente 01', 'Eletrônica', '20h', 'Ativo', 'D1'),
       _TeacherData('Docente 02', 'Eletrotécnica', '18h', 'Ativo', 'D2'),
-      _TeacherData('Docente 03', 'Telecomunicações', '16h', 'Afastamento', 'D3'),
+      _TeacherData(
+        'Docente 03',
+        'Telecomunicações',
+        '16h',
+        'Afastamento',
+        'D3',
+      ),
       _TeacherData('Docente 04', 'Automação', '20h', 'Ativo', 'D4'),
       _TeacherData('Docente 05', 'Computação', '14h', 'Ativo', 'D5'),
       _TeacherData('Docente 06', 'Eletrotécnica', '12h', 'Atenção', 'D6'),
@@ -883,8 +890,18 @@ class _SigadAtividadesPageState extends State<SigadAtividadesPage> {
   @override
   Widget build(BuildContext context) {
     final atividades = const [
-      _ActivityData('Atualizar plano de ensino', 'Acadêmica', '20/07', 'Pendente'),
-      _ActivityData('Revisar inventário', 'Laboratórios', '22/07', 'Em progresso'),
+      _ActivityData(
+        'Atualizar plano de ensino',
+        'Acadêmica',
+        '20/07',
+        'Pendente',
+      ),
+      _ActivityData(
+        'Revisar inventário',
+        'Laboratórios',
+        '22/07',
+        'Em progresso',
+      ),
       _ActivityData('Preparar relatório', 'Gestão', '25/07', 'Pendente'),
       _ActivityData('Publicar comunicado', 'Comunicação', '18/07', 'Concluída'),
     ];
@@ -896,7 +913,8 @@ class _SigadAtividadesPageState extends State<SigadAtividadesPage> {
       header: _PageHeader(
         eyebrow: 'ACOMPANHAMENTO',
         title: 'Atividades',
-        subtitle: 'Ações acadêmicas e administrativas com prazos e responsáveis.',
+        subtitle:
+            'Ações acadêmicas e administrativas com prazos e responsáveis.',
         actions: [
           _HeaderAction(
             icon: Icons.add_task_outlined,
@@ -1069,14 +1087,8 @@ class _SigadRelatoriosPageState extends State<SigadRelatoriosPage> {
               .map(
                 (report) => _ReportCard(
                   report: report,
-                  onOpen: () => _notify(
-                    context,
-                    'Abrindo ${report.title}.',
-                  ),
-                  onExport: () => _notify(
-                    context,
-                    'Exportação preparada.',
-                  ),
+                  onOpen: () => _notify(context, 'Abrindo ${report.title}.'),
+                  onExport: () => _notify(context, 'Exportação preparada.'),
                 ),
               )
               .toList(),
@@ -1090,8 +1102,7 @@ class SigadConfiguracoesPage extends StatefulWidget {
   const SigadConfiguracoesPage({super.key});
 
   @override
-  State<SigadConfiguracoesPage> createState() =>
-      _SigadConfiguracoesPageState();
+  State<SigadConfiguracoesPage> createState() => _SigadConfiguracoesPageState();
 }
 
 class _SigadConfiguracoesPageState extends State<SigadConfiguracoesPage> {
@@ -1162,8 +1173,7 @@ class _SigadConfiguracoesPageState extends State<SigadConfiguracoesPage> {
                 SwitchListTile.adaptive(
                   contentPadding: EdgeInsets.zero,
                   value: _notifications,
-                  onChanged: (value) =>
-                      setState(() => _notifications = value),
+                  onChanged: (value) => setState(() => _notifications = value),
                   title: const Text('Notificações no aplicativo'),
                   subtitle: const Text('Alertas, convites e prazos'),
                 ),
@@ -1210,8 +1220,7 @@ class _SigadConfiguracoesPageState extends State<SigadConfiguracoesPage> {
                 SwitchListTile.adaptive(
                   contentPadding: EdgeInsets.zero,
                   value: _biometrics,
-                  onChanged: (value) =>
-                      setState(() => _biometrics = value),
+                  onChanged: (value) => setState(() => _biometrics = value),
                   title: const Text('Biometria'),
                   subtitle: const Text('Usar autenticação do dispositivo'),
                 ),
@@ -1262,11 +1271,7 @@ class _PageFrame extends StatelessWidget {
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              header,
-              const SizedBox(height: 18),
-              ...children,
-            ],
+            children: [header, const SizedBox(height: 18), ...children],
           ),
         ),
       ],
@@ -1334,10 +1339,7 @@ class _PageHeader extends StatelessWidget {
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            SigadColors.brandDark,
-            SigadColors.brand,
-          ],
+          colors: [SigadColors.brandDark, SigadColors.brand],
         ),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
@@ -1357,25 +1359,25 @@ class _PageHeader extends StatelessWidget {
               Text(
                 eyebrow,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.72),
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.4,
-                    ),
+                  color: Colors.white.withValues(alpha: 0.72),
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.4,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 title,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const SizedBox(height: 6),
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.82),
-                    ),
+                  color: Colors.white.withValues(alpha: 0.82),
+                ),
               ),
             ],
           );
@@ -1487,8 +1489,8 @@ class _SectionCard extends StatelessWidget {
                     Text(
                       subtitle,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
+                        color: colors.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
@@ -1504,10 +1506,7 @@ class _SectionCard extends StatelessWidget {
 }
 
 class _ResponsiveGrid extends StatelessWidget {
-  const _ResponsiveGrid({
-    required this.minItemWidth,
-    required this.children,
-  });
+  const _ResponsiveGrid({required this.minItemWidth, required this.children});
 
   final double minItemWidth;
   final List<Widget> children;
@@ -1543,11 +1542,7 @@ class _ResponsiveSplit extends StatelessWidget {
       builder: (context, constraints) {
         if (constraints.maxWidth < 840) {
           return Column(
-            children: [
-              primary,
-              const SizedBox(height: 16),
-              secondary,
-            ],
+            children: [primary, const SizedBox(height: 16), secondary],
           );
         }
         return Row(
@@ -1627,15 +1622,15 @@ class _MetricCard extends StatelessWidget {
                 Text(
                   value,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: color,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    color: color,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 Text(
                   detail,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
+                    color: colors.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
@@ -1702,9 +1697,9 @@ class _AgendaTile extends StatelessWidget {
         child: Text(
           time,
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: colors.onPrimaryContainer,
-                fontWeight: FontWeight.w700,
-              ),
+            color: colors.onPrimaryContainer,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
       title: Text(title),
@@ -1742,10 +1737,7 @@ class _QuickAction extends StatelessWidget {
             Icon(icon, color: colors.primary),
             const SizedBox(width: 10),
             Expanded(
-              child: Text(
-                label,
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
+              child: Text(label, style: Theme.of(context).textTheme.labelLarge),
             ),
             const Icon(Icons.arrow_forward_rounded, size: 18),
           ],
@@ -1894,8 +1886,9 @@ class _ConversationList extends StatelessWidget {
                       final selected = index == selectedIndex;
                       return ListTile(
                         selected: selected,
-                        selectedTileColor:
-                            colors.primaryContainer.withValues(alpha: 0.55),
+                        selectedTileColor: colors.primaryContainer.withValues(
+                          alpha: 0.55,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
@@ -1946,9 +1939,7 @@ class _ConversationList extends StatelessWidget {
                                 ),
                                 child: Text(
                                   '${item.unread}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelSmall
+                                  style: Theme.of(context).textTheme.labelSmall
                                       ?.copyWith(color: colors.onPrimary),
                                 ),
                               ),
@@ -2185,7 +2176,12 @@ class _WorkloadRow extends StatelessWidget {
               ],
             );
           }
-          return Row(children: [Expanded(child: info), meter]);
+          return Row(
+            children: [
+              Expanded(child: info),
+              meter,
+            ],
+          );
         },
       ),
     );
@@ -2299,8 +2295,8 @@ class _DemandTile extends StatelessWidget {
     final color = item.status == 'Atrasada'
         ? SigadColors.risk
         : item.priority == 'Alta'
-            ? SigadColors.warning
-            : SigadColors.info;
+        ? SigadColors.warning
+        : SigadColors.info;
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
       leading: Container(
@@ -2359,14 +2355,8 @@ class _KanbanColumn extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
-              _StatusPill(
-                label: '${items.length}',
-                color: colors.primary,
-              ),
-              IconButton(
-                onPressed: onAdd,
-                icon: const Icon(Icons.add_rounded),
-              ),
+              _StatusPill(label: '${items.length}', color: colors.primary),
+              IconButton(onPressed: onAdd, icon: const Icon(Icons.add_rounded)),
             ],
           ),
           const SizedBox(height: 8),
@@ -2379,8 +2369,8 @@ class _KanbanColumn extends StatelessWidget {
                 final color = item.priority == 'Alta'
                     ? SigadColors.risk
                     : item.priority == 'Média'
-                        ? SigadColors.warning
-                        : SigadColors.info;
+                    ? SigadColors.warning
+                    : SigadColors.info;
                 return Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
@@ -2471,10 +2461,7 @@ class _MonthOverview extends StatelessWidget {
           ),
           child: Column(
             children: [
-              Text(
-                '$day',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+              Text('$day', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 6),
               Text(occupied ? 'Com reservas' : 'Disponível'),
             ],
@@ -2545,14 +2532,11 @@ class _ActivityTile extends StatelessWidget {
     final color = item.status == 'Concluída'
         ? SigadColors.success
         : item.status == 'Em progresso'
-            ? SigadColors.info
-            : SigadColors.warning;
+        ? SigadColors.info
+        : SigadColors.warning;
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-      leading: Checkbox(
-        value: item.status == 'Concluída',
-        onChanged: (_) {},
-      ),
+      leading: Checkbox(value: item.status == 'Concluída', onChanged: (_) {}),
       title: Text(item.title),
       subtitle: Text('${item.category} · Prazo ${item.deadline}'),
       trailing: _StatusPill(label: item.status, color: color),
@@ -2669,9 +2653,9 @@ class _StatusPill extends StatelessWidget {
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w700,
-            ),
+          color: color,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
