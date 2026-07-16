@@ -53,10 +53,10 @@ class ConfiguracoesRepository {
     backupAutomaticoAtivo: data['backupAutomaticoAtivo'] as bool? ?? true,
     idioma: data['idioma'] as String? ?? 'Português (Brasil)',
     tamanhoFonte: data['tamanhoFonte'] as String? ?? 'Médio',
-    nomePerfil: data['nomePerfil'] as String? ?? 'João Silva',
-    cargoPerfil: data['cargoPerfil'] as String? ?? 'Coordenador Acadêmico',
-    emailUsuario:
-        data['emailUsuario'] as String? ?? 'joao.silva@universidade.edu.br',
+    nomePerfil: data['nomePerfil'] as String? ?? 'Usuário Demonstrativo',
+    cargoPerfil:
+        data['cargoPerfil'] as String? ?? 'Coordenação dos Cursos do DEE',
+    emailUsuario: data['emailUsuario'] as String? ?? 'usuario.demo@ifma.edu.br',
     ultimaAlteracaoSenha:
         data['ultimaAlteracaoSenha'] as String? ?? '20/02/2026',
     proximoBackup: data['proximoBackup'] as String? ?? '25/04/2026',

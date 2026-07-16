@@ -42,9 +42,9 @@ void main() {
       final userContext = UserContextProvider();
       await userContext.login(
         User(
-          id: 'user_email_coordenador@univ.br',
+          id: 'user_email_coordenador@ifma.edu.br',
           name: 'Coordenador',
-          email: 'coordenador@univ.br',
+          email: 'coordenador@ifma.edu.br',
           role: UserRole.coordenador,
           createdAt: DateTime.now(),
         ),
@@ -65,11 +65,11 @@ void main() {
 
       // Simula busca pelo nome do docente
       final searchField = find.byType(TextField).last;
-      await tester.enterText(searchField, 'João Silva');
+      await tester.enterText(searchField, 'Docente 02');
       await tester.pumpAndSettle();
 
-      expect(find.text('Prof. Dr. João Silva'), findsOneWidget);
-      await tester.tap(find.text('Prof. Dr. João Silva'));
+      expect(find.text('Docente 02'), findsWidgets);
+      await tester.tap(find.text('Docente 02').last);
       await tester.pumpAndSettle();
 
       expect(find.text('Distribuição semanal'), findsOneWidget);

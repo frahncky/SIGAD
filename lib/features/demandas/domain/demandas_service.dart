@@ -21,12 +21,12 @@ abstract final class DemandasService {
   ];
 
   static const List<String> proprietarios = [
-    'Coordenação',
+    'Coordenação dos Cursos do DEE',
     'Secretaria Acadêmica',
-    'Lab. Biologia',
-    'TI',
-    'RH',
-    'Gestão',
+    'Lab. de Máquinas Elétricas',
+    'DTI do Campus',
+    'Gestão de Pessoas',
+    'Chefia do DEE',
     'Comissão de Estágio',
   ];
 
@@ -59,11 +59,12 @@ abstract final class DemandasService {
     return const [
       Demanda(
         id: '#DEM-001',
-        titulo: 'Revisar inventário de microscópios',
-        descricao: 'Auditoria completa do laboratório de biologia',
+        titulo: 'Revisar inventário de instrumentos de medição',
+        descricao:
+            'Conferência dos instrumentos do Laboratório de Medidas Elétricas',
         prioridade: 'Alta',
         statusLabel: 'Em andamento',
-        proprietario: 'Lab. Biologia',
+        proprietario: 'Lab. de Máquinas Elétricas',
         prazo: '15/04/2026',
       ),
       Demanda(
@@ -72,7 +73,7 @@ abstract final class DemandasService {
         descricao: 'Levantamento de todas as solicitações do período',
         prioridade: 'Alta',
         statusLabel: 'Novo',
-        proprietario: 'Coordenação',
+        proprietario: 'Coordenação dos Cursos do DEE',
         prazo: '20/04/2026',
       ),
       Demanda(
@@ -99,7 +100,7 @@ abstract final class DemandasService {
         descricao: 'Análise de utilização de espaços e equipamentos',
         prioridade: 'Baixa',
         statusLabel: 'Concluído',
-        proprietario: 'Gestão',
+        proprietario: 'Chefia do DEE',
         prazo: '10/04/2026',
       ),
     ];

@@ -21,10 +21,10 @@ class AulasPraticasPage extends StatefulWidget {
 
 class _AulasPraticasPageState extends State<AulasPraticasPage> {
   static const List<String> _laboratoriosDefault = [
-    'Lab Química 1',
-    'Lab Biologia 2',
-    'Lab Física 1',
-    'Lab Automação',
+    'Lab. de Eletrônica Analógica',
+    'Lab. de Máquinas Elétricas',
+    'Lab. de Medidas Elétricas',
+    'Lab. de Automação',
   ];
 
   static const List<String> _mesesDefault = [
@@ -548,10 +548,16 @@ class _FiltroLabRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
+      isExpanded: true,
       initialValue: laboratorioSelecionado,
       decoration: const InputDecoration(labelText: 'Laboratório'),
       items: laboratorios
-          .map((lab) => DropdownMenuItem(value: lab, child: Text(lab)))
+          .map(
+            (lab) => DropdownMenuItem(
+              value: lab,
+              child: Text(lab, maxLines: 1, overflow: TextOverflow.ellipsis),
+            ),
+          )
           .toList(),
       onChanged: (value) {
         if (value != null) onChanged(value);
