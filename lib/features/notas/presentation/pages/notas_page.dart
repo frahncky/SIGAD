@@ -41,6 +41,7 @@ class _NotasPageState extends State<NotasPage> {
   static const _storageKey = 'sigad_notas';
   final List<Nota> _notas = [];
   bool _isLoading = true;
+  bool _dialogOpen = false;
   String _busca = '';
 
   @override
@@ -80,6 +81,7 @@ class _NotasPageState extends State<NotasPage> {
   );
 
   Future<void> _criarOuEditarNota({Nota? nota}) async {
+    setState(() => _dialogOpen = true);
     var textoEditado = nota?.texto ?? '';
     final resultado = await showDialog<String>(
       context: context,
@@ -111,6 +113,7 @@ class _NotasPageState extends State<NotasPage> {
       ),
     );
 
+    if (mounted) setState(() => _dialogOpen = false);
     if (!mounted || resultado == null || resultado.isEmpty) return;
     final agora = DateTime.now();
     setState(() {
@@ -219,13 +222,14 @@ class _NotasPageState extends State<NotasPage> {
             ),
           ),
           const SizedBox(height: 16),
-          TextField(
-            onChanged: (value) => setState(() => _busca = value),
-            decoration: const InputDecoration(
-              hintText: 'Buscar anotações',
-              prefixIcon: Icon(Icons.search_rounded),
+          if (!_dialogOpen)
+            TextField(
+              onChanged: (value) => setState(() => _busca = value),
+              decoration: const InputDecoration(
+                hintText: 'Buscar anotações',
+                prefixIcon: Icon(Icons.search_rounded),
+              ),
             ),
-          ),
           const SizedBox(height: 16),
           if (_isLoading)
             const SizedBox(
