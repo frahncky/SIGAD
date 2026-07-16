@@ -58,11 +58,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       departamento: 'Engenharia Elétrica',
       cargaHoraria: 20,
       cargaMaxima: 20,
-      disciplinas: [
-        'Programação I',
-        'Programação II',
-        'Engenharia Elétrica',
-      ],
+      disciplinas: ['Programação I', 'Programação II', 'Engenharia Elétrica'],
       horariosAula: const [
         HorarioAula(
           diaSemana: 'Segunda',

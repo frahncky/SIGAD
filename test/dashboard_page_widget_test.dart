@@ -20,7 +20,7 @@ void main() {
       User(
         id: 'coord_1',
         name: 'Maria',
-        email: 'maria.santos@ifma.edu.br',
+        email: 'coordenacao.demo@ifma.edu.br',
         role: UserRole.coordenador,
         createdAt: DateTime.now(),
       ),

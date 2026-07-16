@@ -101,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         const SizedBox(height: 4),
         Text(
-          'Use suas credenciais institucionais para acessar o ambiente.',
+          'Use suas credenciais do IFMA para acessar o Campus São Luís–Monte Castelo.',
           style: theme.textTheme.bodySmall?.copyWith(
             color: colors.onSurfaceVariant,
           ),
@@ -441,12 +441,12 @@ class _InstitutionPanel extends StatelessWidget {
           const BrandTitle(compact: true),
           const SizedBox(height: 24),
           Text(
-            'IFMA — Campus São Luís–Monte Castelo do IFMA — Campus São Luís–Monte Castelo.',
+            'Gestão acadêmica e departamental do IFMA — Campus São Luís–Monte Castelo.',
             style: textTheme.headlineSmall?.copyWith(color: Colors.white),
           ),
           const SizedBox(height: 10),
           Text(
-            'Planeje carga docente, laboratórios, reuniões, demandas e atividades com mais clareza.',
+            'Planeje as atividades do DEE: carga docente, laboratórios, reuniões e demandas.',
             style: textTheme.bodyMedium?.copyWith(
               color: Colors.white.withValues(alpha: 0.82),
             ),

@@ -24,7 +24,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     'Lab. de Eletrônica Analógica',
     'Lab. de Máquinas Elétricas',
     'Lab. de Medidas Elétricas',
-    'Lab Automação',
+    'Lab. de Automação',
   ];
 
   static const List<String> _mesesDefault = [

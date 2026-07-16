@@ -21,12 +21,12 @@ abstract final class DemandasService {
   ];
 
   static const List<String> proprietarios = [
-    'Coordenação',
+    'Coordenação dos Cursos do DEE',
     'Secretaria Acadêmica',
     'Lab. de Máquinas Elétricas',
-    'TI',
-    'RH',
-    'Gestão',
+    'DTI do Campus',
+    'Gestão de Pessoas',
+    'Chefia do DEE',
     'Comissão de Estágio',
   ];
 
@@ -72,7 +72,7 @@ abstract final class DemandasService {
         descricao: 'Levantamento de todas as solicitações do período',
         prioridade: 'Alta',
         statusLabel: 'Novo',
-        proprietario: 'Coordenação',
+        proprietario: 'Coordenação dos Cursos do DEE',
         prazo: '20/04/2026',
       ),
       Demanda(
@@ -99,7 +99,7 @@ abstract final class DemandasService {
         descricao: 'Análise de utilização de espaços e equipamentos',
         prioridade: 'Baixa',
         statusLabel: 'Concluído',
-        proprietario: 'Gestão',
+        proprietario: 'Chefia do DEE',
         prazo: '10/04/2026',
       ),
     ];

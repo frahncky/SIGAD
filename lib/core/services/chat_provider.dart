@@ -40,22 +40,22 @@ class ChatProvider extends ChangeNotifier {
   final List<ChatContact> _baseContacts = const [
     ChatContact(
       name: 'João Silva',
-      email: 'joao.silva@ifma.edu.br',
+      email: 'professor.demo@ifma.edu.br',
       role: UserRole.professor,
     ),
     ChatContact(
       name: 'Maria Santos',
-      email: 'maria.santos@ifma.edu.br',
+      email: 'coordenacao.demo@ifma.edu.br',
       role: UserRole.coordenador,
     ),
     ChatContact(
       name: 'Carlos Oliveira',
-      email: 'carlos.oliveira@ifma.edu.br',
+      email: 'servidor.demo@ifma.edu.br',
       role: UserRole.servidorAdministrativo,
     ),
     ChatContact(
       name: 'Ana Pereira',
-      email: 'ana.pereira@ifma.edu.br',
+      email: 'chefia.demo@ifma.edu.br',
       role: UserRole.chefeDepartamento,
     ),
   ];
