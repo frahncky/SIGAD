@@ -1,25 +1,18 @@
-import '../../features/calendario/presentation/pages/calendario_page.dart';
-import '../../features/notas/presentation/pages/notas_page.dart';
 import 'package:flutter/material.dart';
-import '../../features/atividades/presentation/pages/atividades_page.dart';
-import '../../features/carga_docente/presentation/pages/carga_docente_page.dart';
-import '../../features/carga_docente/domain/docente_models.dart';
-import '../../features/carga_docente/presentation/pages/professores_page.dart';
-import '../../features/configuracoes/presentation/pages/configuracoes_page.dart';
-import '../../features/dashboard/presentation/pages/dashboard_page.dart';
-import '../../features/demandas/presentation/pages/demandas_page.dart';
-import '../../features/bate_papo/presentation/pages/bate_papo_page.dart';
+
+import '../../features/calendario/presentation/pages/calendario_page.dart';
 import '../../features/home/presentation/pages/home_shell_page.dart';
-import '../../features/kanban/presentation/pages/kanban_page.dart';
 import '../../features/login/presentation/pages/login_page.dart';
-import '../../features/relatorios/presentation/pages/relatorios_page.dart';
-import '../../features/aulas_praticas/presentation/pages/aulas_praticas_page.dart';
+import '../../features/notas/presentation/pages/notas_page.dart';
+import '../../features/redesign/presentation/pages/sigad_redesign_pages.dart';
 import 'app_routes.dart';
 
 /// Responsável por gerar as rotas do aplicativo SIGAD.
-/// Inclui tratamento para rotas desconhecidas (404).
+///
+/// As páginas principais usam o sistema visual unificado do redesign. Login,
+/// calendário e anotações permanecem em seus módulos próprios porque já foram
+/// atualizados e possuem regras específicas de persistência e autenticação.
 abstract final class AppRouter {
-  /// Gera a rota baseada no nome informado.
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     final routeName = settings.name ?? AppRoutes.dashboard;
 
@@ -30,28 +23,25 @@ abstract final class AppRouter {
           builder: (_) => const LoginPage(),
         );
       case AppRoutes.dashboard:
-        return _shell(routeName, const DashboardPage());
+        return _shell(routeName, const SigadDashboardPage());
       case AppRoutes.batePapo:
-        return _shell(routeName, const BatePapoPage());
+        return _shell(routeName, const SigadChatPage());
       case AppRoutes.cargaDocente:
-        final docente = settings.arguments is Docente
-            ? settings.arguments as Docente
-            : null;
-        return _shell(routeName, CargaDocentePage(docente: docente));
+        return _shell(routeName, const SigadCargaDocentePage());
       case AppRoutes.demandas:
-        return _shell(routeName, const DemandasPage());
+        return _shell(routeName, const SigadDemandasPage());
       case AppRoutes.kanban:
-        return _shell(routeName, const KanbanPage());
+        return _shell(routeName, const SigadKanbanPage());
       case AppRoutes.aulasPraticas:
-        return _shell(routeName, const AulasPraticasPage());
+        return _shell(routeName, const SigadLaboratoriosPage());
       case AppRoutes.professores:
-        return _shell(routeName, const ProfessoresPage());
+        return _shell(routeName, const SigadProfessoresPage());
       case AppRoutes.atividades:
-        return _shell(routeName, const AtividadesPage());
+        return _shell(routeName, const SigadAtividadesPage());
       case AppRoutes.relatorios:
-        return _shell(routeName, const RelatoriosPage());
+        return _shell(routeName, const SigadRelatoriosPage());
       case AppRoutes.configuracoes:
-        return _shell(routeName, const ConfiguracoesPage());
+        return _shell(routeName, const SigadConfiguracoesPage());
       case AppRoutes.notas:
         return _shell(routeName, const NotasPage());
       case AppRoutes.calendario:
@@ -64,7 +54,6 @@ abstract final class AppRouter {
     }
   }
 
-  /// Cria uma rota com o shell padrão do app.
   static MaterialPageRoute<void> _shell(String routeName, Widget page) {
     return MaterialPageRoute<void>(
       settings: RouteSettings(name: routeName),
@@ -73,15 +62,46 @@ abstract final class AppRouter {
   }
 }
 
-/// Página exibida para rotas não encontradas (404).
 class _NotFoundPage extends StatelessWidget {
   const _NotFoundPage();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Página não encontrada')),
-      body: const Center(child: Text('404 - Página não encontrada')),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.travel_explore_outlined,
+                size: 72,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Página não encontrada',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'O endereço informado não corresponde a um módulo do SIGAD.',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 18),
+              FilledButton.icon(
+                onPressed: () => Navigator.pushReplacementNamed(
+                  context,
+                  AppRoutes.dashboard,
+                ),
+                icon: const Icon(Icons.home_outlined),
+                label: const Text('Voltar à visão geral'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
