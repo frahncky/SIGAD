@@ -1,0 +1,66 @@
+name: Corrige integração final IFMA
+
+on:
+  push:
+    branches:
+      - institucionalizacao-ifma-final
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: institucionalizacao-ifma-final
+          fetch-depth: 0
+      - name: Corrigir textos e visibilidade docente
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          login = Path('lib/features/login/presentation/pages/login_page_v2.dart')
+          text = login.read_text(encoding='utf-8')
+          text = text.replace(
+              'IFMA — Campus São Luís–Monte Castelo do IFMA — Campus São Luís–Monte Castelo.',
+              'Gestão acadêmica e departamental do IFMA — Campus São Luís–Monte Castelo.',
+          )
+          login.write_text(text, encoding='utf-8')
+
+          carga = Path('lib/features/carga_docente/presentation/pages/carga_docente_page.dart')
+          text = carga.read_text(encoding='utf-8')
+          old = '''  List<Docente> _docentesVisiveis() {
+    // Professores podem pesquisar todos, mas só visualizar agenda e enviar convite
+    return List<Docente>.from(_docentes, growable: false);
+  }'''
+          new = '''  List<Docente> _docentesVisiveis() {
+    final user = context.read<UserContextProvider>().currentUser;
+    if (user?.role != UserRole.professor) {
+      return List<Docente>.from(_docentes, growable: false);
+    }
+
+    final email = user?.email.trim().toLowerCase() ?? '';
+    return _docentes
+        .where((docente) => docente.userEmail.trim().toLowerCase() == email)
+        .toList(growable: false);
+  }'''
+          text = text.replace(old, new)
+          carga.write_text(text, encoding='utf-8')
+          PY
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+      - run: dart format lib/features/login/presentation/pages/login_page_v2.dart lib/features/carga_docente/presentation/pages/carga_docente_page.dart
+      - name: Commitar correções
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          if git diff --cached --quiet; then
+            echo "Sem alterações."
+          else
+            git commit -m "fix: corrige textos e visibilidade docente no contexto IFMA [skip ci]"
+            git push origin HEAD:institucionalizacao-ifma-final
+          fi
