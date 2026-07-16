@@ -32,6 +32,7 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
+/[Aa][Nn][Aa][Ll][Yy][Zz][Ee]_[Oo][Uu][Tt][Pp][Uu][Tt].[Tt][Xx][Tt]
 
 # Symbolication related
 app.*.symbols
