@@ -1,0 +1,766 @@
+===== test/home_shell_page_widget_test.dart =====
+EXIT_CODE=1
+00:00 +0: loading /home/runner/work/SIGAD/SIGAD/test/home_shell_page_widget_test.dart
+00:00 +0: exibe AppBar em mobile com titulo correto
+[SIGAD][ACTION] session_login_persisted | userRef=u1, role=professor
+00:00 +1: desktop exibe modulos permitidos para coordenador
+[SIGAD][ACTION] session_login_persisted | userRef=u2, role=coordenador
+══╡ EXCEPTION CAUGHT BY FLUTTER FRAMEWORK ╞═════════════════════════════════════════════════════════
+The following assertion was thrown:
+ListTile background color or ink splashes may be invisible.
+The ListTile is wrapped in a DecoratedBox that has a background color. Because ListTile paints its
+background and ink splashes on the nearest Material ancestor, this DecoratedBox will hide those
+effects.
+To fix this, wrap the ListTile in its own Material widget, or remove the background color from the
+intermediate DecoratedBox.
+
+ListTile:
+  ListTile(shape: RoundedRectangleBorder(BorderSide(width: 0.0, style: none), BorderRadius.circular(12.0)), onTap: Closure: () => void)
+DecoratedBox:
+  DecoratedBox(bg: BoxDecoration(color: Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace: ColorSpace.sRGB), border: Border(right: BorderSide(color: Color(alpha: 1.0000, red: 0.8667, green: 0.8980, blue: 0.8824, colorSpace: ColorSpace.sRGB)))))
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER FRAMEWORK ╞═════════════════════════════════════════════════════════
+The following assertion was thrown:
+ListTile background color or ink splashes may be invisible.
+The ListTile is wrapped in a DecoratedBox that has a background color. Because ListTile paints its
+background and ink splashes on the nearest Material ancestor, this DecoratedBox will hide those
+effects.
+To fix this, wrap the ListTile in its own Material widget, or remove the background color from the
+intermediate DecoratedBox.
+
+ListTile:
+  ListTile(shape: RoundedRectangleBorder(BorderSide(width: 0.0, style: none), BorderRadius.circular(14.0)), selectedColor: Color(alpha: 1.0000, red: 0.0431, green: 0.4196, blue: 0.3686, colorSpace: ColorSpace.sRGB), onTap: Closure: () => void, selected: true, selectedTileColor: Color(alpha: 0.5500, red: 0.9059, green: 0.9529, blue: 0.9373, colorSpace: ColorSpace.sRGB))
+DecoratedBox:
+  DecoratedBox(bg: BoxDecoration(color: Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace: ColorSpace.sRGB), border: Border(right: BorderSide(color: Color(alpha: 1.0000, red: 0.8667, green: 0.8980, blue: 0.8824, colorSpace: ColorSpace.sRGB)))))
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER FRAMEWORK ╞═════════════════════════════════════════════════════════
+The following assertion was thrown:
+ListTile background color or ink splashes may be invisible.
+The ListTile is wrapped in a DecoratedBox that has a background color. Because ListTile paints its
+background and ink splashes on the nearest Material ancestor, this DecoratedBox will hide those
+effects.
+To fix this, wrap the ListTile in its own Material widget, or remove the background color from the
+intermediate DecoratedBox.
+
+ListTile:
+  ListTile(shape: RoundedRectangleBorder(BorderSide(width: 0.0, style: none), BorderRadius.circular(14.0)), selectedColor: Color(alpha: 1.0000, red: 0.0431, green: 0.4196, blue: 0.3686, colorSpace: ColorSpace.sRGB), onTap: Closure: () => void, selectedTileColor: Color(alpha: 0.5500, red: 0.9059, green: 0.9529, blue: 0.9373, colorSpace: ColorSpace.sRGB))
+DecoratedBox:
+  DecoratedBox(bg: BoxDecoration(color: Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace: ColorSpace.sRGB), border: Border(right: BorderSide(color: Color(alpha: 1.0000, red: 0.8667, green: 0.8980, blue: 0.8824, colorSpace: ColorSpace.sRGB)))))
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER FRAMEWORK ╞═════════════════════════════════════════════════════════
+The following assertion was thrown:
+ListTile background color or ink splashes may be invisible.
+The ListTile is wrapped in a DecoratedBox that has a background color. Because ListTile paints its
+background and ink splashes on the nearest Material ancestor, this DecoratedBox will hide those
+effects.
+To fix this, wrap the ListTile in its own Material widget, or remove the background color from the
+intermediate DecoratedBox.
+
+ListTile:
+  ListTile(shape: RoundedRectangleBorder(BorderSide(width: 0.0, style: none), BorderRadius.circular(14.0)), selectedColor: Color(alpha: 1.0000, red: 0.0431, green: 0.4196, blue: 0.3686, colorSpace: ColorSpace.sRGB), onTap: Closure: () => void, selectedTileColor: Color(alpha: 0.5500, red: 0.9059, green: 0.9529, blue: 0.9373, colorSpace: ColorSpace.sRGB))
+DecoratedBox:
+  DecoratedBox(bg: BoxDecoration(color: Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace: ColorSpace.sRGB), border: Border(right: BorderSide(color: Color(alpha: 1.0000, red: 0.8667, green: 0.8980, blue: 0.8824, colorSpace: ColorSpace.sRGB)))))
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER FRAMEWORK ╞═════════════════════════════════════════════════════════
+The following assertion was thrown:
+ListTile background color or ink splashes may be invisible.
+The ListTile is wrapped in a DecoratedBox that has a background color. Because ListTile paints its
+background and ink splashes on the nearest Material ancestor, this DecoratedBox will hide those
+effects.
+To fix this, wrap the ListTile in its own Material widget, or remove the background color from the
+intermediate DecoratedBox.
+
+ListTile:
+  ListTile(shape: RoundedRectangleBorder(BorderSide(width: 0.0, style: none), BorderRadius.circular(14.0)), selectedColor: Color(alpha: 1.0000, red: 0.0431, green: 0.4196, blue: 0.3686, colorSpace: ColorSpace.sRGB), onTap: Closure: () => void, selectedTileColor: Color(alpha: 0.5500, red: 0.9059, green: 0.9529, blue: 0.9373, colorSpace: ColorSpace.sRGB))
+DecoratedBox:
+  DecoratedBox(bg: BoxDecoration(color: Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace: ColorSpace.sRGB), border: Border(right: BorderSide(color: Color(alpha: 1.0000, red: 0.8667, green: 0.8980, blue: 0.8824, colorSpace: ColorSpace.sRGB)))))
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER FRAMEWORK ╞═════════════════════════════════════════════════════════
+The following assertion was thrown:
+ListTile background color or ink splashes may be invisible.
+The ListTile is wrapped in a DecoratedBox that has a background color. Because ListTile paints its
+background and ink splashes on the nearest Material ancestor, this DecoratedBox will hide those
+effects.
+To fix this, wrap the ListTile in its own Material widget, or remove the background color from the
+intermediate DecoratedBox.
+
+ListTile:
+  ListTile(shape: RoundedRectangleBorder(BorderSide(width: 0.0, style: none), BorderRadius.circular(14.0)), selectedColor: Color(alpha: 1.0000, red: 0.0431, green: 0.4196, blue: 0.3686, colorSpace: ColorSpace.sRGB), onTap: Closure: () => void, selectedTileColor: Color(alpha: 0.5500, red: 0.9059, green: 0.9529, blue: 0.9373, colorSpace: ColorSpace.sRGB))
+DecoratedBox:
+  DecoratedBox(bg: BoxDecoration(color: Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace: ColorSpace.sRGB), border: Border(right: BorderSide(color: Color(alpha: 1.0000, red: 0.8667, green: 0.8980, blue: 0.8824, colorSpace: ColorSpace.sRGB)))))
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER FRAMEWORK ╞═════════════════════════════════════════════════════════
+The following assertion was thrown:
+ListTile background color or ink splashes may be invisible.
+The ListTile is wrapped in a DecoratedBox that has a background color. Because ListTile paints its
+background and ink splashes on the nearest Material ancestor, this DecoratedBox will hide those
+effects.
+To fix this, wrap the ListTile in its own Material widget, or remove the background color from the
+intermediate DecoratedBox.
+
+ListTile:
+  ListTile(shape: RoundedRectangleBorder(BorderSide(width: 0.0, style: none), BorderRadius.circular(14.0)), selectedColor: Color(alpha: 1.0000, red: 0.0431, green: 0.4196, blue: 0.3686, colorSpace: ColorSpace.sRGB), onTap: Closure: () => void, selectedTileColor: Color(alpha: 0.5500, red: 0.9059, green: 0.9529, blue: 0.9373, colorSpace: ColorSpace.sRGB))
+DecoratedBox:
+  DecoratedBox(bg: BoxDecoration(color: Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace: ColorSpace.sRGB), border: Border(right: BorderSide(color: Color(alpha: 1.0000, red: 0.8667, green: 0.8980, blue: 0.8824, colorSpace: ColorSpace.sRGB)))))
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER FRAMEWORK ╞═════════════════════════════════════════════════════════
+The following assertion was thrown:
+ListTile background color or ink splashes may be invisible.
+The ListTile is wrapped in a DecoratedBox that has a background color. Because ListTile paints its
+background and ink splashes on the nearest Material ancestor, this DecoratedBox will hide those
+effects.
+To fix this, wrap the ListTile in its own Material widget, or remove the background color from the
+intermediate DecoratedBox.
+
+ListTile:
+  ListTile(shape: RoundedRectangleBorder(BorderSide(width: 0.0, style: none), BorderRadius.circular(14.0)), selectedColor: Color(alpha: 1.0000, red: 0.0431, green: 0.4196, blue: 0.3686, colorSpace: ColorSpace.sRGB), onTap: Closure: () => void, selectedTileColor: Color(alpha: 0.5500, red: 0.9059, green: 0.9529, blue: 0.9373, colorSpace: ColorSpace.sRGB))
+DecoratedBox:
+  DecoratedBox(bg: BoxDecoration(color: Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace: ColorSpace.sRGB), border: Border(right: BorderSide(color: Color(alpha: 1.0000, red: 0.8667, green: 0.8980, blue: 0.8824, colorSpace: ColorSpace.sRGB)))))
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER FRAMEWORK ╞═════════════════════════════════════════════════════════
+The following assertion was thrown:
+ListTile background color or ink splashes may be invisible.
+The ListTile is wrapped in a DecoratedBox that has a background color. Because ListTile paints its
+background and ink splashes on the nearest Material ancestor, this DecoratedBox will hide those
+effects.
+To fix this, wrap the ListTile in its own Material widget, or remove the background color from the
+intermediate DecoratedBox.
+
+ListTile:
+  ListTile(shape: RoundedRectangleBorder(BorderSide(width: 0.0, style: none), BorderRadius.circular(14.0)), selectedColor: Color(alpha: 1.0000, red: 0.0431, green: 0.4196, blue: 0.3686, colorSpace: ColorSpace.sRGB), onTap: Closure: () => void, selectedTileColor: Color(alpha: 0.5500, red: 0.9059, green: 0.9529, blue: 0.9373, colorSpace: ColorSpace.sRGB))
+DecoratedBox:
+  DecoratedBox(bg: BoxDecoration(color: Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace: ColorSpace.sRGB), border: Border(right: BorderSide(color: Color(alpha: 1.0000, red: 0.8667, green: 0.8980, blue: 0.8824, colorSpace: ColorSpace.sRGB)))))
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER FRAMEWORK ╞═════════════════════════════════════════════════════════
+The following assertion was thrown:
+ListTile background color or ink splashes may be invisible.
+The ListTile is wrapped in a DecoratedBox that has a background color. Because ListTile paints its
+background and ink splashes on the nearest Material ancestor, this DecoratedBox will hide those
+effects.
+To fix this, wrap the ListTile in its own Material widget, or remove the background color from the
+intermediate DecoratedBox.
+
+ListTile:
+  ListTile(shape: RoundedRectangleBorder(BorderSide(width: 0.0, style: none), BorderRadius.circular(14.0)), selectedColor: Color(alpha: 1.0000, red: 0.0431, green: 0.4196, blue: 0.3686, colorSpace: ColorSpace.sRGB), onTap: Closure: () => void, selectedTileColor: Color(alpha: 0.5500, red: 0.9059, green: 0.9529, blue: 0.9373, colorSpace: ColorSpace.sRGB))
+DecoratedBox:
+  DecoratedBox(bg: BoxDecoration(color: Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace: ColorSpace.sRGB), border: Border(right: BorderSide(color: Color(alpha: 1.0000, red: 0.8667, green: 0.8980, blue: 0.8824, colorSpace: ColorSpace.sRGB)))))
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER FRAMEWORK ╞═════════════════════════════════════════════════════════
+The following assertion was thrown:
+ListTile background color or ink splashes may be invisible.
+The ListTile is wrapped in a DecoratedBox that has a background color. Because ListTile paints its
+background and ink splashes on the nearest Material ancestor, this DecoratedBox will hide those
+effects.
+To fix this, wrap the ListTile in its own Material widget, or remove the background color from the
+intermediate DecoratedBox.
+
+ListTile:
+  ListTile(shape: RoundedRectangleBorder(BorderSide(width: 0.0, style: none), BorderRadius.circular(14.0)), selectedColor: Color(alpha: 1.0000, red: 0.0431, green: 0.4196, blue: 0.3686, colorSpace: ColorSpace.sRGB), onTap: Closure: () => void, selectedTileColor: Color(alpha: 0.5500, red: 0.9059, green: 0.9529, blue: 0.9373, colorSpace: ColorSpace.sRGB))
+DecoratedBox:
+  DecoratedBox(bg: BoxDecoration(color: Color(alpha: 1.0000, red: 1.0000, green: 1.0000, blue: 1.0000, colorSpace: ColorSpace.sRGB), border: Border(right: BorderSide(color: Color(alpha: 1.0000, red: 0.8667, green: 0.8980, blue: 0.8824, colorSpace: ColorSpace.sRGB)))))
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following message was thrown:
+Multiple exceptions (11) were detected during the running of the current test, and at least one was
+unexpected.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:01 +1 -1: desktop exibe modulos permitidos para coordenador [E]
+  Test failed. See exception logs above.
+  The test description was: desktop exibe modulos permitidos para coordenador
+  
+00:01 +1 -1: drawer mobile exibe modulos permitidos para coordenador
+[SIGAD][ACTION] session_login_persisted | userRef=u-***er, role=coordenador
+00:01 +2 -1: exibe BottomNavigationBar em mobile
+[SIGAD][ACTION] session_login_persisted | userRef=u3, role=coordenador
+00:01 +3 -1: Some tests failed.
+
+Failing tests:
+  /home/runner/work/SIGAD/SIGAD/test/home_shell_page_widget_test.dart: desktop exibe modulos permitidos para coordenador
+
+===== test/login_page_widget_test.dart =====
+EXIT_CODE=1
+#58     main.<anonymous closure> (file:///home/runner/work/SIGAD/SIGAD/test/login_page_widget_test.dart:99:18)
+<asynchronous suspension>
+#59     testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#60     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 7 frames from class _AssertionError, dart:async, and package:stack_trace)
+
+The following RenderObject was being processed when the exception was fired: RenderTransform#fc695 relayoutBoundary=up5:
+  needs compositing
+  creator: Transform ← StretchEffect ← ClipRect ← AnimatedBuilder ←
+    NotificationListener<ScrollNotification> ← StretchingOverscrollIndicator ← Scrollable ←
+    PrimaryScrollController ← SingleChildScrollView ← Center ← MediaQuery ← Padding ← ⋯
+  parentData: <none> (can use size)
+  constraints: BoxConstraints(0.0<=w<=800.0, 0.0<=h<=600.0)
+  size: MISSING
+  transform matrix:
+    [0] 1.0,0.0,0.0,0.0
+    [1] 0.0,1.0,0.0,0.0
+    [2] 0.0,0.0,1.0,0.0
+    [3] 0.0,0.0,0.0,1.0
+  origin: null
+  alignment: AlignmentDirectional.bottomCenter
+  textDirection: ltr
+  transformHitTests: true
+This RenderObject had the following descendants (showing up to depth 5):
+    child: _RenderScrollSemantics#6568c relayoutBoundary=up6 NEEDS-PAINT
+      child: RenderPointerListener#c3154 relayoutBoundary=up7 NEEDS-PAINT
+        child: RenderSemanticsGestureHandler#9cb6a relayoutBoundary=up8 NEEDS-PAINT
+          child: RenderPointerListener#06723 relayoutBoundary=up9 NEEDS-PAINT
+            child: RenderSemanticsAnnotations#8d567 relayoutBoundary=up10 NEEDS-PAINT
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY SCHEDULER LIBRARY ╞═════════════════════════════════════════════════════════
+The following assertion was thrown during a scheduler callback:
+'package:flutter/src/rendering/object.dart': Failed assertion: line 5705 pos 14:
+'!semantics.parentDataDirty': is not true.
+
+When the exception was thrown, this was the stack:
+#2      _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5705:14)
+#3      List.forEach (dart:core-patch/growable_array.dart:428:8)
+#4      _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#5      List.forEach (dart:core-patch/growable_array.dart:428:8)
+#6      _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#7      List.forEach (dart:core-patch/growable_array.dart:428:8)
+#8      _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#9      List.forEach (dart:core-patch/growable_array.dart:428:8)
+#10     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#11     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#12     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#13     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#14     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#15     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#16     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#17     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#18     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#19     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#20     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#21     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#22     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#23     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#24     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#25     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#26     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#27     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#28     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#29     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#30     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#31     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#32     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#33     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#34     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#35     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#36     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#37     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#38     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#39     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#40     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#41     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#42     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#43     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#44     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#45     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#46     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#47     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#48     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#49     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#50     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#51     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#52     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#53     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#54     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#55     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#56     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#57     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#58     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#59     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#60     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#61     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#62     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#63     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#64     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#65     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#66     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#67     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#68     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#69     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#70     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#71     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#72     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#73     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#74     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#75     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#76     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#77     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#78     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#79     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#80     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#81     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#82     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#83     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#84     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#85     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#86     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#87     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#88     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#89     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#90     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#91     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#92     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#93     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#94     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#95     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#96     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#97     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#98     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#99     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#100    _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#101    List.forEach (dart:core-patch/growable_array.dart:428:8)
+#102    _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#103    _RenderObjectSemantics.debugCheckForParentData (package:flutter/src/rendering/object.dart:5709:5)
+#104    PipelineOwner.flushSemantics.<anonymous closure> (package:flutter/src/rendering/object.dart:1498:34)
+#105    PipelineOwner.flushSemantics (package:flutter/src/rendering/object.dart:1501:8)
+#106    PipelineOwner.flushSemantics (package:flutter/src/rendering/object.dart:1653:15)
+#107    AutomatedTestWidgetsFlutterBinding.drawFrame (package:flutter_test/src/binding.dart:2444:35)
+#108    RendererBinding._handlePersistentFrameCallback (package:flutter/src/rendering/binding.dart:509:5)
+#109    SchedulerBinding._invokeFrameCallback (package:flutter/src/scheduler/binding.dart:1430:15)
+#110    SchedulerBinding.handleDrawFrame (package:flutter/src/scheduler/binding.dart:1345:9)
+#111    AutomatedTestWidgetsFlutterBinding.pump.<anonymous closure> (package:flutter_test/src/binding.dart:2260:9)
+#114    TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#115    AutomatedTestWidgetsFlutterBinding.pump (package:flutter_test/src/binding.dart:2249:27)
+#116    WidgetTester.pumpAndSettle.<anonymous closure> (package:flutter_test/src/widget_tester.dart:719:23)
+#119    TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#120    WidgetTester.pumpAndSettle (package:flutter_test/src/widget_tester.dart:712:27)
+#121    main.<anonymous closure> (file:///home/runner/work/SIGAD/SIGAD/test/login_page_widget_test.dart:99:18)
+<asynchronous suspension>
+#122    testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#123    TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 7 frames from class _AssertionError, dart:async, and package:stack_trace)
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following message was thrown:
+Multiple exceptions (33) were detected during the running of the current test, and at least one was
+unexpected.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:04 +0 -7: botao acesso demo esta visivel [E]
+  Test failed. See exception logs above.
+  The test description was: botao acesso demo esta visivel
+  
+00:04 +0 -7: Some tests failed.
+
+Failing tests:
+  /home/runner/work/SIGAD/SIGAD/test/login_page_widget_test.dart: alterna visibilidade da senha
+  /home/runner/work/SIGAD/SIGAD/test/login_page_widget_test.dart: botao acesso demo esta visivel
+  /home/runner/work/SIGAD/SIGAD/test/login_page_widget_test.dart: exibe campos de email e senha
+  /home/runner/work/SIGAD/SIGAD/test/login_page_widget_test.dart: exibe pills de perfil e permite selecionar
+  ... and 3 more
+
+===== test/notas_page_widget_test.dart =====
+EXIT_CODE=1
+00:00 +0: loading /home/runner/work/SIGAD/SIGAD/test/notas_page_widget_test.dart
+00:00 +0: persiste criação e exclusão de anotação entre remontagens
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following StateError was thrown running a test:
+Bad state: Too many elements
+
+When the exception was thrown, this was the stack:
+#0      Iterable.single (dart:core/iterable.dart:696:24)
+#1      WidgetController.state (package:flutter_test/src/controller.dart:932:42)
+#2      WidgetTester.showKeyboard.<anonymous closure> (package:flutter_test/src/widget_tester.dart:1125:42)
+#5      TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#6      WidgetTester.showKeyboard (package:flutter_test/src/widget_tester.dart:1124:27)
+#7      WidgetTester.enterText.<anonymous closure> (package:flutter_test/src/widget_tester.dart:1160:13)
+#10     TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#11     WidgetTester.enterText (package:flutter_test/src/widget_tester.dart:1159:27)
+#12     main.<anonymous closure> (file:///home/runner/work/SIGAD/SIGAD/test/notas_page_widget_test.dart:38:18)
+<asynchronous suspension>
+#13     testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#14     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 5 frames from dart:async and package:stack_trace)
+
+The test description was:
+  persiste criação e exclusão de anotação entre remontagens
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:01 +0 -1: persiste criação e exclusão de anotação entre remontagens [E]
+  Test failed. See exception logs above.
+  The test description was: persiste criação e exclusão de anotação entre remontagens
+  
+00:01 +0 -1: Some tests failed.
+
+Failing tests:
+  /home/runner/work/SIGAD/SIGAD/test/notas_page_widget_test.dart: persiste criação e exclusão de anotação entre remontagens
+
+===== test/sprint1_flows_test.dart =====
+EXIT_CODE=1
+#35     main.<anonymous closure> (file:///home/runner/work/SIGAD/SIGAD/test/sprint1_flows_test.dart:117:18)
+<asynchronous suspension>
+#36     testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#37     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 7 frames from dart:async and package:stack_trace)
+
+router: Instance of 'PointerRouter'
+route: Closure: (PointerEvent) => void from Function '_handleGlobalPointerEvent@959258657':.
+event: PointerDownEvent#cda52(position: Offset(84.8, 300.0))
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY GESTURE LIBRARY ╞═══════════════════════════════════════════════════════════
+The following assertion was thrown while routing a pointer event:
+RawTooltipState is a SingleTickerProviderStateMixin but multiple tickers were created.
+A SingleTickerProviderStateMixin can only be used as a TickerProvider once.
+If a State is used for multiple AnimationController objects, or if it is passed to other objects and
+those objects might use it more than one time in total, then instead of mixing in a
+SingleTickerProviderStateMixin, use a regular TickerProviderStateMixin.
+
+When the exception was thrown, this was the stack:
+#0      SingleTickerProviderStateMixin.createTicker.<anonymous closure> (package:flutter/src/widgets/ticker_provider.dart:327:7)
+#1      SingleTickerProviderStateMixin.createTicker (package:flutter/src/widgets/ticker_provider.dart:340:6)
+#2      new AnimationController (package:flutter/src/animation/animation_controller.dart:257:21)
+#3      RawTooltipState._controller (package:flutter/src/widgets/raw_tooltip.dart:544:35)
+#4      RawTooltipState._handleGlobalPointerEvent (package:flutter/src/widgets/raw_tooltip.dart:680:28)
+#5      PointerRouter._dispatch (package:flutter/src/gestures/pointer_router.dart:97:12)
+#6      PointerRouter._dispatchEventToRoutes.<anonymous closure> (package:flutter/src/gestures/pointer_router.dart:140:9)
+#7      _LinkedHashMapMixin.forEach (dart:_compact_hash:772:13)
+#8      PointerRouter._dispatchEventToRoutes (package:flutter/src/gestures/pointer_router.dart:138:18)
+#9      PointerRouter.route (package:flutter/src/gestures/pointer_router.dart:130:5)
+#10     GestureBinding.handleEvent (package:flutter/src/gestures/binding.dart:528:19)
+#11     GestureBinding.dispatchEvent (package:flutter/src/gestures/binding.dart:498:22)
+#12     RendererBinding.dispatchEvent (package:flutter/src/rendering/binding.dart:473:11)
+#13     GestureBinding._handlePointerEventImmediately (package:flutter/src/gestures/binding.dart:437:7)
+#14     GestureBinding.handlePointerEvent (package:flutter/src/gestures/binding.dart:394:5)
+#15     TestWidgetsFlutterBinding.handlePointerEventForSource.<anonymous closure> (package:flutter_test/src/binding.dart:1570:42)
+#16     TestWidgetsFlutterBinding.withPointerEventSource (package:flutter_test/src/binding.dart:1580:11)
+#17     TestWidgetsFlutterBinding.handlePointerEventForSource (package:flutter_test/src/binding.dart:1570:5)
+#18     WidgetTester.sendEventToBinding.<anonymous closure> (package:flutter_test/src/widget_tester.dart:869:15)
+#21     TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#22     WidgetTester.sendEventToBinding (package:flutter_test/src/widget_tester.dart:868:27)
+#23     TestGesture.up.<anonymous closure> (package:flutter_test/src/test_pointer.dart:587:26)
+#26     TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#27     TestGesture.up (package:flutter_test/src/test_pointer.dart:580:27)
+#28     WidgetController.tapAt.<anonymous closure> (package:flutter_test/src/controller.dart:1155:21)
+<asynchronous suspension>
+#29     TestAsyncUtils.guard.<anonymous closure> (package:flutter_test/src/test_async_utils.dart:130:27)
+<asynchronous suspension>
+#30     main.<anonymous closure> (file:///home/runner/work/SIGAD/SIGAD/test/sprint1_flows_test.dart:117:5)
+<asynchronous suspension>
+#31     testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#32     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 5 frames from dart:async and package:stack_trace)
+
+router: Instance of 'PointerRouter'
+route: Closure: (PointerEvent) => void from Function '_handleGlobalPointerEvent@959258657':.
+event: PointerUpEvent#17c2b(position: Offset(84.8, 300.0))
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY GESTURE LIBRARY ╞═══════════════════════════════════════════════════════════
+The following assertion was thrown while routing a pointer event:
+RawTooltipState is a SingleTickerProviderStateMixin but multiple tickers were created.
+A SingleTickerProviderStateMixin can only be used as a TickerProvider once.
+If a State is used for multiple AnimationController objects, or if it is passed to other objects and
+those objects might use it more than one time in total, then instead of mixing in a
+SingleTickerProviderStateMixin, use a regular TickerProviderStateMixin.
+
+When the exception was thrown, this was the stack:
+#0      SingleTickerProviderStateMixin.createTicker.<anonymous closure> (package:flutter/src/widgets/ticker_provider.dart:327:7)
+#1      SingleTickerProviderStateMixin.createTicker (package:flutter/src/widgets/ticker_provider.dart:340:6)
+#2      new AnimationController (package:flutter/src/animation/animation_controller.dart:257:21)
+#3      RawTooltipState._controller (package:flutter/src/widgets/raw_tooltip.dart:544:35)
+#4      RawTooltipState._handleGlobalPointerEvent (package:flutter/src/widgets/raw_tooltip.dart:680:28)
+#5      PointerRouter._dispatch (package:flutter/src/gestures/pointer_router.dart:97:12)
+#6      PointerRouter._dispatchEventToRoutes.<anonymous closure> (package:flutter/src/gestures/pointer_router.dart:140:9)
+#7      _LinkedHashMapMixin.forEach (dart:_compact_hash:772:13)
+#8      PointerRouter._dispatchEventToRoutes (package:flutter/src/gestures/pointer_router.dart:138:18)
+#9      PointerRouter.route (package:flutter/src/gestures/pointer_router.dart:130:5)
+#10     GestureBinding.handleEvent (package:flutter/src/gestures/binding.dart:528:19)
+#11     GestureBinding.dispatchEvent (package:flutter/src/gestures/binding.dart:498:22)
+#12     RendererBinding.dispatchEvent (package:flutter/src/rendering/binding.dart:473:11)
+#13     GestureBinding._handlePointerEventImmediately (package:flutter/src/gestures/binding.dart:437:7)
+#14     GestureBinding.handlePointerEvent (package:flutter/src/gestures/binding.dart:394:5)
+#15     TestWidgetsFlutterBinding.handlePointerEventForSource.<anonymous closure> (package:flutter_test/src/binding.dart:1570:42)
+#16     TestWidgetsFlutterBinding.withPointerEventSource (package:flutter_test/src/binding.dart:1580:11)
+#17     TestWidgetsFlutterBinding.handlePointerEventForSource (package:flutter_test/src/binding.dart:1570:5)
+#18     WidgetTester.sendEventToBinding.<anonymous closure> (package:flutter_test/src/widget_tester.dart:869:15)
+#21     TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#22     WidgetTester.sendEventToBinding (package:flutter_test/src/widget_tester.dart:868:27)
+#23     TestGesture.down.<anonymous closure> (package:flutter_test/src/test_pointer.dart:485:25)
+#26     TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#27     TestGesture.down (package:flutter_test/src/test_pointer.dart:484:27)
+#28     WidgetController.startGesture (package:flutter_test/src/controller.dart:1897:20)
+#29     WidgetController.tapAt.<anonymous closure> (package:flutter_test/src/controller.dart:1148:41)
+#32     TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#33     WidgetController.tapAt (package:flutter_test/src/controller.dart:1147:27)
+#34     WidgetController.tap (package:flutter_test/src/controller.dart:1079:12)
+#35     main.<anonymous closure> (file:///home/runner/work/SIGAD/SIGAD/test/sprint1_flows_test.dart:128:18)
+<asynchronous suspension>
+#36     testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#37     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 7 frames from dart:async and package:stack_trace)
+
+router: Instance of 'PointerRouter'
+route: Closure: (PointerEvent) => void from Function '_handleGlobalPointerEvent@959258657':.
+event: PointerDownEvent#72524(position: Offset(472.0, 394.0))
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY GESTURE LIBRARY ╞═══════════════════════════════════════════════════════════
+The following assertion was thrown while routing a pointer event:
+RawTooltipState is a SingleTickerProviderStateMixin but multiple tickers were created.
+A SingleTickerProviderStateMixin can only be used as a TickerProvider once.
+If a State is used for multiple AnimationController objects, or if it is passed to other objects and
+those objects might use it more than one time in total, then instead of mixing in a
+SingleTickerProviderStateMixin, use a regular TickerProviderStateMixin.
+
+When the exception was thrown, this was the stack:
+#0      SingleTickerProviderStateMixin.createTicker.<anonymous closure> (package:flutter/src/widgets/ticker_provider.dart:327:7)
+#1      SingleTickerProviderStateMixin.createTicker (package:flutter/src/widgets/ticker_provider.dart:340:6)
+#2      new AnimationController (package:flutter/src/animation/animation_controller.dart:257:21)
+#3      RawTooltipState._controller (package:flutter/src/widgets/raw_tooltip.dart:544:35)
+#4      RawTooltipState._handleGlobalPointerEvent (package:flutter/src/widgets/raw_tooltip.dart:680:28)
+#5      PointerRouter._dispatch (package:flutter/src/gestures/pointer_router.dart:97:12)
+#6      PointerRouter._dispatchEventToRoutes.<anonymous closure> (package:flutter/src/gestures/pointer_router.dart:140:9)
+#7      _LinkedHashMapMixin.forEach (dart:_compact_hash:772:13)
+#8      PointerRouter._dispatchEventToRoutes (package:flutter/src/gestures/pointer_router.dart:138:18)
+#9      PointerRouter.route (package:flutter/src/gestures/pointer_router.dart:130:5)
+#10     GestureBinding.handleEvent (package:flutter/src/gestures/binding.dart:528:19)
+#11     GestureBinding.dispatchEvent (package:flutter/src/gestures/binding.dart:498:22)
+#12     RendererBinding.dispatchEvent (package:flutter/src/rendering/binding.dart:473:11)
+#13     GestureBinding._handlePointerEventImmediately (package:flutter/src/gestures/binding.dart:437:7)
+#14     GestureBinding.handlePointerEvent (package:flutter/src/gestures/binding.dart:394:5)
+#15     TestWidgetsFlutterBinding.handlePointerEventForSource.<anonymous closure> (package:flutter_test/src/binding.dart:1570:42)
+#16     TestWidgetsFlutterBinding.withPointerEventSource (package:flutter_test/src/binding.dart:1580:11)
+#17     TestWidgetsFlutterBinding.handlePointerEventForSource (package:flutter_test/src/binding.dart:1570:5)
+#18     WidgetTester.sendEventToBinding.<anonymous closure> (package:flutter_test/src/widget_tester.dart:869:15)
+#21     TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#22     WidgetTester.sendEventToBinding (package:flutter_test/src/widget_tester.dart:868:27)
+#23     TestGesture.up.<anonymous closure> (package:flutter_test/src/test_pointer.dart:587:26)
+#26     TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#27     TestGesture.up (package:flutter_test/src/test_pointer.dart:580:27)
+#28     WidgetController.tapAt.<anonymous closure> (package:flutter_test/src/controller.dart:1155:21)
+<asynchronous suspension>
+#29     TestAsyncUtils.guard.<anonymous closure> (package:flutter_test/src/test_async_utils.dart:130:27)
+<asynchronous suspension>
+#30     main.<anonymous closure> (file:///home/runner/work/SIGAD/SIGAD/test/sprint1_flows_test.dart:128:5)
+<asynchronous suspension>
+#31     testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#32     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 5 frames from dart:async and package:stack_trace)
+
+router: Instance of 'PointerRouter'
+route: Closure: (PointerEvent) => void from Function '_handleGlobalPointerEvent@959258657':.
+event: PointerUpEvent#87848(position: Offset(472.0, 394.0))
+════════════════════════════════════════════════════════════════════════════════════════════════════
+[SIGAD][ACTION] reserva_create | laboratorio=Lab Química 1, diaSemana=Seg, turno=matutino, periodo=1, professor=***este
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following message was thrown:
+Multiple exceptions (4) were detected during the running of the current test, and at least one was
+unexpected.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:04 +0 -3: Professor consegue reservar horário em laboratório [E]
+  Test failed. See exception logs above.
+  The test description was: Professor consegue reservar horário em laboratório
+  
+00:04 +0 -3: Some tests failed.
+
+Failing tests:
+  /home/runner/work/SIGAD/SIGAD/test/sprint1_flows_test.dart: Coordenador consegue expandir distribuição semanal de qualquer docente
+  /home/runner/work/SIGAD/SIGAD/test/sprint1_flows_test.dart: Login mostra validação para email inválido
+  /home/runner/work/SIGAD/SIGAD/test/sprint1_flows_test.dart: Professor consegue reservar horário em laboratório
+
+===== test/widget_test.dart =====
+EXIT_CODE=1
+#52     AutomatedTestWidgetsFlutterBinding.pump (package:flutter_test/src/binding.dart:2249:27)
+#53     WidgetTester.pump.<anonymous closure> (package:flutter_test/src/widget_tester.dart:652:53)
+#56     TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#57     WidgetTester.pump (package:flutter_test/src/widget_tester.dart:652:27)
+#58     main.<anonymous closure> (file:///home/runner/work/SIGAD/SIGAD/test/widget_test.dart:20:18)
+<asynchronous suspension>
+#59     testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#60     TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 7 frames from class _AssertionError, dart:async, and package:stack_trace)
+
+The following RenderObject was being processed when the exception was fired: RenderTransform#7d0d7 relayoutBoundary=up5:
+  needs compositing
+  creator: Transform ← StretchEffect ← ClipRect ← AnimatedBuilder ←
+    NotificationListener<ScrollNotification> ← StretchingOverscrollIndicator ← Scrollable ←
+    PrimaryScrollController ← SingleChildScrollView ← Center ← MediaQuery ← Padding ← ⋯
+  parentData: <none> (can use size)
+  constraints: BoxConstraints(0.0<=w<=1920.0, 0.0<=h<=1080.0)
+  size: MISSING
+  transform matrix:
+    [0] 1.0,0.0,0.0,0.0
+    [1] 0.0,1.0,0.0,0.0
+    [2] 0.0,0.0,1.0,0.0
+    [3] 0.0,0.0,0.0,1.0
+  origin: null
+  alignment: AlignmentDirectional.bottomCenter
+  textDirection: ltr
+  transformHitTests: true
+This RenderObject had the following descendants (showing up to depth 5):
+    child: _RenderScrollSemantics#24639 relayoutBoundary=up6 NEEDS-PAINT
+      child: RenderPointerListener#71901 relayoutBoundary=up7 NEEDS-PAINT
+        child: RenderSemanticsGestureHandler#219f0 relayoutBoundary=up8 NEEDS-PAINT
+          child: RenderPointerListener#94a75 relayoutBoundary=up9 NEEDS-PAINT
+            child: RenderSemanticsAnnotations#af143 relayoutBoundary=up10 NEEDS-PAINT
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY SCHEDULER LIBRARY ╞═════════════════════════════════════════════════════════
+The following assertion was thrown during a scheduler callback:
+'package:flutter/src/rendering/object.dart': Failed assertion: line 5705 pos 14:
+'!semantics.parentDataDirty': is not true.
+
+When the exception was thrown, this was the stack:
+#2      _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5705:14)
+#3      List.forEach (dart:core-patch/growable_array.dart:428:8)
+#4      _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#5      List.forEach (dart:core-patch/growable_array.dart:428:8)
+#6      _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#7      List.forEach (dart:core-patch/growable_array.dart:428:8)
+#8      _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#9      List.forEach (dart:core-patch/growable_array.dart:428:8)
+#10     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#11     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#12     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#13     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#14     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#15     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#16     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#17     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#18     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#19     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#20     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#21     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#22     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#23     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#24     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#25     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#26     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#27     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#28     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#29     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#30     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#31     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#32     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#33     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#34     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#35     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#36     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#37     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#38     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#39     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#40     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#41     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#42     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#43     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#44     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#45     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#46     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#47     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#48     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#49     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#50     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#51     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#52     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#53     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#54     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#55     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#56     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#57     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#58     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#59     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#60     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#61     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#62     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#63     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#64     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#65     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#66     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#67     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#68     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#69     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#70     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#71     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#72     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#73     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#74     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#75     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#76     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#77     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#78     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#79     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#80     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#81     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#82     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#83     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#84     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#85     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#86     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#87     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#88     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#89     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#90     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#91     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#92     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#93     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#94     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#95     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#96     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#97     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#98     _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#99     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#100    _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#101    List.forEach (dart:core-patch/growable_array.dart:428:8)
+#102    _RenderObjectSemantics.debugCheckForParentData.debugCheckParentDataNotDirty (package:flutter/src/rendering/object.dart:5706:42)
+#103    _RenderObjectSemantics.debugCheckForParentData (package:flutter/src/rendering/object.dart:5709:5)
+#104    PipelineOwner.flushSemantics.<anonymous closure> (package:flutter/src/rendering/object.dart:1498:34)
+#105    PipelineOwner.flushSemantics (package:flutter/src/rendering/object.dart:1501:8)
+#106    PipelineOwner.flushSemantics (package:flutter/src/rendering/object.dart:1653:15)
+#107    AutomatedTestWidgetsFlutterBinding.drawFrame (package:flutter_test/src/binding.dart:2444:35)
+#108    RendererBinding._handlePersistentFrameCallback (package:flutter/src/rendering/binding.dart:509:5)
+#109    SchedulerBinding._invokeFrameCallback (package:flutter/src/scheduler/binding.dart:1430:15)
+#110    SchedulerBinding.handleDrawFrame (package:flutter/src/scheduler/binding.dart:1345:9)
+#111    AutomatedTestWidgetsFlutterBinding.pump.<anonymous closure> (package:flutter_test/src/binding.dart:2260:9)
+#114    TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#115    AutomatedTestWidgetsFlutterBinding.pump (package:flutter_test/src/binding.dart:2249:27)
+#116    WidgetTester.pump.<anonymous closure> (package:flutter_test/src/widget_tester.dart:652:53)
+#119    TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+#120    WidgetTester.pump (package:flutter_test/src/widget_tester.dart:652:27)
+#121    main.<anonymous closure> (file:///home/runner/work/SIGAD/SIGAD/test/widget_test.dart:20:18)
+<asynchronous suspension>
+#122    testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#123    TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided 7 frames from class _AssertionError, dart:async, and package:stack_trace)
+════════════════════════════════════════════════════════════════════════════════════════════════════
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following message was thrown:
+Multiple exceptions (33) were detected during the running of the current test, and at least one was
+unexpected.
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:01 +0 -1: SIGAD app renders login page when session is not restored [E]
+  Test failed. See exception logs above.
+  The test description was: SIGAD app renders login page when session is not restored
+  
+00:01 +0 -1: Some tests failed.
+
+Failing tests:
+  /home/runner/work/SIGAD/SIGAD/test/widget_test.dart: SIGAD app renders login page when session is not restored
+
