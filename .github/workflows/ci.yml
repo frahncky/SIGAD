@@ -6,16 +6,36 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.44.6'
       - name: Instalar dependências
         run: flutter pub get
+      - name: Formatar código
+        run: dart format .
+      - name: Registrar formatação
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          if git diff --cached --quiet; then
+            echo "Código já formatado."
+          else
+            git commit -m "style: aplica formatação final [skip ci]"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
       - name: Análise estática
         run: flutter analyze
       - name: Rodar testes
