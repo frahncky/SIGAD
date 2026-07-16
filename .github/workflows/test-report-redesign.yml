@@ -32,25 +32,34 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Run tests individually
+      - name: Capture failing test details
         run: |
           set +e
-          : > TEST_SUMMARY.txt
-          while IFS= read -r file; do
-            flutter test "$file" >/dev/null 2>&1
+          : > TEST_FAILURES.txt
+          for file in \
+            test/home_shell_page_widget_test.dart \
+            test/login_page_widget_test.dart \
+            test/notas_page_widget_test.dart \
+            test/sprint1_flows_test.dart \
+            test/widget_test.dart; do
+            echo "===== $file =====" >> TEST_FAILURES.txt
+            flutter test "$file" --reporter expanded > current_test.txt 2>&1
             code=$?
-            echo "$code $file" >> TEST_SUMMARY.txt
-          done < <(find test -type f -name '*_test.dart' ! -path 'test/goldens/*' | sort)
+            echo "EXIT_CODE=$code" >> TEST_FAILURES.txt
+            tail -n 180 current_test.txt >> TEST_FAILURES.txt
+            echo >> TEST_FAILURES.txt
+          done
+          rm -f current_test.txt
           exit 0
 
-      - name: Commit test summary
+      - name: Commit failure details
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add TEST_SUMMARY.txt
+          git add TEST_FAILURES.txt
           if git diff --cached --quiet; then
             echo "No report changes."
             exit 0
           fi
-          git commit -m "chore: registra resumo temporário de testes [skip ci]"
+          git commit -m "chore: registra detalhes temporários dos testes [skip ci]"
           git push origin HEAD:${{ github.head_ref }}
