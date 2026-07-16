@@ -37,12 +37,8 @@ jobs:
         with:
           flutter-version: '3.44.6'
 
-      - name: Formatar e validar
-        run: |
-          dart format lib test
-          flutter pub get
-          flutter analyze
-          flutter test
+      - name: Formatar
+        run: dart format lib test
 
       - name: Commitar atualização
         run: |
@@ -55,3 +51,9 @@ jobs:
             git commit -m "feat: institucionaliza SIGAD para o IFMA Monte Castelo [skip ci]"
             git push origin HEAD:institucionalizacao-ifma-v2
           fi
+
+      - name: Validar
+        run: |
+          flutter pub get
+          flutter analyze
+          flutter test
