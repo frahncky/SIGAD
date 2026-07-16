@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../app/theme/sigad_colors.dart';
+import '../../core/config/institutional_context.dart';
 
 class BrandTitle extends StatelessWidget {
   const BrandTitle({super.key, this.compact = false, this.light = false});

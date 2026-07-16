@@ -21,10 +21,10 @@ class AulasPraticasPage extends StatefulWidget {
 
 class _AulasPraticasPageState extends State<AulasPraticasPage> {
   static const List<String> _laboratoriosDefault = [
-    'Lab Química 1',
-    'Lab Biologia 2',
-    'Lab Física 1',
-    'Lab Automação',
+    'Lab. de Eletrônica Analógica',
+    'Lab. de Máquinas Elétricas',
+    'Lab. de Medidas Elétricas',
+    'Lab. de Automação',
   ];
 
   static const List<String> _mesesDefault = [

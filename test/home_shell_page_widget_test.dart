@@ -46,7 +46,7 @@ void main() {
       User(
         id: 'u1',
         name: 'Pedro',
-        email: 'pedro@univ.br',
+        email: 'pedro@ifma.edu.br',
         role: UserRole.professor,
         createdAt: DateTime.now(),
       ),
@@ -72,7 +72,7 @@ void main() {
       User(
         id: 'u2',
         name: 'Ana',
-        email: 'ana@univ.br',
+        email: 'ana@ifma.edu.br',
         role: UserRole.coordenador,
         createdAt: DateTime.now(),
       ),
@@ -100,7 +100,7 @@ void main() {
       User(
         id: 'u-drawer',
         name: 'Marina',
-        email: 'marina@univ.br',
+        email: 'marina@ifma.edu.br',
         role: UserRole.coordenador,
         createdAt: DateTime.now(),
       ),
@@ -128,7 +128,7 @@ void main() {
       User(
         id: 'u3',
         name: 'Lucas',
-        email: 'lucas@univ.br',
+        email: 'lucas@ifma.edu.br',
         role: UserRole.coordenador,
         createdAt: DateTime.now(),
       ),

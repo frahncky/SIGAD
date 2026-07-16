@@ -138,10 +138,10 @@ Navigator.pushReplacementNamed(context, AppRoutes.login);
 
 ### Contas de Demonstração
 
-1. **Professor**: João Silva (joao.silva@univ.br)
-2. **Coordenador**: Maria Santos (maria.santos@univ.br)
-3. **Servidor Administrativo**: Carlos Admin (carlos.admin@univ.br)
-4. **Chefe do Departamento**: Ana Chefe (ana.chefe@univ.br)
+1. **Professor**: João Silva (joao.silva@ifma.edu.br)
+2. **Coordenador**: Maria Santos (maria.santos@ifma.edu.br)
+3. **Servidor Administrativo**: Carlos Admin (carlos.admin@ifma.edu.br)
+4. **Chefe do Departamento**: Ana Chefe (ana.chefe@ifma.edu.br)
 
 Use o botão "Usar conta demo" para fazer login com uma conta aleatória.
 

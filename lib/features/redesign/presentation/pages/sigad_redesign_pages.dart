@@ -20,7 +20,7 @@ class SigadDashboardPage extends StatelessWidget {
         eyebrow: 'VISÃO GERAL',
         title: 'Olá, $firstName',
         subtitle:
-            'Acompanhe a operação acadêmica e administrativa em um só lugar.',
+            'Acompanhe a gestão acadêmica do IFMA — Campus São Luís–Monte Castelo.',
         actions: [
           _HeaderAction(
             icon: Icons.refresh_rounded,
@@ -185,26 +185,26 @@ class _SigadChatPageState extends State<SigadChatPage> {
 
   final List<_Conversation> _conversations = const [
     _Conversation(
-      name: 'Equipe do departamento',
+      name: 'Equipe do DEE',
       message: 'A pauta da reunião foi atualizada.',
       time: '10:42',
       unread: 3,
       group: true,
     ),
     _Conversation(
-      name: 'Coordenação de curso',
+      name: 'Coordenação dos cursos do DEE',
       message: 'Podemos revisar a distribuição amanhã?',
       time: '09:18',
       unread: 1,
       group: true,
     ),
     _Conversation(
-      name: 'Secretaria acadêmica',
+      name: 'Secretaria Acadêmica do Campus',
       message: 'Documento recebido e encaminhado.',
       time: 'Ontem',
     ),
     _Conversation(
-      name: 'Comissão de laboratórios',
+      name: 'Comissão de Laboratórios do DEE',
       message: 'A manutenção do equipamento foi concluída.',
       time: 'Ontem',
       group: true,
@@ -230,7 +230,8 @@ class _SigadChatPageState extends State<SigadChatPage> {
       header: _PageHeader(
         eyebrow: 'COMUNICAÇÃO',
         title: 'Bate-papo',
-        subtitle: 'Conversas, grupos e avisos internos do departamento.',
+        subtitle:
+            'Conversas, grupos e avisos internos do DEE — Campus Monte Castelo.',
         actions: [
           _HeaderAction(
             icon: Icons.add_comment_outlined,

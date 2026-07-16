@@ -101,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         const SizedBox(height: 4),
         Text(
-          'Use suas credenciais institucionais para acessar o ambiente.',
+          'Use suas credenciais do IFMA para acessar o Campus São Luís–Monte Castelo.',
           style: theme.textTheme.bodySmall?.copyWith(
             color: colors.onSurfaceVariant,
           ),
@@ -346,26 +346,26 @@ class _LoginPageState extends State<LoginPage> {
   String _demoNameFor(UserRole role) {
     switch (role) {
       case UserRole.professor:
-        return 'João Silva';
+        return 'Professor Demonstrativo';
       case UserRole.coordenador:
-        return 'Maria Santos';
+        return 'Coordenação Demonstrativa';
       case UserRole.servidorAdministrativo:
-        return 'Carlos Oliveira';
+        return 'Servidor Demonstrativo';
       case UserRole.chefeDepartamento:
-        return 'Ana Pereira';
+        return 'Chefia Demonstrativa';
     }
   }
 
   String _demoEmailFor(UserRole role) {
     switch (role) {
       case UserRole.professor:
-        return 'joao.silva@ifma.edu.br';
+        return 'professor.demo@ifma.edu.br';
       case UserRole.coordenador:
-        return 'maria.santos@ifma.edu.br';
+        return 'coordenacao.demo@ifma.edu.br';
       case UserRole.servidorAdministrativo:
-        return 'carlos.oliveira@ifma.edu.br';
+        return 'servidor.demo@ifma.edu.br';
       case UserRole.chefeDepartamento:
-        return 'ana.pereira@ifma.edu.br';
+        return 'chefia.demo@ifma.edu.br';
     }
   }
 
@@ -405,7 +405,7 @@ class _CompactBrandHeader extends StatelessWidget {
             children: [
               const BrandTitle(compact: true),
               Text(
-                'Gestão acadêmica e departamental',
+                'IFMA — Campus São Luís–Monte Castelo',
                 style: Theme.of(
                   context,
                 ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
@@ -441,12 +441,12 @@ class _InstitutionPanel extends StatelessWidget {
           const BrandTitle(compact: true, light: true),
           const SizedBox(height: 24),
           Text(
-            'Gestão acadêmica e departamental em um único ambiente.',
+            'IFMA — Campus São Luís–Monte Castelo do IFMA — Campus São Luís–Monte Castelo.',
             style: textTheme.headlineSmall?.copyWith(color: Colors.white),
           ),
           const SizedBox(height: 10),
           Text(
-            'Planeje carga docente, laboratórios, reuniões, demandas e atividades com mais clareza.',
+            'Planeje as atividades do DEE: carga docente, laboratórios, reuniões e demandas.',
             style: textTheme.bodyMedium?.copyWith(
               color: Colors.white.withValues(alpha: 0.82),
             ),
