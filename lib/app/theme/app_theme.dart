@@ -6,33 +6,33 @@ import 'sigad_colors.dart';
 abstract final class AppTheme {
   static ThemeData light() {
     final base = ThemeData.light(useMaterial3: true);
-    final textTheme = _textTheme(base.textTheme).apply(
-      bodyColor: SigadColors.ink,
-      displayColor: SigadColors.ink,
-    );
+    final textTheme = _textTheme(
+      base.textTheme,
+    ).apply(bodyColor: SigadColors.ink, displayColor: SigadColors.ink);
 
-    final colors = ColorScheme.fromSeed(
-      seedColor: SigadColors.brand,
-      brightness: Brightness.light,
-      surface: SigadColors.surface,
-    ).copyWith(
-      primary: SigadColors.brand,
-      onPrimary: Colors.white,
-      primaryContainer: SigadColors.brandLight,
-      onPrimaryContainer: SigadColors.brandDark,
-      secondary: SigadColors.accent,
-      secondaryContainer: SigadColors.accentSoft,
-      error: SigadColors.risk,
-      surface: SigadColors.surface,
-      surfaceContainerLowest: SigadColors.surface,
-      surfaceContainerLow: SigadColors.surfaceWarm,
-      surfaceContainer: SigadColors.surfaceAlt,
-      surfaceContainerHigh: SigadColors.brandLight,
-      outline: SigadColors.divider,
-      outlineVariant: SigadColors.divider,
-      onSurface: SigadColors.ink,
-      onSurfaceVariant: SigadColors.muted,
-    );
+    final colors =
+        ColorScheme.fromSeed(
+          seedColor: SigadColors.brand,
+          brightness: Brightness.light,
+          surface: SigadColors.surface,
+        ).copyWith(
+          primary: SigadColors.brand,
+          onPrimary: Colors.white,
+          primaryContainer: SigadColors.brandLight,
+          onPrimaryContainer: SigadColors.brandDark,
+          secondary: SigadColors.accent,
+          secondaryContainer: SigadColors.accentSoft,
+          error: SigadColors.risk,
+          surface: SigadColors.surface,
+          surfaceContainerLowest: SigadColors.surface,
+          surfaceContainerLow: SigadColors.surfaceWarm,
+          surfaceContainer: SigadColors.surfaceAlt,
+          surfaceContainerHigh: SigadColors.brandLight,
+          outline: SigadColors.divider,
+          outlineVariant: SigadColors.divider,
+          onSurface: SigadColors.ink,
+          onSurfaceVariant: SigadColors.muted,
+        );
 
     return _buildTheme(
       base: base,
@@ -55,31 +55,31 @@ abstract final class AppTheme {
     const divider = Color(0xFF31453F);
 
     final base = ThemeData.dark(useMaterial3: true);
-    final textTheme = _textTheme(base.textTheme).apply(
-      bodyColor: ink,
-      displayColor: ink,
-    );
+    final textTheme = _textTheme(
+      base.textTheme,
+    ).apply(bodyColor: ink, displayColor: ink);
 
-    final colors = ColorScheme.fromSeed(
-      seedColor: SigadColors.brand,
-      brightness: Brightness.dark,
-      surface: surface,
-    ).copyWith(
-      primary: const Color(0xFF63C8B4),
-      onPrimary: SigadColors.brandDeep,
-      primaryContainer: const Color(0xFF174F45),
-      secondary: const Color(0xFFFFBE70),
-      surface: surface,
-      surfaceContainerLowest: canvas,
-      surfaceContainerLow: surface,
-      surfaceContainer: surfaceAlt,
-      surfaceContainerHigh: const Color(0xFF29413A),
-      outline: divider,
-      outlineVariant: divider,
-      onSurface: ink,
-      onSurfaceVariant: muted,
-      error: const Color(0xFFFFB4AB),
-    );
+    final colors =
+        ColorScheme.fromSeed(
+          seedColor: SigadColors.brand,
+          brightness: Brightness.dark,
+          surface: surface,
+        ).copyWith(
+          primary: const Color(0xFF63C8B4),
+          onPrimary: SigadColors.brandDeep,
+          primaryContainer: const Color(0xFF174F45),
+          secondary: const Color(0xFFFFBE70),
+          surface: surface,
+          surfaceContainerLowest: canvas,
+          surfaceContainerLow: surface,
+          surfaceContainer: surfaceAlt,
+          surfaceContainerHigh: const Color(0xFF29413A),
+          outline: divider,
+          outlineVariant: divider,
+          onSurface: ink,
+          onSurfaceVariant: muted,
+          error: const Color(0xFFFFB4AB),
+        );
 
     return _buildTheme(
       base: base,
@@ -180,7 +180,10 @@ abstract final class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: surface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 15,
+        ),
         prefixIconColor: muted,
         suffixIconColor: muted,
         labelStyle: textTheme.bodyMedium?.copyWith(color: muted),

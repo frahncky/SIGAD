@@ -357,62 +357,64 @@ class _SideNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return Container(
-      width: 290,
-      decoration: BoxDecoration(
-        color: colors.surface,
-        border: Border(right: BorderSide(color: colors.outlineVariant)),
-      ),
-      child: Column(
-        children: [
-          const SizedBox(height: 20),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: BrandTitle(),
-          ),
-          const SizedBox(height: 14),
-          if (userContext.isAuthenticated)
+    return Material(
+      color: colors.surface,
+      child: Container(
+        width: 290,
+        decoration: BoxDecoration(
+          border: Border(right: BorderSide(color: colors.outlineVariant)),
+        ),
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: BrandTitle(),
+            ),
+            const SizedBox(height: 14),
+            if (userContext.isAuthenticated)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: _UserCard(userContext: userContext),
+              ),
+            const SizedBox(height: 14),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _UserCard(userContext: userContext),
-            ),
-          const SizedBox(height: 14),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: OutlinedButton.icon(
-              onPressed: onQuickAccess,
-              icon: const Icon(Icons.search_rounded, size: 19),
-              label: const Text('Acesso rápido'),
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(44),
-                alignment: Alignment.centerLeft,
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Expanded(
-            child: ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 12),
-              itemCount: availableItems.length,
-              itemBuilder: (context, index) => _NavigationTile(
-                item: availableItems[index],
-                selected: index == selectedIndex,
-                onTap: () => onSelected(index),
+              child: OutlinedButton.icon(
+                onPressed: onQuickAccess,
+                icon: const Icon(Icons.search_rounded, size: 19),
+                label: const Text('Acesso rápido'),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(44),
+                  alignment: Alignment.centerLeft,
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
-            child: ListTile(
-              onTap: onLogout,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+            const SizedBox(height: 10),
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                itemCount: availableItems.length,
+                itemBuilder: (context, index) => _NavigationTile(
+                  item: availableItems[index],
+                  selected: index == selectedIndex,
+                  onTap: () => onSelected(index),
+                ),
               ),
-              leading: const Icon(Icons.logout, color: SigadColors.risk),
-              title: const Text('Sair'),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
+              child: ListTile(
+                onTap: onLogout,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                leading: const Icon(Icons.logout, color: SigadColors.risk),
+                title: const Text('Sair'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
