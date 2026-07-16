@@ -1,0 +1,85 @@
+name: Corrige dados de carga docente IFMA
+
+on:
+  push:
+    branches:
+      - institucionalizacao-ifma-monte-castelo
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: institucionalizacao-ifma-monte-castelo
+          fetch-depth: 0
+      - name: Atualizar dados demonstrativos
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('lib/features/carga_docente/presentation/pages/carga_docente_page.dart')
+          text = path.read_text(encoding='utf-8')
+          replacements = {
+            'Profa. Dra. Maria Silva': 'Docente 01',
+            'maria.santos@ifma.edu.br': 'docente01@ifma.edu.br',
+            "disciplinas: ['Programação I', 'Programação II', 'Engenharia Elétrica'],": "disciplinas: ['Circuitos Elétricos I', 'Circuitos Elétricos II', 'Medidas Elétricas'],",
+            "disciplina: 'Programação I'": "disciplina: 'Circuitos Elétricos I'",
+            "disciplina: 'Programação II'": "disciplina: 'Circuitos Elétricos II'",
+            "disciplina: 'Engenharia Elétrica'": "disciplina: 'Medidas Elétricas'",
+            "turma: 'SI-2A'": "turma: 'EE-2A'",
+            "turma: 'SI-2B'": "turma: 'EE-2B'",
+            "turma: 'SI-3A'": "turma: 'EE-3A'",
+            'Prof. Dr. João Silva': 'Docente 02',
+            'joao.silva@ifma.edu.br': 'docente02@ifma.edu.br',
+            "disciplinas: ['Banco de Dados', 'Web Design']": "disciplinas: ['Sistemas de Comunicação', 'Redes de Telecomunicações']",
+            "disciplina: 'Banco de Dados'": "disciplina: 'Sistemas de Comunicação'",
+            "disciplina: 'Web Design'": "disciplina: 'Redes de Telecomunicações'",
+            'Profa. Ana Costa': 'Docente 03',
+            'ana.pereira@ifma.edu.br': 'docente03@ifma.edu.br',
+            "departamento: 'Engenharia Elétrica',\n      cargaHoraria: 12": "departamento: 'Eletrotécnica',\n      cargaHoraria: 12",
+            "disciplinas: ['Computação Gráfica']": "disciplinas: ['Máquinas Elétricas']",
+            "disciplina: 'Computação Gráfica'": "disciplina: 'Máquinas Elétricas'",
+            "turma: 'ES-3B'": "turma: 'ELET-3B'",
+            'Prof. Carlos Oliveira': 'Docente 04',
+            'carlos.oliveira@ifma.edu.br': 'docente04@ifma.edu.br',
+            "departamento: 'Redes e Telecomunicações'": "departamento: 'Telecomunicações'",
+            'Profa. Beatriz Mendes': 'Docente 05',
+            'beatriz.mendes@ifma.edu.br': 'docente05@ifma.edu.br',
+            "departamento: 'Engenharia Elétrica',\n      cargaHoraria: 14": "departamento: 'Eletrônica',\n      cargaHoraria: 14",
+            "disciplinas: ['Qualidade de Software']": "disciplinas: ['Eletrônica de Potência']",
+            "disciplina: 'Qualidade de Software'": "disciplina: 'Eletrônica de Potência'",
+            "turma: 'ES-4A'": "turma: 'ELE-4A'",
+            "turma: 'ES-4B'": "turma: 'ELE-4B'",
+          }
+          for old, new in replacements.items():
+            text = text.replace(old, new)
+          path.write_text(text, encoding='utf-8')
+
+          test = Path('test/carga_docente_page_widget_test.dart')
+          text = test.read_text(encoding='utf-8')
+          text = text.replace('Maria Silva', 'Docente 01')
+          text = text.replace('João Silva', 'Docente 02')
+          text = text.replace('coordenacao.demo@ifma.edu.br', 'docente01@ifma.edu.br')
+          test.write_text(text, encoding='utf-8')
+
+          test = Path('test/sprint1_flows_test.dart')
+          text = test.read_text(encoding='utf-8')
+          text = text.replace('João Silva', 'Docente 02')
+          text = text.replace('Prof. Dr. Docente 02', 'Docente 02')
+          test.write_text(text, encoding='utf-8')
+          PY
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+      - run: dart format lib/features/carga_docente/presentation/pages/carga_docente_page.dart test/carga_docente_page_widget_test.dart test/sprint1_flows_test.dart
+      - name: Commitar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "fix: alinha dados demonstrativos da carga docente ao DEE [skip ci]" || exit 0
+          git push origin HEAD:institucionalizacao-ifma-monte-castelo
