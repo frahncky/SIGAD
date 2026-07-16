@@ -51,7 +51,7 @@ void main() {
   testWidgets('professor ve apenas os proprios dados', (tester) async {
     final ctx = await _loggedIn(
       UserRole.professor,
-      email: 'maria.santos@ifma.edu.br',
+      email: 'docente01@ifma.edu.br',
     );
 
     await tester.pumpWidget(_buildApp(ctx));
