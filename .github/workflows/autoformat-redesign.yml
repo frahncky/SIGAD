@@ -1,21 +1,26 @@
 name: Autoformat redesign
 
 on:
-  push:
+  pull_request:
     branches:
-      - redesign-ui-completo
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 permissions:
   contents: write
 
 jobs:
   format:
+    if: github.head_ref == 'redesign-ui-completo'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout source branch
         uses: actions/checkout@v4
         with:
-          ref: redesign-ui-completo
+          ref: ${{ github.head_ref }}
           fetch-depth: 0
 
       - name: Setup Flutter
@@ -40,4 +45,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add lib test
           git commit -m "style: aplica dart format ao redesign [skip ci]"
-          git push origin HEAD:redesign-ui-completo
+          git push origin HEAD:${{ github.head_ref }}
