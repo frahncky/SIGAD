@@ -24,6 +24,7 @@ class HomeShellPage extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth >= 1024;
+        final colors = Theme.of(context).colorScheme;
         final userContext = context.watch<UserContextProvider>();
         final userRole = userContext.userRole;
         // unreadChatCount removido pois não é mais utilizado
@@ -34,9 +35,6 @@ class HomeShellPage extends StatelessWidget {
             : kNavigationItems
                   .where((item) => item.isAvailableFor(userRole))
                   .toList();
-        final currentItem = availableItems
-            .where((item) => item.route == currentRoute)
-            .firstOrNull;
         final selectedIndex = availableItems.indexWhere(
           (item) => item.route == currentRoute,
         );
@@ -54,13 +52,12 @@ class HomeShellPage extends StatelessWidget {
           appBar: isWide
               ? null
               : AppBar(
-                  titleSpacing: 0,
-                  title: _MobileTopBarTitle(
-                    title: currentItem?.label ?? 'SIGAD',
-                    subtitle: userContext.currentUser?.role.displayName,
-                  ),
-                  elevation: 2,
-                  shadowColor: Colors.black12,
+                  toolbarHeight: 76,
+                  titleSpacing: 4,
+                  title: const BrandTitle(),
+                  backgroundColor: colors.surface,
+                  surfaceTintColor: Colors.transparent,
+                  elevation: 0,
                   actions: [
                     IconButton(
                       onPressed: () => _showNotifications(context),
@@ -77,9 +74,9 @@ class HomeShellPage extends StatelessWidget {
                     IconButton(
                       onPressed: () => _showProfileMenu(context, userContext),
                       tooltip: 'Perfil',
-                      icon: const Icon(Icons.account_circle_outlined),
+                      icon: _UserAvatar(userContext: userContext, radius: 18),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 12),
                   ],
                 ),
           bottomNavigationBar: isWide
@@ -88,19 +85,36 @@ class HomeShellPage extends StatelessWidget {
                   builder: (navigationContext) => NavigationBar(
                     selectedIndex: _bottomNavIndex(),
                     onDestinationSelected: (index) {
-                      if (index == _bottomNavItems.length) {
+                      if (index == 2) {
+                        _showQuickAccess(context, availableItems);
+                        return;
+                      }
+                      if (index == 4) {
                         Scaffold.of(navigationContext).openDrawer();
                         return;
                       }
-                      final item = _bottomNavItems[index];
+                      final item = index < 2
+                          ? _bottomNavItems[index]
+                          : _bottomNavItems[index - 1];
                       _navigate(context, item['route'] as String);
                     },
                     destinations: [
-                      ..._bottomNavItems.map(
-                        (item) => NavigationDestination(
-                          icon: Icon(item['icon'] as IconData),
-                          label: item['label'] as String,
-                        ),
+                      NavigationDestination(
+                        icon: Icon(_bottomNavItems[0]['icon'] as IconData),
+                        label: _bottomNavItems[0]['label'] as String,
+                      ),
+                      NavigationDestination(
+                        icon: Icon(_bottomNavItems[1]['icon'] as IconData),
+                        label: _bottomNavItems[1]['label'] as String,
+                      ),
+                      const NavigationDestination(
+                        icon: _CentralNavAction(),
+                        selectedIcon: _CentralNavAction(),
+                        label: '',
+                      ),
+                      NavigationDestination(
+                        icon: Icon(_bottomNavItems[2]['icon'] as IconData),
+                        label: _bottomNavItems[2]['label'] as String,
                       ),
                       const NavigationDestination(
                         icon: Icon(Icons.grid_view_rounded),
@@ -183,9 +197,9 @@ class HomeShellPage extends StatelessWidget {
       'icon': Icons.calendar_month_outlined,
     },
     {
-      'route': AppRoutes.notas,
-      'label': 'Anotações',
-      'icon': Icons.sticky_note_2_outlined,
+      'route': AppRoutes.batePapo,
+      'label': 'Comunicados',
+      'icon': Icons.notifications_none_rounded,
     },
   ];
 
@@ -193,7 +207,8 @@ class HomeShellPage extends StatelessWidget {
     final idx = _bottomNavItems.indexWhere(
       (item) => item['route'] == currentRoute,
     );
-    return idx >= 0 ? idx : _bottomNavItems.length;
+    if (idx < 0) return 4;
+    return idx < 2 ? idx : idx + 1;
   }
 
   void _navigate(BuildContext context, String route) {
@@ -645,39 +660,56 @@ class _UserCard extends StatelessWidget {
   }
 }
 
-class _MobileTopBarTitle extends StatelessWidget {
-  const _MobileTopBarTitle({required this.title, this.subtitle});
-
-  final String title;
-  final String? subtitle;
+class _CentralNavAction extends StatelessWidget {
+  const _CentralNavAction();
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SizedBox(
-          width: 180,
-          child: Text(
-            title,
-            style: Theme.of(
-              context,
-            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+    return Transform.translate(
+      offset: const Offset(0, -9),
+      child: Container(
+        width: 54,
+        height: 54,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [SigadColors.brand, SigadColors.brandDark],
           ),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: SigadColors.brand.withValues(alpha: 0.28),
+              blurRadius: 16,
+              offset: const Offset(0, 7),
+            ),
+          ],
         ),
-        if (subtitle != null)
-          Text(
-            subtitle!,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-      ],
+        child: const Icon(Icons.add_rounded, color: Colors.white, size: 30),
+      ),
+    );
+  }
+}
+
+class _UserAvatar extends StatelessWidget {
+  const _UserAvatar({required this.userContext, required this.radius});
+
+  final UserContextProvider userContext;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    final user = userContext.currentUser;
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+      child: Text(
+        user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : '?',
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
     );
   }
 }

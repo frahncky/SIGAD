@@ -32,20 +32,20 @@ class _ModuleWorkspacePageState extends State<ModuleWorkspacePage> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
           child: Align(
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.centerRight,
             child: SegmentedButton<int>(
               segments: [
                 ButtonSegment<int>(
                   value: 0,
-                  icon: const Icon(Icons.dashboard_outlined),
-                  label: Text(widget.overviewLabel),
+                  icon: const Icon(Icons.grid_view_rounded, size: 18),
+                  label: const Text('Visão'),
                 ),
                 ButtonSegment<int>(
                   value: 1,
-                  icon: const Icon(Icons.tune_rounded),
-                  label: Text(widget.operationLabel),
+                  icon: const Icon(Icons.tune_rounded, size: 18),
+                  label: const Text('Gerenciar'),
                 ),
               ],
               selected: {_selectedIndex},
@@ -66,6 +66,14 @@ class _ModuleWorkspacePageState extends State<ModuleWorkspacePage> {
                 ),
                 side: WidgetStatePropertyAll(
                   BorderSide(color: colors.outlineVariant),
+                ),
+                padding: const WidgetStatePropertyAll(
+                  EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                ),
+                textStyle: WidgetStatePropertyAll(
+                  Theme.of(context).textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
