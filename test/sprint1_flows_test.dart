@@ -65,11 +65,11 @@ void main() {
 
       // Simula busca pelo nome do docente
       final searchField = find.byType(TextField).last;
-      await tester.enterText(searchField, 'João Silva');
+      await tester.enterText(searchField, 'Docente 02');
       await tester.pumpAndSettle();
 
-      expect(find.text('Prof. Dr. João Silva'), findsOneWidget);
-      await tester.tap(find.text('Prof. Dr. João Silva'));
+      expect(find.text('Docente 02'), findsOneWidget);
+      await tester.tap(find.text('Docente 02'));
       await tester.pumpAndSettle();
 
       expect(find.text('Distribuição semanal'), findsOneWidget);
