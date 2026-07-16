@@ -33,8 +33,13 @@ jobs:
         run: flutter pub get
 
       - name: Run tests and capture output
-        continue-on-error: true
-        run: flutter test --reporter expanded > TEST_OUTPUT.txt 2>&1
+        run: |
+          set +e
+          flutter test --reporter expanded > TEST_OUTPUT.txt 2>&1
+          code=$?
+          echo >> TEST_OUTPUT.txt
+          echo "EXIT_CODE=$code" >> TEST_OUTPUT.txt
+          exit 0
 
       - name: Commit test report
         run: |
@@ -45,5 +50,5 @@ jobs:
             echo "No report changes."
             exit 0
           fi
-          git commit -m "chore: registra relatório temporário de testes [skip ci]"
+          git commit -m "chore: atualiza relatório temporário de testes [skip ci]"
           git push origin HEAD:${{ github.head_ref }}
