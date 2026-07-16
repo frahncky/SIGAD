@@ -5,22 +5,22 @@ import 'package:flutter/material.dart';
 /// As cores foram organizadas por função para evitar valores soltos nas telas
 /// e facilitar a manutenção dos temas claro e escuro.
 abstract final class SigadColors {
-  static const Color brand = Color(0xFF0B6B5E);
-  static const Color brandDark = Color(0xFF064C43);
-  static const Color brandDeep = Color(0xFF033B35);
-  static const Color brandLight = Color(0xFFE7F3EF);
+  static const Color brand = Color(0xFF087F6D);
+  static const Color brandDark = Color(0xFF056354);
+  static const Color brandDeep = Color(0xFF073E37);
+  static const Color brandLight = Color(0xFFE5F5F1);
 
-  static const Color accent = Color(0xFFE59A3A);
-  static const Color accentSoft = Color(0xFFFFEBD3);
+  static const Color accent = Color(0xFFF09A4A);
+  static const Color accentSoft = Color(0xFFFFECDD);
 
-  static const Color canvas = Color(0xFFF5F7F6);
+  static const Color canvas = Color(0xFFF3F7F6);
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceAlt = Color(0xFFF0F4F2);
-  static const Color surfaceWarm = Color(0xFFFAF7F2);
+  static const Color surfaceAlt = Color(0xFFEDF4F2);
+  static const Color surfaceWarm = Color(0xFFFBF8F4);
 
-  static const Color ink = Color(0xFF172522);
-  static const Color muted = Color(0xFF64736F);
-  static const Color divider = Color(0xFFDDE5E1);
+  static const Color ink = Color(0xFF172B27);
+  static const Color muted = Color(0xFF637773);
+  static const Color divider = Color(0xFFD9E6E2);
 
   static const Color info = Color(0xFF2F6F91);
   static const Color infoSoft = Color(0xFFE7F1F7);

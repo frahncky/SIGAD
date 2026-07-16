@@ -438,7 +438,7 @@ class _InstitutionPanel extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const BrandTitle(compact: true),
+          const BrandTitle(compact: true, light: true),
           const SizedBox(height: 24),
           Text(
             'Gestão acadêmica e departamental em um único ambiente.',
@@ -510,16 +510,23 @@ class _LoginSurface extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Theme.of(context).colorScheme.surface,
-      elevation: 6,
-      shadowColor: Colors.black.withValues(alpha: 0.14),
-      borderRadius: BorderRadius.circular(26),
+      elevation: 0,
+      shadowColor: Colors.black.withValues(alpha: 0.08),
+      borderRadius: BorderRadius.circular(30),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(22),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(26),
+          borderRadius: BorderRadius.circular(30),
           border: Border.all(
             color: Theme.of(context).colorScheme.outlineVariant,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.07),
+              blurRadius: 28,
+              offset: const Offset(0, 12),
+            ),
+          ],
         ),
         child: child,
       ),
@@ -537,7 +544,7 @@ class _LoginBackground extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [SigadColors.canvas, SigadColors.surfaceAlt],
+          colors: [Color(0xFFFFFDFC), SigadColors.canvas],
         ),
       ),
       child: const SizedBox.expand(),

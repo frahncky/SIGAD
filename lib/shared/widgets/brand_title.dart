@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import '../../app/theme/sigad_colors.dart';
 
 class BrandTitle extends StatelessWidget {
-  const BrandTitle({super.key, this.compact = false});
+  const BrandTitle({super.key, this.compact = false, this.light = false});
 
   final bool compact;
+  final bool light;
 
   @override
   Widget build(BuildContext context) {
@@ -13,32 +14,58 @@ class BrandTitle extends StatelessWidget {
       mainAxisSize: MainAxisSize.max,
       children: [
         Container(
-          width: compact ? 32 : 36,
-          height: compact ? 32 : 36,
-          decoration: const BoxDecoration(
-            color: SigadColors.brand,
-            shape: BoxShape.circle,
+          width: compact ? 38 : 46,
+          height: compact ? 38 : 46,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [SigadColors.brand, SigadColors.brandDeep],
+            ),
+            borderRadius: BorderRadius.circular(compact ? 12 : 15),
+            boxShadow: [
+              BoxShadow(
+                color: SigadColors.brand.withValues(alpha: 0.18),
+                blurRadius: 12,
+                offset: const Offset(0, 5),
+              ),
+            ],
           ),
-          child: const Icon(Icons.school, color: Colors.white, size: 18),
+          child: Icon(
+            Icons.school_rounded,
+            color: Colors.white,
+            size: compact ? 21 : 25,
+          ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 13),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: 120,
-                child: Text(
-                  'SIGAD',
+              Text(
+                'SIGAD',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style:
+                    (compact ? textTheme.titleMedium : textTheme.headlineSmall)
+                        ?.copyWith(
+                          color: light ? Colors.white : SigadColors.brandDark,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.8,
+                        ),
+              ),
+              if (!compact)
+                Text(
+                  'Gestão Acadêmica',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1.2,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: light
+                        ? Colors.white.withValues(alpha: 0.72)
+                        : SigadColors.muted,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-              ),
-              if (!compact) const SizedBox.shrink(),
             ],
           ),
         ),

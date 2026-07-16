@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/models/navigation_item.dart';
@@ -122,22 +123,35 @@ class HomeShellPage extends StatelessWidget {
                       onLogout: () => _confirmLogout(context, userContext),
                     ),
                     Expanded(
-                      child: SafeArea(
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxWidth: currentRoute == AppRoutes.dashboard
-                                  ? 1720
-                                  : 1480,
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: currentRoute == AppRoutes.dashboard
-                                    ? 8
-                                    : 20,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Theme.of(context).colorScheme.surfaceContainerLow,
+                              Theme.of(context).scaffoldBackgroundColor,
+                            ],
+                          ),
+                        ),
+                        child: SafeArea(
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: currentRoute == AppRoutes.dashboard
+                                    ? 1680
+                                    : 1440,
                               ),
-                              child: child,
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(
+                                  currentRoute == AppRoutes.dashboard ? 16 : 28,
+                                  16,
+                                  currentRoute == AppRoutes.dashboard ? 16 : 28,
+                                  28,
+                                ),
+                                child: child,
+                              ),
                             ),
                           ),
                         ),
@@ -360,24 +374,31 @@ class _SideNav extends StatelessWidget {
     return Material(
       color: colors.surface,
       child: Container(
-        width: 290,
+        width: 272,
         decoration: BoxDecoration(
           border: Border(right: BorderSide(color: colors.outlineVariant)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.035),
+              blurRadius: 20,
+              offset: const Offset(6, 0),
+            ),
+          ],
         ),
         child: Column(
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: BrandTitle(),
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 18),
             if (userContext.isAuthenticated)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: _UserCard(userContext: userContext),
               ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: OutlinedButton.icon(
@@ -385,15 +406,17 @@ class _SideNav extends StatelessWidget {
                 icon: const Icon(Icons.search_rounded, size: 19),
                 label: const Text('Acesso rápido'),
                 style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(44),
+                  minimumSize: const Size.fromHeight(46),
                   alignment: Alignment.centerLeft,
+                  backgroundColor: colors.surfaceContainerLow,
+                  side: BorderSide(color: colors.outlineVariant),
                 ),
               ),
             ),
             const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 itemCount: availableItems.length,
                 itemBuilder: (context, index) => _NavigationTile(
                   item: availableItems[index],
@@ -500,25 +523,48 @@ class _NavigationTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: ListTile(
-        selected: selected,
-        selectedColor: colors.primary,
-        selectedTileColor: colors.primaryContainer.withValues(alpha: 0.55),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        leading: Icon(item.icon, size: 22),
-        title: Text(
-          item.label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+      padding: const EdgeInsets.only(bottom: 3),
+      child: Material(
+        color: selected ? colors.primaryContainer : Colors.transparent,
+        borderRadius: BorderRadius.circular(14),
+        child: ListTile(
+          selected: selected,
+          selectedColor: colors.onPrimaryContainer,
+          selectedTileColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
           ),
+          leading: Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: selected
+                  ? colors.primary.withValues(alpha: 0.12)
+                  : colors.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(item.icon, size: 19),
+          ),
+          title: Text(
+            item.label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+            ),
+          ),
+          trailing: selected
+              ? Container(
+                  width: 5,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    color: colors.primary,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                )
+              : null,
+          onTap: onTap,
         ),
-        trailing: selected
-            ? const Icon(Icons.chevron_right_rounded, size: 18)
-            : null,
-        onTap: onTap,
       ),
     );
   }
@@ -537,23 +583,23 @@ class _UserCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            colors.surfaceContainerHighest,
-            SigadColors.brand.withValues(alpha: 0.08),
+            colors.primaryContainer.withValues(alpha: 0.72),
+            colors.surfaceContainerLow,
           ],
         ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.outlineVariant),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: colors.primary.withValues(alpha: 0.14)),
       ),
       child: Row(
         children: [
           CircleAvatar(
-            backgroundColor: SigadColors.brand.withValues(alpha: 0.18),
+            backgroundColor: colors.surface,
             child: Text(
               user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
               style: const TextStyle(
