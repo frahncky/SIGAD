@@ -1,3 +1,5 @@
+import '../domain/normalizador_texto.dart';
+
 class ReferenciaDocenteIfma {
   const ReferenciaDocenteIfma({required this.nome, required this.areas});
 
@@ -104,15 +106,6 @@ abstract final class CatalogoDocentesIfma {
   }
 
   static String normalizar(String valor) {
-    return valor
-        .trim()
-        .toLowerCase()
-        .replaceAll(RegExp(r'[áàãâä]'), 'a')
-        .replaceAll(RegExp(r'[éèêë]'), 'e')
-        .replaceAll(RegExp(r'[íìîï]'), 'i')
-        .replaceAll(RegExp(r'[óòõôö]'), 'o')
-        .replaceAll(RegExp(r'[úùûü]'), 'u')
-        .replaceAll('ç', 'c')
-        .replaceAll(RegExp(r'\s+'), ' ');
+    return NormalizadorTexto.paraComparacao(valor);
   }
 }

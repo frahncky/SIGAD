@@ -12,11 +12,20 @@ class LocalStorageService {
     await prefs.setString(key, jsonEncode(data));
   }
 
-  /// Carrega uma lista de mapas de JSON.  Retorna lista vazia se não existir.
+  /// Carrega uma lista de mapas de JSON. Retorna lista vazia se não existir.
   static Future<List<Map<String, dynamic>>> loadList(String key) async {
+    return await loadListOrNull(key) ?? const [];
+  }
+
+  /// Carrega uma lista preservando a diferença entre ausência e lista vazia.
+  ///
+  /// Retorna `null` somente quando a chave ainda não foi inicializada. Uma lista
+  /// vazia persistida é retornada como `[]`, permitindo que telas com dados de
+  /// demonstração não recriem os itens depois que o usuário excluir todos.
+  static Future<List<Map<String, dynamic>>?> loadListOrNull(String key) async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(key);
-    if (raw == null) return [];
+    if (raw == null) return null;
     final decoded = jsonDecode(raw) as List<dynamic>;
     return decoded
         .whereType<Map>()

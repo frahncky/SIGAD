@@ -11,6 +11,7 @@ import '../../../../shared/widgets/page_status_view.dart';
 import '../../data/relatorio_repository.dart';
 import '../../domain/relatorio_models.dart';
 import '../../domain/relatorios_service.dart';
+import '../relatorios_visuals.dart';
 
 class RelatoriosPage extends StatefulWidget {
   const RelatoriosPage({super.key});
@@ -26,10 +27,7 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
   String? _loadError;
 
   final RelatorioRepository _relatorioRepository = RelatorioRepository();
-  final List<Relatorio> _relatorios = List<Relatorio>.of(
-    RelatoriosService.defaultRelatorios(),
-    growable: true,
-  );
+  final List<Relatorio> _relatorios = [];
 
   @override
   void initState() {
@@ -43,14 +41,14 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
       _loadError = null;
     });
     try {
-      final list = await _relatorioRepository.loadRelatorios();
+      final list = await _relatorioRepository.loadRelatorios(
+        initialData: RelatoriosService.defaultRelatorios(),
+      );
       if (!mounted) return;
       setState(() {
-        if (list.isNotEmpty) {
-          _relatorios
-            ..clear()
-            ..addAll(list);
-        }
+        _relatorios
+          ..clear()
+          ..addAll(list);
         _isLoading = false;
       });
     } catch (error, stackTrace) {
@@ -67,39 +65,21 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
     }
   }
 
-  void _saveData() {
-    _relatorioRepository.saveRelatorios(_relatorios);
-  }
-
-  void _atualizarRelatorio(Relatorio relatorioAtualizado) {
-    setState(() {
-      final index = _relatorios.indexWhere(
-        (item) => item.id == relatorioAtualizado.id,
-      );
-      if (index >= 0) {
-        _relatorios[index] = relatorioAtualizado;
-      }
-    });
-    _saveData();
-  }
-
   void _baixarRelatorio(Relatorio relatorio) {
     if (!_canAccessRelatorios()) return;
-    final atualizado = RelatoriosService.registrarDownload(relatorio);
-    _atualizarRelatorio(atualizado);
-    AppFeedbackService.success(
+    AppFeedbackService.info(
       context,
-      'Relatorio baixado: ${relatorio.titulo}',
+      'A exportação de "${relatorio.titulo}" estará disponível após a '
+      'integração com o servidor institucional.',
     );
   }
 
   void _compartilharRelatorio(Relatorio relatorio) {
     if (!_canAccessRelatorios()) return;
-    final atualizado = RelatoriosService.registrarCompartilhamento(relatorio);
-    _atualizarRelatorio(atualizado);
     AppFeedbackService.info(
       context,
-      'Link de compartilhamento gerado para ${relatorio.titulo}',
+      'O compartilhamento de "${relatorio.titulo}" estará disponível após '
+      'a integração com o servidor institucional.',
     );
   }
 
@@ -467,7 +447,7 @@ class _RelatorioCard extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: RelatoriosService.statusColor(
+                      color: RelatoriosVisuals.statusColor(
                         relatorio.status,
                       ).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(8),
@@ -475,7 +455,7 @@ class _RelatorioCard extends StatelessWidget {
                     child: Text(
                       relatorio.status,
                       style: textTheme.labelSmall?.copyWith(
-                        color: RelatoriosService.statusColor(relatorio.status),
+                        color: RelatoriosVisuals.statusColor(relatorio.status),
                         fontWeight: FontWeight.w600,
                       ),
                     ),

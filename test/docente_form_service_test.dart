@@ -8,6 +8,7 @@ void main() {
       expect(
         DocenteFormService.validateDocente(
           nome: '',
+          email: 'docente@ifma.edu.br',
           departamento: 'Computação',
           cargaMaxima: '20',
           disciplinas: const ['Algoritmos'],
@@ -20,6 +21,7 @@ void main() {
       expect(
         DocenteFormService.validateDocente(
           nome: 'Prof. Teste',
+          email: 'docente@ifma.edu.br',
           departamento: 'Computação',
           cargaMaxima: '0',
           disciplinas: const ['Algoritmos'],
@@ -30,10 +32,53 @@ void main() {
       );
     });
 
+    test('valida email de acesso vazio, inválido e válido', () {
+      expect(
+        DocenteFormService.validateEmail('  '),
+        'Informe o email de acesso',
+      );
+      expect(
+        DocenteFormService.validateEmail('docente@ifma'),
+        'Informe um email de acesso válido',
+      );
+      expect(DocenteFormService.validateEmail(' DOCENTE@IFMA.EDU.BR '), isNull);
+    });
+
+    test('identifica email duplicado e ignora o próprio docente', () {
+      const docentes = [
+        Docente(
+          id: '#DOC-EMAIL-1',
+          nome: 'Docente existente',
+          userEmail: 'docente@ifma.edu.br',
+          departamento: 'Computação',
+          cargaHoraria: 8,
+          cargaMaxima: 20,
+          disciplinas: ['Algoritmos'],
+        ),
+      ];
+
+      expect(
+        DocenteFormService.emailJaCadastrado(
+          email: ' DOCENTE@IFMA.EDU.BR ',
+          docentes: docentes,
+        ),
+        isTrue,
+      );
+      expect(
+        DocenteFormService.emailJaCadastrado(
+          email: 'docente@ifma.edu.br',
+          docentes: docentes,
+          ignorarDocenteId: '#DOC-EMAIL-1',
+        ),
+        isFalse,
+      );
+    });
+
     test('restringe carga máxima ao regime EBTT e à distribuição cadastrada', () {
       expect(
         DocenteFormService.validateDocente(
           nome: 'Prof. Teste',
+          email: 'docente@ifma.edu.br',
           departamento: 'Computação',
           cargaMaxima: '40',
           disciplinas: const ['Algoritmos'],
@@ -46,6 +91,7 @@ void main() {
       expect(
         DocenteFormService.validateDocente(
           nome: 'Prof. Teste',
+          email: 'docente@ifma.edu.br',
           departamento: 'Computação',
           cargaMaxima: '3',
           disciplinas: const ['Algoritmos'],
@@ -136,6 +182,14 @@ void main() {
       );
 
       expect(
+        DocenteFormService.validateDisciplina(
+          disciplina: 'programacao i',
+          disciplinasExistentes: const ['Programação I'],
+        ),
+        'Disciplina já adicionada.',
+      );
+
+      expect(
         DocenteFormService.validateHorario(
           diaSemana: 'Segunda',
           inicio: '8:00',
@@ -205,6 +259,39 @@ void main() {
       );
     });
 
+    test('compara elegibilidade de disciplina sem caixa ou acentos', () {
+      final resultado = DocenteFormService.simularRedistribuicaoDocentes([
+        const Docente(
+          id: '#DOC-DISC-ORIGEM',
+          nome: 'Docente origem',
+          departamento: 'Computação',
+          cargaHoraria: 12,
+          cargaMaxima: 20,
+          disciplinas: ['Programação I'],
+          horariosAula: [
+            HorarioAula(
+              diaSemana: 'Segunda',
+              inicio: '08:00',
+              fim: '09:40',
+              disciplina: 'PROGRAMACAO I',
+              cargaHoraria: '2h/sem',
+            ),
+          ],
+        ),
+        const Docente(
+          id: '#DOC-DISC-DESTINO',
+          nome: 'Docente destino',
+          departamento: 'Computação',
+          cargaHoraria: 7,
+          cargaMaxima: 20,
+          disciplinas: ['Programação I'],
+        ),
+      ]);
+
+      expect(resultado.propostas, hasLength(1));
+      expect(resultado.propostas.single.docenteDestinoId, '#DOC-DISC-DESTINO');
+    });
+
     test(
       'respeita carga minima da origem e limite maximo de ensino no destino',
       () {
@@ -242,9 +329,9 @@ void main() {
             DocenteFormService.simularRedistribuicaoDocentes([
               const Docente(
                 id: '#DOC-403',
-                nome: 'Profa. Origem no mínimo',
+                nome: 'Profa. Origem próxima do mínimo',
                 departamento: 'Computação',
-                cargaHoraria: 12,
+                cargaHoraria: 11,
                 cargaMaxima: 20,
                 disciplinas: ['Algoritmos'],
                 horariosAula: [
@@ -271,6 +358,80 @@ void main() {
         expect(resultadoMinimoOrigem.propostas, isEmpty);
       },
     );
+
+    group('limites IFMA convertidos em hora-aula', () {
+      test('regime 20h respeita o limite mínimo de 8 horas-aula', () {
+        final exatamenteNoMinimo = _simularTransferenciaNoLimite(
+          regime: RegimeTrabalhoEbtt.vinteHoras,
+          cargaOrigem: 10,
+          cargaDestino: 4,
+          cargaTransferida: 2,
+        );
+        final abaixoDoMinimo = _simularTransferenciaNoLimite(
+          regime: RegimeTrabalhoEbtt.vinteHoras,
+          cargaOrigem: 9,
+          cargaDestino: 4,
+          cargaTransferida: 2,
+        );
+
+        expect(exatamenteNoMinimo.propostas, hasLength(1));
+        expect(abaixoDoMinimo.propostas, isEmpty);
+      });
+
+      test('regime 20h respeita o limite máximo de 10 horas-aula', () {
+        final exatamenteNoMaximo = _simularTransferenciaNoLimite(
+          regime: RegimeTrabalhoEbtt.vinteHoras,
+          cargaOrigem: 12,
+          cargaDestino: 8,
+          cargaTransferida: 2,
+        );
+        final acimaDoMaximo = _simularTransferenciaNoLimite(
+          regime: RegimeTrabalhoEbtt.vinteHoras,
+          cargaOrigem: 12,
+          cargaDestino: 9,
+          cargaTransferida: 2,
+        );
+
+        expect(exatamenteNoMaximo.propostas, hasLength(1));
+        expect(acimaDoMaximo.propostas, isEmpty);
+      });
+
+      test('regime integral respeita o limite mínimo de 10 horas-aula', () {
+        final exatamenteNoMinimo = _simularTransferenciaNoLimite(
+          regime: RegimeTrabalhoEbtt.dedicacaoExclusiva,
+          cargaOrigem: 12,
+          cargaDestino: 8,
+          cargaTransferida: 2,
+        );
+        final abaixoDoMinimo = _simularTransferenciaNoLimite(
+          regime: RegimeTrabalhoEbtt.dedicacaoExclusiva,
+          cargaOrigem: 11,
+          cargaDestino: 8,
+          cargaTransferida: 2,
+        );
+
+        expect(exatamenteNoMinimo.propostas, hasLength(1));
+        expect(abaixoDoMinimo.propostas, isEmpty);
+      });
+
+      test('regime integral respeita o limite máximo de 20 horas-aula', () {
+        final exatamenteNoMaximo = _simularTransferenciaNoLimite(
+          regime: RegimeTrabalhoEbtt.dedicacaoExclusiva,
+          cargaOrigem: 22,
+          cargaDestino: 18,
+          cargaTransferida: 2,
+        );
+        final acimaDoMaximo = _simularTransferenciaNoLimite(
+          regime: RegimeTrabalhoEbtt.dedicacaoExclusiva,
+          cargaOrigem: 22,
+          cargaDestino: 19,
+          cargaTransferida: 2,
+        );
+
+        expect(exatamenteNoMaximo.propostas, hasLength(1));
+        expect(acimaDoMaximo.propostas, isEmpty);
+      });
+    });
 
     test('aplica limites de aulas do IFMA por regime de trabalho', () {
       const regras = RegrasDistribuicaoCarga.ifma();
@@ -342,4 +503,48 @@ void main() {
       );
     });
   });
+}
+
+ResultadoSimulacaoRedistribuicao _simularTransferenciaNoLimite({
+  required RegimeTrabalhoEbtt regime,
+  required int cargaOrigem,
+  required int cargaDestino,
+  required int cargaTransferida,
+}) {
+  final cargaMaxima = regime == RegimeTrabalhoEbtt.vinteHoras ? 20 : 40;
+
+  return DocenteFormService.simularRedistribuicaoDocentes(
+    [
+      Docente(
+        id: '#DOC-LIMITE-ORIGEM',
+        nome: 'Docente origem',
+        departamento: 'Computação',
+        cargaHoraria: cargaOrigem,
+        cargaMaxima: cargaMaxima,
+        disciplinas: const ['Algoritmos'],
+        regimeTrabalho: regime,
+        horariosAula: [
+          HorarioAula(
+            diaSemana: 'Segunda',
+            inicio: '08:00',
+            fim: '09:40',
+            disciplina: 'Algoritmos',
+            cargaHoraria: '${cargaTransferida}h/sem',
+          ),
+        ],
+      ),
+      Docente(
+        id: '#DOC-LIMITE-DESTINO',
+        nome: 'Docente destino',
+        departamento: 'Computação',
+        cargaHoraria: cargaDestino,
+        cargaMaxima: cargaMaxima,
+        disciplinas: const ['Algoritmos'],
+        regimeTrabalho: regime,
+      ),
+    ],
+    // Isola as regras legais do mecanismo heurístico de classificação de carga.
+    limiarAlta: 0,
+    limiarBaixa: 1,
+  );
 }

@@ -33,9 +33,11 @@ class AtividadeRepository implements EntityRepository<Atividade> {
   @override
   Future<void> save(List<Atividade> entities) => saveAtividades(entities);
 
-  Future<List<Atividade>> loadAtividades() async {
+  Future<List<Atividade>> loadAtividades({
+    List<Atividade> initialData = const [],
+  }) async {
     if (_dataSourceMode == DataSourceMode.local) {
-      return _loadLocalAtividades();
+      return _loadLocalAtividades(initialData: initialData);
     }
 
     try {
@@ -48,7 +50,7 @@ class AtividadeRepository implements EntityRepository<Atividade> {
       );
       if (_enableRemoteFallback) {
         AppEventLogger.action('atividades_remote_load_fallback_local');
-        return _loadLocalAtividades();
+        return _loadLocalAtividades(initialData: initialData);
       }
       rethrow;
     }
@@ -76,8 +78,16 @@ class AtividadeRepository implements EntityRepository<Atividade> {
     }
   }
 
-  Future<List<Atividade>> _loadLocalAtividades() async {
-    final list = await LocalStorageService.loadList(storageKey);
+  Future<List<Atividade>> _loadLocalAtividades({
+    List<Atividade> initialData = const [],
+  }) async {
+    final list = await LocalStorageService.loadListOrNull(storageKey);
+    if (list == null) {
+      if (initialData.isNotEmpty) {
+        await _saveLocalAtividades(initialData);
+      }
+      return List<Atividade>.of(initialData, growable: false);
+    }
     if (list.isEmpty) return const [];
 
     final atividades = <Atividade>[];

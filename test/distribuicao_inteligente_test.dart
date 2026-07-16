@@ -28,7 +28,7 @@ void main() {
     id: 'd1',
     nome: 'Destino 1',
     departamento: 'Computação',
-    cargaHoraria: 8,
+    cargaHoraria: 7,
     cargaMaxima: 20,
     disciplinas: ['Algoritmos'],
   );
@@ -36,7 +36,7 @@ void main() {
     id: 'd2',
     nome: 'Destino 2',
     departamento: 'Computação',
-    cargaHoraria: 8,
+    cargaHoraria: 7,
     cargaMaxima: 20,
     disciplinas: ['Algoritmos'],
   );

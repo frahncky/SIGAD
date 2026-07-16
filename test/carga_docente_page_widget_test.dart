@@ -143,6 +143,48 @@ void main() {
     },
   );
 
+  testWidgets('chefe não cadastra email já vinculado a outro docente', (
+    tester,
+  ) async {
+    final chefe = await _loggedIn(UserRole.chefeDepartamento);
+    await tester.pumpWidget(_buildApp(chefe));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+
+    Finder campo(String label) => find.byWidgetPredicate(
+      (widget) => widget is TextField && widget.decoration?.labelText == label,
+    );
+
+    await tester.enterText(campo('Nome completo'), 'Docente Novo');
+    await tester.enterText(campo('Email de acesso'), ' MARIA.SANTOS@UNIV.BR ');
+    await tester.enterText(campo('Área/Comissão'), 'Computação');
+    await tester.enterText(campo('Carga Horária Máxima Semanal (horas)'), '20');
+
+    final adicionarDisciplina = find.widgetWithText(ActionChip, 'Adicionar');
+    await tester.ensureVisible(adicionarDisciplina);
+    await tester.tap(adicionarDisciplina);
+    await tester.pumpAndSettle();
+    await tester.enterText(campo('Nome da Disciplina'), 'Algoritmos');
+    final confirmarDisciplina = find.descendant(
+      of: find.byType(AlertDialog),
+      matching: find.widgetWithText(TextButton, 'Adicionar'),
+    );
+    await tester.tap(confirmarDisciplina);
+    await tester.pumpAndSettle();
+
+    final confirmar = find.widgetWithText(ElevatedButton, 'Adicionar');
+    await tester.ensureVisible(confirmar);
+    await tester.tap(confirmar);
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Este email de acesso já está vinculado a outro docente.'),
+      findsOneWidget,
+    );
+    expect(find.text('Novo Docente'), findsOneWidget);
+  });
+
   testWidgets('somente chefe pode acionar simulacao de redistribuicao', (
     tester,
   ) async {

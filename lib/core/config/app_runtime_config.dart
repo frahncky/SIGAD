@@ -26,6 +26,35 @@ abstract final class AppRuntimeConfig {
     defaultValue: false,
   );
 
+  static const bool _demoAccessRequested = bool.fromEnvironment(
+    'SIGAD_ENABLE_DEMO_ACCESS',
+    defaultValue: true,
+  );
+
+  /// O acesso local existe somente para desenvolvimento e homologação.
+  /// Produção deve falhar fechada até que a autenticação institucional esteja
+  /// configurada.
+  static bool get enableDemoAccess => resolveDemoAccess(
+    flavor: flavor,
+    demoAccessRequested: _demoAccessRequested,
+  );
+
+  static bool resolveDemoAccess({
+    required String flavor,
+    required bool demoAccessRequested,
+  }) {
+    if (!demoAccessRequested) return false;
+
+    switch (flavor.trim().toLowerCase()) {
+      case 'dev':
+      case 'test':
+      case 'staging':
+        return true;
+      default:
+        return false;
+    }
+  }
+
   static const bool enableRemoteFallback = bool.fromEnvironment(
     'SIGAD_ENABLE_REMOTE_FALLBACK',
     defaultValue: true,

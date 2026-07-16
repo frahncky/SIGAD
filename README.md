@@ -2,7 +2,7 @@
 
 Sistema Integrado de Gestão Acadêmica e Departamental desenvolvido em Flutter.
 
-O projeto oferece uma experiência responsiva para perfis institucionais (como coordenação, chefia e apoio administrativo), com módulos para bate-papo, demandas, quadro de tarefas, laboratórios, agenda, atividades, relatórios e configurações.
+O projeto oferece uma experiência responsiva para perfis institucionais (docência, coordenação, chefia e apoio administrativo), com módulos para carga docente, demandas, quadro de tarefas, laboratórios, calendário, anotações, atividades, relatórios e configurações.
 
 ## Tecnologias
 
@@ -36,7 +36,7 @@ flutter run
 flutter run -d chrome
 ```
 
-4. Para executar com fonte remota (Sprint 4):
+4. Para executar os repositórios que já possuem adaptador remoto:
 
 ```bash
 flutter run --dart-define=SIGAD_DATA_SOURCE=remote --dart-define=SIGAD_API_BASE_URL=https://api.sigad.local
@@ -104,17 +104,19 @@ Arquitetura e operação detalhadas:
 
 ## Funcionalidades implementadas
 
-- Autenticação inicial e seleção de perfil
+- Acesso demonstrativo local em `dev`, `test` e `staging`; produção falha fechada enquanto não houver autenticação institucional
 - Navegação responsiva com menu lateral/drawer
 - Dashboard por perfil
-- Bate-papo: conversas entre usuários por perfil
+- Carga docente: cadastro pela chefia, catálogo de nomes/áreas do IFMA, regras EBTT/IFMA, conflitos de horário e redistribuição assistida
+- Afinidade histórica auditável para desempatar sugestões com base nas decisões aceitas/rejeitadas
+- Bate-papo local demonstrativo, sem entrega a outro usuário
 - Demandas: criar, editar, excluir e filtrar
 - Quadro de Tarefas: criar, mover por drag-and-drop e excluir cards
 - Aulas práticas: gestão de slots e reservas por perfil
-- Agenda: criar, editar, excluir e filtrar compromissos
+- Calendário e anotações locais
 - Atividades: criar, editar, excluir e filtrar atividades
-- Relatórios: visualização, download e compartilhamento com rastreio local
-- Configurações: perfil, email, senha, backup, preferências e reporte de problema
+- Relatórios: visualização e filtros; exportação e compartilhamento aguardam servidor
+- Configurações locais de perfil, tema e fonte
 
 ## Rotas do app
 
@@ -128,26 +130,32 @@ Arquitetura e operação detalhadas:
 - `/atividades`
 - `/relatorios`
 - `/configuracoes`
+- `/calendario`
+- `/notas`
 
-## Observações
+## Limites atuais
 
-- Os fluxos de CRUD atuais são em memória (sem backend persistente).
-- O projeto está preparado para evolução com API e armazenamento remoto.
+- A persistência funcional atual usa armazenamento local do dispositivo; não há sincronização multiusuário.
+- Autenticação institucional, envio de mensagens/convites, notificações, troca de email/senha, backup, reporte ao suporte, exportação e compartilhamento ainda dependem de backend.
+- O acesso demonstrativo nunca é liberado quando `SIGAD_FLAVOR=prod`, mesmo que solicitado por outro define.
+- A distribuição usa restrições determinísticas e uma afinidade estatística simples com suavização de Laplace. Ainda não existe um modelo de ML treinado externamente.
+- Não há módulo de PIT; os documentos de PIT serviram apenas como referência de contexto.
+- O projeto está preparado para evolução gradual com API e armazenamento remoto.
 - O modo de dados pode alternar entre local/remoto via `--dart-define=SIGAD_DATA_SOURCE`.
 - Sessão de usuário é persistida localmente com expiração e restauração na splash.
-- Existe gate de qualidade em CI com `flutter analyze`, `flutter test --coverage` e mínimo de 35%.
+- Existe gate de qualidade em CI com formatação, camadas, `flutter analyze`, testes, goldens, bloqueio de demo em produção e cobertura mínima de 35%.
 
-## Estado atual dos sprints
+## Estado atual
 
-- Sprint 1: fluxos base e navegacao responsiva concluídos
-- Sprint 2: extracao de camadas (`domain`/`data`) em features principais concluída
-- Sprint 3: concluído (qualidade técnica, cobertura e governança)
-- Sprint 4: concluído (integrações, sessão, observabilidadeticas e refatoração responsiva)
+- Protótipo local funcional com navegação responsiva, regras de negócio e persistência no dispositivo.
+- Camadas `domain`, `data` e `presentation` separadas nas features principais.
+- Contratos remotos iniciais disponíveis para demandas, atividades, Kanban e relatórios.
+- Integrações institucionais e operação multiusuário continuam pendentes.
 
 ## Ambientes e Flavors
 
-- `SIGAD_FLAVOR=dev|staging|prod` controla o banner visual e tags de runtime.
-- Android possui flavors nativos `dev`, `staging` e `prod`.
+- `SIGAD_FLAVOR=dev|test|staging|prod` controla o ambiente de runtime.
+- `SIGAD_ENABLE_DEMO_ACCESS=true|false` solicita acesso local, permitido apenas em `dev`, `test` e `staging`.
 - Observabilidade remota pode ser ligada por define sem alterar codigo:
   - `SIGAD_OBSERVABILITY_ENABLED=true`
   - `SIGAD_OBSERVABILITY_ENDPOINT=https://seu-endpoint/events`
@@ -155,15 +163,15 @@ Arquitetura e operação detalhadas:
 Exemplos:
 
 ```bash
-flutter run --flavor dev --dart-define=SIGAD_FLAVOR=dev
-flutter run --flavor staging --dart-define=SIGAD_FLAVOR=staging
-flutter run --flavor prod --dart-define=SIGAD_FLAVOR=prod --dart-define=SIGAD_DATA_SOURCE=remote
+flutter run --dart-define=SIGAD_FLAVOR=dev --dart-define=SIGAD_ENABLE_DEMO_ACCESS=true
+flutter run --dart-define=SIGAD_FLAVOR=staging --dart-define=SIGAD_ENABLE_DEMO_ACCESS=true
+flutter run --dart-define=SIGAD_FLAVOR=prod --dart-define=SIGAD_ENABLE_DEMO_ACCESS=false --dart-define=SIGAD_DATA_SOURCE=remote
 ```
 
 Release Android (AAB):
 
 ```bash
-flutter build appbundle --flavor prod --dart-define=SIGAD_FLAVOR=prod
+flutter build appbundle --release --dart-define=SIGAD_FLAVOR=prod --dart-define=SIGAD_ENABLE_DEMO_ACCESS=false
 ```
 
 ## Checklist de release

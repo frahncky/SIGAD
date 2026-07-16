@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sigad/core/models/user_role.dart';
-import 'package:sigad/features/dashboard/domain/dashboard_role_profile.dart';
+import 'package:sigad/features/dashboard/presentation/dashboard_role_profile.dart';
 
 void main() {
   group('RoleProfile', () {

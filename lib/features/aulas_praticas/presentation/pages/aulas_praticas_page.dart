@@ -5,6 +5,7 @@ import '../../../../app/theme/sigad_colors.dart';
 import '../../data/reserva_repository.dart';
 import '../../domain/reserva_models.dart';
 import '../../domain/reserva_service.dart';
+import '../turno_visuals.dart';
 import '../../../carga_docente/data/docente_repository.dart';
 import '../../../carga_docente/domain/docente_models.dart';
 import '../../../../core/services/app_event_logger.dart';
@@ -13,7 +14,9 @@ import '../../../../core/services/user_context_provider.dart';
 import '../widgets/dialog_disciplina_semanas_reserva.dart';
 
 class AulasPraticasPage extends StatefulWidget {
-  const AulasPraticasPage({super.key});
+  const AulasPraticasPage({super.key, this.reservaRepository});
+
+  final ReservaRepository? reservaRepository;
 
   @override
   State<AulasPraticasPage> createState() => _AulasPraticasPageState();
@@ -42,11 +45,9 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     'Dezembro',
   ];
 
-  final ReservaRepository _reservaRepository = ReservaRepository();
+  late final ReservaRepository _reservaRepository;
   final DocenteRepository _docenteRepository = DocenteRepository();
-  final List<ReservaLaboratorio> _reservas = ReservaService.defaultReservas(
-    DateTime.now().month,
-  );
+  final List<ReservaLaboratorio> _reservas = [];
   final List<Docente> _docentes = [];
 
   final TransformationController _transformationController =
@@ -59,6 +60,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   @override
   void initState() {
     super.initState();
+    _reservaRepository = widget.reservaRepository ?? ReservaRepository();
     _loadData();
   }
 
@@ -69,29 +71,43 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   }
 
   Future<void> _loadData() async {
-    final list = await _reservaRepository.loadReservas();
+    final list = await _reservaRepository.loadReservas(
+      initialData: ReservaService.defaultReservas(DateTime.now().month),
+    );
 
     final docentes = await _docenteRepository.loadDocentes(
       generateFallbackId: () => 'DOC-FALLBACK',
     );
 
+    if (!mounted) return;
     setState(() {
-      if (list.isNotEmpty) {
-        _reservas
-          ..clear()
-          ..addAll(list);
-      }
+      _reservas
+        ..clear()
+        ..addAll(list);
       _docentes
         ..clear()
         ..addAll(docentes);
     });
   }
 
-  Future<void> _saveData() async {
+  Future<bool> _saveData(List<ReservaLaboratorio> previous) async {
     try {
       await _reservaRepository.saveReservas(_reservas);
-    } catch (e) {
+      return true;
+    } catch (error, stackTrace) {
+      AppEventLogger.error(
+        'reservas_save_error',
+        error,
+        stackTrace: stackTrace,
+      );
+      if (!mounted) return false;
+      setState(() {
+        _reservas
+          ..clear()
+          ..addAll(previous);
+      });
       _showError('Erro ao salvar os dados localmente.');
+      return false;
     }
   }
 
@@ -346,6 +362,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
           return;
         }
 
+        final previous = List<ReservaLaboratorio>.of(_reservas);
         setState(() {
           _reservas.add(
             ReservaService.createReserva(
@@ -360,7 +377,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
             ),
           );
         });
-        await _saveData();
+        if (!await _saveData(previous)) return;
 
         AppEventLogger.action(
           'reserva_create',
@@ -396,10 +413,11 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
       if (!confirmarExclusao) return;
 
+      final previous = List<ReservaLaboratorio>.of(_reservas);
       setState(() {
         _reservas.removeWhere((reserva) => reserva.id == reservaAtual.id);
       });
-      await _saveData();
+      if (!await _saveData(previous)) return;
 
       AppEventLogger.action(
         'reserva_remove',
@@ -457,6 +475,8 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       return;
     }
 
+    final previous = List<ReservaLaboratorio>.of(_reservas);
+    final laboratorioAnterior = _laboratorioSelecionado;
     setState(() {
       _laboratorioSelecionado = sugestao.laboratorio;
       _reservas.add(
@@ -473,7 +493,12 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       );
     });
 
-    await _saveData();
+    if (!await _saveData(previous)) {
+      if (mounted) {
+        setState(() => _laboratorioSelecionado = laboratorioAnterior);
+      }
+      return;
+    }
 
     AppEventLogger.action(
       'reserva_auto_create',

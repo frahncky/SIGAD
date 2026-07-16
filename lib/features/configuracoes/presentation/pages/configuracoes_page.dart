@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/security/authorization_policy.dart';
+import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/services/theme_provider.dart';
@@ -47,6 +48,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
 
   final ConfiguracoesRepository _configuracoesRepository =
       ConfiguracoesRepository();
+  Future<void> _saveQueue = Future<void>.value();
 
   @override
   void initState() {
@@ -55,52 +57,119 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
   }
 
   Future<void> _loadData() async {
-    final data = await _configuracoesRepository.load();
-    if (data == null) return;
-    setState(() {
-      _notificacoesAtivas = data.notificacoesAtivas;
-      _notificarAntesDaDisciplina = data.notificarAntesDaDisciplina;
-      _antecedenciaNotificacaoMinutos = data.antecedenciaNotificacaoMinutos;
-      _modoDark = data.modoDark;
-      _biometriaAtiva = data.biometriaAtiva;
-      _backupAutomaticoAtivo = data.backupAutomaticoAtivo;
-      _idioma = data.idioma;
-      _tamanhoFonte = data.tamanhoFonte;
-      _nomePerfil = data.nomePerfil;
-      _cargoPerfil = data.cargoPerfil;
-      _emailUsuario = data.emailUsuario;
-      _ultimaAlteracaoSenha = data.ultimaAlteracaoSenha;
-      _proximoBackup = data.proximoBackup;
-      _ultimoBackup = data.ultimoBackup;
-      _problemasReportados = data.problemasReportados;
-      _agendaCompromissos = List<CompromissoAgenda>.of(
-        data.agendaCompromissos,
-        growable: true,
+    try {
+      final data = await _configuracoesRepository.load();
+      if (!mounted) return;
+      final currentUser = context.read<UserContextProvider>().currentUser;
+      setState(() {
+        if (data != null) {
+          _applyData(data);
+        }
+        if (currentUser != null) {
+          _nomePerfil = currentUser.name;
+          _emailUsuario = currentUser.email;
+          if (data == null || _cargoPerfil == 'Perfil institucional') {
+            _cargoPerfil = currentUser.role.displayName;
+          }
+        }
+      });
+      _syncThemePreferences();
+    } catch (error, stackTrace) {
+      AppEventLogger.error(
+        'configuracoes_load_error',
+        error,
+        stackTrace: stackTrace,
       );
-    });
+      if (!mounted) return;
+      AppFeedbackService.error(
+        context,
+        'Não foi possível carregar as configurações.',
+      );
+    }
   }
 
-  void _saveData() {
-    _configuracoesRepository.save(
-      ConfiguracoesData(
-        notificacoesAtivas: _notificacoesAtivas,
-        notificarAntesDaDisciplina: _notificarAntesDaDisciplina,
-        antecedenciaNotificacaoMinutos: _antecedenciaNotificacaoMinutos,
-        modoDark: _modoDark,
-        biometriaAtiva: _biometriaAtiva,
-        backupAutomaticoAtivo: _backupAutomaticoAtivo,
-        idioma: _idioma,
-        tamanhoFonte: _tamanhoFonte,
-        nomePerfil: _nomePerfil,
-        cargoPerfil: _cargoPerfil,
-        emailUsuario: _emailUsuario,
-        ultimaAlteracaoSenha: _ultimaAlteracaoSenha,
-        proximoBackup: _proximoBackup,
-        ultimoBackup: _ultimoBackup,
-        problemasReportados: _problemasReportados,
-        agendaCompromissos: _agendaCompromissos,
-      ),
+  ConfiguracoesData _currentData() => ConfiguracoesData(
+    notificacoesAtivas: _notificacoesAtivas,
+    notificarAntesDaDisciplina: _notificarAntesDaDisciplina,
+    antecedenciaNotificacaoMinutos: _antecedenciaNotificacaoMinutos,
+    modoDark: _modoDark,
+    biometriaAtiva: _biometriaAtiva,
+    backupAutomaticoAtivo: _backupAutomaticoAtivo,
+    idioma: _idioma,
+    tamanhoFonte: _tamanhoFonte,
+    nomePerfil: _nomePerfil,
+    cargoPerfil: _cargoPerfil,
+    emailUsuario: _emailUsuario,
+    ultimaAlteracaoSenha: _ultimaAlteracaoSenha,
+    proximoBackup: _proximoBackup,
+    ultimoBackup: _ultimoBackup,
+    problemasReportados: _problemasReportados,
+    agendaCompromissos: List<CompromissoAgenda>.of(_agendaCompromissos),
+  );
+
+  void _applyData(ConfiguracoesData data) {
+    _notificacoesAtivas = data.notificacoesAtivas;
+    _notificarAntesDaDisciplina = data.notificarAntesDaDisciplina;
+    _antecedenciaNotificacaoMinutos = data.antecedenciaNotificacaoMinutos;
+    _modoDark = data.modoDark;
+    _biometriaAtiva = data.biometriaAtiva;
+    _backupAutomaticoAtivo = data.backupAutomaticoAtivo;
+    _idioma = data.idioma;
+    _tamanhoFonte = data.tamanhoFonte;
+    _nomePerfil = data.nomePerfil;
+    _cargoPerfil = data.cargoPerfil;
+    _emailUsuario = data.emailUsuario;
+    _ultimaAlteracaoSenha = data.ultimaAlteracaoSenha;
+    _proximoBackup = data.proximoBackup;
+    _ultimoBackup = data.ultimoBackup;
+    _problemasReportados = data.problemasReportados;
+    _agendaCompromissos = List<CompromissoAgenda>.of(
+      data.agendaCompromissos,
+      growable: true,
     );
+  }
+
+  void _syncThemePreferences() {
+    ThemeProvider themeProvider;
+    try {
+      themeProvider = context.read<ThemeProvider>();
+    } on ProviderNotFoundException {
+      // Permite reutilizar a página isoladamente (por exemplo, em testes e
+      // previews) sem tornar o provider de tema uma dependência obrigatória.
+      return;
+    }
+    themeProvider.setDark(_modoDark);
+    themeProvider.setFontSizePreference(_tamanhoFonte);
+  }
+
+  Future<bool> _persistChange(VoidCallback change) {
+    final operation = _saveQueue.then((_) async {
+      if (!mounted) return false;
+      final previous = _currentData();
+      setState(change);
+      _syncThemePreferences();
+
+      try {
+        await _configuracoesRepository.save(_currentData());
+        return true;
+      } catch (error, stackTrace) {
+        AppEventLogger.error(
+          'configuracoes_save_error',
+          error,
+          stackTrace: stackTrace,
+        );
+        if (!mounted) return false;
+        setState(() => _applyData(previous));
+        _syncThemePreferences();
+        AppFeedbackService.error(
+          context,
+          'Não foi possível salvar a alteração.',
+        );
+        return false;
+      }
+    });
+    _saveQueue = operation.then<void>((_) {});
+    return operation;
   }
 
   void _mostrarFeedback(String mensagem) {
@@ -147,33 +216,29 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               _ConfigToggle(
                 icon: Icons.notifications,
                 titulo: 'Notificações',
-                subtitulo: 'Receber alertas de demandas e atividades',
-                value: _notificacoesAtivas,
-                onChanged: (value) {
-                  setState(() => _notificacoesAtivas = value);
-                  _saveData();
-                },
+                subtitulo: 'Disponível após integração institucional',
+                value: false,
+                onChanged: (_) => _mostrarFeedback(
+                  'As notificações ainda não estão integradas.',
+                ),
               ),
               _ConfigToggle(
                 icon: Icons.dark_mode,
                 titulo: 'Modo noturno',
                 subtitulo: 'Ativar tema escuro',
                 value: _modoDark,
-                onChanged: (value) {
-                  setState(() => _modoDark = value);
-                  context.read<ThemeProvider>().setDark(value);
-                  _saveData();
+                onChanged: (value) async {
+                  await _persistChange(() => _modoDark = value);
                 },
               ),
               _ConfigToggle(
                 icon: Icons.fingerprint,
                 titulo: 'Autenticação biométrica',
-                subtitulo: 'Usar impressão digital ou rosto',
-                value: _biometriaAtiva,
-                onChanged: (value) {
-                  setState(() => _biometriaAtiva = value);
-                  _saveData();
-                },
+                subtitulo: 'Disponível após integração institucional',
+                value: false,
+                onChanged: (_) => _mostrarFeedback(
+                  'A biometria ainda não está integrada neste dispositivo.',
+                ),
               ),
             ],
           ),
@@ -184,37 +249,12 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 _ConfigToggle(
                   icon: Icons.schedule,
                   titulo: 'Lembrete da próxima disciplina',
-                  subtitulo: _notificarAntesDaDisciplina
-                      ? 'Notificar $_antecedenciaNotificacaoMinutos min antes do início'
-                      : 'Lembrete desativado',
-                  value: _notificarAntesDaDisciplina,
-                  onChanged: (value) {
-                    setState(() => _notificarAntesDaDisciplina = value);
-                    _saveData();
-                  },
-                ),
-                if (_notificarAntesDaDisciplina)
-                  _ConfigDropdown(
-                    icon: Icons.timer_outlined,
-                    titulo: 'Antecedência do lembrete',
-                    valor: '$_antecedenciaNotificacaoMinutos min',
-                    opcoes: ConfiguracoesService.opcoesAntecedenciaMinutos
-                        .map((item) => '$item min')
-                        .toList(growable: false),
-                    onChanged: (valor) {
-                      final minutos = int.parse(valor.replaceAll(' min', ''));
-                      final erro =
-                          ConfiguracoesService.validarAntecedenciaDisciplina(
-                            minutos,
-                          );
-                      if (erro != null) {
-                        _mostrarFeedback(erro);
-                        return;
-                      }
-                      setState(() => _antecedenciaNotificacaoMinutos = minutos);
-                      _saveData();
-                    },
+                  subtitulo: 'Disponível após integração institucional',
+                  value: false,
+                  onChanged: (_) => _mostrarFeedback(
+                    'Os lembretes ainda não estão integrados.',
                   ),
+                ),
               ],
             ),
           // Removed Agenda de compromissos section
@@ -225,10 +265,9 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 icon: Icons.language,
                 titulo: 'Idioma',
                 valor: _idioma,
-                opcoes: ['Português (Brasil)', 'English', 'Español'],
-                onChanged: (valor) {
-                  setState(() => _idioma = valor);
-                  _saveData();
+                opcoes: const ['Português (Brasil)'],
+                onChanged: (valor) async {
+                  await _persistChange(() => _idioma = valor);
                 },
               ),
               _ConfigDropdown(
@@ -236,9 +275,8 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 titulo: 'Tamanho da fonte',
                 valor: _tamanhoFonte,
                 opcoes: ['Pequeno', 'Médio', 'Grande'],
-                onChanged: (valor) {
-                  setState(() => _tamanhoFonte = valor);
-                  _saveData();
+                onChanged: (valor) async {
+                  await _persistChange(() => _tamanhoFonte = valor);
                 },
               ),
             ],
@@ -249,7 +287,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               _ConfigItem(
                 icon: Icons.backup,
                 titulo: 'Backup automático',
-                subtitulo: 'Próximo backup em: $_proximoBackup',
+                subtitulo: 'Disponível após integração com o servidor',
                 onTap: () => _showAlerta(context, 'Backup'),
               ),
               _ConfigItem(
@@ -278,9 +316,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               _ConfigItem(
                 icon: Icons.bug_report,
                 titulo: 'Reportar problema',
-                subtitulo: _problemasReportados == 0
-                    ? 'Enviar feedback ou relatar bugs'
-                    : '$_problemasReportados relato(s) enviados',
+                subtitulo: 'Disponível após integração com o suporte do IFMA',
                 onTap: () => _showAlerta(context, 'Reportar Problema'),
               ),
             ],
@@ -340,7 +376,9 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
           context: context,
           builder: (context) => AlertDialog(
             title: Text(titulo),
-            content: Text('Funcionalidade de $titulo implementada aqui.'),
+            content: Text(
+              'A funcionalidade de $titulo ainda não está disponível.',
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -410,7 +448,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       final erro = ConfiguracoesService.validarPerfil(
                         nome: nomeController.text,
                         cargo: cargoController.text,
@@ -420,11 +458,22 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                         return;
                       }
 
-                      setState(() {
-                        _nomePerfil = nomeController.text.trim();
-                        _cargoPerfil = cargoController.text.trim();
+                      final nome = nomeController.text.trim();
+                      final cargo = cargoController.text.trim();
+                      final saved = await _persistChange(() {
+                        _nomePerfil = nome;
+                        _cargoPerfil = cargo;
                       });
-                      _saveData();
+                      if (!saved || !context.mounted) return;
+
+                      final userContext = context.read<UserContextProvider>();
+                      final currentUser = userContext.currentUser;
+                      if (currentUser != null) {
+                        await userContext.updateUser(
+                          currentUser.copyWith(name: nome),
+                        );
+                      }
+                      if (!context.mounted) return;
 
                       Navigator.pop(context);
                       _mostrarFeedback('Perfil atualizado com sucesso!');
@@ -480,7 +529,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Será enviado um código de verificação para o novo email.',
+              'A alteração será habilitada após a integração com a identidade institucional.',
               style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
             ),
             const Spacer(),
@@ -503,13 +552,10 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                         return;
                       }
 
-                      setState(() {
-                        _emailUsuario = email;
-                      });
-                      _saveData();
-
                       Navigator.pop(context);
-                      _mostrarFeedback('Código de verificação enviado!');
+                      _mostrarFeedback(
+                        'Alteração de e-mail indisponível sem autenticação institucional.',
+                      );
                     },
                     child: const Text('Enviar Código'),
                   ),
@@ -608,14 +654,10 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                         return;
                       }
 
-                      setState(() {
-                        _ultimaAlteracaoSenha =
-                            ConfiguracoesService.dataAtual();
-                      });
-                      _saveData();
-
                       Navigator.pop(context);
-                      _mostrarFeedback('Senha alterada com sucesso!');
+                      _mostrarFeedback(
+                        'Alteração de senha indisponível sem autenticação institucional.',
+                      );
                     },
                     child: const Text('Alterar'),
                   ),
@@ -666,22 +708,15 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               _ConfigToggle(
                 icon: Icons.backup,
                 titulo: 'Backup automático',
-                subtitulo: 'Realizar backup diariamente',
-                value: _backupAutomaticoAtivo,
-                onChanged: (value) {
-                  setState(() {
-                    _backupAutomaticoAtivo = value;
-                    _proximoBackup = value
-                        ? ConfiguracoesService.dataFutura(1)
-                        : 'Desativado';
-                  });
-                  _saveData();
-                  setModalState(() {});
-                },
+                subtitulo: 'Requer servidor institucional configurado',
+                value: false,
+                onChanged: (_) => _mostrarFeedback(
+                  'O backup automático ainda não está integrado.',
+                ),
               ),
               const SizedBox(height: 16),
               Text(
-                'Último backup: $_ultimoBackup',
+                'Último backup: indisponível sem servidor institucional',
                 style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
               ),
               const SizedBox(height: 24),
@@ -690,15 +725,10 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () {
-                        setState(() {
-                          _ultimoBackup = ConfiguracoesService.dataHoraAtual();
-                          _proximoBackup = _backupAutomaticoAtivo
-                              ? ConfiguracoesService.dataFutura(1)
-                              : 'Desativado';
-                        });
-                        _saveData();
                         Navigator.pop(context);
-                        _mostrarFeedback('Backup realizado com sucesso!');
+                        _mostrarFeedback(
+                          'Backup indisponível sem servidor institucional.',
+                        );
                       },
                       child: const Text('Fazer Backup Agora'),
                     ),
@@ -997,13 +1027,11 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                         return;
                       }
 
-                      setState(() {
-                        _problemasReportados += 1;
-                      });
-                      _saveData();
-
                       Navigator.pop(context);
-                      _mostrarFeedback('Relatório enviado com sucesso!');
+                      _mostrarFeedback(
+                        'O envio ao suporte estará disponível após a integração '
+                        'com o servidor institucional.',
+                      );
                     },
                     child: const Text('Enviar'),
                   ),

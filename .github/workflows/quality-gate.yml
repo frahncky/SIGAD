@@ -3,7 +3,7 @@ name: quality-gate
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, develop]
 
 jobs:
   verify:
@@ -42,6 +42,9 @@ jobs:
 
       - name: Unit and widget tests with coverage
         run: flutter test --coverage
+
+      - name: Production access must fail closed
+        run: flutter test test/login_production_mode_widget_test.dart --dart-define=SIGAD_FLAVOR=prod --dart-define=SIGAD_ENABLE_DEMO_ACCESS=true
 
       - name: Coverage gate (minimum 35%)
         run: |

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/user.dart';
 import '../models/user_role.dart';
+import 'app_event_logger.dart';
 import 'local_storage_service.dart';
 
 class ChatContact {
@@ -34,7 +35,8 @@ class ChatMessage {
 
 class ChatProvider extends ChangeNotifier {
   ChatProvider() {
-    _loadData();
+    _initialization = _loadData();
+    _persistenceQueue = _initialization;
   }
 
   final List<ChatContact> _baseContacts = const [
@@ -62,6 +64,13 @@ class ChatProvider extends ChangeNotifier {
 
   final Map<String, List<ChatMessage>> _messagesByConversation = {};
   final Map<String, DateTime> _lastReadByUserConversation = {};
+  late final Future<void> _initialization;
+  late Future<void> _persistenceQueue;
+
+  Future<void> get ready => _initialization;
+
+  @visibleForTesting
+  Future<void> get pendingPersistence => _persistenceQueue;
 
   List<ChatContact> contactsFor(User currentUser) {
     final currentEmail = _normalizeEmail(currentUser.email);
@@ -151,7 +160,10 @@ class ChatProvider extends ChangeNotifier {
 
     _lastReadByUserConversation[readKey] = latestIncomingAt;
     notifyListeners();
-    _saveReadState();
+    _enqueuePersistence(
+      eventName: 'chat_read_state_save_error',
+      operation: _saveReadStateNow,
+    );
   }
 
   void sendMessage({
@@ -177,42 +189,54 @@ class ChatProvider extends ChangeNotifier {
         .putIfAbsent(key, () => <ChatMessage>[])
         .add(message);
     notifyListeners();
-    _saveData();
+    _enqueuePersistence(
+      eventName: 'chat_messages_save_error',
+      operation: _saveDataNow,
+    );
   }
 
   static const String _kKey = 'sigad_chat_messages';
   static const String _kReadKey = 'sigad_chat_read_state';
 
   Future<void> _loadData() async {
-    final list = await LocalStorageService.loadList(_kKey);
-    if (list.isEmpty) {
-      _seedMessages();
+    try {
+      final list = await LocalStorageService.loadListOrNull(_kKey);
+      final shouldSeed = list == null;
+      if (shouldSeed) {
+        _seedMessages();
+      } else {
+        for (final json in list) {
+          final senderEmail = json['senderEmail'] as String;
+          final recipientEmail = json['recipientEmail'] as String;
+          final key = _conversationKey(senderEmail, recipientEmail);
+          _messagesByConversation
+              .putIfAbsent(key, () => <ChatMessage>[])
+              .add(
+                ChatMessage(
+                  id: json['id'] as String,
+                  senderEmail: senderEmail,
+                  recipientEmail: recipientEmail,
+                  content: json['content'] as String,
+                  sentAt: DateTime.parse(json['sentAt'] as String),
+                ),
+              );
+        }
+      }
+
       await _loadReadState();
-      _saveData();
+      if (shouldSeed) {
+        await _runPersistence(
+          eventName: 'chat_seed_messages_save_error',
+          operation: _saveDataNow,
+        );
+      }
       notifyListeners();
-      return;
+    } catch (error, stackTrace) {
+      AppEventLogger.error('chat_load_error', error, stackTrace: stackTrace);
     }
-    for (final json in list) {
-      final senderEmail = json['senderEmail'] as String;
-      final recipientEmail = json['recipientEmail'] as String;
-      final key = _conversationKey(senderEmail, recipientEmail);
-      _messagesByConversation
-          .putIfAbsent(key, () => <ChatMessage>[])
-          .add(
-            ChatMessage(
-              id: json['id'] as String,
-              senderEmail: senderEmail,
-              recipientEmail: recipientEmail,
-              content: json['content'] as String,
-              sentAt: DateTime.parse(json['sentAt'] as String),
-            ),
-          );
-    }
-    await _loadReadState();
-    notifyListeners();
   }
 
-  void _saveData() {
+  Future<void> _saveDataNow() {
     final allMessages = <Map<String, dynamic>>[];
     for (final messages in _messagesByConversation.values) {
       for (final msg in messages) {
@@ -225,7 +249,7 @@ class ChatProvider extends ChangeNotifier {
         });
       }
     }
-    LocalStorageService.saveList(_kKey, allMessages);
+    return LocalStorageService.saveList(_kKey, allMessages);
   }
 
   Future<void> _loadReadState() async {
@@ -245,7 +269,7 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
-  void _saveReadState() {
+  Future<void> _saveReadStateNow() {
     final data = <Map<String, dynamic>>[];
     for (final entry in _lastReadByUserConversation.entries) {
       final parts = entry.key.split('|');
@@ -258,7 +282,27 @@ class ChatProvider extends ChangeNotifier {
         'readAt': entry.value.toIso8601String(),
       });
     }
-    LocalStorageService.saveList(_kReadKey, data);
+    return LocalStorageService.saveList(_kReadKey, data);
+  }
+
+  void _enqueuePersistence({
+    required String eventName,
+    required Future<void> Function() operation,
+  }) {
+    _persistenceQueue = _persistenceQueue.then(
+      (_) => _runPersistence(eventName: eventName, operation: operation),
+    );
+  }
+
+  Future<void> _runPersistence({
+    required String eventName,
+    required Future<void> Function() operation,
+  }) async {
+    try {
+      await operation();
+    } catch (error, stackTrace) {
+      AppEventLogger.error(eventName, error, stackTrace: stackTrace);
+    }
   }
 
   void _seedMessages() {

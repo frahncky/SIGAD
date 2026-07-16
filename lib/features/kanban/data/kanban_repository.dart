@@ -33,9 +33,11 @@ class KanbanRepository implements EntityRepository<KanbanCardModel> {
   @override
   Future<void> save(List<KanbanCardModel> entities) => saveCards(entities);
 
-  Future<List<KanbanCardModel>> loadCards() async {
+  Future<List<KanbanCardModel>> loadCards({
+    List<KanbanCardModel> initialData = const [],
+  }) async {
     if (_dataSourceMode == DataSourceMode.local) {
-      return _loadLocalCards();
+      return _loadLocalCards(initialData: initialData);
     }
 
     try {
@@ -48,7 +50,7 @@ class KanbanRepository implements EntityRepository<KanbanCardModel> {
       );
       if (_enableRemoteFallback) {
         AppEventLogger.action('kanban_remote_load_fallback_local');
-        return _loadLocalCards();
+        return _loadLocalCards(initialData: initialData);
       }
       rethrow;
     }
@@ -76,8 +78,16 @@ class KanbanRepository implements EntityRepository<KanbanCardModel> {
     }
   }
 
-  Future<List<KanbanCardModel>> _loadLocalCards() async {
-    final list = await LocalStorageService.loadList(storageKey);
+  Future<List<KanbanCardModel>> _loadLocalCards({
+    List<KanbanCardModel> initialData = const [],
+  }) async {
+    final list = await LocalStorageService.loadListOrNull(storageKey);
+    if (list == null) {
+      if (initialData.isNotEmpty) {
+        await _saveLocalCards(initialData);
+      }
+      return List<KanbanCardModel>.of(initialData, growable: false);
+    }
     if (list.isEmpty) return const [];
 
     final cards = <KanbanCardModel>[];

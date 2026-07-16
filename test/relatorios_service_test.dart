@@ -39,27 +39,5 @@ void main() {
       expect(filtrados, hasLength(1));
       expect(filtrados.first.id, '1');
     });
-
-    test('incrementa contadores de ação', () {
-      const relatorio = Relatorio(
-        id: '1',
-        titulo: 'X',
-        descricao: 'Y',
-        tipo: 'Mensal',
-        data: 'Mar/2026',
-        autor: 'Coordenação',
-        status: 'Publicado',
-        downloads: 2,
-        compartilhamentos: 3,
-      );
-
-      final baixado = RelatoriosService.registrarDownload(relatorio);
-      final compartilhado = RelatoriosService.registrarCompartilhamento(
-        relatorio,
-      );
-
-      expect(baixado.downloads, 3);
-      expect(compartilhado.compartilhamentos, 4);
-    });
   });
 }

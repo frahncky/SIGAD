@@ -10,17 +10,18 @@ import '../../../../core/security/authorization_policy.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../../../atividades/data/atividade_repository.dart';
 import '../../../atividades/domain/atividade_models.dart';
-import '../../../atividades/domain/atividades_service.dart';
+import '../../../atividades/presentation/atividades_visuals.dart';
 import '../../../configuracoes/data/configuracoes_repository.dart';
 import '../../../configuracoes/domain/configuracoes_models.dart';
 import '../../../demandas/data/demanda_repository.dart';
 import '../../../demandas/domain/demanda_models.dart';
 import '../../../demandas/domain/demandas_service.dart';
+import '../../../demandas/presentation/demandas_visuals.dart';
 import '../../../kanban/data/kanban_repository.dart';
 import '../../../kanban/domain/kanban_models.dart';
 import '../../../kanban/domain/kanban_service.dart';
 import '../../domain/dashboard_priorities_service.dart';
-import '../../domain/dashboard_role_profile.dart';
+import '../dashboard_role_profile.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -50,13 +51,9 @@ class _DashboardPageState extends State<DashboardPage> {
     final storedAtividades = results[2] as List<Atividade>;
 
     return _DashboardData(
-      demandas: storedDemandas.isEmpty
-          ? DemandasService.defaultDemandas()
-          : storedDemandas,
-      cards: storedCards.isEmpty ? KanbanService.defaultCards() : storedCards,
-      atividades: storedAtividades.isEmpty
-          ? AtividadesService.defaultAtividades()
-          : storedAtividades,
+      demandas: storedDemandas,
+      cards: storedCards,
+      atividades: storedAtividades,
     );
   }
 
@@ -641,7 +638,7 @@ class _DemandAttentionRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final tone = DemandasService.tonePrioridade(demanda.prioridade);
+    final tone = DemandasVisuals.tonePrioridade(demanda.prioridade);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -725,7 +722,7 @@ class _ActivitiesPanel extends StatelessWidget {
                         children: [
                           Icon(
                             Icons.event_note_outlined,
-                            color: AtividadesService.statusColor(
+                            color: AtividadesVisuals.statusColor(
                               atividade.status,
                             ),
                           ),
@@ -761,7 +758,7 @@ class _ActivitiesPanel extends StatelessWidget {
                             atividade.status,
                             style: Theme.of(context).textTheme.labelSmall
                                 ?.copyWith(
-                                  color: AtividadesService.statusColor(
+                                  color: AtividadesVisuals.statusColor(
                                     atividade.status,
                                   ),
                                   fontWeight: FontWeight.w800,

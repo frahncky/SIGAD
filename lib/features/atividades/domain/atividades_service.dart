@@ -1,6 +1,3 @@
-import 'package:flutter/material.dart';
-
-import '../../../../app/theme/sigad_colors.dart';
 import 'atividade_models.dart';
 
 abstract final class AtividadesService {
@@ -102,21 +99,6 @@ abstract final class AtividadesService {
     return atividades
         .where((atividade) => atividade.status == 'Pendente')
         .length;
-  }
-
-  static Color statusColor(String status) {
-    switch (status) {
-      case 'Concluída':
-        return SigadColors.success;
-      case 'Em progresso':
-        return SigadColors.info;
-      case 'Agendada':
-        return SigadColors.warning;
-      case 'Pendente':
-        return SigadColors.accent;
-      default:
-        return SigadColors.muted;
-    }
   }
 
   static String gerarProximoIdAtividade(List<Atividade> atividades) {

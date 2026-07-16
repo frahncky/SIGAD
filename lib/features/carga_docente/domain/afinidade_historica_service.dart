@@ -1,4 +1,5 @@
 import 'docente_models.dart';
+import 'normalizador_texto.dart';
 
 class ResultadoAfinidadeHistorica {
   const ResultadoAfinidadeHistorica({
@@ -26,16 +27,18 @@ class AfinidadeHistoricaService {
     required String diaSemana,
     required List<RegistroDecisaoRedistribuicao> registros,
   }) {
-    final disciplinaNormalizada = _normalizar(disciplina);
-    final diaNormalizado = _normalizar(diaSemana);
+    final disciplinaNormalizada = NormalizadorTexto.paraComparacao(disciplina);
+    final diaNormalizado = NormalizadorTexto.paraComparacao(diaSemana);
     final doDocente = registros
         .where((item) => item.docenteDestinoId == docenteDestinoId)
         .toList(growable: false);
     final especificos = doDocente
         .where(
           (item) =>
-              _normalizar(item.disciplina) == disciplinaNormalizada &&
-              _normalizar(item.diaSemana) == diaNormalizado,
+              NormalizadorTexto.paraComparacao(item.disciplina) ==
+                  disciplinaNormalizada &&
+              NormalizadorTexto.paraComparacao(item.diaSemana) ==
+                  diaNormalizado,
         )
         .toList(growable: false);
 
@@ -73,6 +76,4 @@ class AfinidadeHistoricaService {
         .length;
     return (aceitas + 1) / (registros.length + 2);
   }
-
-  String _normalizar(String valor) => valor.trim().toLowerCase();
 }

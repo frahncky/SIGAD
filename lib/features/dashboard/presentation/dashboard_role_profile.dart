@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../app/theme/sigad_colors.dart';
 import '../../../core/models/user_role.dart';
 
+/// Conteúdo e identidade visual do painel para cada perfil de usuário.
+
 class RoleMetric {
   const RoleMetric({
     required this.label,

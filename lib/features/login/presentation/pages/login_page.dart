@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../core/config/app_runtime_config.dart';
 import '../../../../core/models/user.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/services/app_event_logger.dart';
@@ -91,6 +92,26 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildIntro() {
+    if (!AppRuntimeConfig.enableDemoAccess) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const BrandTitle(),
+          const SizedBox(height: 18),
+          Text(
+            'Acesso institucional',
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            'A autenticação institucional precisa estar configurada para este ambiente.',
+          ),
+        ],
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -116,11 +137,45 @@ class _LoginPageState extends State<LoginPage> {
               )
               .toList(),
         ),
+        const SizedBox(height: 18),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.tertiaryContainer,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(
+            'Ambiente de demonstração. Não use uma senha real.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onTertiaryContainer,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
       ],
     );
   }
 
   Widget _buildForm(BuildContext context) {
+    if (!AppRuntimeConfig.enableDemoAccess) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Login indisponível',
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'Este aplicativo está configurado para produção, mas nenhum provedor de identidade do IFMA foi conectado. O acesso local foi bloqueado por segurança.',
+          ),
+        ],
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -209,6 +264,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleLogin() async {
+    if (!AppRuntimeConfig.enableDemoAccess) {
+      _showError('A autenticação institucional ainda não está configurada.');
+      return;
+    }
+
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
@@ -276,6 +336,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleDemoLogin() async {
+    if (!AppRuntimeConfig.enableDemoAccess) {
+      _showError('O acesso demonstrativo está desativado neste ambiente.');
+      return;
+    }
+
     if (_selectedRole == null) {
       _showWarning('Selecione um perfil para usar demo.');
       return;

@@ -15,7 +15,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('abre conversa e envia mensagem no mobile', (tester) async {
+  testWidgets('abre conversa e salva mensagem local no mobile', (tester) async {
     final userContext = UserContextProvider();
     await userContext.login(
       User(
@@ -51,11 +51,11 @@ void main() {
     await tester.tap(find.text('Maria Santos').first);
     await tester.pumpAndSettle();
 
-    expect(find.text('Digite sua mensagem'), findsOneWidget);
+    expect(find.text('Digite uma anotação local'), findsOneWidget);
 
     const texto = 'Mensagem de teste widget';
     await tester.enterText(find.byType(TextField).last, texto);
-    await tester.tap(find.text('Enviar'));
+    await tester.tap(find.text('Salvar localmente'));
     await tester.pumpAndSettle();
 
     expect(find.text(texto), findsOneWidget);

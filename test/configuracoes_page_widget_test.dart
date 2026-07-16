@@ -120,7 +120,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Lembrete da próxima disciplina'), findsOneWidget);
-    expect(find.text('Antecedência do lembrete'), findsOneWidget);
+    expect(find.text('Antecedência do lembrete'), findsNothing);
+    expect(find.text('Disponível após integração institucional'), findsWidgets);
   });
 
   testWidgets('coordenador vê configuração de lembrete de disciplina', (
@@ -156,7 +157,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Lembrete da próxima disciplina'), findsOneWidget);
-    expect(find.text('Antecedência do lembrete'), findsOneWidget);
+    expect(find.text('Antecedência do lembrete'), findsNothing);
+    expect(find.text('Disponível após integração institucional'), findsWidgets);
   });
 
   testWidgets('chefe vê configuração de lembrete de disciplina', (
@@ -192,7 +194,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Lembrete da próxima disciplina'), findsOneWidget);
-    expect(find.text('Antecedência do lembrete'), findsOneWidget);
+    expect(find.text('Antecedência do lembrete'), findsNothing);
+    expect(find.text('Disponível após integração institucional'), findsWidgets);
   });
 
   testWidgets('configuracoes nao exibe agenda de compromissos', (tester) async {

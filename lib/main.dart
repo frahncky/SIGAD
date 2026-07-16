@@ -42,7 +42,10 @@ Future<void> main() async {
       : AppRoutes.login;
 
   final savedConfig = await ConfiguracoesRepository().load();
-  final themeProvider = ThemeProvider(isDark: savedConfig?.modoDark ?? false);
+  final themeProvider = ThemeProvider(
+    isDark: savedConfig?.modoDark ?? false,
+    fontSizePreference: savedConfig?.tamanhoFonte ?? 'Médio',
+  );
 
   runApp(
     SigadApp(

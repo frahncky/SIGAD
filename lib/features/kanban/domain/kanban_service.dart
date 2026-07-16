@@ -1,6 +1,3 @@
-import 'package:flutter/material.dart';
-
-import '../../../app/theme/sigad_colors.dart';
 import 'kanban_models.dart';
 
 abstract final class KanbanService {
@@ -83,16 +80,5 @@ abstract final class KanbanService {
   static String? validateTitulo(String titulo) {
     if (titulo.trim().isEmpty) return 'Informe o título do card';
     return null;
-  }
-
-  static Color prioridadeColor(String prioridade) {
-    switch (prioridade) {
-      case 'Alta':
-        return SigadColors.risk;
-      case 'Média':
-        return SigadColors.warning;
-      default:
-        return SigadColors.success;
-    }
   }
 }

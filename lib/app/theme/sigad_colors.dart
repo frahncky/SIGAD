@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 abstract final class SigadColors {
   static const Color brand = Color(0xFF0C6B5E);
   static const Color brandDark = Color(0xFF08453C);
+  static const Color brandOnDark = Color(0xFF70E0CF);
   static const Color accent = Color(0xFFF29D41);
   static const Color accentSoft = Color(0xFFFFE4C3);
   static const Color canvas = Color(0xFFF7F4EF);

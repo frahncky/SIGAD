@@ -33,6 +33,7 @@ class DocenteFormController {
   String? validate() {
     return DocenteFormService.validateDocente(
       nome: nomeController.text,
+      email: emailController.text,
       departamento: departamentoController.text,
       cargaMaxima: cargaMaximaController.text,
       disciplinas: disciplinas,

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'docente_models.dart';
+import 'normalizador_texto.dart';
 
 typedef AvaliadorAfinidadeRedistribuicao =
     AvaliacaoAfinidadeRedistribuicao Function(
@@ -73,6 +74,7 @@ class RegrasDistribuicaoCarga {
 abstract final class DocenteFormService {
   static String? validateDocente({
     required String nome,
+    required String email,
     required String departamento,
     required String cargaMaxima,
     required List<String> disciplinas,
@@ -82,6 +84,9 @@ abstract final class DocenteFormService {
     if (nome.trim().isEmpty) {
       return 'Informe o nome do docente';
     }
+
+    final erroEmail = validateEmail(email);
+    if (erroEmail != null) return erroEmail;
 
     if (departamento.trim().isEmpty) {
       return 'Informe o departamento';
@@ -108,6 +113,19 @@ abstract final class DocenteFormService {
     return null;
   }
 
+  static String? validateEmail(String? email) {
+    final normalized = normalizeEmail(email);
+    if (normalized == null) {
+      return 'Informe o email de acesso';
+    }
+
+    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(normalized)) {
+      return 'Informe um email de acesso válido';
+    }
+
+    return null;
+  }
+
   static String? validateDisciplina({
     required String disciplina,
     required List<String> disciplinasExistentes,
@@ -117,7 +135,10 @@ abstract final class DocenteFormService {
       return 'Informe o nome da disciplina.';
     }
 
-    if (disciplinasExistentes.contains(normalized)) {
+    final chaveDisciplina = NormalizadorTexto.paraComparacao(normalized);
+    if (disciplinasExistentes.any(
+      (item) => NormalizadorTexto.paraComparacao(item) == chaveDisciplina,
+    )) {
       return 'Disciplina já adicionada.';
     }
 
@@ -324,7 +345,11 @@ abstract final class DocenteFormService {
     for (final origem in docentesAlta) {
       for (final horario in origem.horariosAula) {
         if (propostas.length >= limitePropostas) break;
-        if ((horario.disciplina ?? '').trim().isEmpty) continue;
+        final disciplina = horario.disciplina;
+        if (disciplina == null || disciplina.trim().isEmpty) continue;
+        final disciplinaNormalizada = NormalizadorTexto.paraComparacao(
+          disciplina,
+        );
 
         final cargaHorario = _cargaSemanalDoHorario(horario);
         if (cargaHorario <= 0) continue;
@@ -340,7 +365,11 @@ abstract final class DocenteFormService {
 
         for (final destino in docentesBaixa) {
           if (destino.id == origem.id) continue;
-          if (!destino.disciplinas.contains(horario.disciplina)) continue;
+          final possuiDisciplina = destino.disciplinas.any(
+            (item) =>
+                NormalizadorTexto.paraComparacao(item) == disciplinaNormalizada,
+          );
+          if (!possuiDisciplina) continue;
           if (existeConflitoHorario(
             horarios: horariosProjetados[destino.id] ?? destino.horariosAula,
             candidato: horario,
@@ -468,6 +497,20 @@ abstract final class DocenteFormService {
     return normalized;
   }
 
+  static bool emailJaCadastrado({
+    required String email,
+    required Iterable<Docente> docentes,
+    String? ignorarDocenteId,
+  }) {
+    final normalized = normalizeEmail(email);
+    if (normalized == null) return false;
+
+    return docentes.any((docente) {
+      if (docente.id == ignorarDocenteId) return false;
+      return normalizeEmail(docente.userEmail) == normalized;
+    });
+  }
+
   static int _cargaSemanalDoHorario(HorarioAula horario) {
     final cargaDeclarada = _parseCargaHorariaSemanal(horario.cargaHoraria);
     if (cargaDeclarada != null && cargaDeclarada > 0) {
@@ -575,7 +618,7 @@ abstract final class DocenteFormService {
   ) {
     final limites = regras.limitesAulasPara(docente.regimeTrabalho);
     final limiteRegime = math.min(docente.cargaMaxima, limites.minima);
-    return math.max(0, limiteRegime) * 60;
+    return math.max(0, limiteRegime) * regras.duracaoHoraAulaMinutos;
   }
 
   static int _cargaMaximaAulasMinutos(
@@ -584,7 +627,7 @@ abstract final class DocenteFormService {
   ) {
     final limites = regras.limitesAulasPara(docente.regimeTrabalho);
     final limiteRegime = math.min(docente.cargaMaxima, limites.maxima);
-    return math.max(0, limiteRegime) * 60;
+    return math.max(0, limiteRegime) * regras.duracaoHoraAulaMinutos;
   }
 
   static String? _normalizeNullable(String? value) {

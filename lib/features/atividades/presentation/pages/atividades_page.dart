@@ -6,6 +6,7 @@ import '../../../../shared/widgets/page_status_view.dart';
 import '../../data/atividade_repository.dart';
 import '../../domain/atividade_models.dart';
 import '../../domain/atividades_service.dart';
+import '../atividades_visuals.dart';
 
 class AtividadesPage extends StatefulWidget {
   const AtividadesPage({super.key});
@@ -89,10 +90,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
   bool _isLoading = true;
   String? _loadError;
   final AtividadeRepository _atividadeRepository = AtividadeRepository();
-  final List<Atividade> _atividades = List<Atividade>.of(
-    AtividadesService.defaultAtividades(),
-    growable: true,
-  );
+  final List<Atividade> _atividades = [];
 
   @override
   void initState() {
@@ -106,14 +104,14 @@ class _AtividadesPageState extends State<AtividadesPage> {
       _loadError = null;
     });
     try {
-      final list = await _atividadeRepository.loadAtividades();
+      final list = await _atividadeRepository.loadAtividades(
+        initialData: AtividadesService.defaultAtividades(),
+      );
       if (!mounted) return;
       setState(() {
-        if (list.isNotEmpty) {
-          _atividades
-            ..clear()
-            ..addAll(list);
-        }
+        _atividades
+          ..clear()
+          ..addAll(list);
         _isLoading = false;
       });
     } catch (error, stackTrace) {
@@ -130,8 +128,28 @@ class _AtividadesPageState extends State<AtividadesPage> {
     }
   }
 
-  void _saveData() {
-    _atividadeRepository.saveAtividades(_atividades);
+  Future<bool> _saveData(List<Atividade> previous) async {
+    try {
+      await _atividadeRepository.saveAtividades(_atividades);
+      return true;
+    } catch (error, stackTrace) {
+      AppEventLogger.error(
+        'atividades_save_error',
+        error,
+        stackTrace: stackTrace,
+      );
+      if (!mounted) return false;
+      setState(() {
+        _atividades
+          ..clear()
+          ..addAll(previous);
+      });
+      AppFeedbackService.error(
+        context,
+        'Não foi possível salvar as atividades. Tente novamente.',
+      );
+      return false;
+    }
   }
 
   List<Atividade> get _atividadesFiltradas =>
@@ -346,7 +364,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           final erro = AtividadesService.validarAtividade(
                             titulo: tituloController.text,
                             descricao: descricaoController.text,
@@ -355,6 +373,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                             _mostrarFeedback(erro);
                             return;
                           }
+                          final previous = List<Atividade>.of(_atividades);
                           setState(() {
                             _atividades.insert(
                               0,
@@ -371,7 +390,8 @@ class _AtividadesPageState extends State<AtividadesPage> {
                               ),
                             );
                           });
-                          _saveData();
+                          if (!await _saveData(previous)) return;
+                          if (!context.mounted) return;
                           Navigator.pop(context);
                           _mostrarFeedback('Atividade criada com sucesso!');
                         },
@@ -483,7 +503,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           final erro = AtividadesService.validarAtividade(
                             titulo: tituloController.text,
                             descricao: descricaoController.text,
@@ -492,6 +512,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                             _mostrarFeedback(erro);
                             return;
                           }
+                          final previous = List<Atividade>.of(_atividades);
                           setState(() {
                             final index = _atividades.indexWhere(
                               (item) => item.id == atividade.id,
@@ -505,7 +526,8 @@ class _AtividadesPageState extends State<AtividadesPage> {
                               );
                             }
                           });
-                          _saveData();
+                          if (!await _saveData(previous)) return;
+                          if (!context.mounted) return;
                           Navigator.pop(context);
                           _mostrarFeedback('Atividade atualizada com sucesso!');
                         },
@@ -534,11 +556,13 @@ class _AtividadesPageState extends State<AtividadesPage> {
             child: const Text('Cancelar'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
+              final previous = List<Atividade>.of(_atividades);
               setState(() {
                 _atividades.removeWhere((item) => item.id == atividade.id);
               });
-              _saveData();
+              if (!await _saveData(previous)) return;
+              if (!context.mounted) return;
               Navigator.pop(context);
               _mostrarFeedback('Atividade excluída com sucesso!');
             },
@@ -680,7 +704,7 @@ class _AtividadeCard extends StatelessWidget {
                     width: 4,
                     height: 60,
                     decoration: BoxDecoration(
-                      color: AtividadesService.statusColor(atividade.status),
+                      color: AtividadesVisuals.statusColor(atividade.status),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -714,7 +738,7 @@ class _AtividadeCard extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: AtividadesService.statusColor(
+                      color: AtividadesVisuals.statusColor(
                         atividade.status,
                       ).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(8),
@@ -722,7 +746,7 @@ class _AtividadeCard extends StatelessWidget {
                     child: Text(
                       atividade.status,
                       style: textTheme.labelSmall?.copyWith(
-                        color: AtividadesService.statusColor(atividade.status),
+                        color: AtividadesVisuals.statusColor(atividade.status),
                         fontWeight: FontWeight.w600,
                       ),
                     ),

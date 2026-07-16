@@ -1,6 +1,3 @@
-import 'package:flutter/material.dart';
-
-import '../../../app/theme/sigad_colors.dart';
 import 'relatorio_models.dart';
 
 abstract final class RelatoriosService {
@@ -82,33 +79,5 @@ abstract final class RelatoriosService {
           return filtroMatch && buscaMatch;
         })
         .toList(growable: false);
-  }
-
-  static Relatorio registrarDownload(Relatorio relatorio) {
-    return relatorio.copyWith(
-      downloads: relatorio.downloads + 1,
-      ultimaAcao: 'PDF baixado agora',
-    );
-  }
-
-  static Relatorio registrarCompartilhamento(Relatorio relatorio) {
-    return relatorio.copyWith(
-      compartilhamentos: relatorio.compartilhamentos + 1,
-      ultimaAcao: 'Compartilhado agora',
-    );
-  }
-
-  static Color statusColor(String status) {
-    switch (status) {
-      case 'Publicado':
-      case 'Disponível':
-        return SigadColors.success;
-      case 'Em revisão':
-        return SigadColors.warning;
-      case 'Agendado':
-        return SigadColors.info;
-      default:
-        return SigadColors.muted;
-    }
   }
 }

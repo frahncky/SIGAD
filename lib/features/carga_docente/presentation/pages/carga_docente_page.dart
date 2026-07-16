@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
-import '../../../configuracoes/domain/agenda_convites_service.dart';
 import '../../data/catalogo_docentes_ifma.dart';
 import '../../data/docente_repository.dart';
 import '../../data/distribuicao_historico_repository.dart';
@@ -14,6 +13,14 @@ import '../../../../core/models/user_role.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
+
+int _limiteMaximoAulas(Docente docente) {
+  const regras = RegrasDistribuicaoCarga.ifma();
+  final limiteRegime = regras.limitesAulasPara(docente.regimeTrabalho).maxima;
+  return docente.cargaMaxima < limiteRegime
+      ? docente.cargaMaxima
+      : limiteRegime;
+}
 
 class CargaDocentePage extends StatefulWidget {
   final Docente? docente;
@@ -53,181 +60,9 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   final DocenteRepository _docenteRepository = DocenteRepository();
   final DistribuicaoHistoricoRepository _historicoDistribuicaoRepository =
       DistribuicaoHistoricoRepository();
+  Future<void> _saveQueue = Future<void>.value();
 
-  final List<Docente> _docentes = [
-    Docente(
-      id: '#DOC-001',
-      nome: 'Profa. Dra. Maria Silva',
-      userId: 'user_email_maria.santos@univ.br',
-      userEmail: 'maria.santos@univ.br',
-      departamento: 'Engenharia de Software',
-      cargaHoraria: 20,
-      cargaMaxima: 20,
-      disciplinas: [
-        'Programação I',
-        'Programação II',
-        'Engenharia de Software',
-      ],
-      horariosAula: const [
-        HorarioAula(
-          diaSemana: 'Segunda',
-          inicio: '08:00',
-          fim: '09:40',
-          disciplina: 'Programação I',
-          cargaHoraria: '2h/sem · 80h',
-          turma: 'SI-2A',
-          modalidade: 'Integral',
-        ),
-        HorarioAula(
-          diaSemana: 'Quarta',
-          inicio: '10:00',
-          fim: '11:40',
-          disciplina: 'Programação II',
-          cargaHoraria: '2h/sem · 80h',
-          turma: 'SI-2B',
-          modalidade: 'Concomitante',
-        ),
-        HorarioAula(
-          diaSemana: 'Sexta',
-          inicio: '19:00',
-          fim: '20:40',
-          disciplina: 'Engenharia de Software',
-          cargaHoraria: '4h/sem · 120h',
-          turma: 'SI-3A',
-          modalidade: 'Superior',
-        ),
-      ],
-    ),
-    Docente(
-      id: '#DOC-002',
-      nome: 'Prof. Dr. João Silva',
-      userId: 'user_email_joao.silva@univ.br',
-      userEmail: 'joao.silva@univ.br',
-      departamento: 'Sistemas de Informação',
-      cargaHoraria: 16,
-      cargaMaxima: 20,
-      disciplinas: ['Banco de Dados', 'Web Design'],
-      horariosAula: const [
-        HorarioAula(
-          diaSemana: 'Terça',
-          inicio: '08:00',
-          fim: '09:40',
-          disciplina: 'Banco de Dados',
-          cargaHoraria: '4h/sem · 120h',
-          turma: 'SI-3A',
-          modalidade: 'Subsequente',
-        ),
-        HorarioAula(
-          diaSemana: 'Quinta',
-          inicio: '08:00',
-          fim: '09:40',
-          disciplina: 'Web Design',
-          cargaHoraria: '2h/sem · 60h',
-          turma: 'SI-2A',
-          modalidade: 'EJA',
-        ),
-      ],
-    ),
-    Docente(
-      id: '#DOC-003',
-      nome: 'Profa. Ana Costa',
-      userId: 'user_email_ana.pereira@univ.br',
-      userEmail: 'ana.pereira@univ.br',
-      departamento: 'Engenharia de Software',
-      cargaHoraria: 12,
-      cargaMaxima: 20,
-      disciplinas: ['Computação Gráfica'],
-      horariosAula: const [
-        HorarioAula(
-          diaSemana: 'Segunda',
-          inicio: '14:00',
-          fim: '15:40',
-          disciplina: 'Computação Gráfica',
-          cargaHoraria: '2h/sem · 60h',
-          turma: 'ES-3B',
-          modalidade: 'Integral',
-        ),
-        HorarioAula(
-          diaSemana: 'Quarta',
-          inicio: '14:00',
-          fim: '15:40',
-          disciplina: 'Computação Gráfica',
-          cargaHoraria: '2h/sem · 60h',
-          turma: 'ES-3B',
-          modalidade: 'Integral',
-        ),
-      ],
-    ),
-    Docente(
-      id: '#DOC-004',
-      nome: 'Prof. Carlos Oliveira',
-      userId: 'user_email_carlos.oliveira@univ.br',
-      userEmail: 'carlos.oliveira@univ.br',
-      departamento: 'Redes e Telecomunicações',
-      cargaHoraria: 18,
-      cargaMaxima: 20,
-      disciplinas: ['Redes I', 'Redes II', 'Segurança de Redes'],
-      horariosAula: const [
-        HorarioAula(
-          diaSemana: 'Terça',
-          inicio: '19:00',
-          fim: '20:40',
-          disciplina: 'Redes I',
-          cargaHoraria: '2h/sem · 60h',
-          turma: 'RT-2A',
-          modalidade: 'Subsequente',
-        ),
-        HorarioAula(
-          diaSemana: 'Quinta',
-          inicio: '19:00',
-          fim: '20:40',
-          disciplina: 'Redes II',
-          cargaHoraria: '2h/sem · 80h',
-          turma: 'RT-3A',
-          modalidade: 'Concomitante',
-        ),
-        HorarioAula(
-          diaSemana: 'Sexta',
-          inicio: '21:00',
-          fim: '22:40',
-          disciplina: 'Segurança de Redes',
-          cargaHoraria: '4h/sem · 120h',
-          turma: 'RT-4A',
-          modalidade: 'Superior',
-        ),
-      ],
-    ),
-    Docente(
-      id: '#DOC-005',
-      nome: 'Profa. Beatriz Mendes',
-      userId: 'user_email_beatriz.mendes@univ.br',
-      userEmail: 'beatriz.mendes@univ.br',
-      departamento: 'Engenharia de Software',
-      cargaHoraria: 14,
-      cargaMaxima: 20,
-      disciplinas: ['Qualidade de Software'],
-      horariosAula: const [
-        HorarioAula(
-          diaSemana: 'Terça',
-          inicio: '10:00',
-          fim: '11:40',
-          disciplina: 'Qualidade de Software',
-          cargaHoraria: '2h/sem · 60h',
-          turma: 'ES-4A',
-          modalidade: 'EJA',
-        ),
-        HorarioAula(
-          diaSemana: 'Quinta',
-          inicio: '10:00',
-          fim: '11:40',
-          disciplina: 'Qualidade de Software',
-          cargaHoraria: '2h/sem · 60h',
-          turma: 'ES-4B',
-          modalidade: 'Integral',
-        ),
-      ],
-    ),
-  ];
+  final List<Docente> _docentes = [];
 
   @override
   void initState() {
@@ -242,23 +77,61 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   }
 
   Future<void> _loadData() async {
-    final carregados = await _docenteRepository.loadDocentes(
-      generateFallbackId: _gerarProximoIdDocente,
-    );
-    if (carregados.isEmpty) {
-      setState(_docentes.clear);
-      return;
+    try {
+      final carregados = await _docenteRepository.loadDocentes(
+        generateFallbackId: _gerarProximoIdDocente,
+      );
+      if (!mounted) return;
+      setState(() {
+        _docentes
+          ..clear()
+          ..addAll(carregados);
+      });
+    } catch (error, stackTrace) {
+      AppEventLogger.error(
+        'carga_docente_load_error',
+        error,
+        stackTrace: stackTrace,
+      );
+      if (!mounted) return;
+      AppFeedbackService.error(
+        context,
+        'Não foi possível carregar os docentes.',
+      );
     }
-
-    setState(() {
-      _docentes
-        ..clear()
-        ..addAll(carregados);
-    });
   }
 
-  void _saveData() {
-    _docenteRepository.saveDocentes(_docentes);
+  Future<bool> _persistDocentesChange(VoidCallback change) {
+    final operation = _saveQueue.then((_) async {
+      if (!mounted) return false;
+      final previous = List<Docente>.of(_docentes, growable: false);
+      setState(change);
+      final snapshot = List<Docente>.of(_docentes, growable: false);
+
+      try {
+        await _docenteRepository.saveDocentes(snapshot);
+        return true;
+      } catch (error, stackTrace) {
+        AppEventLogger.error(
+          'carga_docente_save_error',
+          error,
+          stackTrace: stackTrace,
+        );
+        if (!mounted) return false;
+        setState(() {
+          _docentes
+            ..clear()
+            ..addAll(previous);
+        });
+        AppFeedbackService.error(
+          context,
+          'Não foi possível salvar os docentes.',
+        );
+        return false;
+      }
+    });
+    _saveQueue = operation.then<void>((_) {});
+    return operation;
   }
 
   List<Docente> _docentesVisiveis() {
@@ -292,10 +165,21 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       title: 'Novo Docente',
       confirmLabel: 'Adicionar',
       controller: controller,
-      onSubmit: () {
+      onSubmit: () async {
         final erro = controller.validate();
         if (erro != null) {
           _mostrarFeedback(erro);
+          return false;
+        }
+
+        final emailJaCadastrado = DocenteFormService.emailJaCadastrado(
+          email: controller.emailController.text,
+          docentes: _docentes,
+        );
+        if (emailJaCadastrado) {
+          _mostrarFeedback(
+            'Este email de acesso já está vinculado a outro docente.',
+          );
           return false;
         }
 
@@ -311,13 +195,13 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
           return false;
         }
 
-        setState(() {
-          _docentes.insert(
-            0,
-            controller.buildNewDocente(_gerarProximoIdDocente()),
-          );
-        });
-        _saveData();
+        final docenteCriado = controller.buildNewDocente(
+          _gerarProximoIdDocente(),
+        );
+        final saved = await _persistDocentesChange(
+          () => _docentes.insert(0, docenteCriado),
+        );
+        if (!saved) return false;
         AppEventLogger.action(
           'carga_docente_add_docente',
           details: {
@@ -337,8 +221,9 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     required String title,
     required String confirmLabel,
     required DocenteFormController controller,
-    required bool Function() onSubmit,
+    required Future<bool> Function() onSubmit,
   }) {
+    var isSubmitting = false;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -574,12 +459,26 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: () {
-                              if (onSubmit()) {
-                                Navigator.pop(context);
-                              }
-                            },
-                            child: Text(confirmLabel),
+                            onPressed: isSubmitting
+                                ? null
+                                : () async {
+                                    setModalState(() => isSubmitting = true);
+                                    final submitted = await onSubmit();
+                                    if (!context.mounted) return;
+                                    if (submitted) {
+                                      Navigator.pop(context);
+                                      return;
+                                    }
+                                    setModalState(() => isSubmitting = false);
+                                  },
+                            child: isSubmitting
+                                ? const SizedBox.square(
+                                    dimension: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Text(confirmLabel),
                           ),
                         ),
                       ],
@@ -784,20 +683,32 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       title: 'Editar Docente',
       confirmLabel: 'Salvar',
       controller: controller,
-      onSubmit: () {
+      onSubmit: () async {
         final erro = controller.validate();
         if (erro != null) {
           _mostrarFeedback(erro);
           return false;
         }
 
-        setState(() {
+        final emailJaCadastrado = DocenteFormService.emailJaCadastrado(
+          email: controller.emailController.text,
+          docentes: _docentes,
+          ignorarDocenteId: docente.id,
+        );
+        if (emailJaCadastrado) {
+          _mostrarFeedback(
+            'Este email de acesso já está vinculado a outro docente.',
+          );
+          return false;
+        }
+
+        final saved = await _persistDocentesChange(() {
           final index = _docentes.indexWhere((item) => item.id == docente.id);
           if (index >= 0) {
             _docentes[index] = controller.buildUpdatedDocente(docente);
           }
         });
-        _saveData();
+        if (!saved) return false;
         AppEventLogger.action(
           'carga_docente_edit_docente',
           details: {
@@ -824,11 +735,11 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
             child: const Text('Cancelar'),
           ),
           TextButton(
-            onPressed: () {
-              setState(() {
-                _docentes.removeWhere((item) => item.id == docente.id);
-              });
-              _saveData();
+            onPressed: () async {
+              final saved = await _persistDocentesChange(
+                () => _docentes.removeWhere((item) => item.id == docente.id),
+              );
+              if (!saved || !context.mounted) return;
               AppEventLogger.action(
                 'carga_docente_remove_docente',
                 details: {'docenteId': docente.id, 'nome': docente.nome},
@@ -856,8 +767,9 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   }
 
   double _percentualOcupacao(Docente docente) {
-    if (docente.cargaMaxima <= 0) return 0;
-    return docente.cargaHoraria / docente.cargaMaxima;
+    final limiteEnsino = _limiteMaximoAulas(docente);
+    if (limiteEnsino <= 0) return 0;
+    return docente.cargaHoraria / limiteEnsino;
   }
 
   List<Docente> _docentesComAltaCarga(List<Docente> docentes) {
@@ -948,24 +860,53 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       builder: (context) => _SimulacaoRedistribuicaoSheet(resultado: simulacao),
     );
     if (decisao == null || simulacao.propostas.isEmpty) return;
-    await _historicoDistribuicaoRepository.registrarDecisao(
-      propostas: simulacao.propostas,
-      resultado: decisao
-          ? ResultadoDecisaoRedistribuicao.aceita
-          : ResultadoDecisaoRedistribuicao.rejeitada,
-    );
-    if (!mounted) return;
     if (decisao) {
-      _aplicarRedistribuicao(simulacao.propostas);
+      final applied = await _aplicarRedistribuicao(simulacao.propostas);
+      if (!applied) return;
+      await _registrarDecisaoRedistribuicao(
+        propostas: simulacao.propostas,
+        resultado: ResultadoDecisaoRedistribuicao.aceita,
+      );
     } else {
+      await _registrarDecisaoRedistribuicao(
+        propostas: simulacao.propostas,
+        resultado: ResultadoDecisaoRedistribuicao.rejeitada,
+      );
+      if (!mounted) return;
       _mostrarFeedback(
         'Sugestão descartada. A decisão foi registrada para melhorar os próximos desempates.',
       );
     }
   }
 
-  void _aplicarRedistribuicao(List<PropostaRedistribuicao> propostas) {
-    if (propostas.isEmpty) return;
+  Future<void> _registrarDecisaoRedistribuicao({
+    required List<PropostaRedistribuicao> propostas,
+    required ResultadoDecisaoRedistribuicao resultado,
+  }) async {
+    try {
+      await _historicoDistribuicaoRepository.registrarDecisao(
+        propostas: propostas,
+        resultado: resultado,
+      );
+    } catch (error, stackTrace) {
+      AppEventLogger.error(
+        'carga_docente_historico_decisao_error',
+        error,
+        stackTrace: stackTrace,
+      );
+      if (!mounted) return;
+      AppFeedbackService.warning(
+        context,
+        'A distribuição foi processada, mas não foi possível registrar o '
+        'histórico da decisão.',
+      );
+    }
+  }
+
+  Future<bool> _aplicarRedistribuicao(
+    List<PropostaRedistribuicao> propostas,
+  ) async {
+    if (propostas.isEmpty) return false;
 
     final atualizados = List<Docente>.from(_docentes);
 
@@ -1007,13 +948,12 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       );
     }
 
-    setState(() {
+    final saved = await _persistDocentesChange(() {
       _docentes
         ..clear()
         ..addAll(atualizados);
     });
-
-    _saveData();
+    if (!saved) return false;
     AppEventLogger.action(
       'carga_docente_apply_redistribuicao',
       details: {'qtdPropostas': propostas.length},
@@ -1021,6 +961,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     _mostrarFeedback(
       '${propostas.length} redistribuições aplicadas com sucesso.',
     );
+    return true;
   }
 
   HorarioAula? _encontrarHorarioTransferencia(
@@ -1343,7 +1284,7 @@ class _DocenteCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'Distribuição em aulas: ${docente.cargaHoraria}h/${docente.cargaMaxima}h',
+            'Distribuição: ${docente.cargaHoraria}/${_limiteMaximoAulas(docente)} aulas/semana',
             style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
           ),
           const SizedBox(height: 12),
@@ -1707,7 +1648,7 @@ class _AgendaDocentePage extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                'Distribuição em aulas: ${docente.cargaHoraria}h/${docente.cargaMaxima}h',
+                'Distribuição: ${docente.cargaHoraria}/${_limiteMaximoAulas(docente)} aulas/semana',
                 style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
               ),
               const SizedBox(height: 12),
@@ -1763,7 +1704,7 @@ class _AgendaDocentePage extends StatelessWidget {
       text: 'Convite para reunião',
     );
     final descricaoController = TextEditingController(
-      text: 'Convite enviado via agenda do SIGAD.',
+      text: 'Reunião proposta pela agenda do SIGAD.',
     );
     final localController = TextEditingController();
 
@@ -1797,6 +1738,11 @@ class _AgendaDocentePage extends StatelessWidget {
                     modalContext,
                   ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
                 ),
+                const SizedBox(height: 12),
+                const Text(
+                  'O envio ao docente depende da integração com o servidor '
+                  'institucional e ainda não está disponível.',
+                ),
                 const SizedBox(height: 16),
                 TextField(
                   controller: tituloController,
@@ -1826,18 +1772,8 @@ class _AgendaDocentePage extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: () async {
-                      final inicio = _inicioSlot(slot.data, slot.horarioFaixa);
-                      if (inicio == null) {
-                        AppFeedbackService.info(
-                          pageContext,
-                          'Não foi possível interpretar o horário da célula.',
-                        );
-                        return;
-                      }
-
+                    onPressed: () {
                       final titulo = tituloController.text.trim();
-                      final descricao = descricaoController.text.trim();
                       final local = localController.text.trim();
                       if (titulo.isEmpty) {
                         AppFeedbackService.info(
@@ -1854,24 +1790,11 @@ class _AgendaDocentePage extends StatelessWidget {
                         return;
                       }
 
-                      final destinatario = _destinatarioAgenda(docente);
-                      await AgendaConvitesService.registrarConviteRecebido(
-                        destinatarioUserId: destinatario,
-                        titulo: titulo,
-                        descricao: descricao.isEmpty
-                            ? 'Convite enviado via agenda do SIGAD.'
-                            : descricao,
-                        inicio: _formatarDataHora(inicio),
-                        inicioDateTime: inicio,
-                        local: local,
-                        origem: 'Convite enviado pela agenda semanal',
-                      );
-
-                      if (!pageContext.mounted) return;
                       Navigator.pop(modalContext);
                       AppFeedbackService.info(
                         pageContext,
-                        'Convite enviado com sucesso para a agenda do docente.',
+                        'Convite não enviado: é necessário integrar o servidor '
+                        'institucional.',
                       );
                     },
                     icon: const Icon(Icons.send),
@@ -1890,43 +1813,11 @@ class _AgendaDocentePage extends StatelessWidget {
     }
   }
 
-  String _destinatarioAgenda(Docente docente) {
-    final id = (docente.userId ?? '').trim();
-    if (id.isNotEmpty) return id;
-    final email = (docente.userEmail ?? '').trim().toLowerCase();
-    if (email.isNotEmpty) return 'user_email_$email';
-    return docente.id;
-  }
-
-  DateTime? _inicioSlot(DateTime data, String faixa) {
-    final partesFaixa = faixa.split('-');
-    if (partesFaixa.length != 2) return null;
-    final inicio = partesFaixa[0].trim();
-    final partesHora = inicio.split(':');
-    if (partesHora.length != 2) return null;
-
-    final hora = int.tryParse(partesHora[0]);
-    final minuto = int.tryParse(partesHora[1]);
-    if (hora == null || minuto == null) return null;
-    if (hora < 0 || hora > 23 || minuto < 0 || minuto > 59) return null;
-
-    return DateTime(data.year, data.month, data.day, hora, minuto);
-  }
-
   String _formatarData(DateTime data) {
     final dia = data.day.toString().padLeft(2, '0');
     final mes = data.month.toString().padLeft(2, '0');
     final ano = data.year.toString();
     return '$dia/$mes/$ano';
-  }
-
-  String _formatarDataHora(DateTime dataHora) {
-    final dia = dataHora.day.toString().padLeft(2, '0');
-    final mes = dataHora.month.toString().padLeft(2, '0');
-    final ano = dataHora.year.toString();
-    final hora = dataHora.hour.toString().padLeft(2, '0');
-    final minuto = dataHora.minute.toString().padLeft(2, '0');
-    return '$dia/$mes/$ano às $hora:$minuto';
   }
 }
 

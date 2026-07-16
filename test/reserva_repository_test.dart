@@ -62,5 +62,29 @@ void main() {
       expect(carregadas, hasLength(1));
       expect(carregadas.first.id, 'RES-2');
     });
+
+    test('insere dados iniciais apenas quando a chave não existe', () async {
+      const seed = ReservaLaboratorio(
+        id: 'RES-SEED',
+        professor: 'Professor Exemplo',
+        laboratorio: 'Lab A',
+        mes: 4,
+        semanaDoMes: 1,
+        diaSemana: 'Qua',
+        turno: Turno.vespertino,
+        periodo: 2,
+      );
+
+      final primeiraCarga = await repository.loadReservas(
+        initialData: const [seed],
+      );
+      await repository.saveReservas(const []);
+      final aposExcluirTudo = await repository.loadReservas(
+        initialData: const [seed],
+      );
+
+      expect(primeiraCarga.single.id, seed.id);
+      expect(aposExcluirTudo, isEmpty);
+    });
   });
 }
