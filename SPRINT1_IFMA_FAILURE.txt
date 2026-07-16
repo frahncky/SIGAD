@@ -1,0 +1,125 @@
+Resolving dependencies...
+Downloading packages...
+  cli_util 0.4.2 (0.5.1 available)
+  code_assets 1.0.0 (1.2.1 available)
+  google_fonts 8.0.2 (8.2.0 available)
+  hooks 1.0.3 (2.1.0 available)
+  image 4.8.0 (4.9.1 available)
+  intl 0.19.0 (0.20.3 available)
+  json_annotation 4.11.0 (4.12.0 available)
+  matcher 0.12.19 (0.12.20 available)
+  meta 1.18.0 (1.19.0 available)
+  native_toolchain_c 0.17.6 (0.19.3 available)
+  objective_c 9.3.0 (9.4.1 available)
+  package_config 2.2.0 (3.0.0 available)
+  path_provider 2.1.5 (2.1.6 available)
+  path_provider_linux 2.2.1 (2.2.2 available)
+  path_provider_platform_interface 2.1.2 (2.1.3 available)
+  record_use 0.6.0 (1.0.0 available)
+  shared_preferences_android 2.4.23 (2.4.27 available)
+  test_api 0.7.11 (0.7.13 available)
+  url_launcher_android 6.3.29 (6.3.32 available)
+  url_launcher_web 2.4.2 (2.4.3 available)
+  vector_math 2.2.0 (2.4.0 available)
+  vm_service 15.1.0 (15.2.0 available)
+  xml 6.6.1 (7.0.1 available)
+Got dependencies!
+23 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading /home/runner/work/SIGAD/SIGAD/test/sprint1_flows_test.dart
+00:00 +0: Login mostra validação para email inválido
+00:01 +1: Coordenador consegue expandir distribuição semanal de qualquer docente
+[SIGAD][ACTION] session_login_persisted | userRef=us***br, role=coordenador
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 2 widgets with text "Docente 02": [
+            EditableText-[LabeledGlobalKey<EditableTextState>#aac1e](controller:
+TextEditingController#6e3a0(TextEditingValue(text: ┤Docente 02├, selection:
+TextSelection.collapsed(offset: 10, affinity: TextAffinity.downstream, isDirectional: false),
+composing: TextRange(start: -1, end: -1))), focusNode: FocusNode#7cb1b([PRIMARY FOCUS]),
+autocorrect: true, debugLabel: ((englishLike bodyLarge 2021).merge((((((blackMountainView
+bodyLarge).apply).copyWith).copyWith).copyWith).apply)).merge(unknown), inherit: false, color:
+Color(alpha: 1.0000, red: 0.0902, green: 0.1686, blue: 0.1529, colorSpace: ColorSpace.sRGB), family:
+SpaceGrotesk_regular, familyFallback: [SpaceGrotesk], size: 16.0, weight: 400, letterSpacing: 0.5,
+baseline: alphabetic, height: 1.4x, leadingDistribution: even, decoration: Color(alpha: 1.0000, red:
+0.1137, green: 0.1059, blue: 0.1255, colorSpace: ColorSpace.sRGB) TextDecoration.none, textAlign:
+start, keyboardType: TextInputType(name: TextInputType.text, signed: null, decimal: null),
+autofillHints: [], spellCheckConfiguration: SpellCheckConfiguration(disabled, service: null, text
+style: null, toolbar builder: null), dependencies: [Directionality, MediaQuery,
+_EffectiveTickerMode, _ViewScope], state: EditableTextState#75154(tickers: tracking 1 ticker)),
+            Text("Docente 02", debugLabel: ((englishLike titleMedium
+2021).merge((((((blackMountainView
+titleMedium).apply).copyWith).copyWith).copyWith).apply)).copyWith, inherit: false, color:
+Color(alpha: 1.0000, red: 0.0902, green: 0.1686, blue: 0.1529, colorSpace: ColorSpace.sRGB), family:
+SpaceGrotesk_regular, familyFallback: [SpaceGrotesk], size: 16.0, weight: 700, letterSpacing: 0.1,
+baseline: alphabetic, height: 1.5x, leadingDistribution: even, decoration: Color(alpha: 1.0000, red:
+0.1137, green: 0.1059, blue: 0.1255, colorSpace: ColorSpace.sRGB) TextDecoration.none, dependencies:
+[DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+          ]>
+   Which: is too many
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///home/runner/work/SIGAD/SIGAD/test/sprint1_flows_test.dart:71:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///home/runner/work/SIGAD/SIGAD/test/sprint1_flows_test.dart line 71
+The test description was:
+  Coordenador consegue expandir distribuição semanal de qualquer docente
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:01 +1 -1: Coordenador consegue expandir distribuição semanal de qualquer docente [E]
+  Test failed. See exception logs above.
+  The test description was: Coordenador consegue expandir distribuição semanal de qualquer docente
+  
+00:01 +1 -1: Professor consegue reservar horário em laboratório
+[SIGAD][ACTION] session_login_persisted | userRef=u2, role=professor
+[SIGAD][ACTION] reserva_create | laboratorio=Lab. de Eletrônica Analógica, diaSemana=Seg, turno=matutino, periodo=1, professor=***este
+══╡ EXCEPTION CAUGHT BY RENDERING LIBRARY ╞═════════════════════════════════════════════════════════
+The following assertion was thrown during layout:
+A RenderFlex overflowed by 44 pixels on the right.
+
+The relevant error-causing widget was:
+  DropdownButtonFormField<String>
+  DropdownButtonFormField:file:///home/runner/work/SIGAD/SIGAD/lib/features/aulas_praticas/presentation/pages/aulas_praticas_page.dart:550:12
+
+The overflowing RenderFlex has an orientation of Axis.horizontal.
+The edge of the RenderFlex that is overflowing has been marked in the rendering with a yellow and
+black striped pattern. This is usually caused by the contents being too big for the RenderFlex.
+Consider applying a flex factor (e.g. using an Expanded widget) to force the children of the
+RenderFlex to fit within the available space instead of being sized to their natural size.
+This is considered an error condition because it indicates that there is content that cannot be
+seen. If the content is legitimately bigger than the available space, consider clipping it with a
+ClipRect widget before putting it in the flex, or using a scrollable container rather than a Flex,
+like a ListView.
+The specific RenderFlex in question is: RenderFlex#5121f OVERFLOWING:
+  creator: Row ← Padding ← SizedBox ← DefaultTextStyle ← _Decorator ← Semantics ← InputDecorator ←
+    Listener ← _GestureSemantics ← RawGestureDetector ← GestureDetector ← MouseRegion ← ⋯
+  parentData: offset=Offset(0.0, 0.0) (can use size)
+  constraints: BoxConstraints(w=408.0, h=24.0)
+  size: Size(408.0, 24.0)
+  direction: horizontal
+  mainAxisAlignment: spaceBetween
+  mainAxisSize: min
+  crossAxisAlignment: center
+  textDirection: ltr
+  verticalDirection: down
+  spacing: 0.0
+◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:03 +1 -2: Professor consegue reservar horário em laboratório [E]
+  Test failed. See exception logs above.
+  The test description was: Professor consegue reservar horário em laboratório
+  
+00:03 +1 -2: Some tests failed.
+
+Failing tests:
+  /home/runner/work/SIGAD/SIGAD/test/sprint1_flows_test.dart: Coordenador consegue expandir distribuição semanal de qualquer docente
+  /home/runner/work/SIGAD/SIGAD/test/sprint1_flows_test.dart: Professor consegue reservar horário em laboratório
+EXIT_CODE=1
