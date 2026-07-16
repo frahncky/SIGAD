@@ -1,0 +1,43 @@
+name: Diagnóstico IFMA v2
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - reopened
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    if: github.head_ref == 'institucionalizacao-ifma-v2'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: institucionalizacao-ifma-v2
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+      - run: flutter pub get
+      - name: Diagnosticar análise e testes
+        run: |
+          set +e
+          flutter analyze > ANALYZE_IFMA.txt 2>&1
+          echo "ANALYZE_EXIT=$?" >> ANALYZE_IFMA.txt
+          : > TEST_IFMA_V2.txt
+          while IFS= read -r file; do
+            flutter test "$file" >/dev/null 2>&1
+            echo "$? $file" >> TEST_IFMA_V2.txt
+          done < <(find test -type f -name '*_test.dart' ! -path 'test/goldens/*' | sort)
+          exit 0
+      - name: Commitar diagnóstico
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ANALYZE_IFMA.txt TEST_IFMA_V2.txt
+          git commit -m "chore: registra diagnóstico temporário da atualização IFMA [skip ci]" || exit 0
+          git push origin HEAD:institucionalizacao-ifma-v2
