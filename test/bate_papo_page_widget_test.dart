@@ -19,9 +19,9 @@ void main() {
     final userContext = UserContextProvider();
     await userContext.login(
       User(
-        id: 'user_email_joao.silva@univ.br',
-        name: 'João Silva',
-        email: 'joao.silva@univ.br',
+        id: 'user_email_professor.demo@ifma.edu.br',
+        name: 'Professor Demo',
+        email: 'professor.demo@ifma.edu.br',
         role: UserRole.professor,
         createdAt: DateTime.now(),
       ),
@@ -48,7 +48,7 @@ void main() {
 
     expect(find.text('Conversas'), findsOneWidget);
 
-    await tester.tap(find.text('Maria Santos').first);
+    await tester.tap(find.text('Coordenação Demo').first);
     await tester.pumpAndSettle();
 
     expect(find.text('Digite sua mensagem'), findsOneWidget);

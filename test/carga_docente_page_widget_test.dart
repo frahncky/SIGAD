@@ -18,7 +18,7 @@ Widget _buildApp(UserContextProvider userContext) {
 
 Future<UserContextProvider> _loggedIn(
   UserRole role, {
-  String email = 'user@univ.br',
+  String email = 'user@ifma.edu.br',
 }) async {
   final ctx = UserContextProvider();
   await ctx.login(
@@ -44,21 +44,21 @@ void main() {
     await tester.pumpWidget(_buildApp(ctx));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('Maria Silva'), findsWidgets);
+    expect(find.textContaining('Docente 01'), findsWidgets);
     expect(find.text('Nenhum docente encontrado'), findsNothing);
   });
 
   testWidgets('professor ve apenas os proprios dados', (tester) async {
     final ctx = await _loggedIn(
       UserRole.professor,
-      email: 'maria.santos@univ.br',
+      email: 'docente01@ifma.edu.br',
     );
 
     await tester.pumpWidget(_buildApp(ctx));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('Maria Silva'), findsWidgets);
-    expect(find.textContaining('João Silva'), findsNothing);
+    expect(find.textContaining('Docente 01'), findsWidgets);
+    expect(find.textContaining('Docente 02'), findsNothing);
   });
 
   testWidgets('chefe ve todos os docentes', (tester) async {
@@ -67,7 +67,7 @@ void main() {
     await tester.pumpWidget(_buildApp(ctx));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('Maria Silva'), findsWidgets);
+    expect(find.textContaining('Docente 01'), findsWidgets);
     expect(find.text('Nenhum docente encontrado'), findsNothing);
   });
 
