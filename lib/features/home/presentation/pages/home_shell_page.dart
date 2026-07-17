@@ -81,36 +81,19 @@ class HomeShellPage extends StatelessWidget {
                 ),
           bottomNavigationBar: isWide
               ? null
-              : Builder(
-                  builder: (navigationContext) => NavigationBar(
-                    selectedIndex: _bottomNavIndex(),
-                    onDestinationSelected: (index) {
-                      if (index == 3) {
-                        Scaffold.of(navigationContext).openDrawer();
-                        return;
-                      }
-                      final item = _bottomNavItems[index];
-                      _navigate(context, item['route'] as String);
-                    },
-                    destinations: [
+              : NavigationBar(
+                  selectedIndex: _bottomNavIndex(),
+                  onDestinationSelected: (index) {
+                    final item = _bottomNavItems[index];
+                    _navigate(context, item['route'] as String);
+                  },
+                  destinations: [
+                    for (final item in _bottomNavItems)
                       NavigationDestination(
-                        icon: Icon(_bottomNavItems[0]['icon'] as IconData),
-                        label: _bottomNavItems[0]['label'] as String,
+                        icon: Icon(item['icon'] as IconData),
+                        label: item['label'] as String,
                       ),
-                      NavigationDestination(
-                        icon: Icon(_bottomNavItems[1]['icon'] as IconData),
-                        label: _bottomNavItems[1]['label'] as String,
-                      ),
-                      NavigationDestination(
-                        icon: Icon(_bottomNavItems[2]['icon'] as IconData),
-                        label: _bottomNavItems[2]['label'] as String,
-                      ),
-                      const NavigationDestination(
-                        icon: Icon(Icons.grid_view_rounded),
-                        label: 'Mais',
-                      ),
-                    ],
-                  ),
+                  ],
                 ),
           body: isWide
               ? Row(
@@ -186,9 +169,14 @@ class HomeShellPage extends StatelessWidget {
       'icon': Icons.calendar_month_outlined,
     },
     {
-      'route': AppRoutes.batePapo,
-      'label': 'Comunicados',
-      'icon': Icons.notifications_none_rounded,
+      'route': AppRoutes.notas,
+      'label': 'Anotações',
+      'icon': Icons.edit_note_rounded,
+    },
+    {
+      'route': AppRoutes.mais,
+      'label': 'Mais',
+      'icon': Icons.grid_view_rounded,
     },
   ];
 
@@ -196,8 +184,7 @@ class HomeShellPage extends StatelessWidget {
     final idx = _bottomNavItems.indexWhere(
       (item) => item['route'] == currentRoute,
     );
-    if (idx < 0) return 3;
-    return idx;
+    return idx < 0 ? 0 : idx;
   }
 
   void _navigate(BuildContext context, String route) {

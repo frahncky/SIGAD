@@ -25,7 +25,7 @@ class SigadDashboardPage extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _ResponsiveGrid(
-          minItemWidth: 190,
+          minItemWidth: 150,
           children: const [
             _MetricCard(
               icon: Icons.schedule_outlined,
@@ -180,13 +180,6 @@ class _OverviewHero extends StatelessWidget {
                             fontWeight: FontWeight.w800,
                           ),
                     ),
-                    const SizedBox(height: 5),
-                    Text(
-                      'Confira os destaques do departamento',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.white.withValues(alpha: 0.88),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -208,57 +201,57 @@ class _OverviewHero extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 24),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final columns = constraints.maxWidth >= 900
-                  ? 4
-                  : constraints.maxWidth >= 520
-                  ? 2
-                  : 1;
-              final width =
-                  (constraints.maxWidth - (columns - 1) * 12) / columns;
-              const highlights = [
-                _OverviewHighlight(
+          const Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 3,
+                child: _OverviewHighlight(
                   icon: Icons.error_outline_rounded,
-                  label: 'AVISO URGENTE',
+                  label: 'AVISO',
+                  count: '1',
                   title: 'Laboratório 2 interditado',
                   detail: 'Manutenção elétrica até 23/05',
-                  action: 'Ver detalhes',
                   color: Color(0xFFFF6B6B),
                 ),
-                _OverviewHighlight(
+              ),
+              SizedBox(width: 10),
+              Expanded(
+                flex: 3,
+                child: _OverviewHighlight(
                   icon: Icons.calendar_month_outlined,
-                  label: 'REUNIÃO PRÓXIMA',
+                  label: 'REUNIÃO',
+                  count: '1',
                   title: 'Reunião departamental',
                   detail: 'Amanhã • 10:00 • Sala 204',
-                  action: 'Ver pauta',
                   color: Color(0xFF57D68D),
                 ),
-                _OverviewHighlight(
+              ),
+              SizedBox(width: 10),
+              Expanded(
+                flex: 3,
+                child: _OverviewHighlight(
                   icon: Icons.assignment_outlined,
-                  label: 'DEMANDA PENDENTE',
+                  label: 'DEMANDA',
+                  count: '1',
                   title: '1 aguardando atribuição',
                   detail: 'Necessita encaminhamento',
-                  action: 'Ver demanda',
                   color: Color(0xFFFFB74D),
                 ),
-                _OverviewHighlight(
+              ),
+              SizedBox(width: 10),
+              Expanded(
+                flex: 4,
+                child: _OverviewHighlight(
                   icon: Icons.science_outlined,
                   label: 'MANUTENÇÃO',
+                  count: '1',
                   title: 'Lab. de Eletrônica',
                   detail: 'Preventiva agendada para 24/05',
-                  action: 'Ver cronograma',
                   color: Color(0xFF64B5F6),
                 ),
-              ];
-              return Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: highlights
-                    .map((item) => SizedBox(width: width, child: item))
-                    .toList(),
-              );
-            },
+              ),
+            ],
           ),
         ],
       ),
@@ -270,74 +263,98 @@ class _OverviewHighlight extends StatelessWidget {
   const _OverviewHighlight({
     required this.icon,
     required this.label,
+    required this.count,
     required this.title,
     required this.detail,
-    required this.action,
     required this.color,
   });
 
   final IconData icon;
   final String label;
+  final String count;
   final String title;
   final String detail;
-  final String action;
   final Color color;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(minHeight: 210),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                backgroundColor: color.withValues(alpha: 0.22),
-                child: Icon(icon, color: color, size: 21),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  label,
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: () => _showHighlightDetails(context),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 13,
+                  backgroundColor: color.withValues(alpha: 0.22),
+                  child: Icon(icon, color: color, size: 15),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  count,
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w800,
-                    fontSize: 12,
+                    fontSize: 22,
+                    height: 1,
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Text(
-            title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
+              ],
             ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            detail,
-            style: TextStyle(color: Colors.white.withValues(alpha: 0.82)),
-          ),
-          const Spacer(),
-          Row(
-            children: [
-              Text(
-                action,
-                style: TextStyle(color: color, fontWeight: FontWeight.w700),
+            const SizedBox(height: 8),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                label,
+                maxLines: 1,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 10.5,
+                  height: 1.2,
+                ),
               ),
-              const SizedBox(width: 6),
-              Icon(Icons.chevron_right_rounded, color: color, size: 20),
-            ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showHighlightDetails(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        icon: Icon(icon, color: color),
+        title: Text(label),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 6),
+            Text(detail),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Fechar'),
           ),
         ],
       ),

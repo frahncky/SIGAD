@@ -12,6 +12,7 @@ import '../../features/demandas/presentation/pages/demandas_page.dart';
 import '../../features/home/presentation/pages/home_shell_page.dart';
 import '../../features/kanban/presentation/pages/kanban_page.dart';
 import '../../features/login/presentation/pages/login_page.dart';
+import '../../features/mais/presentation/pages/mais_page.dart';
 import '../../features/notas/presentation/pages/notas_page.dart';
 import '../../features/redesign/presentation/pages/module_workspace_page.dart';
 import '../../features/redesign/presentation/pages/sigad_redesign_pages.dart';
@@ -109,6 +110,8 @@ abstract final class AppRouter {
         return _shell(routeName, const NotasPage());
       case AppRoutes.calendario:
         return _shell(routeName, const CalendarioPage());
+      case AppRoutes.mais:
+        return _shell(routeName, const MaisPage());
       default:
         return MaterialPageRoute<void>(
           settings: const RouteSettings(name: '/404'),
