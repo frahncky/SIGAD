@@ -173,11 +173,6 @@ class HomeShellPage extends StatelessWidget {
       'label': 'Anotações',
       'icon': Icons.edit_note_rounded,
     },
-    {
-      'route': AppRoutes.mais,
-      'label': 'Mais',
-      'icon': Icons.grid_view_rounded,
-    },
   ];
 
   int _bottomNavIndex() {

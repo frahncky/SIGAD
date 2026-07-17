@@ -9,6 +9,7 @@ import '../../features/carga_docente/presentation/pages/carga_docente_page.dart'
 import '../../features/carga_docente/presentation/pages/professores_page.dart';
 import '../../features/configuracoes/presentation/pages/configuracoes_page.dart';
 import '../../features/demandas/presentation/pages/demandas_page.dart';
+import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/home/presentation/pages/home_shell_page.dart';
 import '../../features/kanban/presentation/pages/kanban_page.dart';
 import '../../features/login/presentation/pages/login_page.dart';
@@ -37,7 +38,7 @@ abstract final class AppRouter {
         return _workspace(
           routeName,
           overview: const SigadDashboardPage(),
-          operation: const SigadDashboardPage(),
+          operation: const DashboardPage(),
           operationLabel: 'Painel operacional',
         );
       case AppRoutes.batePapo:
