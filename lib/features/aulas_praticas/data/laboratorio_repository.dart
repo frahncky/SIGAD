@@ -5,10 +5,17 @@ class LaboratorioRepository {
   LaboratorioRepository({this.storageKey = 'sigad_laboratorios'});
 
   final String storageKey;
+  static final Map<String, List<Laboratorio>> _memoryCache = {};
 
   Future<List<Laboratorio>> load() async {
+    final cached = _memoryCache[storageKey];
+    if (cached != null) return List<Laboratorio>.from(cached);
     final data = await LocalStorageService.loadList(storageKey);
-    if (data.isEmpty) return defaultLaboratorios();
+    if (data.isEmpty) {
+      final defaults = defaultLaboratorios();
+      _memoryCache[storageKey] = defaults;
+      return List<Laboratorio>.from(defaults);
+    }
     final laboratorios = <Laboratorio>[];
     for (final item in data) {
       try {
@@ -17,14 +24,20 @@ class LaboratorioRepository {
         // Um registro inválido não deve impedir o acesso aos demais.
       }
     }
-    return laboratorios.isEmpty ? defaultLaboratorios() : laboratorios;
+    final resultado = laboratorios.isEmpty
+        ? defaultLaboratorios()
+        : laboratorios;
+    _memoryCache[storageKey] = resultado;
+    return List<Laboratorio>.from(resultado);
   }
 
-  Future<void> save(List<Laboratorio> laboratorios) =>
-      LocalStorageService.saveList(
-        storageKey,
-        laboratorios.map((item) => item.toJson()).toList(growable: false),
-      );
+  Future<void> save(List<Laboratorio> laboratorios) {
+    _memoryCache[storageKey] = List<Laboratorio>.from(laboratorios);
+    return LocalStorageService.saveList(
+      storageKey,
+      laboratorios.map((item) => item.toJson()).toList(growable: false),
+    );
+  }
 
   List<Laboratorio> defaultLaboratorios() => [
     Laboratorio(

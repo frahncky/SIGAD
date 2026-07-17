@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
+import '../../data/laboratorio_repository.dart';
 import '../../data/reserva_repository.dart';
 import '../../domain/reserva_models.dart';
 import '../../domain/reserva_service.dart';
@@ -45,6 +46,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   ];
 
   final ReservaRepository _reservaRepository = ReservaRepository();
+  final LaboratorioRepository _laboratorioRepository = LaboratorioRepository();
   final DocenteRepository _docenteRepository = DocenteRepository();
   final List<ReservaLaboratorio> _reservas = ReservaService.defaultReservas(
     DateTime.now().month,
@@ -71,12 +73,15 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   }
 
   Future<void> _loadData() async {
+    final catalogoFuture = _laboratorioRepository.load();
     final list = await _reservaRepository.loadReservas();
 
     final docentes = await _docenteRepository.loadDocentes(
       generateFallbackId: () => 'DOC-FALLBACK',
     );
+    await catalogoFuture;
 
+    if (!mounted) return;
     setState(() {
       if (list.isNotEmpty) {
         _reservas

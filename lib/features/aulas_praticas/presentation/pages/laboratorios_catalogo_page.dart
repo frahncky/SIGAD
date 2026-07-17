@@ -471,28 +471,39 @@ class _Header extends StatelessWidget {
   const _Header({required this.onAbrirReservas});
   final VoidCallback onAbrirReservas;
   @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Laboratórios',
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
-            ),
-            const Text('Recursos, disponibilidade, manutenção e ocorrências.'),
-          ],
-        ),
-      ),
-      FilledButton.icon(
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final title = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Laboratórios',
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          const Text('Recursos, disponibilidade, manutenção e ocorrências.'),
+        ],
+      );
+      final action = FilledButton.icon(
         onPressed: onAbrirReservas,
         icon: const Icon(Icons.calendar_month_outlined),
         label: const Text('Reservas'),
-      ),
-    ],
+      );
+      if (constraints.maxWidth < 430) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [title, const SizedBox(height: 12), action],
+        );
+      }
+      return Row(
+        children: [
+          Expanded(child: title),
+          const SizedBox(width: 12),
+          action,
+        ],
+      );
+    },
   );
 }
 
@@ -645,25 +656,34 @@ class _Section extends StatelessWidget {
   Widget build(BuildContext context) => Card(
     child: Padding(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final titleWidget = Text(
+            title,
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+          );
+          final compact = action != null && constraints.maxWidth < 420;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+              if (compact) ...[
+                titleWidget,
+                const SizedBox(height: 4),
+                Align(alignment: Alignment.centerLeft, child: action!),
+              ] else
+                Row(
+                  children: [
+                    Expanded(child: titleWidget),
+                    ?action,
+                  ],
                 ),
-              ),
-              ?action,
+              const SizedBox(height: 8),
+              child,
             ],
-          ),
-          const SizedBox(height: 8),
-          child,
-        ],
+          );
+        },
       ),
     ),
   );
