@@ -3,6 +3,10 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/routes/app_routes.dart';
+import '../../../aulas_praticas/data/reserva_repository.dart';
+import '../../../aulas_praticas/domain/reserva_models.dart';
+import '../../../aulas_praticas/domain/reserva_service.dart';
 import '../widgets/calendario_mes_widget.dart';
 
 class CalendarioPage extends StatefulWidget {
@@ -16,6 +20,9 @@ class _CalendarioPageState extends State<CalendarioPage> {
   DateTime _mesAtual = DateTime.now();
   DateTime _diaSelecionado = DateTime.now();
   bool _intlReady = false;
+  bool _loadingReservas = true;
+  final ReservaRepository _reservaRepository = ReservaRepository();
+  List<ReservaLaboratorio> _reservas = const [];
 
   String _departamento = 'Eletroeletrônica (DEE)';
   String _tipoItem = 'Todos';
@@ -40,10 +47,40 @@ class _CalendarioPageState extends State<CalendarioPage> {
   @override
   void initState() {
     super.initState();
+    _carregarReservas();
     initializeDateFormatting('pt_BR', null).then((_) {
       if (!mounted) return;
       setState(() => _intlReady = true);
     });
+  }
+
+  Future<void> _carregarReservas() async {
+    final armazenadas = await _reservaRepository.loadReservas();
+    final reservas = armazenadas.isEmpty
+        ? ReservaService.defaultReservas(DateTime.now().month)
+        : armazenadas;
+    if (!mounted) return;
+    setState(() {
+      _reservas = reservas;
+      _loadingReservas = false;
+    });
+  }
+
+  List<ReservaLaboratorio> get _reservasFiltradas => _reservas
+      .where((reserva) {
+        if (_tipoItem != 'Todos' && _tipoItem != 'Laboratório') return false;
+        if (_laboratorio != 'Todos' && reserva.laboratorio != _laboratorio) {
+          return false;
+        }
+        return true;
+      })
+      .toList(growable: false);
+
+  List<String> get _laboratorios {
+    final nomes =
+        _reservas.map((reserva) => reserva.laboratorio).toSet().toList()
+          ..sort();
+    return ['Todos', ...nomes];
   }
 
   void _onDiaSelecionado(DateTime dia) {
@@ -56,7 +93,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
   Map<DateTime, List<Color>> _marcadoresDoMes() {
     final ano = _mesAtual.year;
     final mes = _mesAtual.month;
-    return {
+    final marcadores = <DateTime, List<Color>>{
       DateTime(ano, mes, 7): [SigadColors.accent],
       DateTime(ano, mes, 9): [SigadColors.info],
       DateTime(ano, mes, 14): [SigadColors.success],
@@ -64,6 +101,74 @@ class _CalendarioPageState extends State<CalendarioPage> {
       DateTime(ano, mes, 27): [SigadColors.accent, SigadColors.risk],
       DateTime(ano, mes, 30): [SigadColors.info],
     };
+    for (final reserva in _reservasFiltradas.where((r) => r.mes == mes)) {
+      final data = _dataDaReserva(reserva, ano);
+      if (data != null) {
+        marcadores.putIfAbsent(data, () => []).add(SigadColors.success);
+      }
+    }
+    return marcadores;
+  }
+
+  DateTime? _dataDaReserva(ReservaLaboratorio reserva, int ano) {
+    const weekdays = {'Seg': 1, 'Ter': 2, 'Qua': 3, 'Qui': 4, 'Sex': 5};
+    final weekday = weekdays[reserva.diaSemana];
+    if (weekday == null) return null;
+    final primeiroDia = DateTime(ano, reserva.mes, 1);
+    final deslocamento = (weekday - primeiroDia.weekday + 7) % 7;
+    final dia = 1 + deslocamento + ((reserva.semanaDoMes - 1) * 7);
+    final data = DateTime(ano, reserva.mes, dia);
+    return data.month == reserva.mes ? data : null;
+  }
+
+  List<_Evento> _eventosPara(DateTime dia) {
+    return _reservasFiltradas
+        .where((reserva) {
+          final data = _dataDaReserva(reserva, dia.year);
+          return data != null && DateUtils.isSameDay(data, dia);
+        })
+        .map((reserva) {
+          final partes = reserva.turno.horarioDo(reserva.periodo).split('-');
+          return _Evento(
+            partes.first,
+            partes.length > 1 ? partes.last : '',
+            reserva.disciplina?.trim().isNotEmpty == true
+                ? 'Aula prática – ${reserva.disciplina}'
+                : 'Reserva de laboratório',
+            '${reserva.laboratorio} · ${reserva.professor}',
+            'Laboratório',
+          );
+        })
+        .toList()
+      ..sort((a, b) => a.inicio.compareTo(b.inicio));
+  }
+
+  void _abrirAgendaCompleta() {
+    final eventos = _eventosPara(_diaSelecionado);
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Agenda completa',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 12),
+              if (eventos.isEmpty)
+                const _EmptyAgenda()
+              else
+                ...eventos.map((evento) => _EventoTile(evento: evento)),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -77,7 +182,10 @@ class _CalendarioPageState extends State<CalendarioPage> {
     return ListView(
       padding: EdgeInsets.fromLTRB(isWide ? 24 : 16, 16, isWide ? 24 : 16, 28),
       children: [
-        const _ResumoDaSemana(),
+        _ResumoDaSemana(
+          reservas: _reservasFiltradas,
+          onVerAgenda: _abrirAgendaCompleta,
+        ),
         const SizedBox(height: 16),
         if (isWide)
           Row(
@@ -85,7 +193,14 @@ class _CalendarioPageState extends State<CalendarioPage> {
             children: [
               Expanded(flex: 3, child: _calendarCard()),
               const SizedBox(width: 16),
-              Expanded(flex: 2, child: _AgendaDoDia(dia: _diaSelecionado)),
+              Expanded(
+                flex: 2,
+                child: _AgendaDoDia(
+                  dia: _diaSelecionado,
+                  eventos: _eventosPara(_diaSelecionado),
+                  onVerCompleta: _abrirAgendaCompleta,
+                ),
+              ),
             ],
           )
         else ...[
@@ -95,6 +210,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
             departamento: _departamento,
             tipoItem: _tipoItem,
             laboratorio: _laboratorio,
+            laboratorios: _laboratorios,
             onDepartamentoChanged: (value) =>
                 setState(() => _departamento = value),
             onTipoItemChanged: (value) => setState(() => _tipoItem = value),
@@ -102,11 +218,24 @@ class _CalendarioPageState extends State<CalendarioPage> {
                 setState(() => _laboratorio = value),
           ),
           const SizedBox(height: 16),
-          const _ProximosCompromissos(),
+          _ProximosCompromissos(
+            reservas: _reservasFiltradas,
+            dataDaReserva: _dataDaReserva,
+            onVerTodos: _abrirAgendaCompleta,
+          ),
           const SizedBox(height: 16),
-          _AgendaDoDia(dia: _diaSelecionado),
+          _AgendaDoDia(
+            dia: _diaSelecionado,
+            eventos: _eventosPara(_diaSelecionado),
+            onVerCompleta: _abrirAgendaCompleta,
+          ),
           const SizedBox(height: 16),
-          const _OcupacaoLaboratorios(),
+          _OcupacaoLaboratorios(
+            reservas: _reservasFiltradas,
+            loading: _loadingReservas,
+            onVerTodos: () =>
+                Navigator.of(context).pushNamed(AppRoutes.aulasPraticas),
+          ),
         ],
       ],
     );
@@ -129,13 +258,21 @@ class _CalendarioPageState extends State<CalendarioPage> {
 }
 
 class _ResumoDaSemana extends StatelessWidget {
-  const _ResumoDaSemana();
+  const _ResumoDaSemana({required this.reservas, required this.onVerAgenda});
+
+  final List<ReservaLaboratorio> reservas;
+  final VoidCallback onVerAgenda;
 
   @override
   Widget build(BuildContext context) {
     final hoje = DateTime.now();
     final inicioSemana = hoje.subtract(Duration(days: hoje.weekday % 7));
     final fimSemana = inicioSemana.add(const Duration(days: 6));
+    final reservasNaSemana = reservas.where((reserva) {
+      if (reserva.mes != hoje.month) return false;
+      final semanaAtual = ((hoje.day - 1) ~/ 7) + 1;
+      return reserva.semanaDoMes == semanaAtual;
+    }).length;
     final periodo =
         '${DateFormat('d', 'pt_BR').format(inicioSemana)} a '
         "${DateFormat("d 'de' MMMM", 'pt_BR').format(fimSemana)}";
@@ -174,8 +311,9 @@ class _ResumoDaSemana extends StatelessWidget {
                       'Resumo da semana',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w800),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                     Text(
                       periodo,
@@ -190,7 +328,7 @@ class _ResumoDaSemana extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: onVerAgenda,
                 icon: const Icon(Icons.arrow_forward_rounded, size: 15),
                 label: const Text('Ver agenda'),
                 style: OutlinedButton.styleFrom(
@@ -204,21 +342,21 @@ class _ResumoDaSemana extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          const Row(
+          Row(
             children: [
-              _ResumoStat(
+              const _ResumoStat(
                 icon: Icons.event_note_outlined,
-                value: '5',
+                value: '—',
                 label: 'Eventos agendados',
               ),
               _ResumoStat(
                 icon: Icons.science_outlined,
-                value: '2',
+                value: '$reservasNaSemana',
                 label: 'Reservas de laboratório',
               ),
-              _ResumoStat(
+              const _ResumoStat(
                 icon: Icons.groups_outlined,
-                value: '1',
+                value: '—',
                 label: 'Reunião marcada',
               ),
             ],
@@ -258,10 +396,7 @@ class _ResumoStat extends StatelessWidget {
                 child: Icon(icon, color: SigadColors.brand, size: 15),
               ),
               const SizedBox(width: 6),
-              Text(
-                value,
-                style: const TextStyle(fontWeight: FontWeight.w800),
-              ),
+              Text(value, style: const TextStyle(fontWeight: FontWeight.w800)),
             ],
           ),
           const SizedBox(height: 4),
@@ -282,6 +417,7 @@ class _FiltrosCalendario extends StatelessWidget {
     required this.departamento,
     required this.tipoItem,
     required this.laboratorio,
+    required this.laboratorios,
     required this.onDepartamentoChanged,
     required this.onTipoItemChanged,
     required this.onLaboratorioChanged,
@@ -290,6 +426,7 @@ class _FiltrosCalendario extends StatelessWidget {
   final String departamento;
   final String tipoItem;
   final String laboratorio;
+  final List<String> laboratorios;
   final ValueChanged<String> onDepartamentoChanged;
   final ValueChanged<String> onTipoItemChanged;
   final ValueChanged<String> onLaboratorioChanged;
@@ -327,12 +464,7 @@ class _FiltrosCalendario extends StatelessWidget {
             icon: Icons.science_outlined,
             label: 'Laboratórios',
             value: laboratorio,
-            options: const [
-              'Todos',
-              'Lab. de Medidas Elétricas',
-              'Lab. de Eletrônica',
-              'Lab. de Sinais e Sistemas',
-            ],
+            options: laboratorios,
             onChanged: onLaboratorioChanged,
           ),
         ),
@@ -420,7 +552,10 @@ class _FiltroChip extends StatelessWidget {
                 (option) => ListTile(
                   title: Text(option),
                   trailing: option == value
-                      ? const Icon(Icons.check_rounded, color: SigadColors.brand)
+                      ? const Icon(
+                          Icons.check_rounded,
+                          color: SigadColors.brand,
+                        )
                       : null,
                   onTap: () {
                     Navigator.pop(context);
@@ -465,33 +600,48 @@ Color _corCategoria(String categoria) {
 }
 
 class _ProximosCompromissos extends StatelessWidget {
-  const _ProximosCompromissos();
+  const _ProximosCompromissos({
+    required this.reservas,
+    required this.dataDaReserva,
+    required this.onVerTodos,
+  });
+
+  final List<ReservaLaboratorio> reservas;
+  final DateTime? Function(ReservaLaboratorio reserva, int ano) dataDaReserva;
+  final VoidCallback onVerTodos;
 
   @override
   Widget build(BuildContext context) {
-    const compromissos = [
-      _Compromisso(
-        'Reunião departamental',
-        'Pauta: projetos, avaliações e demandas',
-        'Reunião',
-        'Hoje • 15:00',
-        Icons.groups_outlined,
-      ),
-      _Compromisso(
-        'Reserva: Lab. de Medidas Elétricas',
-        'Aula prática – Circuitos Elétricos I',
-        'Laboratório',
-        'Amanhã • 08:00',
-        Icons.science_outlined,
-      ),
-      _Compromisso(
-        'Envio de notícias',
-        'Publicação no portal e redes do IFMA',
-        'Comunicação',
-        '17/07 • 10:00',
-        Icons.campaign_outlined,
-      ),
-    ];
+    final agora = DateTime.now();
+    final inicioHoje = DateTime(agora.year, agora.month, agora.day);
+    final agendadas =
+        reservas
+            .map(
+              (reserva) =>
+                  (reserva: reserva, data: dataDaReserva(reserva, agora.year)),
+            )
+            .where(
+              (item) => item.data != null && !item.data!.isBefore(inicioHoje),
+            )
+            .toList()
+          ..sort((a, b) => a.data!.compareTo(b.data!));
+    final compromissos = agendadas
+        .take(3)
+        .map((item) {
+          final reserva = item.reserva;
+          final horario = reserva.turno
+              .horarioDo(reserva.periodo)
+              .split('-')
+              .first;
+          return _Compromisso(
+            'Reserva: ${reserva.laboratorio}',
+            reserva.disciplina ?? 'Responsável: ${reserva.professor}',
+            'Laboratório',
+            '${DateFormat('dd/MM').format(item.data!)} • $horario',
+            Icons.science_outlined,
+          );
+        })
+        .toList(growable: false);
 
     return Card(
       child: Padding(
@@ -514,11 +664,22 @@ class _ProximosCompromissos extends StatelessWidget {
                     ),
                   ),
                 ),
-                TextButton(onPressed: () {}, child: const Text('Ver todos')),
+                TextButton(
+                  onPressed: onVerTodos,
+                  child: const Text('Ver todos'),
+                ),
               ],
             ),
             const SizedBox(height: 6),
-            ...compromissos.map((item) => _CompromissoTile(item: item)),
+            if (compromissos.isEmpty)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 18),
+                child: Center(
+                  child: Text('Nenhuma reserva futura encontrada.'),
+                ),
+              )
+            else
+              ...compromissos.map((item) => _CompromissoTile(item: item)),
           ],
         ),
       ),
@@ -574,10 +735,7 @@ class _CompromissoTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 9,
-                  vertical: 3,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
                 decoration: BoxDecoration(
                   color: cor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(20),
@@ -602,15 +760,19 @@ class _CompromissoTile extends StatelessWidget {
 }
 
 class _AgendaDoDia extends StatelessWidget {
-  const _AgendaDoDia({required this.dia});
+  const _AgendaDoDia({
+    required this.dia,
+    required this.eventos,
+    required this.onVerCompleta,
+  });
 
   final DateTime dia;
+  final List<_Evento> eventos;
+  final VoidCallback onVerCompleta;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final eventos = _eventosPara(dia);
-
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(18),
@@ -641,7 +803,7 @@ class _AgendaDoDia extends StatelessWidget {
                   ),
                 ),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: onVerCompleta,
                   child: const Text('Ver agenda completa'),
                 ),
               ],
@@ -655,35 +817,6 @@ class _AgendaDoDia extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  List<_Evento> _eventosPara(DateTime data) {
-    if (data.weekday == DateTime.saturday || data.weekday == DateTime.sunday) {
-      return const [];
-    }
-    return const [
-      _Evento(
-        '08:00',
-        '10:00',
-        'Aula prática – Circuitos Elétricos I',
-        'Lab. de Medidas Elétricas',
-        'Laboratório',
-      ),
-      _Evento(
-        '14:00',
-        '15:00',
-        'Orientação de TCC',
-        'Sala 203 – Prédio Principal',
-        'Reunião',
-      ),
-      _Evento(
-        '15:00',
-        '16:30',
-        'Reunião departamental',
-        'Sala 205 – Prédio Principal',
-        'Reunião',
-      ),
-    ];
   }
 }
 
@@ -730,7 +863,11 @@ class _EventoTile extends StatelessWidget {
                 height: 10,
                 decoration: BoxDecoration(color: cor, shape: BoxShape.circle),
               ),
-              Container(width: 2, height: 34, color: cor.withValues(alpha: 0.25)),
+              Container(
+                width: 2,
+                height: 34,
+                color: cor.withValues(alpha: 0.25),
+              ),
             ],
           ),
           const SizedBox(width: 12),
@@ -804,7 +941,13 @@ class _EmptyAgenda extends StatelessWidget {
 }
 
 class _LabOcupacao {
-  const _LabOcupacao(this.nome, this.icone, this.ocupacao, this.horas, this.total);
+  const _LabOcupacao(
+    this.nome,
+    this.icone,
+    this.ocupacao,
+    this.horas,
+    this.total,
+  );
 
   final String nome;
   final IconData icone;
@@ -814,15 +957,37 @@ class _LabOcupacao {
 }
 
 class _OcupacaoLaboratorios extends StatelessWidget {
-  const _OcupacaoLaboratorios();
+  const _OcupacaoLaboratorios({
+    required this.reservas,
+    required this.loading,
+    required this.onVerTodos,
+  });
+
+  final List<ReservaLaboratorio> reservas;
+  final bool loading;
+  final VoidCallback onVerTodos;
 
   @override
   Widget build(BuildContext context) {
-    const laboratorios = [
-      _LabOcupacao('Lab. de Medidas Elétricas', Icons.science_outlined, 0.75, 12, 16),
-      _LabOcupacao('Lab. de Eletrônica', Icons.memory_outlined, 0.40, 6, 15),
-      _LabOcupacao('Lab. de Sinais e Sistemas', Icons.graphic_eq_rounded, 0.20, 3, 15),
-    ];
+    final hoje = DateTime.now();
+    final semana = ((hoje.day - 1) ~/ 7) + 1;
+    final nomes =
+        reservas.map((reserva) => reserva.laboratorio).toSet().toList()..sort();
+    final indicadores = ReservaService.calcularOcupacaoLaboratorios(
+      reservas: reservas,
+      laboratorios: nomes,
+      mes: hoje.month,
+      semanaDoMes: semana,
+    );
+    final laboratorios = indicadores.map(
+      (indicador) => _LabOcupacao(
+        indicador.laboratorio,
+        Icons.science_outlined,
+        indicador.taxaOcupacao,
+        indicador.slotsReservados,
+        indicador.totalSlots,
+      ),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -839,67 +1004,75 @@ class _OcupacaoLaboratorios extends StatelessWidget {
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
               ),
             ),
-            TextButton(onPressed: () {}, child: const Text('Ver todos')),
+            TextButton(onPressed: onVerTodos, child: const Text('Ver todos')),
           ],
         ),
         const SizedBox(height: 10),
-        ...laboratorios.map(
-          (lab) => Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.outlineVariant,
+        if (loading)
+          const Center(child: CircularProgressIndicator())
+        else if (nomes.isEmpty)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: Center(child: Text('Nenhuma reserva cadastrada.')),
+          )
+        else
+          ...laboratorios.map(
+            (lab) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                  ),
                 ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(lab.icone, color: SigadColors.brand, size: 18),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          lab.nome,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontWeight: FontWeight.w700),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(lab.icone, color: SigadColors.brand, size: 18),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            lab.nome,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          ),
                         ),
-                      ),
-                      Text(
-                        '${(lab.ocupacao * 100).round()}%',
-                        style: const TextStyle(fontWeight: FontWeight.w800),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: LinearProgressIndicator(
-                      value: lab.ocupacao,
-                      minHeight: 8,
-                      backgroundColor: Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerHighest,
-                      color: SigadColors.brand,
+                        Text(
+                          '${(lab.ocupacao * 100).round()}%',
+                          style: const TextStyle(fontWeight: FontWeight.w800),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    '${lab.horas}h de ${lab.total}h reservadas',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    const SizedBox(height: 8),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: LinearProgressIndicator(
+                        value: lab.ocupacao,
+                        minHeight: 8,
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
+                        color: SigadColors.brand,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 6),
+                    Text(
+                      '${lab.horas} de ${lab.total} horários reservados na semana',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
       ],
     );
   }

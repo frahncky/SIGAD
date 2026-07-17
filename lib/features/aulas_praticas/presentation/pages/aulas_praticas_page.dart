@@ -11,6 +11,7 @@ import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../widgets/dialog_disciplina_semanas_reserva.dart';
+import 'laboratorios_catalogo_page.dart';
 
 class AulasPraticasPage extends StatefulWidget {
   const AulasPraticasPage({super.key});
@@ -20,6 +21,7 @@ class AulasPraticasPage extends StatefulWidget {
 }
 
 class _AulasPraticasPageState extends State<AulasPraticasPage> {
+  bool _mostrarCatalogo = false;
   static const List<String> _laboratoriosDefault = [
     'Lab Química 1',
     'Lab Biologia 2',
@@ -204,6 +206,14 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       return const _AccessDenied();
     }
 
+    if (_mostrarCatalogo) {
+      return Scaffold(
+        body: LaboratoriosCatalogoPage(
+          onAbrirReservas: () => setState(() => _mostrarCatalogo = false),
+        ),
+      );
+    }
+
     final podeEditar = ReservaService.canEdit(role);
 
     return Scaffold(
@@ -215,6 +225,23 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Reservas de laboratórios',
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.w800),
+                      ),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: () => setState(() => _mostrarCatalogo = true),
+                      icon: const Icon(Icons.science_outlined),
+                      label: const Text('Laboratórios'),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 12),
                 Row(
                   children: [
