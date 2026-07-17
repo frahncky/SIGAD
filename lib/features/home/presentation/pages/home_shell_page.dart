@@ -85,17 +85,11 @@ class HomeShellPage extends StatelessWidget {
                   builder: (navigationContext) => NavigationBar(
                     selectedIndex: _bottomNavIndex(),
                     onDestinationSelected: (index) {
-                      if (index == 2) {
-                        _showQuickAccess(context, availableItems);
-                        return;
-                      }
-                      if (index == 4) {
+                      if (index == 3) {
                         Scaffold.of(navigationContext).openDrawer();
                         return;
                       }
-                      final item = index < 2
-                          ? _bottomNavItems[index]
-                          : _bottomNavItems[index - 1];
+                      final item = _bottomNavItems[index];
                       _navigate(context, item['route'] as String);
                     },
                     destinations: [
@@ -106,11 +100,6 @@ class HomeShellPage extends StatelessWidget {
                       NavigationDestination(
                         icon: Icon(_bottomNavItems[1]['icon'] as IconData),
                         label: _bottomNavItems[1]['label'] as String,
-                      ),
-                      const NavigationDestination(
-                        icon: _CentralNavAction(),
-                        selectedIcon: _CentralNavAction(),
-                        label: '',
                       ),
                       NavigationDestination(
                         icon: Icon(_bottomNavItems[2]['icon'] as IconData),
@@ -207,8 +196,8 @@ class HomeShellPage extends StatelessWidget {
     final idx = _bottomNavItems.indexWhere(
       (item) => item['route'] == currentRoute,
     );
-    if (idx < 0) return 4;
-    return idx < 2 ? idx : idx + 1;
+    if (idx < 0) return 3;
+    return idx;
   }
 
   void _navigate(BuildContext context, String route) {
@@ -655,37 +644,6 @@ class _UserCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _CentralNavAction extends StatelessWidget {
-  const _CentralNavAction();
-
-  @override
-  Widget build(BuildContext context) {
-    return Transform.translate(
-      offset: const Offset(0, -9),
-      child: Container(
-        width: 54,
-        height: 54,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [SigadColors.brand, SigadColors.brandDark],
-          ),
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: SigadColors.brand.withValues(alpha: 0.28),
-              blurRadius: 16,
-              offset: const Offset(0, 7),
-            ),
-          ],
-        ),
-        child: const Icon(Icons.add_rounded, color: Colors.white, size: 30),
       ),
     );
   }

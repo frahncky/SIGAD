@@ -51,6 +51,14 @@ void main() {
         child: const LoginPage(),
       ),
     );
+    final loginContext = tester.element(find.byType(LoginPage));
+    await tester.runAsync(
+      () => precacheImage(
+        const AssetImage('assets/images/ifma_monte_castelo.jpg'),
+        loginContext,
+      ),
+    );
+    await tester.pumpAndSettle();
 
     await expectLater(
       find.byType(LoginPage),
