@@ -52,9 +52,9 @@ class _LoginPageState extends State<LoginPage> {
                       final wide =
                           constraints.maxWidth >= 760 && size.height >= 720;
 
-                      return _LoginSurface(
-                        child: wide
-                            ? Row(
+                      return wide
+                          ? _LoginSurface(
+                              child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Expanded(
@@ -64,16 +64,27 @@ class _LoginPageState extends State<LoginPage> {
                                   const SizedBox(width: 24),
                                   Expanded(flex: 6, child: _buildForm()),
                                 ],
-                              )
-                            : Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  const _CompactBrandHeader(),
-                                  const SizedBox(height: 14),
-                                  _buildForm(compact: true),
-                                ],
                               ),
-                      );
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                const SizedBox(
+                                  height: 150,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                    ),
+                                    child: Align(
+                                      alignment: Alignment.bottomLeft,
+                                      child: _CompactBrandHeader(light: true),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                _LoginSurface(child: _buildForm(compact: true)),
+                              ],
+                            );
                     },
                   ),
                 ),
@@ -379,23 +390,34 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 class _CompactBrandHeader extends StatelessWidget {
-  const _CompactBrandHeader();
+  const _CompactBrandHeader({this.light = false});
+
+  final bool light;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final muted = light
+        ? Colors.white.withValues(alpha: 0.82)
+        : colors.onSurfaceVariant;
+
     return Row(
       children: [
         Container(
           width: 44,
           height: 44,
           decoration: BoxDecoration(
-            color: SigadColors.brandLight,
+            color: light
+                ? Colors.white.withValues(alpha: 0.16)
+                : SigadColors.brandLight,
             borderRadius: BorderRadius.circular(14),
+            border: light
+                ? Border.all(color: Colors.white.withValues(alpha: 0.22))
+                : null,
           ),
-          child: const Icon(
+          child: Icon(
             Icons.account_balance_outlined,
-            color: SigadColors.brandDark,
+            color: light ? Colors.white : SigadColors.brandDark,
           ),
         ),
         const SizedBox(width: 12),
@@ -403,12 +425,15 @@ class _CompactBrandHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const BrandTitle(compact: true),
+              BrandTitle(compact: true, light: light),
               Text(
-                'Gestão acadêmica e departamental',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                light
+                    ? 'IFMA • Campus São Luís–Monte Castelo'
+                    : 'Gestão acadêmica e departamental',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: muted,
+                  fontWeight: light ? FontWeight.w600 : null,
+                ),
               ),
             ],
           ),
@@ -427,12 +452,16 @@ class _InstitutionPanel extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [SigadColors.brandDeep, SigadColors.brand],
+          colors: [
+            SigadColors.brandDeep.withValues(alpha: 0.94),
+            SigadColors.brand.withValues(alpha: 0.86),
+          ],
         ),
         borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -508,28 +537,30 @@ class _LoginSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Theme.of(context).colorScheme.surface,
-      elevation: 0,
-      shadowColor: Colors.black.withValues(alpha: 0.08),
-      borderRadius: BorderRadius.circular(30),
-      child: Container(
-        padding: const EdgeInsets.all(22),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.outlineVariant,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.07),
-              blurRadius: 28,
-              offset: const Offset(0, 12),
-            ),
-          ],
+    final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
+
+    return Container(
+      padding: const EdgeInsets.all(22),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface.withValues(
+          alpha: isLight ? 0.94 : 0.91,
         ),
-        child: child,
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color: isLight
+              ? Colors.white.withValues(alpha: 0.70)
+              : theme.colorScheme.outlineVariant,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isLight ? 0.18 : 0.30),
+            blurRadius: 36,
+            offset: const Offset(0, 16),
+          ),
+        ],
       ),
+      child: child,
     );
   }
 }
@@ -539,15 +570,57 @@ class _LoginBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFFFFDFC), SigadColors.canvas],
-        ),
+    final width = MediaQuery.sizeOf(context).width;
+    final compact = width < 760;
+
+    return ColoredBox(
+      color: SigadColors.brandDeep,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            'assets/images/ifma_monte_castelo.jpg',
+            key: const ValueKey('login-campus-background'),
+            fit: compact ? BoxFit.fitWidth : BoxFit.cover,
+            alignment: compact
+                ? Alignment.topCenter
+                : const Alignment(0.08, -0.08),
+            filterQuality: FilterQuality.high,
+            excludeFromSemantics: true,
+          ),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                stops: const [0, 0.56, 1],
+                colors: [
+                  SigadColors.brandDeep.withValues(
+                    alpha: compact ? 0.48 : 0.64,
+                  ),
+                  SigadColors.brandDark.withValues(
+                    alpha: compact ? 0.28 : 0.36,
+                  ),
+                  Colors.black.withValues(alpha: 0.46),
+                ],
+              ),
+            ),
+          ),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.white.withValues(alpha: 0.04),
+                  Colors.transparent,
+                  SigadColors.brandDeep.withValues(alpha: 0.32),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
-      child: const SizedBox.expand(),
     );
   }
 }

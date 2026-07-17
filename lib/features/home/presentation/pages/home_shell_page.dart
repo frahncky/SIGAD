@@ -24,6 +24,7 @@ class HomeShellPage extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth >= 1024;
+        final colors = Theme.of(context).colorScheme;
         final userContext = context.watch<UserContextProvider>();
         final userRole = userContext.userRole;
         // unreadChatCount removido pois não é mais utilizado
@@ -34,9 +35,6 @@ class HomeShellPage extends StatelessWidget {
             : kNavigationItems
                   .where((item) => item.isAvailableFor(userRole))
                   .toList();
-        final currentItem = availableItems
-            .where((item) => item.route == currentRoute)
-            .firstOrNull;
         final selectedIndex = availableItems.indexWhere(
           (item) => item.route == currentRoute,
         );
@@ -54,13 +52,12 @@ class HomeShellPage extends StatelessWidget {
           appBar: isWide
               ? null
               : AppBar(
-                  titleSpacing: 0,
-                  title: _MobileTopBarTitle(
-                    title: currentItem?.label ?? 'SIGAD',
-                    subtitle: userContext.currentUser?.role.displayName,
-                  ),
-                  elevation: 2,
-                  shadowColor: Colors.black12,
+                  toolbarHeight: 76,
+                  titleSpacing: 4,
+                  title: const BrandTitle(),
+                  backgroundColor: colors.surface,
+                  surfaceTintColor: Colors.transparent,
+                  elevation: 0,
                   actions: [
                     IconButton(
                       onPressed: () => _showNotifications(context),
@@ -77,37 +74,26 @@ class HomeShellPage extends StatelessWidget {
                     IconButton(
                       onPressed: () => _showProfileMenu(context, userContext),
                       tooltip: 'Perfil',
-                      icon: const Icon(Icons.account_circle_outlined),
+                      icon: _UserAvatar(userContext: userContext, radius: 18),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 12),
                   ],
                 ),
           bottomNavigationBar: isWide
               ? null
-              : Builder(
-                  builder: (navigationContext) => NavigationBar(
-                    selectedIndex: _bottomNavIndex(),
-                    onDestinationSelected: (index) {
-                      if (index == _bottomNavItems.length) {
-                        Scaffold.of(navigationContext).openDrawer();
-                        return;
-                      }
-                      final item = _bottomNavItems[index];
-                      _navigate(context, item['route'] as String);
-                    },
-                    destinations: [
-                      ..._bottomNavItems.map(
-                        (item) => NavigationDestination(
-                          icon: Icon(item['icon'] as IconData),
-                          label: item['label'] as String,
-                        ),
+              : NavigationBar(
+                  selectedIndex: _bottomNavIndex(),
+                  onDestinationSelected: (index) {
+                    final item = _bottomNavItems[index];
+                    _navigate(context, item['route'] as String);
+                  },
+                  destinations: [
+                    for (final item in _bottomNavItems)
+                      NavigationDestination(
+                        icon: Icon(item['icon'] as IconData),
+                        label: item['label'] as String,
                       ),
-                      const NavigationDestination(
-                        icon: Icon(Icons.grid_view_rounded),
-                        label: 'Mais',
-                      ),
-                    ],
-                  ),
+                  ],
                 ),
           body: isWide
               ? Row(
@@ -185,7 +171,7 @@ class HomeShellPage extends StatelessWidget {
     {
       'route': AppRoutes.notas,
       'label': 'Anotações',
-      'icon': Icons.sticky_note_2_outlined,
+      'icon': Icons.edit_note_rounded,
     },
   ];
 
@@ -193,7 +179,7 @@ class HomeShellPage extends StatelessWidget {
     final idx = _bottomNavItems.indexWhere(
       (item) => item['route'] == currentRoute,
     );
-    return idx >= 0 ? idx : _bottomNavItems.length;
+    return idx < 0 ? 0 : idx;
   }
 
   void _navigate(BuildContext context, String route) {
@@ -645,39 +631,25 @@ class _UserCard extends StatelessWidget {
   }
 }
 
-class _MobileTopBarTitle extends StatelessWidget {
-  const _MobileTopBarTitle({required this.title, this.subtitle});
+class _UserAvatar extends StatelessWidget {
+  const _UserAvatar({required this.userContext, required this.radius});
 
-  final String title;
-  final String? subtitle;
+  final UserContextProvider userContext;
+  final double radius;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SizedBox(
-          width: 180,
-          child: Text(
-            title,
-            style: Theme.of(
-              context,
-            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
+    final user = userContext.currentUser;
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+      child: Text(
+        user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : '?',
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.w800,
         ),
-        if (subtitle != null)
-          Text(
-            subtitle!,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-      ],
+      ),
     );
   }
 }

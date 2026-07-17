@@ -380,22 +380,6 @@ class _OperationalOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final atrasadas = DashboardPrioritiesService.countDemandasAtrasadas(
-      data.demandas,
-    );
-    final altas = DashboardPrioritiesService.countDemandasAltasAbertas(
-      data.demandas,
-    );
-    final emAndamento = DashboardPrioritiesService.countKanbanByColumn(
-      data.cards,
-      'Em Progresso',
-    );
-    final atividadesPendentes = data.atividades
-        .where(
-          (item) => item.status == 'Pendente' || item.status == 'Em progresso',
-        )
-        .length;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -404,59 +388,6 @@ class _OperationalOverview extends StatelessWidget {
           subtitle: 'O que precisa da sua atenção neste momento',
         ),
         const SizedBox(height: 12),
-        _MetricStrip(
-          metrics: [
-            if (canManageDemandas)
-              _MetricData(
-                label: 'Demandas atrasadas',
-                value: '$atrasadas',
-                icon: Icons.timer_off_outlined,
-                tone: SigadColors.risk,
-                route: AppRoutes.demandas,
-              ),
-            if (canManageDemandas)
-              _MetricData(
-                label: 'Alta prioridade',
-                value: '$altas',
-                icon: Icons.priority_high_rounded,
-                tone: SigadColors.warning,
-                route: AppRoutes.demandas,
-              ),
-            if (!canManageDemandas)
-              _MetricData(
-                label: 'Backlog urgente',
-                value:
-                    '${DashboardPrioritiesService.countKanbanBacklogHigh(data.cards)}',
-                icon: Icons.inbox_outlined,
-                tone: SigadColors.warning,
-                route: AppRoutes.kanban,
-              ),
-            if (!canManageDemandas)
-              _MetricData(
-                label: 'Tarefas concluídas',
-                value:
-                    '${DashboardPrioritiesService.countKanbanByColumn(data.cards, 'Concluído')}',
-                icon: Icons.task_alt_outlined,
-                tone: SigadColors.success,
-                route: AppRoutes.kanban,
-              ),
-            _MetricData(
-              label: 'Tarefas em curso',
-              value: '$emAndamento',
-              icon: Icons.autorenew_rounded,
-              tone: SigadColors.info,
-              route: AppRoutes.kanban,
-            ),
-            _MetricData(
-              label: 'Atividades abertas',
-              value: '$atividadesPendentes',
-              icon: Icons.pending_actions_outlined,
-              tone: SigadColors.brand,
-              route: AppRoutes.atividades,
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
         LayoutBuilder(
           builder: (context, constraints) {
             final wide = constraints.maxWidth >= 820;
@@ -480,119 +411,6 @@ class _OperationalOverview extends StatelessWidget {
           },
         ),
       ],
-    );
-  }
-}
-
-class _MetricData {
-  const _MetricData({
-    required this.label,
-    required this.value,
-    required this.icon,
-    required this.tone,
-    required this.route,
-  });
-
-  final String label;
-  final String value;
-  final IconData icon;
-  final Color tone;
-  final String route;
-}
-
-class _MetricStrip extends StatelessWidget {
-  const _MetricStrip({required this.metrics});
-
-  final List<_MetricData> metrics;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final columns = constraints.maxWidth >= 920
-            ? 4
-            : constraints.maxWidth >= 360
-            ? 2
-            : 1;
-        return GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: metrics.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: columns,
-            mainAxisExtent: 88,
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-          ),
-          itemBuilder: (context, index) => _MetricCard(metric: metrics[index]),
-        );
-      },
-    );
-  }
-}
-
-class _MetricCard extends StatelessWidget {
-  const _MetricCard({required this.metric});
-
-  final _MetricData metric;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      margin: EdgeInsets.zero,
-      elevation: 0,
-      color: theme.colorScheme.surface,
-      surfaceTintColor: Colors.transparent,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: theme.colorScheme.outlineVariant),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: () => Navigator.of(context).pushReplacementNamed(metric.route),
-        child: Padding(
-          padding: const EdgeInsets.all(11),
-          child: Row(
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: metric.tone.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(11),
-                ),
-                child: Icon(metric.icon, color: metric.tone),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      metric.value,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    Text(
-                      metric.label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(Icons.chevron_right_rounded, size: 18),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

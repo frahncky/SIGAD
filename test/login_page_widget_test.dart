@@ -23,6 +23,10 @@ void main() {
     await tester.pumpWidget(_buildApp());
     await tester.pumpAndSettle();
 
+    expect(
+      find.byKey(const ValueKey('login-campus-background')),
+      findsOneWidget,
+    );
     expect(find.text('Email institucional'), findsOneWidget);
     expect(find.text('Senha'), findsOneWidget);
     expect(find.text('Entrar'), findsOneWidget);

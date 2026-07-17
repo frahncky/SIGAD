@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../app/theme/sigad_colors.dart';
+
 class CalendarioMesWidget extends StatelessWidget {
   final DateTime mesAtual;
+  final DateTime? diaSelecionado;
   final Map<DateTime, String> feriados;
+  final Map<DateTime, List<Color>> marcadores;
   final void Function(DateTime)? onDiaSelecionado;
 
   const CalendarioMesWidget({
     super.key,
     required this.mesAtual,
+    this.diaSelecionado,
     this.feriados = const {},
+    this.marcadores = const {},
     this.onDiaSelecionado,
   });
 
@@ -27,16 +33,6 @@ class CalendarioMesWidget extends StatelessWidget {
     });
     final hoje = DateTime.now();
 
-    // Filtra feriados do mês atual
-    final feriadosDoMes =
-        feriados.entries
-            .where(
-              (e) =>
-                  e.key.year == mesAtual.year && e.key.month == mesAtual.month,
-            )
-            .toList()
-          ..sort((a, b) => a.key.day.compareTo(b.key.day));
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -44,17 +40,19 @@ class CalendarioMesWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             IconButton(
-              icon: const Icon(Icons.chevron_left),
+              icon: const Icon(Icons.chevron_left_rounded),
               onPressed: () => onDiaSelecionado?.call(
                 DateTime(mesAtual.year, mesAtual.month - 1, 1),
               ),
             ),
             Text(
-              DateFormat.yMMMM('pt_BR').format(mesAtual),
-              style: Theme.of(context).textTheme.titleLarge,
+              _capitalizar(DateFormat.yMMMM('pt_BR').format(mesAtual)),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
             ),
             IconButton(
-              icon: const Icon(Icons.chevron_right),
+              icon: const Icon(Icons.chevron_right_rounded),
               onPressed: () => onDiaSelecionado?.call(
                 DateTime(mesAtual.year, mesAtual.month + 1, 1),
               ),
@@ -64,25 +62,31 @@ class CalendarioMesWidget extends StatelessWidget {
         const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            'D',
-            'S',
-            'T',
-            'Q',
-            'Q',
-            'S',
-            'S',
-          ].map((d) => Expanded(child: Center(child: Text(d)))).toList(),
+          children: ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB']
+              .map(
+                (d) => Expanded(
+                  child: Center(
+                    child: Text(
+                      d,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 6),
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 7,
-            mainAxisSpacing: 2,
+            mainAxisSpacing: 4,
             crossAxisSpacing: 2,
-            childAspectRatio: 1.2,
+            childAspectRatio: 1.05,
           ),
           itemCount: dias.length,
           itemBuilder: (context, i) {
@@ -94,86 +98,91 @@ class CalendarioMesWidget extends StatelessWidget {
                 dia.year == hoje.year &&
                 dia.month == hoje.month &&
                 dia.day == hoje.day;
+            final isSelecionado =
+                diaSelecionado != null &&
+                dia.year == diaSelecionado!.year &&
+                dia.month == diaSelecionado!.month &&
+                dia.day == diaSelecionado!.day;
             final isFeriado = feriados.keys.any(
               (f) =>
                   f.year == dia.year &&
                   f.month == dia.month &&
                   f.day == dia.day,
             );
+            final pontos = marcadores.entries
+                .where(
+                  (e) =>
+                      e.key.year == dia.year &&
+                      e.key.month == dia.month &&
+                      e.key.day == dia.day,
+                )
+                .expand((e) => e.value)
+                .toList();
+
             return GestureDetector(
               onTap: () => onDiaSelecionado?.call(dia),
-              child: Container(
-                margin: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  color: isHoje
-                      ? Colors.blue.shade100
-                      : isFeriado
-                      ? Colors.red.shade100
-                      : null,
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(
-                    color: isHoje
-                        ? Colors.blue
-                        : isFeriado
-                        ? Colors.red
-                        : Colors.grey.shade300,
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    '${dia.day}',
-                    style: TextStyle(
-                      fontWeight: isHoje ? FontWeight.bold : FontWeight.normal,
-                      color: isFeriado ? Colors.red : null,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 34,
+                    height: 34,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: isSelecionado ? SigadColors.brand : null,
+                      shape: BoxShape.circle,
+                      border: !isSelecionado && isHoje
+                          ? Border.all(color: SigadColors.brand, width: 1.4)
+                          : null,
+                    ),
+                    child: Text(
+                      '${dia.day}',
+                      style: TextStyle(
+                        fontWeight: isSelecionado || isHoje
+                            ? FontWeight.w800
+                            : FontWeight.w500,
+                        color: isSelecionado
+                            ? Colors.white
+                            : isFeriado
+                            ? SigadColors.risk
+                            : null,
+                      ),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 3),
+                  SizedBox(
+                    height: 6,
+                    child: pontos.isEmpty
+                        ? null
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: pontos
+                                .take(3)
+                                .map(
+                                  (cor) => Container(
+                                    width: 5,
+                                    height: 5,
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 1.5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: cor,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                  ),
+                ],
               ),
             );
           },
         ),
-        if (feriadosDoMes.isNotEmpty) ...[
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0),
-            child: Text(
-              'Feriados do mês',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Colors.teal.shade700,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          ...feriadosDoMes.map(
-            (e) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2.0),
-              child: Row(
-                children: [
-                  Text(
-                    '${e.key.day.toString().padLeft(2, '0')}/${e.key.month.toString().padLeft(2, '0')}',
-                    style: TextStyle(
-                      color: Colors.teal.shade700,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      e.value,
-                      style: TextStyle(
-                        color: Colors.teal.shade900,
-                        fontWeight: FontWeight.normal,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
       ],
     );
   }
+
+  String _capitalizar(String texto) =>
+      texto.isEmpty ? texto : texto[0].toUpperCase() + texto.substring(1);
 }

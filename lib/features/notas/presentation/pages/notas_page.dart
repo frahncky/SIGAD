@@ -10,29 +10,103 @@ class NotasPage extends StatefulWidget {
   State<NotasPage> createState() => _NotasPageState();
 }
 
+const List<String> kCategoriasAnotacao = [
+  'Geral',
+  'Reuniões',
+  'Laboratórios',
+  'Planejamento',
+  'Carga horária',
+  'Eventos',
+];
+
+IconData _iconeCategoria(String categoria) {
+  switch (categoria) {
+    case 'Reuniões':
+      return Icons.groups_outlined;
+    case 'Laboratórios':
+      return Icons.science_outlined;
+    case 'Planejamento':
+      return Icons.calendar_month_outlined;
+    case 'Carga horária':
+      return Icons.description_outlined;
+    case 'Eventos':
+      return Icons.campaign_outlined;
+    default:
+      return Icons.sticky_note_2_outlined;
+  }
+}
+
+Color _corCategoria(String categoria) {
+  switch (categoria) {
+    case 'Reuniões':
+      return SigadColors.info;
+    case 'Laboratórios':
+      return SigadColors.warning;
+    case 'Planejamento':
+      return SigadColors.brand;
+    case 'Carga horária':
+      return SigadColors.success;
+    case 'Eventos':
+      return SigadColors.accent;
+    default:
+      return SigadColors.muted;
+  }
+}
+
 class Nota {
-  const Nota({required this.id, required this.texto, required this.data});
+  const Nota({
+    required this.id,
+    required this.texto,
+    required this.data,
+    this.categoria = 'Geral',
+    this.fixada = false,
+    this.status,
+  });
 
   final String id;
   final String texto;
   final DateTime data;
+  final String categoria;
+  final bool fixada;
+  final String? status;
+
+  Nota copyWith({
+    String? texto,
+    DateTime? data,
+    String? categoria,
+    bool? fixada,
+  }) => Nota(
+    id: id,
+    texto: texto ?? this.texto,
+    data: data ?? this.data,
+    categoria: categoria ?? this.categoria,
+    fixada: fixada ?? this.fixada,
+    status: status,
+  );
 
   Map<String, dynamic> toMap() => {
     'id': id,
     'texto': texto,
     'data': data.toIso8601String(),
+    'categoria': categoria,
+    'fixada': fixada,
+    'status': status,
   };
 
   static Nota? fromMap(Map<String, dynamic> map) {
     final texto = map['texto'] as String?;
     final data = DateTime.tryParse(map['data'] as String? ?? '');
     if (texto == null || texto.trim().isEmpty || data == null) return null;
+    final categoria = map['categoria'] as String?;
     return Nota(
       id: (map['id'] as String?)?.trim().isNotEmpty == true
           ? map['id'] as String
           : 'nota_${data.microsecondsSinceEpoch}',
       texto: texto,
       data: data,
+      categoria: kCategoriasAnotacao.contains(categoria) ? categoria! : 'Geral',
+      fixada: map['fixada'] as bool? ?? false,
+      status: map['status'] as String?,
     );
   }
 }
@@ -43,6 +117,8 @@ class _NotasPageState extends State<NotasPage> {
   bool _isLoading = true;
   bool _dialogOpen = false;
   String _busca = '';
+  String _categoriaFiltro = 'Todas';
+  bool _maisRecentesPrimeiro = true;
 
   @override
   void initState() {
@@ -50,13 +126,29 @@ class _NotasPageState extends State<NotasPage> {
     _carregarNotas();
   }
 
+  List<Nota> get _notasOrdenadas {
+    final copia = List<Nota>.of(_notas)
+      ..sort(
+        (a, b) => _maisRecentesPrimeiro
+            ? b.data.compareTo(a.data)
+            : a.data.compareTo(b.data),
+      );
+    return copia;
+  }
+
   List<Nota> get _notasFiltradas {
     final query = _busca.trim().toLowerCase();
-    if (query.isEmpty) return _notas;
-    return _notas
-        .where((nota) => nota.texto.toLowerCase().contains(query))
-        .toList(growable: false);
+    return _notasOrdenadas.where((nota) {
+      final matchesQuery =
+          query.isEmpty || nota.texto.toLowerCase().contains(query);
+      final matchesCategoria =
+          _categoriaFiltro == 'Todas' || nota.categoria == _categoriaFiltro;
+      return matchesQuery && matchesCategoria;
+    }).toList(growable: false);
   }
+
+  List<Nota> get _notasFixadas =>
+      _notasOrdenadas.where((nota) => nota.fixada).toList(growable: false);
 
   Future<void> _carregarNotas() async {
     try {
@@ -83,38 +175,67 @@ class _NotasPageState extends State<NotasPage> {
   Future<void> _criarOuEditarNota({Nota? nota}) async {
     setState(() => _dialogOpen = true);
     var textoEditado = nota?.texto ?? '';
-    final resultado = await showDialog<String>(
+    var categoriaEditada = nota?.categoria ?? 'Geral';
+    final resultado = await showDialog<_NotaFormResult>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(nota == null ? 'Nova anotação' : 'Editar anotação'),
-        content: TextField(
-          controller: TextEditingController(text: textoEditado),
-          onChanged: (value) => textoEditado = value,
-          minLines: 5,
-          maxLines: 10,
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: 'Registre uma ideia, encaminhamento ou lembrete...',
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text(nota == null ? 'Nova anotação' : 'Editar anotação'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                controller: TextEditingController(text: textoEditado),
+                onChanged: (value) => textoEditado = value,
+                minLines: 5,
+                maxLines: 10,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintText: 'Registre uma ideia, encaminhamento ou lembrete...',
+                ),
+              ),
+              const SizedBox(height: 14),
+              DropdownButtonFormField<String>(
+                initialValue: categoriaEditada,
+                decoration: const InputDecoration(labelText: 'Categoria'),
+                items: kCategoriasAnotacao
+                    .map(
+                      (item) => DropdownMenuItem(value: item, child: Text(item)),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    setDialogState(() => categoriaEditada = value);
+                  }
+                },
+              ),
+            ],
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final texto = textoEditado.trim();
+                if (texto.isNotEmpty) {
+                  Navigator.pop(
+                    context,
+                    _NotaFormResult(texto: texto, categoria: categoriaEditada),
+                  );
+                }
+              },
+              child: const Text('Salvar'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final texto = textoEditado.trim();
-              if (texto.isNotEmpty) Navigator.pop(context, texto);
-            },
-            child: const Text('Salvar'),
-          ),
-        ],
       ),
     );
 
     if (mounted) setState(() => _dialogOpen = false);
-    if (!mounted || resultado == null || resultado.isEmpty) return;
+    if (!mounted || resultado == null) return;
     final agora = DateTime.now();
     setState(() {
       if (nota == null) {
@@ -122,14 +243,19 @@ class _NotasPageState extends State<NotasPage> {
           0,
           Nota(
             id: 'nota_${agora.microsecondsSinceEpoch}',
-            texto: resultado,
+            texto: resultado.texto,
             data: agora,
+            categoria: resultado.categoria,
           ),
         );
       } else {
         final index = _notas.indexWhere((item) => item.id == nota.id);
         if (index >= 0) {
-          _notas[index] = Nota(id: nota.id, texto: resultado, data: agora);
+          _notas[index] = nota.copyWith(
+            texto: resultado.texto,
+            data: agora,
+            categoria: resultado.categoria,
+          );
         }
       }
     });
@@ -159,11 +285,78 @@ class _NotasPageState extends State<NotasPage> {
     await _salvarNotas();
   }
 
+  Future<void> _alternarFixada(Nota nota) async {
+    setState(() {
+      final index = _notas.indexWhere((item) => item.id == nota.id);
+      if (index >= 0) {
+        _notas[index] = nota.copyWith(fixada: !nota.fixada);
+      }
+    });
+    await _salvarNotas();
+  }
+
+  void _gerenciarFixadas() {
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Gerenciar fixadas',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 8),
+              if (_notas.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  child: Text('Nenhuma anotação criada ainda.'),
+                )
+              else
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 360),
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: _notas
+                        .map(
+                          (nota) => SwitchListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              nota.texto,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            subtitle: Text(nota.categoria),
+                            value: nota.fixada,
+                            onChanged: (_) async {
+                              await _alternarFixada(nota);
+                              setModalState(() {});
+                            },
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final notas = _notasFiltradas;
+    final fixadas = _notasFixadas;
+    final chips = ['Todas', 'Reuniões', 'Laboratórios', 'Planejamento', 'Mais'];
 
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
@@ -175,62 +368,119 @@ class _NotasPageState extends State<NotasPage> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
         children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [SigadColors.brandDeep, SigadColors.brand],
-              ),
-              borderRadius: BorderRadius.circular(22),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Icon(
-                    Icons.sticky_note_2_outlined,
-                    color: Colors.white,
-                    size: 28,
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Anotações',
-                        style: textTheme.titleLarge?.copyWith(
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${_notas.length} registro(s) salvo(s) neste dispositivo',
-                        style: textTheme.bodySmall?.copyWith(
-                          color: Colors.white.withValues(alpha: 0.82),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
           if (!_dialogOpen)
             TextField(
               onChanged: (value) => setState(() => _busca = value),
-              decoration: const InputDecoration(
-                hintText: 'Buscar anotações',
-                prefixIcon: Icon(Icons.search_rounded),
+              decoration: InputDecoration(
+                hintText: 'Buscar anotações, reuniões, temas...',
+                prefixIcon: const Icon(Icons.search_rounded),
+                suffixIcon: const Icon(Icons.tune_rounded),
+                filled: true,
+                fillColor: colors.surface,
               ),
             ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
+          SizedBox(
+            height: 40,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: chips.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              itemBuilder: (context, index) {
+                final chip = chips[index];
+                final selected = chip == 'Mais'
+                    ? !chips.take(4).contains(_categoriaFiltro) &&
+                          _categoriaFiltro != 'Todas'
+                    : _categoriaFiltro == chip;
+                return ChoiceChip(
+                  label: Text(chip),
+                  selected: selected,
+                  selectedColor: SigadColors.brand,
+                  labelStyle: TextStyle(
+                    color: selected ? Colors.white : colors.onSurface,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  onSelected: (_) {
+                    if (chip == 'Mais') {
+                      _abrirMaisCategorias();
+                    } else {
+                      setState(() => _categoriaFiltro = chip);
+                    }
+                  },
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 20),
+          if (fixadas.isNotEmpty) ...[
+            Row(
+              children: [
+                const Icon(Icons.push_pin_outlined, color: SigadColors.brand),
+                const SizedBox(width: 8),
+                Text(
+                  'Fixadas',
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const Spacer(),
+                TextButton(
+                  onPressed: _gerenciarFixadas,
+                  child: const Text('Gerenciar fixadas'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            ...fixadas.map(
+              (nota) => Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _NoteCard(
+                  nota: nota,
+                  destacada: true,
+                  onEdit: () => _criarOuEditarNota(nota: nota),
+                  onDelete: () => _excluirNota(nota),
+                  onTogglePin: () => _alternarFixada(nota),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+          Row(
+            children: [
+              const Icon(Icons.edit_note_rounded, color: SigadColors.brand),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Todas as anotações',
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              PopupMenuButton<bool>(
+                initialValue: _maisRecentesPrimeiro,
+                onSelected: (value) =>
+                    setState(() => _maisRecentesPrimeiro = value),
+                itemBuilder: (context) => const [
+                  PopupMenuItem(value: true, child: Text('Mais recentes')),
+                  PopupMenuItem(value: false, child: Text('Mais antigas')),
+                ],
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Ordenar por: ${_maisRecentesPrimeiro ? 'Mais recentes' : 'Mais antigas'}',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                    const Icon(Icons.expand_more_rounded, size: 18),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
           if (_isLoading)
             const SizedBox(
               height: 280,
@@ -261,6 +511,7 @@ class _NotasPageState extends State<NotasPage> {
                   nota: nota,
                   onEdit: () => _criarOuEditarNota(nota: nota),
                   onDelete: () => _excluirNota(nota),
+                  onTogglePin: () => _alternarFixada(nota),
                 ),
               ),
             ),
@@ -268,6 +519,45 @@ class _NotasPageState extends State<NotasPage> {
       ),
     );
   }
+
+  void _abrirMaisCategorias() {
+    final outras = kCategoriasAnotacao
+        .where(
+          (item) => !['Reuniões', 'Laboratórios', 'Planejamento'].contains(item),
+        )
+        .toList();
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: outras
+              .map(
+                (categoria) => ListTile(
+                  leading: Icon(
+                    _iconeCategoria(categoria),
+                    color: _corCategoria(categoria),
+                  ),
+                  title: Text(categoria),
+                  onTap: () {
+                    Navigator.pop(context);
+                    setState(() => _categoriaFiltro = categoria);
+                  },
+                ),
+              )
+              .toList(),
+        ),
+      ),
+    );
+  }
+}
+
+class _NotaFormResult {
+  const _NotaFormResult({required this.texto, required this.categoria});
+
+  final String texto;
+  final String categoria;
 }
 
 class _EmptyNotes extends StatelessWidget {
@@ -324,16 +614,28 @@ class _NoteCard extends StatelessWidget {
     required this.nota,
     required this.onEdit,
     required this.onDelete,
+    required this.onTogglePin,
+    this.destacada = false,
   });
 
   final Nota nota;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final VoidCallback onTogglePin;
+  final bool destacada;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return Card(
+    final cor = _corCategoria(nota.categoria);
+    return Container(
+      decoration: BoxDecoration(
+        color: destacada ? SigadColors.brandLight : colors.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: destacada ? SigadColors.brand.withValues(alpha: 0.3) : colors.outlineVariant,
+        ),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -343,40 +645,50 @@ class _NoteCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 5,
-                  height: 48,
+                  width: 42,
+                  height: 42,
                   decoration: BoxDecoration(
-                    color: SigadColors.accent,
-                    borderRadius: BorderRadius.circular(8),
+                    color: cor.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(12),
                   ),
+                  child: Icon(_iconeCategoria(nota.categoria), color: cor),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    nota.texto,
-                    style: Theme.of(context).textTheme.bodyLarge,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        nota.categoria.toUpperCase(),
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: cor,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.6,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        nota.texto,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    ],
                   ),
                 ),
-                PopupMenuButton<String>(
-                  tooltip: 'Opções da anotação',
-                  onSelected: (value) {
-                    if (value == 'edit') onEdit();
-                    if (value == 'delete') onDelete();
-                  },
-                  itemBuilder: (_) => const [
-                    PopupMenuItem(
-                      value: 'edit',
-                      child: Text('Editar anotação'),
-                    ),
-                    PopupMenuItem(
-                      value: 'delete',
-                      child: Text('Excluir anotação'),
-                    ),
-                  ],
+                IconButton(
+                  tooltip: nota.fixada ? 'Desafixar' : 'Fixar anotação',
+                  onPressed: onTogglePin,
+                  icon: Icon(
+                    nota.fixada
+                        ? Icons.bookmark_rounded
+                        : Icons.bookmark_border_rounded,
+                    color: nota.fixada ? SigadColors.brand : colors.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             Row(
               children: [
                 Icon(

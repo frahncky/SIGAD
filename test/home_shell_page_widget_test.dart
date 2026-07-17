@@ -138,5 +138,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(NavigationBar), findsOneWidget);
+    expect(find.byType(NavigationDestination), findsNWidgets(3));
+    expect(find.text('Visão geral'), findsOneWidget);
+    expect(find.text('Calendário'), findsOneWidget);
+    expect(find.text('Anotações'), findsOneWidget);
+    expect(find.text('Mais'), findsNothing);
   });
 }

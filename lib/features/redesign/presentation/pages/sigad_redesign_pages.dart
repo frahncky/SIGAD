@@ -16,156 +16,376 @@ class SigadDashboardPage extends StatelessWidget {
         : 'usuário';
 
     return _PageFrame(
-      header: _PageHeader(
-        eyebrow: 'VISÃO GERAL',
-        title: 'Olá, $firstName',
-        subtitle:
-            'Acompanhe a gestão acadêmica do IFMA — Campus São Luís–Monte Castelo.',
-        actions: [
-          _HeaderAction(
-            icon: Icons.refresh_rounded,
-            label: 'Atualizar',
-            onPressed: () => _notify(context, 'Painel atualizado.'),
-          ),
-        ],
-      ),
+      header: _OverviewHero(firstName: firstName),
       children: [
+        const _OverviewSectionTitle(
+          icon: Icons.monitor_heart_outlined,
+          title: 'Panorama do departamento',
+          trailing: 'Atualizado agora',
+        ),
+        const SizedBox(height: 12),
         _ResponsiveGrid(
-          minItemWidth: 210,
+          minItemWidth: 150,
           children: const [
             _MetricCard(
-              icon: Icons.calendar_today_outlined,
-              label: 'Compromissos hoje',
-              value: '04',
-              detail: 'Próximo às 14h',
+              icon: Icons.schedule_outlined,
+              label: 'Carga horária alocada',
+              value: '412h',
+              detail: '↑ 6% vs. mês anterior',
               tone: _MetricTone.primary,
-            ),
-            _MetricCard(
-              icon: Icons.assignment_late_outlined,
-              label: 'Demandas pendentes',
-              value: '08',
-              detail: '2 com prioridade alta',
-              tone: _MetricTone.warning,
             ),
             _MetricCard(
               icon: Icons.science_outlined,
               label: 'Laboratórios em uso',
-              value: '05',
-              detail: '1 manutenção ativa',
+              value: '62%',
+              detail: '↑ 12% vs. semana anterior',
+              tone: _MetricTone.success,
+            ),
+            _MetricCard(
+              icon: Icons.campaign_outlined,
+              label: 'Notícias enviadas',
+              value: '8',
+              detail: '↑ 3 vs. semana anterior',
               tone: _MetricTone.info,
             ),
             _MetricCard(
-              icon: Icons.groups_2_outlined,
-              label: 'Docentes ativos',
-              value: '32',
-              detail: 'Período atual',
-              tone: _MetricTone.success,
+              icon: Icons.error_outline_rounded,
+              label: 'Pendências em aberto',
+              value: '7',
+              detail: '↓ 1 vs. semana anterior',
+              tone: _MetricTone.warning,
             ),
           ],
         ),
-        const SizedBox(height: 18),
-        _ResponsiveSplit(
-          primary: _SectionCard(
-            title: 'Prioridades',
-            subtitle: 'Itens que precisam de atenção',
-            icon: Icons.bolt_outlined,
-            child: Column(
-              children: const [
-                _PriorityTile(
-                  title: 'Revisar distribuição de carga',
-                  subtitle: '3 docentes com carga abaixo do planejado',
-                  icon: Icons.balance_outlined,
-                  tone: _MetricTone.warning,
-                ),
-                _PriorityTile(
-                  title: 'Confirmar reservas',
-                  subtitle: '2 solicitações aguardando validação',
-                  icon: Icons.event_available_outlined,
-                  tone: _MetricTone.info,
-                ),
-                _PriorityTile(
-                  title: 'Demandas com prazo próximo',
-                  subtitle: '4 atividades vencem nesta semana',
-                  icon: Icons.schedule_outlined,
-                  tone: _MetricTone.primary,
-                ),
-              ],
-            ),
-          ),
-          secondary: _SectionCard(
-            title: 'Agenda de hoje',
-            subtitle: 'Compromissos e atividades',
-            icon: Icons.today_outlined,
-            child: Column(
-              children: const [
-                _AgendaTile(
-                  time: '09:00',
-                  title: 'Reunião de planejamento',
-                  meta: 'Sala do DEE',
-                ),
-                _AgendaTile(
-                  time: '14:00',
-                  title: 'Aula prática',
-                  meta: 'Laboratório 6',
-                ),
-                _AgendaTile(
-                  time: '16:30',
-                  title: 'Análise de demandas',
-                  meta: 'Atividade interna',
-                ),
-              ],
-            ),
-          ),
+        const SizedBox(height: 24),
+        const _OverviewSectionTitle(
+          icon: Icons.outlined_flag_rounded,
+          title: 'Próximas prioridades',
+          trailing: 'Ver todas',
         ),
-        const SizedBox(height: 18),
-        _SectionCard(
-          title: 'Acesso rápido',
-          subtitle: 'Principais módulos do seu perfil',
-          icon: Icons.grid_view_rounded,
-          child: _ResponsiveGrid(
-            minItemWidth: 170,
+        const SizedBox(height: 12),
+        const _SectionCard(
+          title: 'Prioridades do departamento',
+          subtitle: 'Planejamento e atividades mais próximas',
+          icon: Icons.flag_outlined,
+          showHeader: false,
+          child: Column(
             children: [
-              _QuickAction(
+              _PriorityTile(
+                title: 'Planejamento da carga horária 2025.2',
+                subtitle: 'Consolidar propostas e validar alocações',
+                icon: Icons.calendar_month_outlined,
+                tone: _MetricTone.risk,
+              ),
+              _PriorityTile(
+                title: 'Otimizar uso dos laboratórios',
+                subtitle: 'Ajustar grade de reservas e ocupação',
                 icon: Icons.science_outlined,
-                label: 'Laboratórios',
-                onTap: () => Navigator.pushReplacementNamed(
-                  context,
-                  AppRoutes.aulasPraticas,
-                ),
+                tone: _MetricTone.warning,
               ),
-              _QuickAction(
-                icon: Icons.badge_outlined,
-                label: 'Professores',
-                onTap: () => Navigator.pushReplacementNamed(
-                  context,
-                  AppRoutes.professores,
-                ),
-              ),
-              _QuickAction(
-                icon: Icons.balance_outlined,
-                label: 'Carga docente',
-                onTap: () => Navigator.pushReplacementNamed(
-                  context,
-                  AppRoutes.cargaDocente,
-                ),
-              ),
-              _QuickAction(
-                icon: Icons.assignment_outlined,
-                label: 'Demandas',
-                onTap: () =>
-                    Navigator.pushReplacementNamed(context, AppRoutes.demandas),
-              ),
-              _QuickAction(
-                icon: Icons.analytics_outlined,
-                label: 'Relatórios',
-                onTap: () => Navigator.pushReplacementNamed(
-                  context,
-                  AppRoutes.relatorios,
-                ),
+              _PriorityTile(
+                title: 'Reunião departamental',
+                subtitle: 'Pauta: projetos, avaliações e demandas',
+                icon: Icons.groups_outlined,
+                tone: _MetricTone.info,
               ),
             ],
           ),
         ),
+        const SizedBox(height: 24),
+        const _OverviewSectionTitle(
+          icon: Icons.bolt_outlined,
+          title: 'Acesso rápido',
+          trailing: 'Personalizar',
+        ),
+        const SizedBox(height: 12),
+        _ResponsiveGrid(
+          minItemWidth: 180,
+          children: [
+            _QuickAction(
+              icon: Icons.co_present_outlined,
+              label: 'Carga docente',
+              onTap: () => Navigator.pushReplacementNamed(
+                context,
+                AppRoutes.cargaDocente,
+              ),
+            ),
+            _QuickAction(
+              icon: Icons.science_outlined,
+              label: 'Laboratórios',
+              onTap: () => Navigator.pushReplacementNamed(
+                context,
+                AppRoutes.aulasPraticas,
+              ),
+            ),
+            _QuickAction(
+              icon: Icons.campaign_outlined,
+              label: 'Notícias',
+              onTap: () =>
+                  Navigator.pushReplacementNamed(context, AppRoutes.batePapo),
+            ),
+            _QuickAction(
+              icon: Icons.event_available_outlined,
+              label: 'Reuniões',
+              onTap: () =>
+                  Navigator.pushReplacementNamed(context, AppRoutes.calendario),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _OverviewHero extends StatelessWidget {
+  const _OverviewHero({required this.firstName});
+
+  final String firstName;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF00695C), Color(0xFF004D40)],
+        ),
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x33004D40),
+            blurRadius: 24,
+            offset: Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Olá, $firstName',
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.account_balance_outlined, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text(
+                    'INSTITUTO FEDERAL',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          const Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 3,
+                child: _OverviewHighlight(
+                  icon: Icons.error_outline_rounded,
+                  label: 'AVISO',
+                  count: '1',
+                  title: 'Laboratório 2 interditado',
+                  detail: 'Manutenção elétrica até 23/05',
+                  color: Color(0xFFFF6B6B),
+                ),
+              ),
+              SizedBox(width: 10),
+              Expanded(
+                flex: 3,
+                child: _OverviewHighlight(
+                  icon: Icons.calendar_month_outlined,
+                  label: 'REUNIÃO',
+                  count: '1',
+                  title: 'Reunião departamental',
+                  detail: 'Amanhã • 10:00 • Sala 204',
+                  color: Color(0xFF57D68D),
+                ),
+              ),
+              SizedBox(width: 10),
+              Expanded(
+                flex: 3,
+                child: _OverviewHighlight(
+                  icon: Icons.assignment_outlined,
+                  label: 'DEMANDA',
+                  count: '1',
+                  title: '1 aguardando atribuição',
+                  detail: 'Necessita encaminhamento',
+                  color: Color(0xFFFFB74D),
+                ),
+              ),
+              SizedBox(width: 10),
+              Expanded(
+                flex: 4,
+                child: _OverviewHighlight(
+                  icon: Icons.science_outlined,
+                  label: 'MANUTENÇÃO',
+                  count: '1',
+                  title: 'Lab. de Eletrônica',
+                  detail: 'Preventiva agendada para 24/05',
+                  color: Color(0xFF64B5F6),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OverviewHighlight extends StatelessWidget {
+  const _OverviewHighlight({
+    required this.icon,
+    required this.label,
+    required this.count,
+    required this.title,
+    required this.detail,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final String count;
+  final String title;
+  final String detail;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: () => _showHighlightDetails(context),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 13,
+                  backgroundColor: color.withValues(alpha: 0.22),
+                  child: Icon(icon, color: color, size: 15),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  count,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 22,
+                    height: 1,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                label,
+                maxLines: 1,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 10.5,
+                  height: 1.2,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showHighlightDetails(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        icon: Icon(icon, color: color),
+        title: Text(label),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
+            const SizedBox(height: 6),
+            Text(detail),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Fechar'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OverviewSectionTitle extends StatelessWidget {
+  const _OverviewSectionTitle({
+    required this.icon,
+    required this.title,
+    required this.trailing,
+  });
+
+  final IconData icon;
+  final String title;
+  final String trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Icon(icon, color: colors.primary),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            title,
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+          ),
+        ),
+        Text(trailing, style: TextStyle(color: colors.primary)),
       ],
     );
   }
@@ -1436,12 +1656,14 @@ class _SectionCard extends StatelessWidget {
     required this.subtitle,
     required this.icon,
     required this.child,
+    this.showHeader = true,
   });
 
   final String title;
   final String subtitle;
   final IconData icon;
   final Widget child;
+  final bool showHeader;
 
   @override
   Widget build(BuildContext context) {
@@ -1464,35 +1686,40 @@ class _SectionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: colors.primaryContainer,
-                  borderRadius: BorderRadius.circular(14),
+          if (showHeader) ...[
+            Row(
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: colors.primaryContainer,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(icon, color: colors.onPrimaryContainer),
                 ),
-                child: Icon(icon, color: colors.onPrimaryContainer),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: Theme.of(context).textTheme.titleMedium),
-                    Text(
-                      subtitle,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: colors.onSurfaceVariant,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
-                    ),
-                  ],
+                      Text(
+                        subtitle,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
           child,
         ],
       ),
@@ -1670,44 +1897,6 @@ class _PriorityTile extends StatelessWidget {
       title: Text(title),
       subtitle: Text(subtitle),
       trailing: const Icon(Icons.chevron_right_rounded),
-    );
-  }
-}
-
-class _AgendaTile extends StatelessWidget {
-  const _AgendaTile({
-    required this.time,
-    required this.title,
-    required this.meta,
-  });
-
-  final String time;
-  final String title;
-  final String meta;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Container(
-        width: 54,
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          color: colors.primaryContainer,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Text(
-          time,
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-            color: colors.onPrimaryContainer,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
-      title: Text(title),
-      subtitle: Text(meta),
     );
   }
 }
