@@ -665,30 +665,87 @@ class _ProfileMenu extends StatelessWidget {
     if (user == null) return const SizedBox.shrink();
 
     return SafeArea(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            16,
-            16,
-            16,
-            16 + MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CircleAvatar(
-                radius: 38,
-                backgroundColor: SigadColors.brand.withValues(alpha: 0.14),
-                child: Text(
-                  user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: SigadColors.brand,
-                    fontWeight: FontWeight.w700,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          20,
+          8,
+          20,
+          16 + MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: SigadColors.brand.withValues(alpha: 0.14),
+                  child: Text(
+                    user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: SigadColors.brand,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        user.name,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w700),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        user.role.displayName,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                      ),
+                      Text(
+                        user.email,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            const Divider(height: 1),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(
+                Icons.settings_outlined,
+                color: SigadColors.brand,
               ),
-            ],
-          ),
+              title: const Text('Configurações'),
+              onTap: () {
+                final navigator = Navigator.of(context);
+                navigator.pop();
+                navigator.pushNamed(AppRoutes.configuracoes);
+              },
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.logout, color: SigadColors.risk),
+              title: const Text('Sair'),
+              onTap: () {
+                final navigator = Navigator.of(context);
+                navigator.pop();
+                _confirmLogout(navigator.context, userContext);
+              },
+            ),
+          ],
         ),
       ),
     );
