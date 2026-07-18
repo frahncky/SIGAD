@@ -114,7 +114,10 @@ class _LoginPageState extends State<LoginPage> {
         const SizedBox(height: 8),
         LayoutBuilder(
           builder: (context, constraints) {
-            final itemWidth = (constraints.maxWidth - 8) / 2;
+            final itemWidth = ((constraints.maxWidth - 8) / 2).clamp(
+              0.0,
+              double.infinity,
+            );
             return Wrap(
               spacing: 8,
               runSpacing: 8,

@@ -27,8 +27,11 @@ class HomeShellPage extends StatelessWidget {
         final colors = Theme.of(context).colorScheme;
         final userContext = context.watch<UserContextProvider>();
         final userRole = userContext.userRole;
+        final isDashboard = currentRoute == AppRoutes.dashboard;
         // unreadChatCount removido pois não é mais utilizado
-        final notifCount = NotificacoesService.porRole(userRole).length;
+        final notifCount = isDashboard
+            ? 0
+            : NotificacoesService.porRole(userRole).length;
 
         final availableItems = userRole == null
             ? kNavigationItems
@@ -52,30 +55,38 @@ class HomeShellPage extends StatelessWidget {
           appBar: isWide
               ? null
               : AppBar(
-                  toolbarHeight: 64,
+                  toolbarHeight: isDashboard ? 52 : 64,
                   backgroundColor: colors.surface,
                   surfaceTintColor: Colors.transparent,
                   elevation: 0,
-                  actions: [
-                    IconButton(
-                      onPressed: () => _showNotifications(context),
-                      tooltip: 'Notificações',
-                      icon: notifCount > 0
-                          ? Badge(
-                              label: Text(
-                                notifCount > 99 ? '99+' : '$notifCount',
-                              ),
-                              child: const Icon(Icons.notifications_outlined),
-                            )
-                          : const Icon(Icons.notifications_outlined),
-                    ),
-                    IconButton(
-                      onPressed: () => _showProfileMenu(context, userContext),
-                      tooltip: 'Perfil',
-                      icon: _UserAvatar(userContext: userContext, radius: 18),
-                    ),
-                    const SizedBox(width: 12),
-                  ],
+                  actions: isDashboard
+                      ? null
+                      : [
+                          IconButton(
+                            onPressed: () => _showNotifications(context),
+                            tooltip: 'Notificações',
+                            icon: notifCount > 0
+                                ? Badge(
+                                    label: Text(
+                                      notifCount > 99 ? '99+' : '$notifCount',
+                                    ),
+                                    child: const Icon(
+                                      Icons.notifications_outlined,
+                                    ),
+                                  )
+                                : const Icon(Icons.notifications_outlined),
+                          ),
+                          IconButton(
+                            onPressed: () =>
+                                _showProfileMenu(context, userContext),
+                            tooltip: 'Perfil',
+                            icon: _UserAvatar(
+                              userContext: userContext,
+                              radius: 18,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                        ],
                 ),
           bottomNavigationBar: isWide
               ? null
@@ -701,15 +712,15 @@ class _ProfileMenu extends StatelessWidget {
                       ),
                       Text(
                         user.role.displayName,
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: SigadColors.muted,
+                        ),
                       ),
                       Text(
                         user.email,
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: SigadColors.muted,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),

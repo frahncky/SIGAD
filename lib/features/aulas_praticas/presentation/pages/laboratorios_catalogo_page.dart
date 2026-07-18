@@ -244,222 +244,319 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
   @override
   Widget build(BuildContext context) {
     final statusColor = _statusColor(_laboratorio.status);
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final expandedHeight = 216.0 + (72.0 * (textScale - 1).clamp(0.0, 1.0));
     final proximas = List<ReservaLaboratorio>.from(widget.reservas)
       ..sort((a, b) => a.semanaDoMes.compareTo(b.semanaDoMes));
     return Scaffold(
-      appBar: AppBar(title: const Text('Detalhes do laboratório')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      backgroundColor: SigadColors.canvas,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            expandedHeight: expandedHeight,
+            backgroundColor: statusColor,
+            foregroundColor: Colors.white,
+            elevation: 0,
+            flexibleSpace: FlexibleSpaceBar(
+              titlePadding: const EdgeInsetsDirectional.only(
+                start: 56,
+                bottom: 16,
+                end: 72,
+              ),
+              title: Text(
+                _laboratorio.nome,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontWeight: FontWeight.w800),
+              ),
+              background: Stack(
+                fit: StackFit.expand,
                 children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 28,
-                        backgroundColor: SigadColors.brandLight,
-                        child: const Icon(
-                          Icons.science_outlined,
-                          color: SigadColors.brand,
-                          size: 30,
-                        ),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          statusColor,
+                          statusColor.withValues(alpha: .78),
+                        ],
                       ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
+                    ),
+                  ),
+                  const Positioned(
+                    top: -40,
+                    right: -30,
+                    child: _HeroBlob(size: 140, opacity: .14),
+                  ),
+                  const Positioned(
+                    bottom: -50,
+                    left: -20,
+                    child: _HeroBlob(size: 110, opacity: .10),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 60, 20, 18),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              _laboratorio.nome,
-                              style: Theme.of(context).textTheme.headlineSmall
-                                  ?.copyWith(fontWeight: FontWeight.w800),
+                            CircleAvatar(
+                              radius: 26,
+                              backgroundColor: Colors.white.withValues(
+                                alpha: .22,
+                              ),
+                              child: const Icon(
+                                Icons.science_outlined,
+                                color: Colors.white,
+                                size: 26,
+                              ),
                             ),
-                            const SizedBox(height: 5),
-                            Wrap(
-                              spacing: 10,
-                              runSpacing: 6,
-                              children: [
-                                _StatusPill(
-                                  label: _statusLabel(_laboratorio.status),
-                                  color: statusColor,
-                                ),
-                                Text(_laboratorio.localizacao),
-                              ],
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _laboratorio.nome,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall
+                                        ?.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.place_outlined,
+                                        size: 14,
+                                        color: Colors.white70,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Expanded(
+                                        child: Text(
+                                          _laboratorio.localizacao,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 18),
-                  Wrap(
-                    spacing: 24,
-                    runSpacing: 12,
-                    children: [
-                      _Info(
-                        icon: Icons.groups_outlined,
-                        label: 'Capacidade',
-                        value: '${_laboratorio.capacidade} pessoas',
-                      ),
-                      _Info(
-                        icon: Icons.person_outline,
-                        label: 'Responsável técnico',
-                        value: _laboratorio.responsavelTecnico,
-                      ),
-                      _Info(
-                        icon: Icons.devices_outlined,
-                        label: 'Equipamentos disponíveis',
-                        value: '${_laboratorio.equipamentosDisponiveis}',
-                      ),
-                      _Info(
-                        icon: Icons.warning_amber_rounded,
-                        label: 'Ocorrências ativas',
-                        value: '${_laboratorio.ocorrenciasAtivas}',
-                      ),
-                    ],
+                        const SizedBox(height: 14),
+                        _GradientPill(label: _statusLabel(_laboratorio.status)),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 14),
-          _Section(
-            title: 'Próximas reservas',
-            action: TextButton(
-              onPressed: _abrirReservas,
-              child: const Text('Ver agenda semanal'),
-            ),
-            child: proximas.isEmpty
-                ? const Text(
-                    'Nenhuma reserva cadastrada para este laboratório.',
-                  )
-                : Column(
-                    children: proximas
-                        .take(4)
+          SliverPadding(
+            padding: const EdgeInsets.all(16),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                _InfoGrid(laboratorio: _laboratorio),
+                const SizedBox(height: 14),
+                _Section(
+                  title: 'Próximas reservas',
+                  icon: Icons.event_available_outlined,
+                  tone: SigadColors.info,
+                  action: TextButton(
+                    onPressed: _abrirReservas,
+                    child: const Text('Ver agenda semanal'),
+                  ),
+                  child: proximas.isEmpty
+                      ? const _SectionEmptyState(
+                          icon: Icons.event_busy_outlined,
+                          message:
+                              'Nenhuma reserva cadastrada para este laboratório.',
+                        )
+                      : Column(
+                          children: proximas
+                              .take(4)
+                              .map(
+                                (reserva) => ListTile(
+                                  contentPadding: EdgeInsets.zero,
+                                  leading: CircleAvatar(
+                                    radius: 18,
+                                    backgroundColor: SigadColors.info
+                                        .withValues(alpha: .12),
+                                    child: const Icon(
+                                      Icons.event_available_outlined,
+                                      color: SigadColors.info,
+                                      size: 18,
+                                    ),
+                                  ),
+                                  title: Text(
+                                    reserva.disciplina ??
+                                        'Reserva de laboratório',
+                                  ),
+                                  subtitle: Text(
+                                    '${reserva.diaSemana} · ${reserva.turno.horarioDo(reserva.periodo)} · ${reserva.professor}',
+                                  ),
+                                  trailing: const _StatusPill(
+                                    label: 'Confirmada',
+                                    color: SigadColors.success,
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                ),
+                const SizedBox(height: 14),
+                _Section(
+                  title: 'Equipamentos',
+                  icon: Icons.memory_outlined,
+                  tone: SigadColors.brand,
+                  child: Column(
+                    children: _laboratorio.equipamentos
                         .map(
-                          (reserva) => ListTile(
+                          (equipamento) => ListTile(
                             contentPadding: EdgeInsets.zero,
-                            leading: const Icon(
-                              Icons.event_available_outlined,
-                              color: SigadColors.brand,
+                            leading: CircleAvatar(
+                              radius: 18,
+                              backgroundColor: SigadColors.brand.withValues(
+                                alpha: .12,
+                              ),
+                              child: const Icon(
+                                Icons.memory_outlined,
+                                color: SigadColors.brand,
+                                size: 18,
+                              ),
                             ),
-                            title: Text(
-                              reserva.disciplina ?? 'Reserva de laboratório',
-                            ),
+                            title: Text(equipamento.nome),
                             subtitle: Text(
-                              '${reserva.diaSemana} · ${reserva.turno.horarioDo(reserva.periodo)} · ${reserva.professor}',
+                              '${equipamento.quantidade} unidade(s)',
                             ),
-                            trailing: const _StatusPill(
-                              label: 'Confirmada',
-                              color: SigadColors.success,
+                            trailing: _StatusPill(
+                              label: _equipamentoStatusLabel(
+                                equipamento.status,
+                              ),
+                              color: _equipamentoStatusColor(
+                                equipamento.status,
+                              ),
                             ),
                           ),
                         )
                         .toList(),
                   ),
-          ),
-          const SizedBox(height: 14),
-          _Section(
-            title: 'Equipamentos',
-            child: Column(
-              children: _laboratorio.equipamentos
-                  .map(
-                    (equipamento) => ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: const Icon(
-                        Icons.memory_outlined,
-                        color: SigadColors.brand,
-                      ),
-                      title: Text(equipamento.nome),
-                      subtitle: Text('${equipamento.quantidade} unidade(s)'),
-                      trailing: _StatusPill(
-                        label: _equipamentoStatusLabel(equipamento.status),
-                        color: _equipamentoStatusColor(equipamento.status),
-                      ),
+                ),
+                if (_laboratorio.manutencoes.isNotEmpty) ...[
+                  const SizedBox(height: 14),
+                  _Section(
+                    title: 'Manutenção',
+                    icon: Icons.build_outlined,
+                    tone: SigadColors.warning,
+                    child: Column(
+                      children: _laboratorio.manutencoes
+                          .map(
+                            (item) => ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: CircleAvatar(
+                                radius: 18,
+                                backgroundColor: SigadColors.warning.withValues(
+                                  alpha: .12,
+                                ),
+                                child: const Icon(
+                                  Icons.build_outlined,
+                                  color: SigadColors.warning,
+                                  size: 18,
+                                ),
+                              ),
+                              title: Text(item.descricao),
+                              subtitle: Text(
+                                item.previsaoFim == null
+                                    ? 'Iniciada em ${DateFormat('dd/MM/yyyy').format(item.inicio)}'
+                                    : 'Previsão: ${DateFormat('dd/MM/yyyy').format(item.previsaoFim!)}',
+                              ),
+                              trailing: _StatusPill(
+                                label: item.concluida
+                                    ? 'Concluída'
+                                    : 'Em andamento',
+                                color: item.concluida
+                                    ? SigadColors.success
+                                    : SigadColors.warning,
+                              ),
+                            ),
+                          )
+                          .toList(),
                     ),
-                  )
-                  .toList(),
+                  ),
+                ],
+                if (_laboratorio.ocorrencias.isNotEmpty) ...[
+                  const SizedBox(height: 14),
+                  _Section(
+                    title: 'Ocorrências',
+                    icon: Icons.report_problem_outlined,
+                    tone: SigadColors.risk,
+                    child: Column(
+                      children: _laboratorio.ocorrencias.reversed
+                          .map(
+                            (item) => ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: CircleAvatar(
+                                radius: 18,
+                                backgroundColor:
+                                    (item.resolvida
+                                            ? SigadColors.success
+                                            : SigadColors.risk)
+                                        .withValues(alpha: .12),
+                                child: Icon(
+                                  item.resolvida
+                                      ? Icons.check_circle_outline
+                                      : Icons.error_outline,
+                                  color: item.resolvida
+                                      ? SigadColors.success
+                                      : SigadColors.risk,
+                                  size: 18,
+                                ),
+                              ),
+                              title: Text(item.titulo),
+                              subtitle: Text(
+                                '${item.descricao}\n${DateFormat('dd/MM/yyyy HH:mm').format(item.criadaEm)}',
+                              ),
+                              isThreeLine: item.descricao.isNotEmpty,
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 18),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    FilledButton.icon(
+                      onPressed: _abrirReservas,
+                      icon: const Icon(Icons.calendar_month_outlined),
+                      label: const Text('Reservar'),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: _reportarProblema,
+                      icon: const Icon(Icons.warning_amber_rounded),
+                      label: const Text('Reportar problema'),
+                    ),
+                  ],
+                ),
+              ]),
             ),
-          ),
-          if (_laboratorio.manutencoes.isNotEmpty) ...[
-            const SizedBox(height: 14),
-            _Section(
-              title: 'Manutenção',
-              child: Column(
-                children: _laboratorio.manutencoes
-                    .map(
-                      (item) => ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: const Icon(
-                          Icons.build_outlined,
-                          color: SigadColors.warning,
-                        ),
-                        title: Text(item.descricao),
-                        subtitle: Text(
-                          item.previsaoFim == null
-                              ? 'Iniciada em ${DateFormat('dd/MM/yyyy').format(item.inicio)}'
-                              : 'Previsão: ${DateFormat('dd/MM/yyyy').format(item.previsaoFim!)}',
-                        ),
-                        trailing: _StatusPill(
-                          label: item.concluida ? 'Concluída' : 'Em andamento',
-                          color: item.concluida
-                              ? SigadColors.success
-                              : SigadColors.warning,
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
-          ],
-          if (_laboratorio.ocorrencias.isNotEmpty) ...[
-            const SizedBox(height: 14),
-            _Section(
-              title: 'Ocorrências',
-              child: Column(
-                children: _laboratorio.ocorrencias.reversed
-                    .map(
-                      (item) => ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: Icon(
-                          item.resolvida
-                              ? Icons.check_circle_outline
-                              : Icons.error_outline,
-                          color: item.resolvida
-                              ? SigadColors.success
-                              : SigadColors.risk,
-                        ),
-                        title: Text(item.titulo),
-                        subtitle: Text(
-                          '${item.descricao}\n${DateFormat('dd/MM/yyyy HH:mm').format(item.criadaEm)}',
-                        ),
-                        isThreeLine: item.descricao.isNotEmpty,
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
-          ],
-          const SizedBox(height: 14),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [
-              FilledButton.icon(
-                onPressed: _abrirReservas,
-                icon: const Icon(Icons.calendar_month_outlined),
-                label: const Text('Reservar'),
-              ),
-              OutlinedButton.icon(
-                onPressed: _reportarProblema,
-                icon: const Icon(Icons.warning_amber_rounded),
-                label: const Text('Reportar problema'),
-              ),
-            ],
           ),
         ],
       ),
@@ -648,68 +745,250 @@ class _LaboratorioCard extends StatelessWidget {
 }
 
 class _Section extends StatelessWidget {
-  const _Section({required this.title, required this.child, this.action});
+  const _Section({
+    required this.title,
+    required this.child,
+    this.action,
+    this.icon,
+    this.tone = SigadColors.brand,
+  });
   final String title;
   final Widget child;
   final Widget? action;
+  final IconData? icon;
+  final Color tone;
   @override
-  Widget build(BuildContext context) => Card(
-    child: Padding(
-      padding: const EdgeInsets.all(16),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final titleWidget = Text(
-            title,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-          );
-          final compact = action != null && constraints.maxWidth < 420;
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (compact) ...[
-                titleWidget,
-                const SizedBox(height: 4),
-                Align(alignment: Alignment.centerLeft, child: action!),
-              ] else
-                Row(
-                  children: [
-                    Expanded(child: titleWidget),
-                    ?action,
-                  ],
+  Widget build(BuildContext context) => Container(
+    decoration: BoxDecoration(
+      color: SigadColors.surface,
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: SigadColors.divider),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: .04),
+          blurRadius: 16,
+          offset: const Offset(0, 6),
+        ),
+      ],
+    ),
+    padding: const EdgeInsets.all(16),
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        final titleWidget = Row(
+          children: [
+            if (icon != null) ...[
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: tone.withValues(alpha: .12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-              const SizedBox(height: 8),
-              child,
+                child: Icon(icon, size: 18, color: tone),
+              ),
+              const SizedBox(width: 10),
             ],
-          );
-        },
+            Expanded(
+              child: Text(
+                title,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+              ),
+            ),
+          ],
+        );
+        final compact = action != null && constraints.maxWidth < 420;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (compact) ...[
+              titleWidget,
+              const SizedBox(height: 4),
+              Align(alignment: Alignment.centerLeft, child: action!),
+            ] else
+              Row(
+                children: [
+                  Expanded(child: titleWidget),
+                  ?action,
+                ],
+              ),
+            const SizedBox(height: 12),
+            child,
+          ],
+        );
+      },
+    ),
+  );
+}
+
+class _SectionEmptyState extends StatelessWidget {
+  const _SectionEmptyState({required this.icon, required this.message});
+  final IconData icon;
+  final String message;
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 18),
+    child: Column(
+      children: [
+        Icon(icon, size: 28, color: SigadColors.muted),
+        const SizedBox(height: 8),
+        Text(
+          message,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: SigadColors.muted),
+        ),
+      ],
+    ),
+  );
+}
+
+class _InfoGrid extends StatelessWidget {
+  const _InfoGrid({required this.laboratorio});
+  final Laboratorio laboratorio;
+
+  @override
+  Widget build(BuildContext context) {
+    final ocorrenciaTone = laboratorio.ocorrenciasAtivas > 0
+        ? SigadColors.risk
+        : SigadColors.success;
+    final itens = [
+      _InfoTile(
+        icon: Icons.groups_outlined,
+        label: 'Capacidade',
+        value: '${laboratorio.capacidade} pessoas',
+        tone: SigadColors.info,
+      ),
+      _InfoTile(
+        icon: Icons.person_outline,
+        label: 'Responsável técnico',
+        value: laboratorio.responsavelTecnico,
+        tone: SigadColors.brand,
+      ),
+      _InfoTile(
+        icon: Icons.devices_outlined,
+        label: 'Equipamentos disponíveis',
+        value: '${laboratorio.equipamentosDisponiveis}',
+        tone: SigadColors.success,
+      ),
+      _InfoTile(
+        icon: Icons.warning_amber_rounded,
+        label: 'Ocorrências ativas',
+        value: '${laboratorio.ocorrenciasAtivas}',
+        tone: ocorrenciaTone,
+      ),
+    ];
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final textScale = MediaQuery.textScalerOf(context).scale(1);
+        final colunas = constraints.maxWidth >= 640
+            ? 4
+            : constraints.maxWidth < 360 || textScale > 1.3
+            ? 1
+            : 2;
+        final largura = (constraints.maxWidth - ((colunas - 1) * 12)) / colunas;
+        return Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: itens
+              .map((item) => SizedBox(width: largura, child: item))
+              .toList(),
+        );
+      },
+    );
+  }
+}
+
+class _InfoTile extends StatelessWidget {
+  const _InfoTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.tone,
+  });
+  final IconData icon;
+  final String label, value;
+  final Color tone;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(14),
+    decoration: BoxDecoration(
+      color: SigadColors.surface,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: tone.withValues(alpha: .16)),
+      boxShadow: [
+        BoxShadow(
+          color: tone.withValues(alpha: .10),
+          blurRadius: 14,
+          offset: const Offset(0, 6),
+        ),
+      ],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: tone.withValues(alpha: .12),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, color: tone, size: 20),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          value,
+          maxLines: 3,
+          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          maxLines: 3,
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+        ),
+      ],
+    ),
+  );
+}
+
+class _GradientPill extends StatelessWidget {
+  const _GradientPill({required this.label});
+  final String label;
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    decoration: BoxDecoration(
+      color: Colors.white.withValues(alpha: .20),
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: Colors.white.withValues(alpha: .35)),
+    ),
+    child: Text(
+      label,
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 12,
+        fontWeight: FontWeight.w700,
       ),
     ),
   );
 }
 
-class _Info extends StatelessWidget {
-  const _Info({required this.icon, required this.label, required this.value});
-  final IconData icon;
-  final String label, value;
+class _HeroBlob extends StatelessWidget {
+  const _HeroBlob({required this.size, required this.opacity});
+  final double size;
+  final double opacity;
   @override
-  Widget build(BuildContext context) => SizedBox(
-    width: 210,
-    child: Row(
-      children: [
-        Icon(icon, color: SigadColors.brand),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label, style: Theme.of(context).textTheme.bodySmall),
-              Text(value, style: const TextStyle(fontWeight: FontWeight.w700)),
-            ],
-          ),
-        ),
-      ],
+  Widget build(BuildContext context) => IgnorePointer(
+    child: Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white.withValues(alpha: opacity),
+      ),
     ),
   );
 }

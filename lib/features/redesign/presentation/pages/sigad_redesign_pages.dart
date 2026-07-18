@@ -1,22 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
-import '../../../../core/services/user_context_provider.dart';
 
 class SigadDashboardPage extends StatelessWidget {
   const SigadDashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<UserContextProvider>().currentUser;
-    final firstName = (user?.name.trim().isNotEmpty ?? false)
-        ? user!.name.trim().split(' ').first
-        : 'usuário';
-
     return _PageFrame(
-      header: _OverviewHero(firstName: firstName),
+      header: const _OverviewHero(),
       children: [
         const _OverviewSectionTitle(
           icon: Icons.monitor_heart_outlined,
@@ -138,20 +131,39 @@ class SigadDashboardPage extends StatelessWidget {
 }
 
 class _OverviewHero extends StatelessWidget {
-  const _OverviewHero({required this.firstName});
+  const _OverviewHero();
 
-  final String firstName;
+  static const _items = [
+    _OverviewItemData(
+      icon: Icons.event_note_outlined,
+      title: 'Atividades do departamento',
+      detail: 'Consulte os registros no painel operacional',
+      color: SigadColors.mint,
+    ),
+    _OverviewItemData(
+      icon: Icons.view_kanban_outlined,
+      title: 'Quadro de trabalho',
+      detail: 'Acompanhe os itens do fluxo operacional',
+      color: SigadColors.accent,
+    ),
+    _OverviewItemData(
+      icon: Icons.assignment_outlined,
+      title: 'Demandas do departamento',
+      detail: 'Disponível conforme as permissões do perfil',
+      color: Color(0xFFE7D7D1),
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF00695C), Color(0xFF004D40)],
+          colors: [SigadColors.brand, SigadColors.brandDeep],
         ),
         borderRadius: BorderRadius.circular(28),
         boxShadow: const [
@@ -165,188 +177,58 @@ class _OverviewHero extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Olá, $firstName',
-                      style: Theme.of(context).textTheme.headlineMedium
-                          ?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w800,
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.account_balance_outlined, color: Colors.white),
-                  SizedBox(width: 8),
-                  Text(
-                    'INSTITUTO FEDERAL',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          const Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                flex: 3,
-                child: _OverviewHighlight(
-                  icon: Icons.error_outline_rounded,
-                  label: 'AVISO',
-                  count: '1',
-                  title: 'Laboratório 2 interditado',
-                  detail: 'Manutenção elétrica até 23/05',
-                  color: Color(0xFFFF6B6B),
-                ),
-              ),
-              SizedBox(width: 10),
-              Expanded(
-                flex: 3,
-                child: _OverviewHighlight(
-                  icon: Icons.calendar_month_outlined,
-                  label: 'REUNIÃO',
-                  count: '1',
-                  title: 'Reunião departamental',
-                  detail: 'Amanhã • 10:00 • Sala 204',
-                  color: Color(0xFF57D68D),
-                ),
-              ),
-              SizedBox(width: 10),
-              Expanded(
-                flex: 3,
-                child: _OverviewHighlight(
-                  icon: Icons.assignment_outlined,
-                  label: 'DEMANDA',
-                  count: '1',
-                  title: '1 aguardando atribuição',
-                  detail: 'Necessita encaminhamento',
-                  color: Color(0xFFFFB74D),
-                ),
-              ),
-              SizedBox(width: 10),
-              Expanded(
-                flex: 4,
-                child: _OverviewHighlight(
-                  icon: Icons.science_outlined,
-                  label: 'MANUTENÇÃO',
-                  count: '1',
-                  title: 'Lab. de Eletrônica',
-                  detail: 'Preventiva agendada para 24/05',
-                  color: Color(0xFF64B5F6),
-                ),
-              ),
-            ],
+          for (var index = 0; index < _items.length; index++) ...[
+            _OverviewItem(
+              data: _items[index],
+              onTap: () => _showItemDetails(context, _items[index]),
+            ),
+            if (index != _items.length - 1)
+              Divider(color: Colors.white.withValues(alpha: 0.14), height: 1),
+          ],
+          const SizedBox(height: 12),
+          _OverviewFooter(onSeeAll: () => _showAllItems(context)),
+        ],
+      ),
+    );
+  }
+
+  void _showItemDetails(BuildContext context, _OverviewItemData item) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        scrollable: true,
+        icon: Icon(item.icon, color: SigadColors.brand),
+        title: Text(item.title),
+        content: Text(item.detail),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Fechar'),
           ),
         ],
       ),
     );
   }
-}
 
-class _OverviewHighlight extends StatelessWidget {
-  const _OverviewHighlight({
-    required this.icon,
-    required this.label,
-    required this.count,
-    required this.title,
-    required this.detail,
-    required this.color,
-  });
-
-  final IconData icon;
-  final String label;
-  final String count;
-  final String title;
-  final String detail;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: () => _showHighlightDetails(context),
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.06),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CircleAvatar(
-                  radius: 13,
-                  backgroundColor: color.withValues(alpha: 0.22),
-                  child: Icon(icon, color: color, size: 15),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  count,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 22,
-                    height: 1,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: Text(
-                label,
-                maxLines: 1,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 10.5,
-                  height: 1.2,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showHighlightDetails(BuildContext context) {
+  void _showAllItems(BuildContext context) {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        icon: Icon(icon, color: color),
-        title: Text(label),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
-            const SizedBox(height: 6),
-            Text(detail),
-          ],
+        scrollable: true,
+        title: const Text('Informações do departamento'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final item in _items)
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(item.icon, color: SigadColors.brand),
+                  title: Text(item.title),
+                  subtitle: Text(item.detail),
+                ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -355,6 +237,192 @@ class _OverviewHighlight extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _OverviewItemData {
+  const _OverviewItemData({
+    required this.icon,
+    required this.title,
+    required this.detail,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String title;
+  final String detail;
+  final Color color;
+}
+
+class _OverviewItem extends StatelessWidget {
+  const _OverviewItem({required this.data, required this.onTap});
+
+  final _OverviewItemData data;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      onTap: onTap,
+      label: '${data.title}. ${data.detail}',
+      excludeSemantics: true,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: data.color.withValues(alpha: 0.22),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(data.icon, color: data.color, size: 24),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      data.title,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                        height: 1.25,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      data.detail,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.white.withValues(alpha: 0.76),
+                        height: 1.3,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: Colors.white,
+                semanticLabel: 'Abrir detalhes',
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _OverviewFooter extends StatelessWidget {
+  const _OverviewFooter({required this.onSeeAll});
+
+  final VoidCallback onSeeAll;
+
+  @override
+  Widget build(BuildContext context) {
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final stackContent = constraints.maxWidth < 300 || textScale > 1.3;
+        final department = Row(
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.18),
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.apartment_rounded,
+                    color: SigadColors.mint,
+                  ),
+                ),
+                const Positioned(
+                  top: -2,
+                  left: -2,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Color(0xFFE83E4D),
+                      shape: BoxShape.circle,
+                    ),
+                    child: SizedBox(width: 8, height: 8),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Departamento de Eletroeletrônica',
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      height: 1.25,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'IFMA Campus Monte Castelo',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.white.withValues(alpha: 0.72),
+                      height: 1.25,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+        final seeAll = OutlinedButton(
+          onPressed: onSeeAll,
+          style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.white,
+            side: BorderSide(color: Colors.white.withValues(alpha: 0.35)),
+            minimumSize: const Size(0, 48),
+          ),
+          child: const Text('Ver tudo'),
+        );
+
+        return Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+          ),
+          child: stackContent
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [department, const SizedBox(height: 12), seeAll],
+                )
+              : Row(
+                  children: [
+                    Expanded(child: department),
+                    const SizedBox(width: 12),
+                    seeAll,
+                  ],
+                ),
+        );
+      },
     );
   }
 }
@@ -373,7 +441,8 @@ class _OverviewSectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return Row(
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final titleRow = Row(
       children: [
         Icon(icon, color: colors.primary),
         const SizedBox(width: 10),
@@ -385,6 +454,27 @@ class _OverviewSectionTitle extends StatelessWidget {
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
           ),
         ),
+      ],
+    );
+
+    if (textScale > 1.3) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          titleRow,
+          const SizedBox(height: 4),
+          Padding(
+            padding: const EdgeInsets.only(left: 34),
+            child: Text(trailing, style: TextStyle(color: colors.primary)),
+          ),
+        ],
+      );
+    }
+
+    return Row(
+      children: [
+        Expanded(child: titleRow),
+        const SizedBox(width: 12),
         Text(trailing, style: TextStyle(color: colors.primary)),
       ],
     );

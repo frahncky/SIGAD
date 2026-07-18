@@ -35,7 +35,9 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('exibe AppBar em mobile com titulo correto', (tester) async {
+  testWidgets('dashboard mobile mantém menu e remove ações do topo', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
@@ -56,7 +58,40 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(AppBar), findsOneWidget);
+    expect(find.byIcon(Icons.menu), findsOneWidget);
+    expect(find.byIcon(Icons.notifications_outlined), findsNothing);
+    expect(find.byTooltip('Perfil'), findsNothing);
+    expect(tester.widget<AppBar>(find.byType(AppBar)).toolbarHeight, 52);
+  });
+
+  testWidgets('outra rota mobile preserva notificações e perfil', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final userContext = UserContextProvider();
+    await userContext.login(
+      User(
+        id: 'u-other-route',
+        name: 'Pedro',
+        email: 'pedro@ifma.edu.br',
+        role: UserRole.professor,
+        createdAt: DateTime.now(),
+      ),
+    );
+
+    await tester.pumpWidget(
+      _buildShell(userContext: userContext, route: AppRoutes.calendario),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byIcon(Icons.menu), findsOneWidget);
     expect(find.byIcon(Icons.notifications_outlined), findsOneWidget);
+    expect(find.byTooltip('Perfil'), findsOneWidget);
+    expect(tester.widget<AppBar>(find.byType(AppBar)).toolbarHeight, 64);
   });
 
   testWidgets('desktop exibe modulos permitidos para coordenador', (
