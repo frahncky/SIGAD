@@ -37,7 +37,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('Olá, Maria'), findsOneWidget);
+    expect(find.text('Maria'), findsOneWidget);
     expect(find.text('Atalhos do seu perfil'), findsOneWidget);
     expect(find.text('Prioridades'), findsNothing);
     expect(find.text('Demandas'), findsWidgets);

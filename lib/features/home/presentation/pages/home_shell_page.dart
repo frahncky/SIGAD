@@ -52,9 +52,7 @@ class HomeShellPage extends StatelessWidget {
           appBar: isWide
               ? null
               : AppBar(
-                  toolbarHeight: 76,
-                  titleSpacing: 4,
-                  title: const BrandTitle(),
+                  toolbarHeight: 64,
                   backgroundColor: colors.surface,
                   surfaceTintColor: Colors.transparent,
                   elevation: 0,

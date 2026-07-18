@@ -157,33 +157,13 @@ class _HeroPanel extends StatelessWidget {
     final isWide = MediaQuery.of(context).size.width >= 1200;
     final labels = _labelsPorPerfil();
 
-    final headerText = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Olá, $userName',
-          style: textTheme.headlineMedium?.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.w800,
-            height: 1.1,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.18),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            profile.title,
-            style: textTheme.labelMedium?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ],
+    final headerText = Text(
+      userName,
+      style: textTheme.headlineLarge?.copyWith(
+        color: Colors.white,
+        fontWeight: FontWeight.w800,
+        height: 1.1,
+      ),
     );
 
     final compactIndicators = FutureBuilder<ConfiguracoesData?>(
@@ -288,14 +268,14 @@ class _HeroPanel extends StatelessWidget {
             ),
             Padding(
               padding: EdgeInsets.symmetric(
-                horizontal: isWide ? 34 : 24,
-                vertical: isWide ? 22 : 20,
+                horizontal: isWide ? 40 : 28,
+                vertical: isWide ? 34 : 32,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   headerText,
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 22),
                   Align(
                     alignment: Alignment.topCenter,
                     child: compactIndicators,
