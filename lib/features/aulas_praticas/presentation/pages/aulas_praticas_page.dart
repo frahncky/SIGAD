@@ -1296,13 +1296,16 @@ class _PainelOtimizacaoLaboratorio extends StatelessWidget {
                 color: SigadColors.brand,
               ),
               const SizedBox(width: 6),
-              Text(
-                'Otimização de laboratórios',
-                style: textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
+              Expanded(
+                child: Text(
+                  'Otimização de laboratórios',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
-              const Spacer(),
               if (onAplicarSugestao != null)
                 TextButton.icon(
                   onPressed: onAplicarSugestao,
