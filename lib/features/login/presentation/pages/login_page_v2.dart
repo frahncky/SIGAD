@@ -98,24 +98,16 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildForm({bool compact = false}) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Entrar no SIGAD',
+          'Entrar',
           style: compact
               ? theme.textTheme.titleLarge
               : theme.textTheme.headlineSmall,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'Use suas credenciais do IFMA para acessar o Campus São Luís–Monte Castelo.',
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: colors.onSurfaceVariant,
-          ),
         ),
         const SizedBox(height: 14),
         Text('Perfil de acesso', style: theme.textTheme.labelLarge),
@@ -230,28 +222,6 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
         ],
-        const SizedBox(height: 10),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(
-              Icons.verified_user_outlined,
-              size: 17,
-              color: colors.onSurfaceVariant,
-            ),
-            const SizedBox(width: 7),
-            Expanded(
-              child: Text(
-                kDebugMode
-                    ? 'Modo de desenvolvimento ativo. O perfil definitivo será validado pelo serviço institucional.'
-                    : 'A autenticação e o perfil serão validados pelo serviço institucional.',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.onSurfaceVariant,
-                ),
-              ),
-            ),
-          ],
-        ),
       ],
     );
   }
@@ -265,7 +235,7 @@ class _LoginPageState extends State<LoginPage> {
       case UserRole.servidorAdministrativo:
         return Icons.badge_outlined;
       case UserRole.chefeDepartamento:
-        return Icons.account_balance_outlined;
+        return Icons.admin_panel_settings_outlined;
     }
   }
 
@@ -396,50 +366,7 @@ class _CompactBrandHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final muted = light
-        ? Colors.white.withValues(alpha: 0.82)
-        : colors.onSurfaceVariant;
-
-    return Row(
-      children: [
-        Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: light
-                ? Colors.white.withValues(alpha: 0.16)
-                : SigadColors.brandLight,
-            borderRadius: BorderRadius.circular(14),
-            border: light
-                ? Border.all(color: Colors.white.withValues(alpha: 0.22))
-                : null,
-          ),
-          child: Icon(
-            Icons.account_balance_outlined,
-            color: light ? Colors.white : SigadColors.brandDark,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              BrandTitle(compact: true, light: light),
-              Text(
-                light
-                    ? 'IFMA • Campus São Luís–Monte Castelo'
-                    : 'Gestão acadêmica e departamental',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: muted,
-                  fontWeight: light ? FontWeight.w600 : null,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
+    return BrandTitle(compact: true, light: light);
   }
 }
 

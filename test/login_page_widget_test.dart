@@ -29,15 +29,20 @@ void main() {
     );
     expect(find.text('Email institucional'), findsOneWidget);
     expect(find.text('Senha'), findsOneWidget);
-    expect(find.text('Entrar'), findsOneWidget);
+    expect(find.text('Entrar'), findsNWidgets(2));
+    expect(find.byIcon(Icons.account_balance_outlined), findsNothing);
+    expect(find.byIcon(Icons.verified_user_outlined), findsNothing);
+    expect(find.text('Entrar no SIGAD'), findsNothing);
+    expect(find.textContaining('Use suas credenciais'), findsNothing);
   });
 
   testWidgets('valida campos vazios ao tentar logar', (tester) async {
     await tester.pumpWidget(_buildApp());
     await tester.pumpAndSettle();
 
-    await tester.ensureVisible(find.text('Entrar'));
-    await tester.tap(find.text('Entrar'));
+    final enterButton = find.widgetWithText(FilledButton, 'Entrar');
+    await tester.ensureVisible(enterButton);
+    await tester.tap(enterButton);
     await tester.pumpAndSettle();
 
     expect(find.textContaining('Preencha email e senha'), findsOneWidget);
@@ -49,8 +54,9 @@ void main() {
 
     await tester.enterText(find.byType(TextField).first, 'email-invalido');
     await tester.enterText(find.byType(TextField).at(1), '1234');
-    await tester.ensureVisible(find.text('Entrar'));
-    await tester.tap(find.text('Entrar'));
+    final enterButton = find.widgetWithText(FilledButton, 'Entrar');
+    await tester.ensureVisible(enterButton);
+    await tester.tap(enterButton);
     await tester.pumpAndSettle();
 
     expect(find.textContaining('email válido'), findsOneWidget);
@@ -65,8 +71,9 @@ void main() {
       'user@instituicao.edu.br',
     );
     await tester.enterText(find.byType(TextField).at(1), 'ab');
-    await tester.ensureVisible(find.text('Entrar'));
-    await tester.tap(find.text('Entrar'));
+    final enterButton = find.widgetWithText(FilledButton, 'Entrar');
+    await tester.ensureVisible(enterButton);
+    await tester.tap(enterButton);
     await tester.pumpAndSettle();
 
     expect(find.textContaining('pelo menos 4 caracteres'), findsOneWidget);

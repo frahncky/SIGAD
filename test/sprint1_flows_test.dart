@@ -29,8 +29,9 @@ void main() {
 
     await tester.enterText(find.byType(TextField).first, 'email-invalido');
     await tester.enterText(find.byType(TextField).at(1), '1234');
-    await tester.ensureVisible(find.text('Entrar'));
-    await tester.tap(find.text('Entrar'));
+    final enterButton = find.widgetWithText(FilledButton, 'Entrar');
+    await tester.ensureVisible(enterButton);
+    await tester.tap(enterButton);
     await tester.pump();
 
     expect(find.text('Informe um email válido.'), findsOneWidget);
@@ -132,5 +133,49 @@ void main() {
     expect(find.text('Nova Reserva'), findsNothing);
     final livresDepois = find.text('Livre').evaluate().length;
     expect(livresDepois, lessThan(livresAntes));
+  });
+
+  testWidgets('painel de otimização adapta ação no mobile com texto ampliado', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final userContext = UserContextProvider();
+    await userContext.login(
+      User(
+        id: 'coordenador-mobile',
+        name: 'Coordenação',
+        email: 'coordenacao@ifma.edu.br',
+        role: UserRole.coordenador,
+        createdAt: DateTime(2026),
+      ),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light(),
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: ChangeNotifierProvider<UserContextProvider>.value(
+          value: userContext,
+          child: const AulasPraticasPage(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final action = find.text('Reservar sugestão');
+    await tester.ensureVisible(action);
+    await tester.pumpAndSettle();
+
+    expect(action, findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }

@@ -19,6 +19,7 @@ void main() {
     await tester.pumpWidget(const SigadApp());
     await tester.pump();
 
-    expect(find.text('Entrar no SIGAD'), findsOneWidget);
+    expect(find.text('Email institucional'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'Entrar'), findsOneWidget);
   });
 }

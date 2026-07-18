@@ -233,55 +233,91 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Reservas de laboratórios',
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(fontWeight: FontWeight.w800),
-                      ),
-                    ),
-                    OutlinedButton.icon(
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final stacked =
+                        constraints.maxWidth < 460 ||
+                        MediaQuery.textScalerOf(context).scale(14) > 18;
+                    final title = Text(
+                      'Reservas de laboratórios',
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.w800),
+                    );
+                    final action = OutlinedButton.icon(
                       onPressed: () => setState(() => _mostrarCatalogo = true),
                       icon: const Icon(Icons.science_outlined),
                       label: const Text('Laboratórios'),
-                    ),
-                  ],
+                    );
+
+                    if (stacked) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          title,
+                          const SizedBox(height: 8),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: action,
+                          ),
+                        ],
+                      );
+                    }
+
+                    return Row(
+                      children: [
+                        Expanded(child: title),
+                        action,
+                      ],
+                    );
+                  },
                 ),
                 const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: _FiltroLabRow(
-                        laboratorioSelecionado: _laboratorioSelecionadoValido,
-                        laboratorios: _laboratoriosDefault,
-                        onChanged: (value) =>
-                            setState(() => _laboratorioSelecionado = value),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      flex: 2,
-                      child: _FiltroPeriodoRow(
-                        mesSelecionado: _mesSelecionado,
-                        meses: _mesesDefault,
-                        onMesChanged: (value) {
-                          setState(() {
-                            _mesSelecionado = value;
-                            final maxDia = _diasNoMesSelecionado;
-                            if (_diaSelecionado > maxDia) {
-                              _diaSelecionado = maxDia;
-                            }
-                            if (_diaSelecionado < 1) {
-                              _diaSelecionado = 1;
-                            }
-                          });
-                        },
-                      ),
-                    ),
-                  ],
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final stacked =
+                        constraints.maxWidth < 560 ||
+                        MediaQuery.textScalerOf(context).scale(14) > 18;
+                    final laboratorio = _FiltroLabRow(
+                      laboratorioSelecionado: _laboratorioSelecionadoValido,
+                      laboratorios: _laboratoriosDefault,
+                      onChanged: (value) =>
+                          setState(() => _laboratorioSelecionado = value),
+                    );
+                    final periodo = _FiltroPeriodoRow(
+                      mesSelecionado: _mesSelecionado,
+                      meses: _mesesDefault,
+                      onMesChanged: (value) {
+                        setState(() {
+                          _mesSelecionado = value;
+                          final maxDia = _diasNoMesSelecionado;
+                          if (_diaSelecionado > maxDia) {
+                            _diaSelecionado = maxDia;
+                          }
+                          if (_diaSelecionado < 1) {
+                            _diaSelecionado = 1;
+                          }
+                        });
+                      },
+                    );
+
+                    if (stacked) {
+                      return Column(
+                        children: [
+                          laboratorio,
+                          const SizedBox(height: 10),
+                          periodo,
+                        ],
+                      );
+                    }
+
+                    return Row(
+                      children: [
+                        Expanded(flex: 3, child: laboratorio),
+                        const SizedBox(width: 10),
+                        Expanded(flex: 2, child: periodo),
+                      ],
+                    );
+                  },
                 ),
                 const SizedBox(height: 10),
                 _SelecaoDiaMesRow(
@@ -614,11 +650,15 @@ class _FiltroPeriodoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<int>(
+      isExpanded: true,
       initialValue: mesSelecionado,
       decoration: const InputDecoration(labelText: 'Mês'),
       items: [
         for (var i = 0; i < meses.length; i++)
-          DropdownMenuItem<int>(value: i + 1, child: Text(meses[i])),
+          DropdownMenuItem<int>(
+            value: i + 1,
+            child: Text(meses[i], maxLines: 1, overflow: TextOverflow.ellipsis),
+          ),
       ],
       onChanged: (value) {
         if (value != null) {
@@ -866,48 +906,66 @@ class _GradeSemanal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: SigadColors.divider),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (var index = 0; index < linhas.length; index++) ...[
-            if (index == 0 || linhas[index - 1].turno != linhas[index].turno)
-              _TurnoDividerRow(turno: linhas[index].turno),
-            Row(
-              children: [
-                for (
-                  var dayIndex = 0;
-                  dayIndex < diasAbreviados.length;
-                  dayIndex++
-                )
-                  Expanded(
-                    child: _GradeReservaCell(
-                      height: _rowHeight,
-                      horario: linhas[index].horario,
-                      turno: linhas[index].turno,
-                      periodo: linhas[index].periodo,
-                      diaSemana: diasAbreviados[dayIndex],
-                      diaDoMes: diasDoMes[dayIndex],
-                      reserva: reservaPara(
-                        diasAbreviados[dayIndex],
-                        linhas[index].turno,
-                        linhas[index].periodo,
-                      ),
-                      podeEditar: podeEditar,
-                      onTapCelula: onTapCelula,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final textoAmpliado = MediaQuery.textScalerOf(context).scale(14) > 18;
+        final rowHeight = textoAmpliado ? 96.0 : _rowHeight;
+        final minimumWidth = textoAmpliado ? 700.0 : 560.0;
+        final gridWidth = constraints.maxWidth < minimumWidth
+            ? minimumWidth
+            : constraints.maxWidth;
+
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SizedBox(
+            width: gridWidth,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: SigadColors.divider),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (var index = 0; index < linhas.length; index++) ...[
+                    if (index == 0 ||
+                        linhas[index - 1].turno != linhas[index].turno)
+                      _TurnoDividerRow(turno: linhas[index].turno),
+                    Row(
+                      children: [
+                        for (
+                          var dayIndex = 0;
+                          dayIndex < diasAbreviados.length;
+                          dayIndex++
+                        )
+                          Expanded(
+                            child: _GradeReservaCell(
+                              height: rowHeight,
+                              horario: linhas[index].horario,
+                              turno: linhas[index].turno,
+                              periodo: linhas[index].periodo,
+                              diaSemana: diasAbreviados[dayIndex],
+                              diaDoMes: diasDoMes[dayIndex],
+                              reserva: reservaPara(
+                                diasAbreviados[dayIndex],
+                                linhas[index].turno,
+                                linhas[index].periodo,
+                              ),
+                              podeEditar: podeEditar,
+                              onTapCelula: onTapCelula,
+                            ),
+                          ),
+                      ],
                     ),
-                  ),
-              ],
+                  ],
+                ],
+              ),
             ),
-          ],
-        ],
-      ),
+          ),
+        );
+      },
     );
   }
 }
@@ -1020,14 +1078,16 @@ class _GradeReservaCell extends StatelessWidget {
               Expanded(
                 child: Row(
                   children: [
-                    Text(
-                      '$diaSemana · $diaDoMes',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: SigadColors.brandDark,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 10,
+                    Expanded(
+                      child: Text(
+                        '$diaSemana · $diaDoMes',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: SigadColors.brandDark,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 10,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 4),
@@ -1290,32 +1350,67 @@ class _PainelOtimizacaoLaboratorio extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const SigadIconAvatar(
-                icon: Icons.insights_outlined,
-                tone: SigadColors.brand,
-                size: 30,
-                iconSize: 16,
-              ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  'Otimização de laboratórios',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final textScaler = MediaQuery.textScalerOf(context);
+              final stacked =
+                  constraints.maxWidth < 420 || textScaler.scale(14) > 18;
+              final title = Row(
+                children: [
+                  const SigadIconAvatar(
+                    icon: Icons.insights_outlined,
+                    tone: SigadColors.brand,
+                    size: 30,
+                    iconSize: 16,
                   ),
-                ),
-              ),
-              if (onAplicarSugestao != null)
-                TextButton.icon(
-                  onPressed: onAplicarSugestao,
-                  icon: const Icon(Icons.auto_fix_high_outlined, size: 16),
-                  label: const Text('Reservar sugestão'),
-                ),
-            ],
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      'Otimização de laboratórios',
+                      maxLines: stacked ? 2 : 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+              if (stacked) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    title,
+                    if (onAplicarSugestao != null) ...[
+                      const SizedBox(height: 4),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton.icon(
+                          onPressed: onAplicarSugestao,
+                          icon: const Icon(
+                            Icons.auto_fix_high_outlined,
+                            size: 16,
+                          ),
+                          label: const Text('Reservar sugestão'),
+                        ),
+                      ),
+                    ],
+                  ],
+                );
+              }
+
+              return Row(
+                children: [
+                  Expanded(child: title),
+                  if (onAplicarSugestao != null)
+                    TextButton.icon(
+                      onPressed: onAplicarSugestao,
+                      icon: const Icon(Icons.auto_fix_high_outlined, size: 16),
+                      label: const Text('Reservar sugestão'),
+                    ),
+                ],
+              );
+            },
           ),
           const SizedBox(height: 8),
           Row(
