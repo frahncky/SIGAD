@@ -1,55 +1,184 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
 
-class SigadDashboardPage extends StatelessWidget {
+class SigadDashboardPage extends StatefulWidget {
   const SigadDashboardPage({super.key});
 
   @override
+  State<SigadDashboardPage> createState() => _SigadDashboardPageState();
+}
+
+class _SigadDashboardPageState extends State<SigadDashboardPage> {
+  static const _prefsKey = 'sigad_overview_metricas_visiveis';
+
+  static const _todasMetricas = [
+    _OverviewMetricDef(
+      id: 'carga_horaria',
+      icon: Icons.schedule_outlined,
+      label: 'Carga horária alocada',
+      value: '412h',
+      detail: '↑ 6% vs. mês anterior',
+      tone: _MetricTone.primary,
+    ),
+    _OverviewMetricDef(
+      id: 'laboratorios',
+      icon: Icons.science_outlined,
+      label: 'Laboratórios em uso',
+      value: '62%',
+      detail: '↑ 12% vs. semana anterior',
+      tone: _MetricTone.success,
+    ),
+    _OverviewMetricDef(
+      id: 'noticias',
+      icon: Icons.campaign_outlined,
+      label: 'Notícias enviadas',
+      value: '8',
+      detail: '↑ 3 vs. semana anterior',
+      tone: _MetricTone.info,
+    ),
+    _OverviewMetricDef(
+      id: 'pendencias',
+      icon: Icons.error_outline_rounded,
+      label: 'Pendências em aberto',
+      value: '7',
+      detail: '↓ 1 vs. semana anterior',
+      tone: _MetricTone.warning,
+    ),
+  ];
+
+  Set<String> _visiveis = _todasMetricas.map((item) => item.id).toSet();
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarPreferencia();
+  }
+
+  Future<void> _carregarPreferencia() async {
+    final prefs = await SharedPreferences.getInstance();
+    final salvos = prefs.getStringList(_prefsKey);
+    if (salvos != null && mounted) {
+      setState(() => _visiveis = salvos.toSet());
+    }
+  }
+
+  Future<void> _salvarPreferencia() {
+    return SharedPreferences.getInstance().then(
+      (prefs) => prefs.setStringList(_prefsKey, _visiveis.toList()),
+    );
+  }
+
+  void _abrirSeletorDeIndicadores() {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.outlineVariant,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ),
+                    Text(
+                      'Indicadores do painel',
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w800),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Escolha quais indicadores aparecem no panorama.',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 4),
+                    for (final metrica in _todasMetricas)
+                      CheckboxListTile(
+                        contentPadding: EdgeInsets.zero,
+                        value: _visiveis.contains(metrica.id),
+                        title: Text(metrica.label),
+                        secondary: Icon(
+                          metrica.icon,
+                          color: _toneColor(metrica.tone),
+                        ),
+                        onChanged: (selecionado) {
+                          setModalState(() {
+                            if (selecionado ?? false) {
+                              _visiveis.add(metrica.id);
+                            } else {
+                              _visiveis.remove(metrica.id);
+                            }
+                          });
+                          setState(() {});
+                          _salvarPreferencia();
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final metricasVisiveis = _todasMetricas
+        .where((item) => _visiveis.contains(item.id))
+        .toList(growable: false);
+
     return _PageFrame(
       header: const _OverviewHero(),
+      topPadding: 4,
       children: [
-        const _OverviewSectionTitle(
+        _OverviewSectionTitle(
           icon: Icons.monitor_heart_outlined,
           title: 'Panorama do departamento',
           trailing: 'Atualizado agora',
+          trailingAction: IconButton(
+            onPressed: _abrirSeletorDeIndicadores,
+            tooltip: 'Personalizar indicadores',
+            icon: const Icon(Icons.dashboard_customize_outlined),
+            visualDensity: VisualDensity.compact,
+          ),
         ),
         const SizedBox(height: 12),
-        _ResponsiveGrid(
-          minItemWidth: 150,
-          children: const [
-            _MetricCard(
-              icon: Icons.schedule_outlined,
-              label: 'Carga horária alocada',
-              value: '412h',
-              detail: '↑ 6% vs. mês anterior',
-              tone: _MetricTone.primary,
-            ),
-            _MetricCard(
-              icon: Icons.science_outlined,
-              label: 'Laboratórios em uso',
-              value: '62%',
-              detail: '↑ 12% vs. semana anterior',
-              tone: _MetricTone.success,
-            ),
-            _MetricCard(
-              icon: Icons.campaign_outlined,
-              label: 'Notícias enviadas',
-              value: '8',
-              detail: '↑ 3 vs. semana anterior',
-              tone: _MetricTone.info,
-            ),
-            _MetricCard(
-              icon: Icons.error_outline_rounded,
-              label: 'Pendências em aberto',
-              value: '7',
-              detail: '↓ 1 vs. semana anterior',
-              tone: _MetricTone.warning,
-            ),
-          ],
-        ),
+        if (metricasVisiveis.isEmpty)
+          const _EmptyMetricsPlaceholder()
+        else
+          _ResponsiveGrid(
+            minItemWidth: 150,
+            children: [
+              for (final metrica in metricasVisiveis)
+                _MetricCard(
+                  icon: metrica.icon,
+                  label: metrica.label,
+                  value: metrica.value,
+                  detail: metrica.detail,
+                  tone: metrica.tone,
+                ),
+            ],
+          ),
         const SizedBox(height: 24),
         const _OverviewSectionTitle(
           icon: Icons.outlined_flag_rounded,
@@ -432,11 +561,13 @@ class _OverviewSectionTitle extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.trailing,
+    this.trailingAction,
   });
 
   final IconData icon;
   final String title;
   final String trailing;
+  final Widget? trailingAction;
 
   @override
   Widget build(BuildContext context) {
@@ -465,7 +596,17 @@ class _OverviewSectionTitle extends StatelessWidget {
           const SizedBox(height: 4),
           Padding(
             padding: const EdgeInsets.only(left: 34),
-            child: Text(trailing, style: TextStyle(color: colors.primary)),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    trailing,
+                    style: TextStyle(color: colors.primary),
+                  ),
+                ),
+                ?trailingAction,
+              ],
+            ),
           ),
         ],
       );
@@ -476,7 +617,61 @@ class _OverviewSectionTitle extends StatelessWidget {
         Expanded(child: titleRow),
         const SizedBox(width: 12),
         Text(trailing, style: TextStyle(color: colors.primary)),
+        ?trailingAction,
       ],
+    );
+  }
+}
+
+class _OverviewMetricDef {
+  const _OverviewMetricDef({
+    required this.id,
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.detail,
+    required this.tone,
+  });
+
+  final String id;
+  final IconData icon;
+  final String label;
+  final String value;
+  final String detail;
+  final _MetricTone tone;
+}
+
+class _EmptyMetricsPlaceholder extends StatelessWidget {
+  const _EmptyMetricsPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 16),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: colors.outlineVariant),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.dashboard_customize_outlined,
+            size: 28,
+            color: colors.onSurfaceVariant,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Nenhum indicador selecionado. Toque no ícone ao lado para escolher.',
+            textAlign: TextAlign.center,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -1563,10 +1758,15 @@ class _SigadConfiguracoesPageState extends State<SigadConfiguracoesPage> {
 }
 
 class _PageFrame extends StatelessWidget {
-  const _PageFrame({required this.header, required this.children});
+  const _PageFrame({
+    required this.header,
+    required this.children,
+    this.topPadding = 18,
+  });
 
   final Widget header;
   final List<Widget> children;
+  final double topPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -1576,7 +1776,7 @@ class _PageFrame extends StatelessWidget {
         SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
             MediaQuery.sizeOf(context).width >= 1024 ? 24 : 16,
-            18,
+            topPadding,
             MediaQuery.sizeOf(context).width >= 1024 ? 24 : 16,
             32,
           ),

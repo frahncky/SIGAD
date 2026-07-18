@@ -776,7 +776,7 @@ class _SelecaoDiaMesRow extends StatelessWidget {
   }
 }
 
-class _MapaSemanal extends StatelessWidget {
+class _MapaSemanal extends StatefulWidget {
   const _MapaSemanal({
     required this.mesSelecionado,
     required this.mesLabel,
@@ -805,6 +805,11 @@ class _MapaSemanal extends StatelessWidget {
   )
   onTapCelula;
 
+  @override
+  State<_MapaSemanal> createState() => _MapaSemanalState();
+}
+
+class _MapaSemanalState extends State<_MapaSemanal> {
   static const List<String> _diasAbreviados = [
     'Seg',
     'Ter',
@@ -812,6 +817,8 @@ class _MapaSemanal extends StatelessWidget {
     'Qui',
     'Sex',
   ];
+
+  Turno? _turnoSelecionado;
 
   @override
   Widget build(BuildContext context) {
@@ -828,25 +835,34 @@ class _MapaSemanal extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          '$semanaLabel de $mesLabel · Dia $diaSelecionado ($diaSemanaSelecionado)',
+          '${widget.semanaLabel} de ${widget.mesLabel} · Dia ${widget.diaSelecionado} (${widget.diaSemanaSelecionado})',
           style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 12),
+        _TurnoTabs(
+          selecionado: _turnoSelecionado,
+          onSelected: (turno) => setState(() => _turnoSelecionado = turno),
+        ),
+        const SizedBox(height: 12),
         _GradeSemanal(
           diasAbreviados: _diasAbreviados,
           diasDoMes: diasDoMesDaSemana,
-          diaSemanaSelecionado: diaSemanaSelecionado,
+          diaSemanaSelecionado: widget.diaSemanaSelecionado,
           linhas: linhas,
           reservaPara: _reservaPara,
-          podeEditar: podeEditar,
-          onTapCelula: onTapCelula,
+          podeEditar: widget.podeEditar,
+          onTapCelula: widget.onTapCelula,
         ),
       ],
     );
   }
 
   List<HorarioGridRow> _gerarLinhasGrade() {
-    return ReservaService.gerarLinhasGrade();
+    final todasAsLinhas = ReservaService.gerarLinhasGrade();
+    if (_turnoSelecionado == null) return todasAsLinhas;
+    return todasAsLinhas
+        .where((linha) => linha.turno == _turnoSelecionado)
+        .toList(growable: false);
   }
 
   ReservaLaboratorio? _reservaPara(
@@ -854,7 +870,7 @@ class _MapaSemanal extends StatelessWidget {
     Turno turno,
     int periodo,
   ) => ReservaService.reservaPara(
-    reservas: reservas,
+    reservas: widget.reservas,
     diaSemana: diaSemana,
     turno: turno,
     periodo: periodo,
@@ -863,8 +879,8 @@ class _MapaSemanal extends StatelessWidget {
   List<int> _diasDoMesDaSemanaSelecionada() {
     final dataSelecionada = DateTime(
       DateTime.now().year,
-      mesSelecionado,
-      diaSelecionado,
+      widget.mesSelecionado,
+      widget.diaSelecionado,
     );
     final inicioDaSemana = dataSelecionada.subtract(
       Duration(days: dataSelecionada.weekday - DateTime.monday),
@@ -872,6 +888,81 @@ class _MapaSemanal extends StatelessWidget {
     return List<int>.generate(
       5,
       (index) => inicioDaSemana.add(Duration(days: index)).day,
+    );
+  }
+}
+
+class _TurnoTabs extends StatelessWidget {
+  const _TurnoTabs({required this.selecionado, required this.onSelected});
+
+  final Turno? selecionado;
+  final ValueChanged<Turno?> onSelected;
+
+  static const _opcoes = <MapEntry<String, Turno?>>[
+    MapEntry('Todos', null),
+    MapEntry('Manhã', Turno.matutino),
+    MapEntry('Tarde', Turno.vespertino),
+    MapEntry('Noite', Turno.noturno),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          for (final opcao in _opcoes)
+            Expanded(
+              child: _TurnoTabButton(
+                label: opcao.key,
+                selecionado: selecionado == opcao.value,
+                onTap: () => onSelected(opcao.value),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TurnoTabButton extends StatelessWidget {
+  const _TurnoTabButton({
+    required this.label,
+    required this.selecionado,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selecionado;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Material(
+      color: selecionado ? colors.surface : Colors.transparent,
+      borderRadius: BorderRadius.circular(9),
+      elevation: selecionado ? 1 : 0,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(9),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 9),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: selecionado ? FontWeight.w800 : FontWeight.w500,
+              color: selecionado ? SigadColors.brand : colors.onSurfaceVariant,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

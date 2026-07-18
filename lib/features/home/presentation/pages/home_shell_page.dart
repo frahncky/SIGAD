@@ -59,34 +59,29 @@ class HomeShellPage extends StatelessWidget {
                   backgroundColor: colors.surface,
                   surfaceTintColor: Colors.transparent,
                   elevation: 0,
-                  actions: isDashboard
-                      ? null
-                      : [
-                          IconButton(
-                            onPressed: () => _showNotifications(context),
-                            tooltip: 'Notificações',
-                            icon: notifCount > 0
-                                ? Badge(
-                                    label: Text(
-                                      notifCount > 99 ? '99+' : '$notifCount',
-                                    ),
-                                    child: const Icon(
-                                      Icons.notifications_outlined,
-                                    ),
-                                  )
-                                : const Icon(Icons.notifications_outlined),
-                          ),
-                          IconButton(
-                            onPressed: () =>
-                                _showProfileMenu(context, userContext),
-                            tooltip: 'Perfil',
-                            icon: _UserAvatar(
-                              userContext: userContext,
-                              radius: 18,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                        ],
+                  actions: [
+                    if (!isDashboard)
+                      IconButton(
+                        onPressed: () => _showNotifications(context),
+                        tooltip: 'Notificações',
+                        icon: notifCount > 0
+                            ? Badge(
+                                label: Text(
+                                  notifCount > 99 ? '99+' : '$notifCount',
+                                ),
+                                child: const Icon(
+                                  Icons.notifications_outlined,
+                                ),
+                              )
+                            : const Icon(Icons.notifications_outlined),
+                      ),
+                    IconButton(
+                      onPressed: () => _showProfileMenu(context, userContext),
+                      tooltip: 'Perfil',
+                      icon: _UserAvatar(userContext: userContext, radius: 18),
+                    ),
+                    const SizedBox(width: 12),
+                  ],
                 ),
           bottomNavigationBar: isWide
               ? null

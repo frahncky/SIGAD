@@ -105,7 +105,9 @@ void main() {
     expect(find.text('0 itens no fluxo de trabalho'), findsOneWidget);
     expect(find.text('0 demandas registradas'), findsOneWidget);
     expect(find.text('Maria'), findsNothing);
-    expect(find.text('Atalhos do seu perfil'), findsOneWidget);
+    expect(find.text('Acesso rápido'), findsOneWidget);
+    expect(find.byTooltip('Personalizar atalhos'), findsOneWidget);
+    expect(find.text('Atenção agora'), findsOneWidget);
   });
 
   testWidgets('professor recebe resumo compatível com o perfil', (
@@ -151,7 +153,7 @@ void main() {
         .height;
     expect(
       cardHeight,
-      lessThanOrEqualTo(220),
+      lessThanOrEqualTo(380),
       reason: 'linhas=$rowHeights, rodapé=$footerHeight',
     );
 

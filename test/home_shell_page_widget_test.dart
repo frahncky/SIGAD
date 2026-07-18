@@ -35,7 +35,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('dashboard mobile mantém menu e remove ações do topo', (
+  testWidgets('dashboard mobile mantém menu, perfil e remove notificações', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(390, 844);
@@ -60,7 +60,7 @@ void main() {
     expect(find.byType(AppBar), findsOneWidget);
     expect(find.byIcon(Icons.menu), findsOneWidget);
     expect(find.byIcon(Icons.notifications_outlined), findsNothing);
-    expect(find.byTooltip('Perfil'), findsNothing);
+    expect(find.byTooltip('Perfil'), findsOneWidget);
     expect(tester.widget<AppBar>(find.byType(AppBar)).toolbarHeight, 52);
   });
 
