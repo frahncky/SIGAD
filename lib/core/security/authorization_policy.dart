@@ -15,6 +15,10 @@ abstract final class AuthorizationPolicy {
     return role == UserRole.chefeDepartamento;
   }
 
+  static bool canViewOtimizacaoLaboratorios(UserRole? role) {
+    return role == UserRole.coordenador || role == UserRole.chefeDepartamento;
+  }
+
   static bool canAccessConfiguracoes(UserRole? role) {
     return role != null;
   }

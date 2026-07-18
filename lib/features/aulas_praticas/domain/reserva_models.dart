@@ -12,7 +12,8 @@ class ReservaLaboratorio {
     required this.turno,
     required this.periodo,
     this.disciplina,
-  });
+    String? grupoId,
+  }) : grupoId = grupoId ?? id;
 
   final String id;
   final String professor;
@@ -23,6 +24,11 @@ class ReservaLaboratorio {
   final Turno turno;
   final int periodo;
   final String? disciplina;
+
+  /// Identifica reservas criadas juntas (mesmo dia/horário repetido em
+  /// várias semanas, ou vários dias/horários reservados de uma vez). Reservas
+  /// avulsas têm [grupoId] igual ao próprio [id].
+  final String grupoId;
 }
 
 class HorarioGridRow {

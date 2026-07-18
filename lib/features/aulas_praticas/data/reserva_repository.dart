@@ -38,6 +38,7 @@ class ReservaRepository {
     'turno': r.turno.name,
     'periodo': r.periodo,
     if (r.disciplina != null) 'disciplina': r.disciplina,
+    'grupoId': r.grupoId,
   };
 
   ReservaLaboratorio _reservaFromJson(Map<String, dynamic> json) {
@@ -51,6 +52,7 @@ class ReservaRepository {
       turno: Turno.values.firstWhere((turno) => turno.name == json['turno']),
       periodo: json['periodo'] as int,
       disciplina: json['disciplina'] as String?,
+      grupoId: json['grupoId'] as String?,
     );
   }
 }

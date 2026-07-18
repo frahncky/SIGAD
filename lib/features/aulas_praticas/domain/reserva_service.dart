@@ -102,9 +102,10 @@ abstract final class ReservaService {
     required Turno turno,
     required int periodo,
     String? disciplina,
+    String? grupoId,
   }) {
     return ReservaLaboratorio(
-      id: 'RES-${DateTime.now().microsecondsSinceEpoch}',
+      id: 'RES-${DateTime.now().microsecondsSinceEpoch}-${_idSequence++}',
       professor: professor,
       laboratorio: laboratorio,
       mes: mes,
@@ -113,8 +114,11 @@ abstract final class ReservaService {
       turno: turno,
       periodo: periodo,
       disciplina: _normalizeNullable(disciplina),
+      grupoId: grupoId,
     );
   }
+
+  static int _idSequence = 0;
 
   static List<ReservaLaboratorio> reservasDoLaboratorio({
     required List<ReservaLaboratorio> reservas,
