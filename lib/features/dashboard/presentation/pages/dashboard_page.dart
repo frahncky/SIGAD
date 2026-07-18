@@ -160,9 +160,25 @@ class _HeroPanel extends StatelessWidget {
       children: [
         Text(
           'Olá, $userName',
-          style: textTheme.headlineSmall?.copyWith(
+          style: textTheme.headlineMedium?.copyWith(
             color: Colors.white,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w800,
+            height: 1.1,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.18),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Text(
+            profile.title,
+            style: textTheme.labelMedium?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
       ],
@@ -233,16 +249,7 @@ class _HeroPanel extends StatelessWidget {
     );
 
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: isWide ? 34 : 24,
-        vertical: isWide ? 22 : 20,
-      ),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [profile.tone, profile.tone.withValues(alpha: 0.78)],
-        ),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -252,13 +259,50 @@ class _HeroPanel extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          headerText,
-          const SizedBox(height: 14),
-          Align(alignment: Alignment.topCenter, child: compactIndicators),
-        ],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [profile.tone, profile.tone.withValues(alpha: 0.78)],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: -46,
+              right: -30,
+              child: _HeroBlob(size: 150, opacity: 0.14),
+            ),
+            Positioned(
+              bottom: -60,
+              right: 60,
+              child: _HeroBlob(size: 110, opacity: 0.10),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: isWide ? 34 : 24,
+                vertical: isWide ? 22 : 20,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  headerText,
+                  const SizedBox(height: 16),
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: compactIndicators,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -339,6 +383,27 @@ class _HeroPanel extends StatelessWidget {
     final hora = data.hour.toString().padLeft(2, '0');
     final minuto = data.minute.toString().padLeft(2, '0');
     return '$hora:$minuto';
+  }
+}
+
+class _HeroBlob extends StatelessWidget {
+  const _HeroBlob({required this.size, required this.opacity});
+
+  final double size;
+  final double opacity;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white.withValues(alpha: opacity),
+        ),
+      ),
+    );
   }
 }
 
@@ -434,6 +499,8 @@ class _AttentionPanel extends StatelessWidget {
       title: 'Atenção agora',
       subtitle: 'Itens abertos ordenados por impacto',
       actionLabel: 'Ver todas',
+      icon: Icons.priority_high_rounded,
+      tone: SigadColors.risk,
       onAction: () =>
           Navigator.of(context).pushReplacementNamed(AppRoutes.demandas),
       child: abertas.isEmpty
@@ -527,6 +594,8 @@ class _ActivitiesPanel extends StatelessWidget {
       title: 'Próximas atividades',
       subtitle: 'Compromissos que ainda pedem atenção',
       actionLabel: 'Ver todas',
+      icon: Icons.event_note_outlined,
+      tone: SigadColors.info,
       onAction: () =>
           Navigator.of(context).pushReplacementNamed(AppRoutes.atividades),
       child: abertas.isEmpty
@@ -609,12 +678,37 @@ class _FlowPanel extends StatelessWidget {
     final progress = cards.isEmpty ? 0.0 : completed / cards.length;
     return _DashboardPanel(
       title: 'Fluxo de tarefas',
-      subtitle: '${(progress * 100).round()}% do quadro concluído',
+      subtitle: 'Progresso do quadro operacional',
       actionLabel: 'Abrir quadro',
+      icon: Icons.insights_rounded,
+      tone: SigadColors.brand,
       onAction: () =>
           Navigator.of(context).pushReplacementNamed(AppRoutes.kanban),
       child: Column(
         children: [
+          const SizedBox(height: 6),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                '${(progress * 100).round()}%',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: SigadColors.brand,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'do quadro concluído',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 10),
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
@@ -661,6 +755,8 @@ class _DashboardPanel extends StatelessWidget {
     required this.actionLabel,
     required this.onAction,
     required this.child,
+    required this.icon,
+    required this.tone,
   });
 
   final String title;
@@ -668,6 +764,8 @@ class _DashboardPanel extends StatelessWidget {
   final String actionLabel;
   final VoidCallback onAction;
   final Widget child;
+  final IconData icon;
+  final Color tone;
 
   @override
   Widget build(BuildContext context) {
@@ -679,8 +777,9 @@ class _DashboardPanel extends StatelessWidget {
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(22),
-        side: BorderSide(color: theme.colorScheme.outlineVariant),
+        side: BorderSide(color: tone.withValues(alpha: 0.16)),
       ),
+      shadowColor: tone.withValues(alpha: 0.25),
       child: Padding(
         padding: const EdgeInsets.all(18),
         child: Column(
@@ -689,6 +788,16 @@ class _DashboardPanel extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: tone.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: tone, size: 19),
+                ),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -842,6 +951,15 @@ class _SectionTitle extends StatelessWidget {
   }
 }
 
+const _moduleTones = [
+  SigadColors.brand,
+  SigadColors.info,
+  SigadColors.warning,
+  SigadColors.success,
+  SigadColors.accent,
+  SigadColors.risk,
+];
+
 class _ModuleGrid extends StatelessWidget {
   const _ModuleGrid({required this.modules});
 
@@ -873,7 +991,10 @@ class _ModuleGrid extends StatelessWidget {
             mainAxisSpacing: 8,
             crossAxisSpacing: 8,
           ),
-          itemBuilder: (context, index) => _ModuleCard(item: modules[index]),
+          itemBuilder: (context, index) => _ModuleCard(
+            item: modules[index],
+            tone: _moduleTones[index % _moduleTones.length],
+          ),
         );
       },
     );
@@ -881,9 +1002,10 @@ class _ModuleGrid extends StatelessWidget {
 }
 
 class _ModuleCard extends StatelessWidget {
-  const _ModuleCard({required this.item});
+  const _ModuleCard({required this.item, required this.tone});
 
   final NavigationItem item;
+  final Color tone;
 
   @override
   Widget build(BuildContext context) {
@@ -900,7 +1022,7 @@ class _ModuleCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18),
-        side: BorderSide(color: colors.outlineVariant),
+        side: BorderSide(color: tone.withValues(alpha: 0.18)),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
@@ -916,10 +1038,10 @@ class _ModuleCard extends StatelessWidget {
                     width: 30,
                     height: 30,
                     decoration: BoxDecoration(
-                      color: SigadColors.brand.withValues(alpha: 0.10),
+                      color: tone.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(9),
                     ),
-                    child: Icon(item.icon, color: SigadColors.brand, size: 17),
+                    child: Icon(item.icon, color: tone, size: 17),
                   ),
                   const Spacer(),
                   Icon(
