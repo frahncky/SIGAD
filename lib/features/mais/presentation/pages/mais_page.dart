@@ -4,8 +4,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../../../core/services/notificacoes_service.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../../shared/widgets/icon_avatar.dart';
 
 class MaisPage extends StatelessWidget {
   const MaisPage({super.key});
@@ -340,7 +342,7 @@ class _QuickAccessGrid extends StatelessWidget {
           ),
           itemBuilder: (context, index) {
             final item = items[index];
-            return _QuickAccessCard(item: item);
+            return _QuickAccessCard(item: item, tone: sigadToneForIndex(index));
           },
         );
       },
@@ -349,9 +351,10 @@ class _QuickAccessGrid extends StatelessWidget {
 }
 
 class _QuickAccessCard extends StatelessWidget {
-  const _QuickAccessCard({required this.item});
+  const _QuickAccessCard({required this.item, required this.tone});
 
   final _QuickAccessItem item;
+  final Color tone;
 
   @override
   Widget build(BuildContext context) {
@@ -367,19 +370,17 @@ class _QuickAccessCard extends StatelessWidget {
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: colors.outlineVariant),
+            border: Border.all(color: tone.withValues(alpha: 0.18)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 34,
-                height: 34,
-                decoration: BoxDecoration(
-                  color: SigadColors.brandLight,
-                  borderRadius: BorderRadius.circular(11),
-                ),
-                child: Icon(item.icon, color: SigadColors.brand, size: 18),
+              SigadIconAvatar(
+                icon: item.icon,
+                tone: tone,
+                size: 34,
+                iconSize: 18,
+                borderRadius: 11,
               ),
               const Spacer(),
               Text(
@@ -439,7 +440,7 @@ class _AdminCard extends StatelessWidget {
       child: Column(
         children: [
           for (var i = 0; i < items.length; i++) ...[
-            _AdminTile(item: items[i]),
+            _AdminTile(item: items[i], tone: sigadToneForIndex(i)),
             if (i < items.length - 1)
               Divider(height: 1, color: colors.outlineVariant),
           ],
@@ -450,14 +451,15 @@ class _AdminCard extends StatelessWidget {
 }
 
 class _AdminTile extends StatelessWidget {
-  const _AdminTile({required this.item});
+  const _AdminTile({required this.item, required this.tone});
 
   final _AdminItem item;
+  final Color tone;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(item.icon, color: SigadColors.brand),
+      leading: SigadIconAvatar(icon: item.icon, tone: tone),
       title: Text(
         item.title,
         style: const TextStyle(fontWeight: FontWeight.w700),

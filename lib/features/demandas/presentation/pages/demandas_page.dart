@@ -5,6 +5,7 @@ import '../../../../core/security/authorization_policy.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../../shared/widgets/icon_avatar.dart';
 import '../../../../shared/widgets/page_status_view.dart';
 import '../../data/demanda_repository.dart';
 import '../../domain/demanda_models.dart';
@@ -92,9 +93,24 @@ class _DemandasPageState extends State<DemandasPage> {
   @override
   Widget build(BuildContext context) {
     final demandasVisiveis = _demandasVisiveis;
+    final totalDemandas = _demandas.length;
+    final demandasAbertas = _demandas
+        .where((d) => d.statusLabel != 'Concluído')
+        .length;
+    final demandasUrgentes = _demandas
+        .where((d) => d.prioridade == 'Alta')
+        .length;
     return Scaffold(
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: _DemandasSummaryBanner(
+              total: totalDemandas,
+              abertas: demandasAbertas,
+              urgentes: demandasUrgentes,
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -657,6 +673,121 @@ class _DemandasPageState extends State<DemandasPage> {
       'Seu perfil não possui permissão para $actionLabel.',
     );
     return false;
+  }
+}
+
+class _DemandasSummaryBanner extends StatelessWidget {
+  const _DemandasSummaryBanner({
+    required this.total,
+    required this.abertas,
+    required this.urgentes,
+  });
+
+  final int total;
+  final int abertas;
+  final int urgentes;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: SigadColors.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: SigadColors.divider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const SigadIconAvatar(
+                icon: Icons.assignment_outlined,
+                tone: SigadColors.brand,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Resumo das demandas',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              _DemandasKpi(
+                label: 'No total',
+                value: '$total',
+                color: SigadColors.brand,
+              ),
+              const SizedBox(width: 8),
+              _DemandasKpi(
+                label: 'Abertas',
+                value: '$abertas',
+                color: SigadColors.info,
+              ),
+              const SizedBox(width: 8),
+              _DemandasKpi(
+                label: 'Urgentes',
+                value: '$urgentes',
+                color: SigadColors.risk,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DemandasKpi extends StatelessWidget {
+  const _DemandasKpi({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  final String label;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: SigadColors.surfaceAlt,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              value,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

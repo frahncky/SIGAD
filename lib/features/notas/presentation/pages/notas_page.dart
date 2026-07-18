@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../../../core/services/local_storage_service.dart';
 
 class NotasPage extends StatefulWidget {
@@ -392,10 +393,11 @@ class _NotasPageState extends State<NotasPage> {
                     ? !chips.take(4).contains(_categoriaFiltro) &&
                           _categoriaFiltro != 'Todas'
                     : _categoriaFiltro == chip;
+                final tone = sigadToneForIndex(index);
                 return ChoiceChip(
                   label: Text(chip),
                   selected: selected,
-                  selectedColor: SigadColors.brand,
+                  selectedColor: tone,
                   labelStyle: TextStyle(
                     color: selected ? Colors.white : colors.onSurface,
                     fontWeight: FontWeight.w700,

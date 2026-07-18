@@ -7,6 +7,7 @@ import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/services/theme_provider.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../../shared/widgets/icon_avatar.dart';
 import '../../data/configuracoes_repository.dart';
 import '../../domain/configuracoes_models.dart';
 import '../../domain/configuracoes_service.dart';
@@ -120,6 +121,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
         children: [
           _ConfigSection(
             titulo: 'Conta',
+            icon: Icons.person_outline,
             children: [
               _ConfigItem(
                 icon: Icons.person,
@@ -132,17 +134,21 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 titulo: 'Email',
                 subtitulo: _emailUsuario,
                 onTap: () => _showAlerta(context, 'Email'),
+                tone: SigadColors.info,
               ),
               _ConfigItem(
                 icon: Icons.lock,
                 titulo: 'Senha',
                 subtitulo: 'Última alteração: $_ultimaAlteracaoSenha',
                 onTap: () => _showAlerta(context, 'Alterar Senha'),
+                tone: SigadColors.risk,
               ),
             ],
           ),
           _ConfigSection(
             titulo: 'Preferências',
+            icon: Icons.tune_outlined,
+            tone: SigadColors.accent,
             children: [
               _ConfigToggle(
                 icon: Icons.notifications,
@@ -153,6 +159,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                   setState(() => _notificacoesAtivas = value);
                   _saveData();
                 },
+                tone: SigadColors.accent,
               ),
               _ConfigToggle(
                 icon: Icons.dark_mode,
@@ -164,6 +171,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                   context.read<ThemeProvider>().setDark(value);
                   _saveData();
                 },
+                tone: SigadColors.info,
               ),
               _ConfigToggle(
                 icon: Icons.fingerprint,
@@ -174,12 +182,15 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                   setState(() => _biometriaAtiva = value);
                   _saveData();
                 },
+                tone: SigadColors.success,
               ),
             ],
           ),
           if (_isDocenteComLembrete(role))
             _ConfigSection(
               titulo: 'Disciplinas e lembretes',
+              icon: Icons.school_outlined,
+              tone: SigadColors.warning,
               children: [
                 _ConfigToggle(
                   icon: Icons.schedule,
@@ -192,6 +203,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                     setState(() => _notificarAntesDaDisciplina = value);
                     _saveData();
                   },
+                  tone: SigadColors.warning,
                 ),
                 if (_notificarAntesDaDisciplina)
                   _ConfigDropdown(
@@ -214,12 +226,15 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                       setState(() => _antecedenciaNotificacaoMinutos = minutos);
                       _saveData();
                     },
+                    tone: SigadColors.accent,
                   ),
               ],
             ),
           // Removed Agenda de compromissos section
           _ConfigSection(
             titulo: 'Idioma e Aparência',
+            icon: Icons.translate_outlined,
+            tone: SigadColors.info,
             children: [
               _ConfigDropdown(
                 icon: Icons.language,
@@ -230,6 +245,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                   setState(() => _idioma = valor);
                   _saveData();
                 },
+                tone: SigadColors.info,
               ),
               _ConfigDropdown(
                 icon: Icons.text_fields,
@@ -240,34 +256,41 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                   setState(() => _tamanhoFonte = valor);
                   _saveData();
                 },
+                tone: SigadColors.accent,
               ),
             ],
           ),
           _ConfigSection(
             titulo: 'Dados e Privacidade',
+            icon: Icons.shield_outlined,
+            tone: SigadColors.risk,
             children: [
               _ConfigItem(
                 icon: Icons.backup,
                 titulo: 'Backup automático',
                 subtitulo: 'Próximo backup em: $_proximoBackup',
                 onTap: () => _showAlerta(context, 'Backup'),
+                tone: SigadColors.success,
               ),
               _ConfigItem(
                 icon: Icons.privacy_tip,
                 titulo: 'Política de privacidade',
                 subtitulo: 'Versão 2.1 (efetivo desde 01/01/2026)',
                 onTap: () => _showAlerta(context, 'Política de Privacidade'),
+                tone: SigadColors.risk,
               ),
               _ConfigItem(
                 icon: Icons.description,
                 titulo: 'Termos de serviço',
                 subtitulo: 'Versão 1.5',
                 onTap: () => _showAlerta(context, 'Termos de Serviço'),
+                tone: SigadColors.info,
               ),
             ],
           ),
           _ConfigSection(
             titulo: 'Sobre',
+            icon: Icons.info_outline,
             children: [
               _ConfigItem(
                 icon: Icons.info,
@@ -282,6 +305,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                     ? 'Enviar feedback ou relatar bugs'
                     : '$_problemasReportados relato(s) enviados',
                 onTap: () => _showAlerta(context, 'Reportar Problema'),
+                tone: SigadColors.warning,
               ),
             ],
           ),
@@ -1074,9 +1098,16 @@ class _ConfiguracoesAccessDenied extends StatelessWidget {
 }
 
 class _ConfigSection extends StatelessWidget {
-  const _ConfigSection({required this.titulo, required this.children});
+  const _ConfigSection({
+    required this.titulo,
+    required this.icon,
+    this.tone = SigadColors.brand,
+    required this.children,
+  });
 
   final String titulo;
+  final IconData icon;
+  final Color tone;
   final List<Widget> children;
 
   @override
@@ -1087,12 +1118,18 @@ class _ConfigSection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Text(
-            titulo,
-            style: textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: SigadColors.muted,
-            ),
+          child: Row(
+            children: [
+              SigadIconAvatar(icon: icon, tone: tone, size: 30, iconSize: 16),
+              const SizedBox(width: 10),
+              Text(
+                titulo,
+                style: textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: SigadColors.muted,
+                ),
+              ),
+            ],
           ),
         ),
         ...children.asMap().entries.map(
@@ -1119,19 +1156,21 @@ class _ConfigItem extends StatelessWidget {
     required this.titulo,
     required this.subtitulo,
     required this.onTap,
+    this.tone = SigadColors.brand,
   });
 
   final IconData icon;
   final String titulo;
   final String subtitulo;
   final VoidCallback onTap;
+  final Color tone;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      leading: Icon(icon, color: SigadColors.brand),
+      leading: Icon(icon, color: tone),
       title: Text(
         titulo,
         style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
@@ -1153,6 +1192,7 @@ class _ConfigToggle extends StatelessWidget {
     required this.subtitulo,
     required this.value,
     required this.onChanged,
+    this.tone = SigadColors.brand,
   });
 
   final IconData icon;
@@ -1160,13 +1200,14 @@ class _ConfigToggle extends StatelessWidget {
   final String subtitulo;
   final bool value;
   final ValueChanged<bool> onChanged;
+  final Color tone;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      leading: Icon(icon, color: SigadColors.brand),
+      leading: Icon(icon, color: tone),
       title: Text(
         titulo,
         style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
@@ -1220,6 +1261,7 @@ class _ConfigDropdown extends StatelessWidget {
     required this.valor,
     required this.opcoes,
     required this.onChanged,
+    this.tone = SigadColors.brand,
   });
 
   final IconData icon;
@@ -1227,6 +1269,7 @@ class _ConfigDropdown extends StatelessWidget {
   final String valor;
   final List<String> opcoes;
   final ValueChanged<String> onChanged;
+  final Color tone;
 
   @override
   Widget build(BuildContext context) {
@@ -1235,7 +1278,7 @@ class _ConfigDropdown extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          Icon(icon, color: SigadColors.brand),
+          Icon(icon, color: tone),
           const SizedBox(width: 16),
           Expanded(
             child: Column(

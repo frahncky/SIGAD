@@ -21,6 +21,8 @@ import '../../../kanban/domain/kanban_models.dart';
 import '../../../kanban/domain/kanban_service.dart';
 import '../../domain/dashboard_priorities_service.dart';
 import '../../domain/dashboard_role_profile.dart';
+import '../../../../app/theme/sigad_tone_palette.dart';
+import '../../../../shared/widgets/icon_avatar.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -788,15 +790,7 @@ class _DashboardPanel extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    color: tone.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(icon, color: tone, size: 19),
-                ),
+                SigadIconAvatar(icon: icon, tone: tone),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -951,15 +945,6 @@ class _SectionTitle extends StatelessWidget {
   }
 }
 
-const _moduleTones = [
-  SigadColors.brand,
-  SigadColors.info,
-  SigadColors.warning,
-  SigadColors.success,
-  SigadColors.accent,
-  SigadColors.risk,
-];
-
 class _ModuleGrid extends StatelessWidget {
   const _ModuleGrid({required this.modules});
 
@@ -993,7 +978,7 @@ class _ModuleGrid extends StatelessWidget {
           ),
           itemBuilder: (context, index) => _ModuleCard(
             item: modules[index],
-            tone: _moduleTones[index % _moduleTones.length],
+            tone: sigadToneForIndex(index),
           ),
         );
       },
@@ -1034,14 +1019,12 @@ class _ModuleCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: tone.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(9),
-                    ),
-                    child: Icon(item.icon, color: tone, size: 17),
+                  SigadIconAvatar(
+                    icon: item.icon,
+                    tone: tone,
+                    size: 30,
+                    iconSize: 17,
+                    borderRadius: 9,
                   ),
                   const Spacer(),
                   Icon(

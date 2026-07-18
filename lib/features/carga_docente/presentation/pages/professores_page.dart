@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../domain/docente_models.dart';
 import '../../data/docente_repository.dart';
+import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../../shared/widgets/icon_avatar.dart';
 import 'package:provider/provider.dart';
 
 class ProfessoresPage extends StatefulWidget {
@@ -75,7 +78,10 @@ class _ProfessoresPageState extends State<ProfessoresPage> {
                     decoration: const InputDecoration(
                       hintText:
                           'Buscar docente por nome, e-mail ou departamento',
-                      prefixIcon: Icon(Icons.search_outlined),
+                      prefixIcon: Icon(
+                        Icons.search_outlined,
+                        color: SigadColors.brand,
+                      ),
                     ),
                   ),
                 ),
@@ -86,6 +92,7 @@ class _ProfessoresPageState extends State<ProfessoresPage> {
                       : 'Ordem decrescente',
                   icon: Icon(
                     _ordemCrescente ? Icons.arrow_downward : Icons.arrow_upward,
+                    color: SigadColors.brand,
                   ),
                   onPressed: () {
                     setState(() {
@@ -116,6 +123,10 @@ class _ProfessoresPageState extends State<ProfessoresPage> {
                       final docente = docentesFiltrados[index];
                       return Card(
                         child: ListTile(
+                          leading: SigadIconAvatar(
+                            icon: Icons.school_outlined,
+                            tone: sigadToneForIndex(index),
+                          ),
                           title: Text(docente.nome),
                           subtitle: Text(docente.departamento),
                           trailing: podeGerenciar

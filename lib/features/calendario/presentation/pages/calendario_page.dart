@@ -8,6 +8,7 @@ import '../../../aulas_praticas/data/reserva_repository.dart';
 import '../../../aulas_praticas/domain/reserva_models.dart';
 import '../../../aulas_praticas/domain/reserva_service.dart';
 import '../widgets/calendario_mes_widget.dart';
+import '../../../../shared/widgets/icon_avatar.dart';
 
 class CalendarioPage extends StatefulWidget {
   const CalendarioPage({super.key});
@@ -348,16 +349,19 @@ class _ResumoDaSemana extends StatelessWidget {
                 icon: Icons.event_note_outlined,
                 value: '—',
                 label: 'Eventos agendados',
+                tone: SigadColors.accent,
               ),
               _ResumoStat(
                 icon: Icons.science_outlined,
                 value: '$reservasNaSemana',
                 label: 'Reservas de laboratório',
+                tone: SigadColors.success,
               ),
               const _ResumoStat(
                 icon: Icons.groups_outlined,
                 value: '—',
                 label: 'Reunião marcada',
+                tone: SigadColors.info,
               ),
             ],
           ),
@@ -372,11 +376,13 @@ class _ResumoStat extends StatelessWidget {
     required this.icon,
     required this.value,
     required this.label,
+    required this.tone,
   });
 
   final IconData icon;
   final String value;
   final String label;
+  final Color tone;
 
   @override
   Widget build(BuildContext context) {
@@ -386,14 +392,12 @@ class _ResumoStat extends StatelessWidget {
         children: [
           Row(
             children: [
-              Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: SigadColors.brandLight,
-                  borderRadius: BorderRadius.circular(9),
-                ),
-                child: Icon(icon, color: SigadColors.brand, size: 15),
+              SigadIconAvatar(
+                icon: icon,
+                tone: tone,
+                size: 28,
+                iconSize: 15,
+                borderRadius: 9,
               ),
               const SizedBox(width: 6),
               Text(value, style: const TextStyle(fontWeight: FontWeight.w800)),
@@ -597,6 +601,12 @@ Color _corCategoria(String categoria) {
     default:
       return SigadColors.brand;
   }
+}
+
+Color _corOcupacao(double ocupacao) {
+  if (ocupacao < 0.4) return SigadColors.success;
+  if (ocupacao < 0.75) return SigadColors.warning;
+  return SigadColors.risk;
 }
 
 class _ProximosCompromissos extends StatelessWidget {
@@ -994,7 +1004,13 @@ class _OcupacaoLaboratorios extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Icon(Icons.bar_chart_rounded, color: SigadColors.brand),
+            const SigadIconAvatar(
+              icon: Icons.bar_chart_rounded,
+              tone: SigadColors.brand,
+              size: 34,
+              iconSize: 18,
+              borderRadius: 10,
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -1033,7 +1049,11 @@ class _OcupacaoLaboratorios extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(lab.icone, color: SigadColors.brand, size: 18),
+                        Icon(
+                          lab.icone,
+                          color: _corOcupacao(lab.ocupacao),
+                          size: 18,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -1045,7 +1065,11 @@ class _OcupacaoLaboratorios extends StatelessWidget {
                         ),
                         Text(
                           '${(lab.ocupacao * 100).round()}%',
-                          style: const TextStyle(fontWeight: FontWeight.w800),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                fontWeight: FontWeight.w800,
+                                color: _corOcupacao(lab.ocupacao),
+                              ),
                         ),
                       ],
                     ),

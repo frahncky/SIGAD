@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../../configuracoes/domain/agenda_convites_service.dart';
 import '../../data/docente_repository.dart';
 import '../../domain/docente_form_service.dart';
@@ -11,6 +12,7 @@ import '../../../../core/models/user_role.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../../shared/widgets/icon_avatar.dart';
 
 class CargaDocentePage extends StatefulWidget {
   final Docente? docente;
@@ -1270,20 +1272,24 @@ class _DocenteCard extends StatelessWidget {
             spacing: 6,
             runSpacing: 6,
             children: docente.disciplinas
+                .asMap()
+                .entries
                 .map(
-                  (d) => Container(
+                  (entry) => Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: SigadColors.brand.withValues(alpha: 0.1),
+                      color: sigadToneForIndex(
+                        entry.key,
+                      ).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
-                      d,
+                      entry.value,
                       style: textTheme.labelSmall?.copyWith(
-                        color: SigadColors.brand,
+                        color: sigadToneForIndex(entry.key),
                       ),
                     ),
                   ),
@@ -1331,23 +1337,46 @@ class _PainelDistribuicaoInteligente extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(
-                Icons.tune_outlined,
-                size: 18,
-                color: SigadColors.brand,
+              const SigadIconAvatar(
+                icon: Icons.tune_outlined,
+                tone: SigadColors.brand,
               ),
-              const SizedBox(width: 6),
-              Text(
-                'Otimização da distribuição',
-                style: textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Otimização da distribuição',
+                  style: textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
-              const Spacer(),
               TextButton.icon(
                 onPressed: onSimularRedistribuicao,
                 icon: const Icon(Icons.auto_graph_outlined, size: 16),
                 label: const Text('Simular'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                '$mediaPercentual%',
+                style: textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: SigadColors.brand,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'de aproveitamento médio da carga horária',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: SigadColors.muted,
+                  ),
+                ),
               ),
             ],
           ),

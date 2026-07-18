@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../data/laboratorio_repository.dart';
 import '../../data/reserva_repository.dart';
 import '../../domain/reserva_models.dart';
@@ -11,6 +12,7 @@ import '../../../carga_docente/domain/docente_models.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../../shared/widgets/icon_avatar.dart';
 import '../widgets/dialog_disciplina_semanas_reserva.dart';
 import 'laboratorios_catalogo_page.dart';
 
@@ -1290,10 +1292,11 @@ class _PainelOtimizacaoLaboratorio extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(
-                Icons.insights_outlined,
-                size: 18,
-                color: SigadColors.brand,
+              const SigadIconAvatar(
+                icon: Icons.insights_outlined,
+                tone: SigadColors.brand,
+                size: 30,
+                iconSize: 16,
               ),
               const SizedBox(width: 6),
               Expanded(
@@ -1314,10 +1317,32 @@ class _PainelOtimizacaoLaboratorio extends StatelessWidget {
                 ),
             ],
           ),
-          const SizedBox(height: 6),
-          Text(
-            'Laboratório selecionado: ${laboratorioSelecionado.isEmpty ? 'N/D' : laboratorioSelecionado} · ${taxa.toStringAsFixed(0)}% ocupado na semana.',
-            style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+          const SizedBox(height: 8),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                '${taxa.toStringAsFixed(0)}%',
+                style: textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: taxa < 40
+                      ? SigadColors.success
+                      : taxa < 75
+                      ? SigadColors.warning
+                      : SigadColors.risk,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'ocupado na semana em ${laboratorioSelecionado.isEmpty ? 'N/D' : laboratorioSelecionado}',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: SigadColors.muted,
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 10),
           Wrap(
@@ -1325,29 +1350,35 @@ class _PainelOtimizacaoLaboratorio extends StatelessWidget {
             runSpacing: 8,
             children: indicadoresOrdenados
                 .take(4)
-                .map(
-                  (indicador) => Container(
+                .toList()
+                .asMap()
+                .entries
+                .map((entry) {
+                  final index = entry.key;
+                  final indicador = entry.value;
+                  final selecionado =
+                      indicador.laboratorio == laboratorioSelecionado;
+                  final tone = sigadToneForIndex(index);
+                  return Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 10,
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: indicador.laboratorio == laboratorioSelecionado
+                      color: selecionado
                           ? SigadColors.brand.withValues(alpha: 0.12)
-                          : SigadColors.surfaceAlt,
+                          : tone.withValues(alpha: 0.10),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       '${indicador.laboratorio}: ${(indicador.taxaOcupacao * 100).toStringAsFixed(0)}% · ${indicador.slotsLivres} livres',
                       style: textTheme.labelSmall?.copyWith(
-                        color: indicador.laboratorio == laboratorioSelecionado
-                            ? SigadColors.brandDark
-                            : SigadColors.muted,
+                        color: selecionado ? SigadColors.brandDark : tone,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ),
-                )
+                  );
+                })
                 .toList(growable: false),
           ),
           if (sugestoes.isNotEmpty) ...[

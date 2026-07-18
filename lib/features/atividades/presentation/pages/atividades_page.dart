@@ -3,6 +3,7 @@ import '../../../../app/theme/sigad_colors.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../shared/widgets/page_status_view.dart';
+import '../../../../shared/widgets/icon_avatar.dart';
 import '../../data/atividade_repository.dart';
 import '../../domain/atividade_models.dart';
 import '../../domain/atividades_service.dart';
@@ -574,23 +575,43 @@ class _AtividadesSummaryBanner extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Agenda operacional',
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          Row(
+            children: [
+              const SigadIconAvatar(
+                icon: Icons.fact_check_outlined,
+                tone: SigadColors.brand,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Agenda operacional',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 14),
           Row(
             children: [
-              _AtividadesKpi(label: 'No total', value: '$totalAtividades'),
+              _AtividadesKpi(
+                label: 'No total',
+                value: '$totalAtividades',
+                tone: SigadColors.brand,
+              ),
               const SizedBox(width: 8),
               _AtividadesKpi(
                 label: 'Concluídas',
                 value: '$atividadesConcluidas',
+                tone: SigadColors.success,
               ),
               const SizedBox(width: 8),
-              _AtividadesKpi(label: 'Pendentes', value: '$atividadesPendentes'),
+              _AtividadesKpi(
+                label: 'Pendentes',
+                value: '$atividadesPendentes',
+                tone: SigadColors.warning,
+              ),
             ],
           ),
         ],
@@ -600,10 +621,15 @@ class _AtividadesSummaryBanner extends StatelessWidget {
 }
 
 class _AtividadesKpi extends StatelessWidget {
-  const _AtividadesKpi({required this.label, required this.value});
+  const _AtividadesKpi({
+    required this.label,
+    required this.value,
+    required this.tone,
+  });
 
   final String label;
   final String value;
+  final Color tone;
 
   @override
   Widget build(BuildContext context) {
@@ -626,9 +652,10 @@ class _AtividadesKpi extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               value,
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: tone,
+              ),
             ),
           ],
         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../../../core/models/user.dart';
 import '../../../../core/services/chat_provider.dart';
 import '../../../../core/services/user_context_provider.dart';
@@ -339,11 +340,13 @@ class _ConversationTile extends StatelessWidget {
     required this.conversation,
     required this.selected,
     required this.onTap,
+    required this.tone,
   });
 
   final ConversationSummary conversation;
   final bool selected;
   final VoidCallback onTap;
+  final Color tone;
 
   @override
   Widget build(BuildContext context) {
@@ -368,11 +371,11 @@ class _ConversationTile extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 24,
-                    backgroundColor: SigadColors.surfaceAlt,
+                    backgroundColor: tone,
                     child: Text(
                       _initials(conversation.contact.name),
                       style: const TextStyle(
-                        color: SigadColors.brandDark,
+                        color: Colors.white,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -636,15 +639,15 @@ class _ConversationListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = conversations
-        .map<Widget>(
-          (c) => _ConversationTile(
-            conversation: c,
-            selected: c.contact.email == selectedContactEmail,
-            onTap: () => onSelect(c.contact.email),
-          ),
-        )
-        .toList();
+    final items = <Widget>[
+      for (var index = 0; index < conversations.length; index++)
+        _ConversationTile(
+          conversation: conversations[index],
+          selected: conversations[index].contact.email == selectedContactEmail,
+          onTap: () => onSelect(conversations[index].contact.email),
+          tone: sigadToneForIndex(index),
+        ),
+    ];
 
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),

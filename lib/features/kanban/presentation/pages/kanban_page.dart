@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../shared/widgets/horizontal_scroll_hint.dart';
@@ -67,6 +68,7 @@ class _KanbanPageState extends State<KanbanPage> {
   @override
   Widget build(BuildContext context) {
     final shouldShowScrollHint = MediaQuery.of(context).size.width < 960;
+    final colunasEntries = _colunas.entries.toList();
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -108,14 +110,18 @@ class _KanbanPageState extends State<KanbanPage> {
                     ),
                     child: Row(
                       children: [
-                        ..._colunas.entries.map(
-                          (entry) => _KanbanColuna(
-                            titulo: entry.key,
-                            cards: entry.value,
+                        for (
+                          var index = 0;
+                          index < colunasEntries.length;
+                          index++
+                        )
+                          _KanbanColuna(
+                            titulo: colunasEntries[index].key,
+                            cards: colunasEntries[index].value,
+                            tone: sigadToneForIndex(index),
                             onCardMoved: _moveCard,
                             onCardDeleted: _deleteCard,
                           ),
-                        ),
                       ],
                     ),
                   ),
@@ -248,12 +254,14 @@ class _KanbanColuna extends StatelessWidget {
   const _KanbanColuna({
     required this.titulo,
     required this.cards,
+    required this.tone,
     required this.onCardMoved,
     required this.onCardDeleted,
   });
 
   final String titulo;
   final List<KanbanCardModel> cards;
+  final Color tone;
   final Function(KanbanCardModel, String) onCardMoved;
   final Function(KanbanCardModel) onCardDeleted;
 
@@ -291,13 +299,14 @@ class _KanbanColuna extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: SigadColors.muted.withValues(alpha: 0.1),
+                    color: tone.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
                     '${cards.length}',
                     style: textTheme.labelSmall?.copyWith(
-                      color: SigadColors.muted,
+                      color: tone,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),

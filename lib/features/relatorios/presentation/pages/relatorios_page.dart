@@ -8,6 +8,8 @@ import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../../../../shared/widgets/horizontal_scroll_hint.dart';
 import '../../../../shared/widgets/page_status_view.dart';
+import '../../../../shared/widgets/icon_avatar.dart';
+import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../data/relatorio_repository.dart';
 import '../../domain/relatorio_models.dart';
 import '../../domain/relatorios_service.dart';
@@ -180,9 +182,17 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
               children: [
                 const Icon(Icons.info, color: SigadColors.brand),
                 const SizedBox(width: 12),
+                Text(
+                  '${relatoriosFiltrados.length}',
+                  style: textTheme.titleLarge?.copyWith(
+                    color: SigadColors.brand,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    '${relatoriosFiltrados.length} relatorios disponiveis para consulta',
+                    'relatorios disponiveis para consulta',
                     style: textTheme.bodySmall?.copyWith(
                       color: SigadColors.brand,
                     ),
@@ -222,6 +232,7 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
                 ),
                 child: _RelatorioCard(
                   relatorio: entry.value,
+                  index: entry.key,
                   onBaixar: () => _baixarRelatorio(entry.value),
                   onCompartilhar: () => _compartilharRelatorio(entry.value),
                 ),
@@ -294,20 +305,43 @@ class _RelatoriosSummaryBanner extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Central de relatorios',
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          Row(
+            children: [
+              const SigadIconAvatar(
+                icon: Icons.summarize_outlined,
+                tone: SigadColors.brand,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Central de relatorios',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 14),
           Row(
             children: [
-              _RelatoriosKpi(label: 'Disponiveis', value: '$totalRelatorios'),
+              _RelatoriosKpi(
+                label: 'Disponiveis',
+                value: '$totalRelatorios',
+                tone: SigadColors.brand,
+              ),
               const SizedBox(width: 8),
-              _RelatoriosKpi(label: 'Publicados', value: '$publicados'),
+              _RelatoriosKpi(
+                label: 'Publicados',
+                value: '$publicados',
+                tone: SigadColors.success,
+              ),
               const SizedBox(width: 8),
-              _RelatoriosKpi(label: 'Em revisao', value: '$emRevisao'),
+              _RelatoriosKpi(
+                label: 'Em revisao',
+                value: '$emRevisao',
+                tone: SigadColors.warning,
+              ),
             ],
           ),
         ],
@@ -317,10 +351,15 @@ class _RelatoriosSummaryBanner extends StatelessWidget {
 }
 
 class _RelatoriosKpi extends StatelessWidget {
-  const _RelatoriosKpi({required this.label, required this.value});
+  const _RelatoriosKpi({
+    required this.label,
+    required this.value,
+    required this.tone,
+  });
 
   final String label;
   final String value;
+  final Color tone;
 
   @override
   Widget build(BuildContext context) {
@@ -343,9 +382,10 @@ class _RelatoriosKpi extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               value,
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: tone,
+              ),
             ),
           ],
         ),
@@ -357,13 +397,32 @@ class _RelatoriosKpi extends StatelessWidget {
 class _RelatorioCard extends StatelessWidget {
   const _RelatorioCard({
     required this.relatorio,
+    required this.index,
     required this.onBaixar,
     required this.onCompartilhar,
   });
 
   final Relatorio relatorio;
+  final int index;
   final VoidCallback onBaixar;
   final VoidCallback onCompartilhar;
+
+  Color _toneParaTipo(String tipo) {
+    switch (tipo) {
+      case 'Análise Geral':
+        return SigadColors.brand;
+      case 'Recursos Humanos':
+        return SigadColors.accent;
+      case 'Desempenho':
+        return SigadColors.success;
+      case 'Infraestrutura':
+        return SigadColors.info;
+      case 'Conformidade':
+        return SigadColors.risk;
+      default:
+        return sigadToneForIndex(index);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -393,20 +452,12 @@ class _RelatorioCard extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: SigadColors.brand.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Center(
-                      child: Icon(
-                        Icons.description,
-                        color: SigadColors.brand,
-                        size: 20,
-                      ),
-                    ),
+                  SigadIconAvatar(
+                    icon: Icons.description,
+                    tone: _toneParaTipo(relatorio.tipo),
+                    size: 40,
+                    iconSize: 20,
+                    borderRadius: 8,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
