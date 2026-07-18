@@ -242,4 +242,68 @@ void main() {
     expect(find.textContaining('1 compromisso(s) no período'), findsNothing);
     expect(find.textContaining('Reunião de coordenação'), findsNothing);
   });
+
+  testWidgets(
+    'sobre o SIGAD não apresenta overflow em tela pequena com texto ampliado',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 568);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final userContext = UserContextProvider();
+      await userContext.login(
+        User(
+          id: 'cfg-sobre-1',
+          name: 'Pessoa QA',
+          email: 'qa@ifma.edu.br',
+          role: UserRole.coordenador,
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      );
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<UserContextProvider>.value(
+          value: userContext,
+          child: MaterialApp(
+            theme: AppTheme.light(),
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: TextScaler.linear(2)),
+              child: child!,
+            ),
+            home: const ConfiguracoesPage(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final aboutEntry = find.text('Sobre o SIGAD');
+      await tester.scrollUntilVisible(
+        aboutEntry,
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+
+      await tester.tap(aboutEntry);
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(find.byTooltip('Fechar sobre o SIGAD'), findsOneWidget);
+
+      final closeButton = find.widgetWithText(ElevatedButton, 'Fechar');
+      expect(closeButton, findsOneWidget);
+      expect(closeButton.hitTestable(), findsOneWidget);
+
+      await tester.tap(closeButton);
+      await tester.pumpAndSettle();
+
+      expect(find.byTooltip('Fechar sobre o SIGAD'), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
 }
