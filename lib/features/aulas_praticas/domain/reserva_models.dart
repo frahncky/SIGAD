@@ -1,5 +1,6 @@
+import 'dart:ui' show Color;
+
 import '../../../../app/theme/sigad_colors.dart';
-import 'package:flutter/material.dart';
 
 class ReservaLaboratorio {
   const ReservaLaboratorio({

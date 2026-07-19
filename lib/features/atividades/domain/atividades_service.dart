@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'dart:ui' show Color;
 
 import '../../../../app/theme/sigad_colors.dart';
 import 'atividade_models.dart';

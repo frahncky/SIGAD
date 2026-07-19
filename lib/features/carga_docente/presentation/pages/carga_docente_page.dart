@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../app/theme/sigad_tone_palette.dart';
-import '../../../configuracoes/domain/agenda_convites_service.dart';
+import '../../../configuracoes/data/agenda_convites_service.dart';
 import '../../data/docente_repository.dart';
 import '../../domain/docente_form_service.dart';
 import '../../domain/docente_models.dart';
