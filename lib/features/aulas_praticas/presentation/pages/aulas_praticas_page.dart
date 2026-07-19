@@ -5,6 +5,7 @@ import '../../../../app/theme/sigad_colors.dart';
 import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../data/laboratorio_repository.dart';
 import '../../data/reserva_repository.dart';
+import '../../domain/feriado_service.dart';
 import '../../domain/reserva_models.dart';
 import '../../domain/reserva_service.dart';
 import '../../../carga_docente/data/docente_repository.dart';
@@ -61,7 +62,8 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   final LaboratorioRepository _laboratorioRepository = LaboratorioRepository();
   final DocenteRepository _docenteRepository = DocenteRepository();
   final List<ReservaLaboratorio> _reservas = ReservaService.defaultReservas(
-    DateTime.now().month,
+    ano: DateTime.now().year,
+    mes: DateTime.now().month,
   );
   final List<Docente> _docentes = [];
 
@@ -69,6 +71,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       TransformationController();
 
   String? _laboratorioSelecionado;
+  int _anoSelecionado = DateTime.now().year;
   int _mesSelecionado = DateTime.now().month;
   int _diaSelecionado = DateTime.now().day;
 
@@ -106,11 +109,13 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     });
   }
 
-  Future<void> _saveData() async {
+  Future<bool> _saveData() async {
     try {
       await _reservaRepository.saveReservas(_reservas);
+      return true;
     } catch (e) {
       _showError('Erro ao salvar os dados localmente.');
+      return false;
     }
   }
 
@@ -127,11 +132,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   String get _diaSemanaAbreviadoDoDiaSelecionado {
     // Segunda = 1, Domingo = 7
     const dias = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-    final data = DateTime(
-      DateTime.now().year,
-      _mesSelecionado,
-      _diaSelecionado,
-    );
+    final data = DateTime(_anoSelecionado, _mesSelecionado, _diaSelecionado);
     // DateTime.weekday: segunda=1, domingo=7
     return dias[data.weekday - 1];
   }
@@ -146,11 +147,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       'Sábado',
       'Domingo',
     ];
-    final data = DateTime(
-      DateTime.now().year,
-      _mesSelecionado,
-      _diaSelecionado,
-    );
+    final data = DateTime(_anoSelecionado, _mesSelecionado, _diaSelecionado);
     return dias[data.weekday - 1];
   }
 
@@ -158,6 +155,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       ReservaService.reservasDoLaboratorio(
         reservas: _reservas,
         laboratorio: _laboratorioSelecionadoValido,
+        ano: _anoSelecionado,
         mes: _mesSelecionado,
         semanaDoMes: _semanaSelecionada,
       );
@@ -166,6 +164,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       ReservaService.calcularOcupacaoLaboratorios(
         reservas: _reservas,
         laboratorios: _laboratoriosDefault,
+        ano: _anoSelecionado,
         mes: _mesSelecionado,
         semanaDoMes: _semanaSelecionada,
       );
@@ -174,6 +173,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       ReservaService.sugerirSlotsLivres(
         reservas: _reservas,
         laboratorios: _laboratoriosDefault,
+        ano: _anoSelecionado,
         mes: _mesSelecionado,
         semanaDoMes: _semanaSelecionada,
         diaSemanaPreferencial: _diaSemanaAbreviadoDoDiaSelecionado,
@@ -209,8 +209,94 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   }
 
   int get _diasNoMesSelecionado {
-    final now = DateTime.now();
-    return DateTime(now.year, _mesSelecionado + 1, 0).day;
+    return DateTime(_anoSelecionado, _mesSelecionado + 1, 0).day;
+  }
+
+  void _selecionarPeriodo(int ano, int mes) {
+    final periodo = DateTime(ano.clamp(2020, 2100), mes);
+    setState(() {
+      _anoSelecionado = periodo.year;
+      _mesSelecionado = periodo.month;
+      _diaSelecionado = _diaSelecionado.clamp(1, _diasNoMesSelecionado);
+    });
+  }
+
+  void _irParaMesAnterior() {
+    if (_anoSelecionado == 2020 && _mesSelecionado == DateTime.january) {
+      return;
+    }
+    final anterior = DateTime(_anoSelecionado, _mesSelecionado - 1);
+    _selecionarPeriodo(anterior.year, anterior.month);
+  }
+
+  void _irParaProximoMes() {
+    if (_anoSelecionado == 2100 && _mesSelecionado == DateTime.december) {
+      return;
+    }
+    final proximo = DateTime(_anoSelecionado, _mesSelecionado + 1);
+    _selecionarPeriodo(proximo.year, proximo.month);
+  }
+
+  Future<void> _abrirSeletorMesAno() async {
+    var ano = _anoSelecionado;
+    var mes = _mesSelecionado;
+    final periodo = await showDialog<DateTime>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          scrollable: true,
+          title: const Text('Escolher mês e ano'),
+          content: SizedBox(
+            width: 360,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DropdownButtonFormField<int>(
+                  initialValue: mes,
+                  isExpanded: true,
+                  decoration: const InputDecoration(labelText: 'Mês'),
+                  items: [
+                    for (var index = 0; index < _mesesDefault.length; index++)
+                      DropdownMenuItem(
+                        value: index + 1,
+                        child: Text(_mesesDefault[index]),
+                      ),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) setDialogState(() => mes = value);
+                  },
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<int>(
+                  initialValue: ano,
+                  isExpanded: true,
+                  decoration: const InputDecoration(labelText: 'Ano'),
+                  items: [
+                    for (var value = 2020; value <= 2100; value++)
+                      DropdownMenuItem(value: value, child: Text('$value')),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) setDialogState(() => ano = value);
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancelar'),
+            ),
+            FilledButton(
+              onPressed: () =>
+                  Navigator.of(dialogContext).pop(DateTime(ano, mes)),
+              child: const Text('Aplicar'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (periodo != null) _selecionarPeriodo(periodo.year, periodo.month);
   }
 
   /// Cria a reserva de uma célula na semana atual e, se [totalSemanas] for
@@ -239,6 +325,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       final ocupado = ReservaService.isSlotOccupied(
         reservas: _reservas,
         laboratorio: _laboratorioSelecionadoValido,
+        ano: _anoSelecionado,
         mes: _mesSelecionado,
         semanaDoMes: semana,
         diaSemana: diaSemana,
@@ -253,6 +340,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         ReservaService.createReserva(
           professor: professor,
           laboratorio: _laboratorioSelecionadoValido,
+          ano: _anoSelecionado,
           mes: _mesSelecionado,
           semanaDoMes: semana,
           diaSemana: diaSemana,
@@ -351,20 +439,12 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                           setState(() => _laboratorioSelecionado = value),
                     );
                     final periodo = _FiltroPeriodoRow(
+                      anoSelecionado: _anoSelecionado,
                       mesSelecionado: _mesSelecionado,
                       meses: _mesesDefault,
-                      onMesChanged: (value) {
-                        setState(() {
-                          _mesSelecionado = value;
-                          final maxDia = _diasNoMesSelecionado;
-                          if (_diaSelecionado > maxDia) {
-                            _diaSelecionado = maxDia;
-                          }
-                          if (_diaSelecionado < 1) {
-                            _diaSelecionado = 1;
-                          }
-                        });
-                      },
+                      onAnterior: _irParaMesAnterior,
+                      onProximo: _irParaProximoMes,
+                      onSelecionarPeriodo: _abrirSeletorMesAno,
                     );
 
                     if (stacked) {
@@ -388,11 +468,14 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                 ),
                 const SizedBox(height: 10),
                 _SelecaoDiaMesRow(
+                  anoSelecionado: _anoSelecionado,
                   mesSelecionado: _mesSelecionado,
                   diaSelecionado: _diaSelecionado,
                   diasNoMes: _diasNoMesSelecionado,
                   onDiaChanged: (value) =>
                       setState(() => _diaSelecionado = value),
+                  onMesAnterior: _irParaMesAnterior,
+                  onProximoMes: _irParaProximoMes,
                 ),
                 if (podeVerOtimizacao) ...[
                   const SizedBox(height: 12),
@@ -408,11 +491,10 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                 ],
                 const SizedBox(height: 12),
                 _MapaSemanal(
+                  anoSelecionado: _anoSelecionado,
                   mesSelecionado: _mesSelecionado,
-                  mesLabel: ReservaService.nomeMes(
-                    _mesSelecionado,
-                    _mesesDefault,
-                  ),
+                  mesLabel:
+                      '${ReservaService.nomeMes(_mesSelecionado, _mesesDefault)} de $_anoSelecionado',
                   semanaLabel: ReservaService.descricaoSemana(
                     _semanaSelecionada,
                   ),
@@ -473,6 +555,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
               isOcupado: (t, p) => ReservaService.isSlotOccupied(
                 reservas: _reservas,
                 laboratorio: _laboratorioSelecionadoValido,
+                ano: _anoSelecionado,
                 mes: _mesSelecionado,
                 semanaDoMes: _semanaSelecionada,
                 diaSemana: diaSemana,
@@ -563,6 +646,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
             (item) =>
                 item.grupoId == reservaAtual.grupoId &&
                 item.laboratorio == reservaAtual.laboratorio &&
+                item.ano == reservaAtual.ano &&
                 item.mes == reservaAtual.mes,
           )
           .toList(growable: false);
@@ -575,13 +659,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         return;
       }
 
-      await _executarExclusao(
-        reservaAtual: reservaAtual,
-        grupo: grupo,
-        diaSemana: diaSemana,
-        turno: turno,
-        periodo: periodo,
-      );
+      await _executarExclusao(reservaAtual: reservaAtual, grupo: grupo);
     } catch (error, stackTrace) {
       AppEventLogger.error('reserva_error', error, stackTrace: stackTrace);
 
@@ -703,6 +781,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
             ReservaService.isSlotOccupied(
               reservas: _reservas,
               laboratorio: _laboratorioSelecionadoValido,
+              ano: ocorrencia.ano,
               mes: _mesSelecionado,
               semanaDoMes: ocorrencia.semanaDoMes,
               diaSemana: novoDiaSemana,
@@ -719,6 +798,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
             id: ocorrencia.id,
             professor: ocorrencia.professor,
             laboratorio: ocorrencia.laboratorio,
+            ano: ocorrencia.ano,
             mes: ocorrencia.mes,
             semanaDoMes: ocorrencia.semanaDoMes,
             diaSemana: novoDiaSemana,
@@ -764,9 +844,6 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   Future<void> _executarExclusao({
     required ReservaLaboratorio reservaAtual,
     required List<ReservaLaboratorio> grupo,
-    required String diaSemana,
-    required Turno turno,
-    required int periodo,
   }) async {
     var idsSelecionados = {reservaAtual.id};
     if (grupo.length > 1) {
@@ -775,17 +852,21 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         mensagem:
             'Essa reserva se repete em ${grupo.length} ocorrências. Selecione quais você quer excluir.',
         grupo: grupo,
-        selecionadosIniciais: {reservaAtual.id},
-        labelConfirmar: 'Continuar',
+        selecionadosIniciais: const {},
+        labelConfirmar: 'Revisar exclusão',
       );
       if (selecionados == null || selecionados.isEmpty) return;
       idsSelecionados = selecionados;
     }
 
+    final ocorrenciasSelecionadas = _ordenarOcorrencias(
+      grupo.where((item) => idsSelecionados.contains(item.id)).toList(),
+    );
+    final unica = ocorrenciasSelecionadas.singleOrNull;
     final confirmarExclusao = await _confirmarAcao(
       titulo: 'Excluir reserva',
-      mensagem: idsSelecionados.length == 1
-          ? 'Deseja remover sua reserva de ${ReservaService.diaCompleto(diaSemana)}, ${turno.horarioDo(periodo)}, ${ReservaService.descricaoSemana(_semanaSelecionada)} de ${ReservaService.nomeMes(_mesSelecionado, _mesesDefault)} no $_laboratorioSelecionadoValido?'
+      mensagem: unica != null
+          ? 'Deseja remover sua reserva de ${ReservaService.diaCompleto(unica.diaSemana)}, ${unica.turno.horarioDo(unica.periodo)}, ${ReservaService.descricaoSemana(unica.semanaDoMes)} de ${ReservaService.nomeMes(unica.mes, _mesesDefault)} de ${unica.ano} no ${unica.laboratorio}?'
           : 'Deseja remover as ${idsSelecionados.length} ocorrências selecionadas no $_laboratorioSelecionadoValido?',
       confirmarLabel: 'Excluir',
       isDelete: true,
@@ -796,7 +877,11 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     setState(() {
       _reservas.removeWhere((reserva) => idsSelecionados.contains(reserva.id));
     });
-    await _saveData();
+    final salvo = await _saveData();
+    if (!salvo) {
+      setState(() => _reservas.addAll(ocorrenciasSelecionadas));
+      return;
+    }
 
     AppEventLogger.action(
       'reserva_remove',
@@ -824,6 +909,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
           (item) =>
               item.id != reserva.id &&
               item.laboratorio == _laboratorioSelecionadoValido &&
+              item.ano == _anoSelecionado &&
               item.mes == _mesSelecionado &&
               item.semanaDoMes == _semanaSelecionada &&
               item.diaSemana == dia &&
@@ -859,6 +945,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     final jaOcupado = ReservaService.isSlotOccupied(
       reservas: _reservas,
       laboratorio: sugestao.laboratorio,
+      ano: _anoSelecionado,
       mes: _mesSelecionado,
       semanaDoMes: _semanaSelecionada,
       diaSemana: sugestao.diaSemana,
@@ -877,6 +964,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         ReservaService.createReserva(
           professor: user.name,
           laboratorio: sugestao.laboratorio,
+          ano: _anoSelecionado,
           mes: _mesSelecionado,
           semanaDoMes: _semanaSelecionada,
           diaSemana: sugestao.diaSemana,
@@ -1223,137 +1311,51 @@ class _FiltroLabRow extends StatelessWidget {
 
 class _FiltroPeriodoRow extends StatelessWidget {
   const _FiltroPeriodoRow({
+    required this.anoSelecionado,
     required this.mesSelecionado,
     required this.meses,
-    required this.onMesChanged,
+    required this.onAnterior,
+    required this.onProximo,
+    required this.onSelecionarPeriodo,
   });
 
+  final int anoSelecionado;
   final int mesSelecionado;
   final List<String> meses;
-  final ValueChanged<int> onMesChanged;
+  final VoidCallback onAnterior;
+  final VoidCallback onProximo;
+  final VoidCallback onSelecionarPeriodo;
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonFormField<int>(
-      isExpanded: true,
-      initialValue: mesSelecionado,
-      decoration: const InputDecoration(labelText: 'Mês'),
-      items: [
-        for (var i = 0; i < meses.length; i++)
-          DropdownMenuItem<int>(
-            value: i + 1,
-            child: Text(meses[i], maxLines: 1, overflow: TextOverflow.ellipsis),
-          ),
-      ],
-      onChanged: (value) {
-        if (value != null) {
-          onMesChanged(value);
-        }
-      },
-    );
-  }
-}
-
-class _SelecaoDiaMesRow extends StatelessWidget {
-  const _SelecaoDiaMesRow({
-    required this.mesSelecionado,
-    required this.diaSelecionado,
-    required this.diasNoMes,
-    required this.onDiaChanged,
-  });
-
-  final int mesSelecionado;
-  final int diaSelecionado;
-  final int diasNoMes;
-  final ValueChanged<int> onDiaChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    // Calcula em qual dia da semana o mês começa para alinhar o grid
-    final ano = DateTime.now().year;
-    final primeiroDiaDoMes = DateTime(ano, mesSelecionado, 1);
-    // weekday: 1 (seg) a 7 (dom). Subtraímos 1 para o offset começar na segunda.
-    final offset = primeiroDiaDoMes.weekday - 1;
-
-    const diasSemanaHeader = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      decoration: BoxDecoration(
-        color: SigadColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: SigadColors.divider),
-      ),
-      child: Column(
+    final titulo = '${meses[mesSelecionado - 1]} de $anoSelecionado';
+    return Semantics(
+      container: true,
+      label: 'Navegação do calendário',
+      child: Row(
         children: [
-          // Cabeçalho com as iniciais dos dias da semana
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: diasSemanaHeader
-                .map(
-                  (d) => Expanded(
-                    child: Center(
-                      child: Text(
-                        d,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(255, 17, 17, 17),
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  ),
-                )
-                .toList(),
+          IconButton(
+            onPressed: anoSelecionado == 2020 && mesSelecionado == 1
+                ? null
+                : onAnterior,
+            tooltip: 'Mês anterior',
+            icon: const Icon(Icons.chevron_left_rounded),
           ),
-          const SizedBox(height: 6),
-          // Grade de dias com offset para alinhamento correto
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 7,
-              mainAxisSpacing: 4,
-              crossAxisSpacing: 4,
-              childAspectRatio:
-                  1.1, // Torna as células levemente mais achatadas
+          Expanded(
+            child: Tooltip(
+              message: 'Escolher mês e ano',
+              child: OutlinedButton(
+                onPressed: onSelecionarPeriodo,
+                child: Text(titulo, textAlign: TextAlign.center, maxLines: 2),
+              ),
             ),
-            itemCount: offset + diasNoMes,
-            itemBuilder: (context, index) {
-              if (index < offset) return const SizedBox.shrink();
-
-              final dia = index - offset + 1;
-              final isSelected = dia == diaSelecionado;
-              return InkWell(
-                onTap: () => onDiaChanged(dia),
-                borderRadius: BorderRadius.circular(4),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: isSelected ? SigadColors.brand : Colors.transparent,
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(
-                      color: isSelected
-                          ? SigadColors.brand
-                          : SigadColors.divider.withValues(alpha: 0.5),
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      '$dia',
-                      style: TextStyle(
-                        fontSize: 13,
-                        //fontFamily: 'Roboto',
-                        fontWeight: isSelected
-                            ? FontWeight.bold
-                            : FontWeight.normal,
-                        color: isSelected ? Colors.white : SigadColors.ink,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
+          ),
+          IconButton(
+            onPressed: anoSelecionado == 2100 && mesSelecionado == 12
+                ? null
+                : onProximo,
+            tooltip: 'Próximo mês',
+            icon: const Icon(Icons.chevron_right_rounded),
           ),
         ],
       ),
@@ -1361,8 +1363,204 @@ class _SelecaoDiaMesRow extends StatelessWidget {
   }
 }
 
+class _SelecaoDiaMesRow extends StatelessWidget {
+  const _SelecaoDiaMesRow({
+    required this.anoSelecionado,
+    required this.mesSelecionado,
+    required this.diaSelecionado,
+    required this.diasNoMes,
+    required this.onDiaChanged,
+    required this.onMesAnterior,
+    required this.onProximoMes,
+  });
+
+  final int anoSelecionado;
+  final int mesSelecionado;
+  final int diaSelecionado;
+  final int diasNoMes;
+  final ValueChanged<int> onDiaChanged;
+  final VoidCallback onMesAnterior;
+  final VoidCallback onProximoMes;
+
+  @override
+  Widget build(BuildContext context) {
+    // Calcula em qual dia da semana o mês começa para alinhar o grid
+    final primeiroDiaDoMes = DateTime(anoSelecionado, mesSelecionado, 1);
+    // weekday: 1 (seg) a 7 (dom). Subtraímos 1 para o offset começar na segunda.
+    final offset = primeiroDiaDoMes.weekday - 1;
+
+    const diasSemanaHeader = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+
+    final feriadoSelecionado = FeriadoService.feriadoEm(
+      DateTime(anoSelecionado, mesSelecionado, diaSelecionado),
+    );
+
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onHorizontalDragEnd: (details) {
+        final velocidade = details.primaryVelocity ?? 0;
+        if (velocidade.abs() < 250) return;
+        if (velocidade < 0) {
+          onProximoMes();
+        } else {
+          onMesAnterior();
+        }
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        decoration: BoxDecoration(
+          color: SigadColors.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: SigadColors.divider),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Cabeçalho com as iniciais dos dias da semana
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: diasSemanaHeader
+                  .map(
+                    (d) => Expanded(
+                      child: Center(
+                        child: Text(
+                          d,
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: const Color.fromARGB(255, 17, 17, 17),
+                                fontSize: 12,
+                              ),
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+            const SizedBox(height: 6),
+            // Grade de dias com offset para alinhamento correto
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 7,
+                mainAxisSpacing: 4,
+                crossAxisSpacing: 4,
+                childAspectRatio:
+                    1.1, // Torna as células levemente mais achatadas
+              ),
+              itemCount: offset + diasNoMes,
+              itemBuilder: (context, index) {
+                if (index < offset) return const SizedBox.shrink();
+
+                final dia = index - offset + 1;
+                final isSelected = dia == diaSelecionado;
+                final feriado = FeriadoService.feriadoEm(
+                  DateTime(anoSelecionado, mesSelecionado, dia),
+                );
+                return Semantics(
+                  button: true,
+                  selected: isSelected,
+                  label: feriado == null
+                      ? 'Dia $dia'
+                      : 'Dia $dia, feriado: ${feriado.descricao}',
+                  excludeSemantics: true,
+                  child: InkWell(
+                    onTap: () => onDiaChanged(dia),
+                    borderRadius: BorderRadius.circular(4),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? SigadColors.brand
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(
+                          color: isSelected
+                              ? SigadColors.brand
+                              : feriado != null
+                              ? SigadColors.warning
+                              : SigadColors.divider.withValues(alpha: 0.5),
+                          width: feriado != null ? 2 : 1,
+                        ),
+                      ),
+                      child: Stack(
+                        children: [
+                          Center(
+                            child: Text(
+                              '$dia',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                color: isSelected
+                                    ? Colors.white
+                                    : SigadColors.ink,
+                              ),
+                            ),
+                          ),
+                          if (feriado != null)
+                            Positioned(
+                              right: 2,
+                              top: 2,
+                              child: Icon(
+                                Icons.flag_rounded,
+                                size: 10,
+                                color: isSelected
+                                    ? Colors.white
+                                    : SigadColors.warning,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+            if (feriadoSelecionado != null)
+              Semantics(
+                liveRegion: true,
+                label: 'Feriado selecionado: ${feriadoSelecionado.descricao}',
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(
+                      Icons.flag_rounded,
+                      size: 18,
+                      color: SigadColors.warning,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        feriadoSelecionado.descricao,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 4),
+            Text(
+              FeriadoService.avisoEscopo,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _MapaSemanal extends StatefulWidget {
   const _MapaSemanal({
+    required this.anoSelecionado,
     required this.mesSelecionado,
     required this.mesLabel,
     required this.semanaLabel,
@@ -1374,6 +1572,7 @@ class _MapaSemanal extends StatefulWidget {
     required this.onTapCelula,
   });
 
+  final int anoSelecionado;
   final int mesSelecionado;
   final String mesLabel;
   final String semanaLabel;
@@ -1463,7 +1662,7 @@ class _MapaSemanalState extends State<_MapaSemanal> {
 
   List<int> _diasDoMesDaSemanaSelecionada() {
     final dataSelecionada = DateTime(
-      DateTime.now().year,
+      widget.anoSelecionado,
       widget.mesSelecionado,
       widget.diaSelecionado,
     );

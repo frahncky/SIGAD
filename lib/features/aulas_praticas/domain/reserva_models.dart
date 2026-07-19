@@ -6,6 +6,7 @@ class ReservaLaboratorio {
     required this.id,
     required this.professor,
     required this.laboratorio,
+    required this.ano,
     required this.mes,
     required this.semanaDoMes,
     required this.diaSemana,
@@ -18,6 +19,7 @@ class ReservaLaboratorio {
   final String id;
   final String professor;
   final String laboratorio;
+  final int ano;
   final int mes;
   final int semanaDoMes;
   final String diaSemana;

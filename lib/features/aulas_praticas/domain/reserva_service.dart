@@ -3,13 +3,17 @@ import '../../../core/models/user.dart';
 import 'reserva_models.dart';
 
 abstract final class ReservaService {
-  static List<ReservaLaboratorio> defaultReservas(int currentMonth) {
+  static List<ReservaLaboratorio> defaultReservas({
+    required int ano,
+    required int mes,
+  }) {
     return [
       ReservaLaboratorio(
         id: 'RES-101',
         professor: 'Docente 01',
         laboratorio: 'Lab. de Eletrônica Analógica',
-        mes: currentMonth,
+        ano: ano,
+        mes: mes,
         semanaDoMes: 2,
         diaSemana: 'Seg',
         turno: Turno.matutino,
@@ -19,7 +23,8 @@ abstract final class ReservaService {
         id: 'RES-102',
         professor: 'Docente 02',
         laboratorio: 'Lab. de Eletrônica Analógica',
-        mes: currentMonth,
+        ano: ano,
+        mes: mes,
         semanaDoMes: 2,
         diaSemana: 'Ter',
         turno: Turno.matutino,
@@ -29,7 +34,8 @@ abstract final class ReservaService {
         id: 'RES-103',
         professor: 'Docente 03',
         laboratorio: 'Lab. de Eletrônica Analógica',
-        mes: currentMonth,
+        ano: ano,
+        mes: mes,
         semanaDoMes: 3,
         diaSemana: 'Sex',
         turno: Turno.noturno,
@@ -39,7 +45,8 @@ abstract final class ReservaService {
         id: 'RES-104',
         professor: 'Docente 04',
         laboratorio: 'Lab. de Eletrônica Analógica',
-        mes: currentMonth,
+        ano: ano,
+        mes: mes,
         semanaDoMes: 3,
         diaSemana: 'Seg',
         turno: Turno.vespertino,
@@ -76,6 +83,7 @@ abstract final class ReservaService {
   static bool isSlotOccupied({
     required List<ReservaLaboratorio> reservas,
     required String laboratorio,
+    required int ano,
     required int mes,
     required int semanaDoMes,
     required String diaSemana,
@@ -85,6 +93,7 @@ abstract final class ReservaService {
     return reservas.any(
       (reserva) =>
           reserva.laboratorio == laboratorio &&
+          reserva.ano == ano &&
           reserva.mes == mes &&
           reserva.semanaDoMes == semanaDoMes &&
           reserva.diaSemana == diaSemana &&
@@ -96,6 +105,7 @@ abstract final class ReservaService {
   static ReservaLaboratorio createReserva({
     required String professor,
     required String laboratorio,
+    required int ano,
     required int mes,
     required int semanaDoMes,
     required String diaSemana,
@@ -108,6 +118,7 @@ abstract final class ReservaService {
       id: 'RES-${DateTime.now().microsecondsSinceEpoch}-${_idSequence++}',
       professor: professor,
       laboratorio: laboratorio,
+      ano: ano,
       mes: mes,
       semanaDoMes: semanaDoMes,
       diaSemana: diaSemana,
@@ -123,6 +134,7 @@ abstract final class ReservaService {
   static List<ReservaLaboratorio> reservasDoLaboratorio({
     required List<ReservaLaboratorio> reservas,
     required String laboratorio,
+    required int ano,
     required int mes,
     required int semanaDoMes,
   }) {
@@ -130,6 +142,7 @@ abstract final class ReservaService {
         .where(
           (reserva) =>
               reserva.laboratorio == laboratorio &&
+              reserva.ano == ano &&
               reserva.mes == mes &&
               reserva.semanaDoMes == semanaDoMes,
         )
@@ -139,6 +152,7 @@ abstract final class ReservaService {
   static List<IndicadorOcupacaoLaboratorio> calcularOcupacaoLaboratorios({
     required List<ReservaLaboratorio> reservas,
     required List<String> laboratorios,
+    required int ano,
     required int mes,
     required int semanaDoMes,
   }) {
@@ -148,6 +162,7 @@ abstract final class ReservaService {
         .map((laboratorio) {
           final reservados = reservas.where((reserva) {
             return reserva.laboratorio == laboratorio &&
+                reserva.ano == ano &&
                 reserva.mes == mes &&
                 reserva.semanaDoMes == semanaDoMes;
           }).length;
@@ -164,6 +179,7 @@ abstract final class ReservaService {
   static List<SugestaoReservaLaboratorio> sugerirSlotsLivres({
     required List<ReservaLaboratorio> reservas,
     required List<String> laboratorios,
+    required int ano,
     required int mes,
     required int semanaDoMes,
     String? diaSemanaPreferencial,
@@ -174,6 +190,7 @@ abstract final class ReservaService {
     final indicadores = calcularOcupacaoLaboratorios(
       reservas: reservas,
       laboratorios: laboratorios,
+      ano: ano,
       mes: mes,
       semanaDoMes: semanaDoMes,
     );
@@ -195,6 +212,7 @@ abstract final class ReservaService {
           final ocupado = isSlotOccupied(
             reservas: reservas,
             laboratorio: laboratorio,
+            ano: ano,
             mes: mes,
             semanaDoMes: semanaDoMes,
             diaSemana: diaSemana,

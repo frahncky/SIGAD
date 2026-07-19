@@ -59,6 +59,7 @@ class _LaboratoriosCatalogoPageState extends State<LaboratoriosCatalogoPage> {
       .where(
         (item) =>
             item.laboratorio == laboratorio.nome &&
+            item.ano == DateTime.now().year &&
             item.mes == DateTime.now().month,
       )
       .length;
@@ -91,7 +92,11 @@ class _LaboratoriosCatalogoPageState extends State<LaboratoriosCatalogoPage> {
             operando: operando,
             manutencao: manutencao,
             reservas: _reservas
-                .where((r) => r.mes == DateTime.now().month)
+                .where(
+                  (r) =>
+                      r.ano == DateTime.now().year &&
+                      r.mes == DateTime.now().month,
+                )
                 .length,
             ocorrencias: ocorrencias,
           ),

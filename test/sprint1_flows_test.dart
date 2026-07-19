@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -309,21 +311,39 @@ void main() {
       await tester.tap(find.text('Excluir reserva'));
       await tester.pumpAndSettle();
 
-      // Como a reserva se repete em 3 semanas, o app pergunta quais
-      // ocorrências devem ser afetadas: por padrão, só a atual vem marcada.
+      // A exclusão recorrente exige escolha explícita e começa vazia.
       expect(find.text('Excluir ocorrências'), findsOneWidget);
       expect(find.byType(CheckboxListTile), findsNWidgets(3));
       expect(
-        tester.widget<CheckboxListTile>(checkboxDaSemana(semanaAtual())).value,
+        tester
+            .widgetList<CheckboxListTile>(find.byType(CheckboxListTile))
+            .every((item) => item.value == false),
         isTrue,
       );
+      final revisar = find.widgetWithText(FilledButton, 'Revisar exclusão');
+      expect(tester.widget<FilledButton>(revisar).onPressed, isNull);
 
-      await tester.tap(find.text('Continuar'));
+      final semanaEscolhida = semanaAtual() + 1;
+      await tester.tap(checkboxDaSemana(semanaEscolhida));
       await tester.pumpAndSettle();
+      expect(tester.widget<FilledButton>(revisar).onPressed, isNotNull);
+      await tester.tap(revisar);
+      await tester.pumpAndSettle();
+      expect(find.textContaining('${semanaEscolhida}a semana'), findsOneWidget);
       await tester.tap(find.text('Excluir'));
       await tester.pumpAndSettle();
 
       expect(find.text('Reserva removida.'), findsOneWidget);
+      final prefs = await SharedPreferences.getInstance();
+      final salvas = (jsonDecode(prefs.getString('sigad_reservas')!) as List)
+          .cast<Map<String, dynamic>>()
+          .where((item) => item['professor'] == 'Professor Teste')
+          .toList(growable: false);
+      expect(salvas, hasLength(2));
+      expect(
+        salvas.map((item) => item['semanaDoMes']),
+        isNot(contains(semanaEscolhida)),
+      );
     },
   );
 
@@ -344,13 +364,15 @@ void main() {
       await tester.tap(find.text('Excluir reserva'));
       await tester.pumpAndSettle();
 
-      // Marca também as outras duas ocorrências (a atual já vem marcada).
+      // Marca explicitamente todas as ocorrências.
+      await tester.tap(checkboxDaSemana(semanaAtual()));
+      await tester.pumpAndSettle();
       await tester.tap(checkboxDaSemana(semanaAtual() + 1));
       await tester.pumpAndSettle();
       await tester.tap(checkboxDaSemana(semanaAtual() + 2));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Continuar'));
+      await tester.tap(find.text('Revisar exclusão'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Excluir'));
       await tester.pumpAndSettle();
@@ -684,6 +706,108 @@ void main() {
       expect(find.text('Otimização de laboratórios'), findsNothing);
       expect(find.text('Reservar sugestão'), findsNothing);
       expect(find.text('Agenda semanal'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'calendário navega entre anos por swipe e expõe seletor e feriado',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 568);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final userContext = UserContextProvider();
+      await userContext.login(
+        User(
+          id: 'professor-calendario',
+          name: 'Professor Teste',
+          email: 'professor.calendario@ifma.edu.br',
+          role: UserRole.professor,
+          createdAt: DateTime(2026),
+        ),
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light(),
+          home: ChangeNotifierProvider<UserContextProvider>.value(
+            value: userContext,
+            child: const AulasPraticasPage(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      const meses = [
+        'Janeiro',
+        'Fevereiro',
+        'Março',
+        'Abril',
+        'Maio',
+        'Junho',
+        'Julho',
+        'Agosto',
+        'Setembro',
+        'Outubro',
+        'Novembro',
+        'Dezembro',
+      ];
+      final agora = DateTime.now();
+      final tituloAtual = '${meses[agora.month - 1]} de ${agora.year}';
+      final tituloFinder = find.text(tituloAtual);
+      await tester.ensureVisible(tituloFinder);
+      await tester.tap(tituloFinder);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Escolher mês e ano'), findsOneWidget);
+      expect(find.text('Mês'), findsOneWidget);
+      expect(find.text('Ano'), findsOneWidget);
+
+      final seletorMes = find.byType(DropdownButton<int>).first;
+      await tester.ensureVisible(seletorMes);
+      await tester.pumpAndSettle();
+      await tester.tap(seletorMes);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Dezembro').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Aplicar'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Dezembro de ${agora.year}'), findsOneWidget);
+      final grade = find.byType(GridView).first;
+      await tester.fling(grade, const Offset(-400, 0), 1200);
+      await tester.pumpAndSettle();
+      expect(find.text('Janeiro de ${agora.year + 1}'), findsOneWidget);
+
+      await tester.fling(grade, const Offset(400, 0), 1200);
+      await tester.pumpAndSettle();
+      expect(find.text('Dezembro de ${agora.year}'), findsOneWidget);
+
+      await tester.tap(find.text('Dezembro de ${agora.year}'));
+      await tester.pumpAndSettle();
+      final seletorMesFeriado = find.byType(DropdownButton<int>).first;
+      await tester.ensureVisible(seletorMesFeriado);
+      await tester.pumpAndSettle();
+      await tester.tap(seletorMesFeriado);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Julho').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Aplicar'));
+      await tester.pumpAndSettle();
+
+      final feriado = find.bySemanticsLabel(
+        RegExp(r'Dia 28, feriado: Adesão do Maranhão à Independência'),
+      );
+      expect(feriado, findsOneWidget);
+      await tester.tap(feriado);
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Adesão do Maranhão à Independência — Estadual — Maranhão'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('pontos facultativos'), findsOneWidget);
+      expect(tester.takeException(), isNull);
     },
   );
 }

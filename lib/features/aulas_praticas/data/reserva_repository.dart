@@ -2,22 +2,28 @@ import '../domain/reserva_models.dart';
 import '../../../core/services/local_storage_service.dart';
 
 class ReservaRepository {
-  ReservaRepository({this.storageKey = 'sigad_reservas'});
+  ReservaRepository({this.storageKey = 'sigad_reservas', int? legacyYear})
+    : legacyYear = legacyYear ?? DateTime.now().year;
 
   final String storageKey;
+  final int legacyYear;
 
   Future<List<ReservaLaboratorio>> loadReservas() async {
     final list = await LocalStorageService.loadList(storageKey);
     if (list.isEmpty) return const [];
 
     final reservas = <ReservaLaboratorio>[];
+    var migratedLegacyYear = false;
     for (final item in list) {
       try {
-        reservas.add(_reservaFromJson(item));
+        final reserva = _reservaFromJson(item);
+        reservas.add(reserva);
+        if (!item.containsKey('ano')) migratedLegacyYear = true;
       } catch (_) {
         // Ignora dados inválidos para não bloquear a tela.
       }
     }
+    if (migratedLegacyYear) await saveReservas(reservas);
     return reservas;
   }
 
@@ -32,6 +38,7 @@ class ReservaRepository {
     'id': r.id,
     'professor': r.professor,
     'laboratorio': r.laboratorio,
+    'ano': r.ano,
     'mes': r.mes,
     'semanaDoMes': r.semanaDoMes,
     'diaSemana': r.diaSemana,
@@ -46,6 +53,7 @@ class ReservaRepository {
       id: json['id'] as String,
       professor: json['professor'] as String,
       laboratorio: json['laboratorio'] as String,
+      ano: json['ano'] as int? ?? legacyYear,
       mes: json['mes'] as int,
       semanaDoMes: json['semanaDoMes'] as int,
       diaSemana: json['diaSemana'] as String,

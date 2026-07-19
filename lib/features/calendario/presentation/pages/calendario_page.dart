@@ -58,7 +58,10 @@ class _CalendarioPageState extends State<CalendarioPage> {
   Future<void> _carregarReservas() async {
     final armazenadas = await _reservaRepository.loadReservas();
     final reservas = armazenadas.isEmpty
-        ? ReservaService.defaultReservas(DateTime.now().month)
+        ? ReservaService.defaultReservas(
+            ano: DateTime.now().year,
+            mes: DateTime.now().month,
+          )
         : armazenadas;
     if (!mounted) return;
     setState(() {
@@ -102,7 +105,9 @@ class _CalendarioPageState extends State<CalendarioPage> {
       DateTime(ano, mes, 27): [SigadColors.accent, SigadColors.risk],
       DateTime(ano, mes, 30): [SigadColors.info],
     };
-    for (final reserva in _reservasFiltradas.where((r) => r.mes == mes)) {
+    for (final reserva in _reservasFiltradas.where(
+      (r) => r.ano == ano && r.mes == mes,
+    )) {
       final data = _dataDaReserva(reserva, ano);
       if (data != null) {
         marcadores.putIfAbsent(data, () => []).add(SigadColors.success);
@@ -112,6 +117,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
   }
 
   DateTime? _dataDaReserva(ReservaLaboratorio reserva, int ano) {
+    if (reserva.ano != ano) return null;
     const weekdays = {'Seg': 1, 'Ter': 2, 'Qua': 3, 'Qui': 4, 'Sex': 5};
     final weekday = weekdays[reserva.diaSemana];
     if (weekday == null) return null;
@@ -270,7 +276,7 @@ class _ResumoDaSemana extends StatelessWidget {
     final inicioSemana = hoje.subtract(Duration(days: hoje.weekday % 7));
     final fimSemana = inicioSemana.add(const Duration(days: 6));
     final reservasNaSemana = reservas.where((reserva) {
-      if (reserva.mes != hoje.month) return false;
+      if (reserva.ano != hoje.year || reserva.mes != hoje.month) return false;
       final semanaAtual = ((hoje.day - 1) ~/ 7) + 1;
       return reserva.semanaDoMes == semanaAtual;
     }).length;
@@ -628,7 +634,7 @@ class _ProximosCompromissos extends StatelessWidget {
         reservas
             .map(
               (reserva) =>
-                  (reserva: reserva, data: dataDaReserva(reserva, agora.year)),
+                  (reserva: reserva, data: dataDaReserva(reserva, reserva.ano)),
             )
             .where(
               (item) => item.data != null && !item.data!.isBefore(inicioHoje),
@@ -647,7 +653,7 @@ class _ProximosCompromissos extends StatelessWidget {
             'Reserva: ${reserva.laboratorio}',
             reserva.disciplina ?? 'Responsável: ${reserva.professor}',
             'Laboratório',
-            '${DateFormat('dd/MM').format(item.data!)} • $horario',
+            '${DateFormat('dd/MM/yyyy').format(item.data!)} • $horario',
             Icons.science_outlined,
           );
         })
@@ -986,6 +992,7 @@ class _OcupacaoLaboratorios extends StatelessWidget {
     final indicadores = ReservaService.calcularOcupacaoLaboratorios(
       reservas: reservas,
       laboratorios: nomes,
+      ano: hoje.year,
       mes: hoje.month,
       semanaDoMes: semana,
     );

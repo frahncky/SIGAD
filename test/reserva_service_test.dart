@@ -12,6 +12,7 @@ void main() {
           id: '1',
           professor: 'Ana',
           laboratorio: 'Lab A',
+          ano: 2026,
           mes: 4,
           semanaDoMes: 2,
           diaSemana: 'Seg',
@@ -22,6 +23,7 @@ void main() {
           id: '2',
           professor: 'Bruno',
           laboratorio: 'Lab B',
+          ano: 2026,
           mes: 4,
           semanaDoMes: 2,
           diaSemana: 'Seg',
@@ -33,6 +35,7 @@ void main() {
       final filtradas = ReservaService.reservasDoLaboratorio(
         reservas: reservas,
         laboratorio: 'Lab A',
+        ano: 2026,
         mes: 4,
         semanaDoMes: 2,
       );
@@ -47,6 +50,7 @@ void main() {
           id: '1',
           professor: 'Ana',
           laboratorio: 'Lab A',
+          ano: 2026,
           mes: 4,
           semanaDoMes: 2,
           diaSemana: 'Seg',
@@ -58,6 +62,7 @@ void main() {
       final ocupado = ReservaService.isSlotOccupied(
         reservas: reservas,
         laboratorio: 'Lab A',
+        ano: 2026,
         mes: 4,
         semanaDoMes: 2,
         diaSemana: 'Seg',
@@ -73,6 +78,7 @@ void main() {
         id: '1',
         professor: 'Ana',
         laboratorio: 'Lab A',
+        ano: 2026,
         mes: 4,
         semanaDoMes: 2,
         diaSemana: 'Seg',
@@ -121,6 +127,7 @@ void main() {
       final reserva = ReservaService.createReserva(
         professor: 'Ana',
         laboratorio: 'Lab A',
+        ano: 2026,
         mes: 4,
         semanaDoMes: 2,
         diaSemana: 'Ter',
@@ -164,6 +171,7 @@ void main() {
           id: '1',
           professor: 'Ana',
           laboratorio: 'Lab A',
+          ano: 2026,
           mes: 4,
           semanaDoMes: 2,
           diaSemana: 'Seg',
@@ -174,6 +182,7 @@ void main() {
           id: '2',
           professor: 'Bia',
           laboratorio: 'Lab A',
+          ano: 2026,
           mes: 4,
           semanaDoMes: 2,
           diaSemana: 'Ter',
@@ -185,6 +194,7 @@ void main() {
       final indicadores = ReservaService.calcularOcupacaoLaboratorios(
         reservas: reservas,
         laboratorios: const ['Lab A', 'Lab B'],
+        ano: 2026,
         mes: 4,
         semanaDoMes: 2,
       );
@@ -209,6 +219,7 @@ void main() {
             id: '1',
             professor: 'Ana',
             laboratorio: 'Lab A',
+            ano: 2026,
             mes: 4,
             semanaDoMes: 2,
             diaSemana: 'Seg',
@@ -220,6 +231,7 @@ void main() {
         final sugestoes = ReservaService.sugerirSlotsLivres(
           reservas: reservas,
           laboratorios: const ['Lab A', 'Lab B'],
+          ano: 2026,
           mes: 4,
           semanaDoMes: 2,
           diaSemanaPreferencial: 'Seg',
@@ -232,5 +244,35 @@ void main() {
         expect(sugestoes.first.score, greaterThan(0));
       },
     );
+
+    test('não considera reserva de outro ano como conflito', () {
+      const reservas = [
+        ReservaLaboratorio(
+          id: 'outro-ano',
+          professor: 'Ana',
+          laboratorio: 'Lab A',
+          ano: 2025,
+          mes: 4,
+          semanaDoMes: 2,
+          diaSemana: 'Seg',
+          turno: Turno.matutino,
+          periodo: 2,
+        ),
+      ];
+
+      expect(
+        ReservaService.isSlotOccupied(
+          reservas: reservas,
+          laboratorio: 'Lab A',
+          ano: 2026,
+          mes: 4,
+          semanaDoMes: 2,
+          diaSemana: 'Seg',
+          turno: Turno.matutino,
+          periodo: 2,
+        ),
+        isFalse,
+      );
+    });
   });
 }
