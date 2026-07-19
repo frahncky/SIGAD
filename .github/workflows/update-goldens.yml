@@ -1,6 +1,8 @@
 name: update-goldens
 
 on:
+  push:
+    branches: [ agent/atualiza-dashboard-interface ]
   workflow_dispatch:
 
 jobs:
