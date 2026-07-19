@@ -1,0 +1,29 @@
+name: update-goldens
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Update golden baselines
+        run: flutter test test/goldens/ --dart-define=RUN_GOLDEN_TESTS=true --update-goldens
+
+      - name: Upload updated baselines
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-baselines
+          path: test/goldens/goldens/baselines/*.png
