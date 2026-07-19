@@ -69,9 +69,7 @@ class HomeShellPage extends StatelessWidget {
                                 label: Text(
                                   notifCount > 99 ? '99+' : '$notifCount',
                                 ),
-                                child: const Icon(
-                                  Icons.notifications_outlined,
-                                ),
+                                child: const Icon(Icons.notifications_outlined),
                               )
                             : const Icon(Icons.notifications_outlined),
                       ),

@@ -657,7 +657,6 @@ class _ActivitiesPanel extends StatelessWidget {
   }
 }
 
-
 class _DashboardPanel extends StatelessWidget {
   const _DashboardPanel({
     required this.title,
@@ -821,9 +820,7 @@ class _CustomizableIndicatorsState extends State<_CustomizableIndicators> {
 
   List<NavigationItem> get _todosAtalhos => kNavigationItems
       .where((item) => item.route != AppRoutes.dashboard)
-      .where(
-        (item) => widget.role == null || item.isAvailableFor(widget.role!),
-      )
+      .where((item) => widget.role == null || item.isAvailableFor(widget.role!))
       .toList(growable: false);
 
   @override
