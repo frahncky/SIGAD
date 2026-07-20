@@ -154,7 +154,10 @@ class _KanbanPageState extends State<KanbanPage> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+            child: Text(
+              'Excluir',
+              style: TextStyle(color: Theme.of(ctx).colorScheme.error),
+            ),
           ),
         ],
       ),
@@ -472,7 +475,7 @@ class _KanbanCard extends StatelessWidget {
                     icon: Icon(
                       Icons.more_vert,
                       size: 18,
-                      color: SigadColors.muted.withValues(alpha: 0.5),
+                      color: SigadColors.muted,
                     ),
                   ),
                 ],
@@ -534,7 +537,10 @@ class _KanbanCard extends StatelessWidget {
               Navigator.pop(context);
               onDeleted(card);
             },
-            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+            child: Text(
+              'Excluir',
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
           ),
         ],
       ),

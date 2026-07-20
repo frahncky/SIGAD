@@ -441,7 +441,7 @@ class _FeatureLine extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         children: [
-          Icon(icon, color: SigadColors.accent, size: 20),
+          Icon(icon, color: Colors.white, size: 20),
           const SizedBox(width: 9),
           Expanded(
             child: Text(

@@ -531,7 +531,11 @@ class _NavigationTile extends StatelessWidget {
                   : colors.surfaceContainerLow,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(item.icon, size: 19),
+            child: Icon(
+              item.icon,
+              size: 19,
+              color: selected ? colors.primary : SigadColors.muted,
+            ),
           ),
           title: Text(
             item.label,

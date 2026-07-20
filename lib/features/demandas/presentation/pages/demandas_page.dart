@@ -656,7 +656,10 @@ class _DemandasPageState extends State<DemandasPage> {
               Navigator.pop(context);
               _mostrarFeedback('Demanda excluída com sucesso!');
             },
-            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+            child: Text(
+              'Excluir',
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
           ),
         ],
       ),

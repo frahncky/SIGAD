@@ -113,7 +113,7 @@ abstract final class AtividadesService {
       case 'Agendada':
         return SigadColors.warning;
       case 'Pendente':
-        return SigadColors.accent;
+        return SigadColors.warning;
       default:
         return SigadColors.muted;
     }

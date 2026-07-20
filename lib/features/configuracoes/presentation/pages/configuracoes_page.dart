@@ -148,7 +148,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
           _ConfigSection(
             titulo: 'Preferências',
             icon: Icons.tune_outlined,
-            tone: SigadColors.accent,
+            tone: SigadColors.warning,
             children: [
               _ConfigToggle(
                 icon: Icons.notifications,
@@ -159,7 +159,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                   setState(() => _notificacoesAtivas = value);
                   _saveData();
                 },
-                tone: SigadColors.accent,
+                tone: SigadColors.warning,
               ),
               _ConfigToggle(
                 icon: Icons.dark_mode,
@@ -226,7 +226,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                       setState(() => _antecedenciaNotificacaoMinutos = minutos);
                       _saveData();
                     },
-                    tone: SigadColors.accent,
+                    tone: SigadColors.warning,
                   ),
               ],
             ),
@@ -256,7 +256,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                   setState(() => _tamanhoFonte = valor);
                   _saveData();
                 },
-                tone: SigadColors.accent,
+                tone: SigadColors.warning,
               ),
             ],
           ),

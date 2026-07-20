@@ -792,7 +792,10 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
               Navigator.pop(context);
               _mostrarFeedback('Docente excluído com sucesso!');
             },
-            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+            child: Text(
+              'Excluir',
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
           ),
         ],
       ),

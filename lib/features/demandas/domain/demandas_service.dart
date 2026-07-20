@@ -182,7 +182,7 @@ abstract final class DemandasService {
       case 'Aguardando':
         return SigadColors.warning;
       case 'Revisão':
-        return SigadColors.accent;
+        return SigadColors.warning;
       case 'Concluído':
         return SigadColors.success;
       default:

@@ -343,7 +343,7 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                                       const Icon(
                                         Icons.place_outlined,
                                         size: 14,
-                                        color: Colors.white70,
+                                        color: Colors.white,
                                       ),
                                       const SizedBox(width: 4),
                                       Expanded(
@@ -352,7 +352,7 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: const TextStyle(
-                                            color: Colors.white70,
+                                            color: Colors.white,
                                           ),
                                         ),
                                       ),
