@@ -141,13 +141,13 @@ class RoleProfile {
           title: 'Perfil Servidor Administrativo',
           subtitle:
               'Mantenha processos operacionais e fluxos documentais em dia.',
-          tone: SigadColors.accent,
+          tone: SigadColors.warning,
           metrics: [
             RoleMetric(
               label: 'Processos hoje',
               value: '18',
               icon: Icons.folder_open_outlined,
-              tone: SigadColors.accent,
+              tone: SigadColors.warning,
             ),
             RoleMetric(
               label: 'Solicitações',
@@ -171,7 +171,7 @@ class RoleProfile {
             PriorityItem(
               label: 'Atualizar status de protocolos',
               icon: Icons.swap_horiz_outlined,
-              tone: SigadColors.accent,
+              tone: SigadColors.warning,
             ),
             PriorityItem(
               label: 'Enviar relatório diário para coordenação',

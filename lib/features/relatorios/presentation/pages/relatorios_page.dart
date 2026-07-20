@@ -412,7 +412,7 @@ class _RelatorioCard extends StatelessWidget {
       case 'Análise Geral':
         return SigadColors.brand;
       case 'Recursos Humanos':
-        return SigadColors.accent;
+        return SigadColors.warning;
       case 'Desempenho':
         return SigadColors.success;
       case 'Infraestrutura':

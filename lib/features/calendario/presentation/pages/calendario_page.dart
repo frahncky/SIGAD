@@ -355,7 +355,7 @@ class _ResumoDaSemana extends StatelessWidget {
                 icon: Icons.event_note_outlined,
                 value: '—',
                 label: 'Eventos agendados',
-                tone: SigadColors.accent,
+                tone: SigadColors.violet,
               ),
               _ResumoStat(
                 icon: Icons.science_outlined,
@@ -603,7 +603,7 @@ Color _corCategoria(String categoria) {
     case 'Laboratório':
       return SigadColors.success;
     case 'Comunicação':
-      return SigadColors.accent;
+      return SigadColors.violet;
     default:
       return SigadColors.brand;
   }

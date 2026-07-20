@@ -48,7 +48,7 @@ Color _corCategoria(String categoria) {
     case 'Carga horária':
       return SigadColors.success;
     case 'Eventos':
-      return SigadColors.accent;
+      return SigadColors.violet;
     default:
       return SigadColors.muted;
   }
