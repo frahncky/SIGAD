@@ -41,6 +41,7 @@ class HomeShellPage extends StatelessWidget {
         final selectedIndex = availableItems.indexWhere(
           (item) => item.route == currentRoute,
         );
+        final bottomNavIndex = _bottomNavIndex();
 
         return Scaffold(
           drawer: isWide
@@ -83,8 +84,16 @@ class HomeShellPage extends StatelessWidget {
                 ),
           bottomNavigationBar: isWide
               ? null
+              : bottomNavIndex == null
+              ? _UnselectedMobileNavigationBar(
+                  items: _bottomNavItems,
+                  onDestinationSelected: (index) {
+                    final item = _bottomNavItems[index];
+                    _navigate(context, item['route'] as String);
+                  },
+                )
               : NavigationBar(
-                  selectedIndex: _bottomNavIndex(),
+                  selectedIndex: bottomNavIndex,
                   onDestinationSelected: (index) {
                     final item = _bottomNavItems[index];
                     _navigate(context, item['route'] as String);
@@ -177,11 +186,11 @@ class HomeShellPage extends StatelessWidget {
     },
   ];
 
-  int _bottomNavIndex() {
+  int? _bottomNavIndex() {
     final idx = _bottomNavItems.indexWhere(
       (item) => item['route'] == currentRoute,
     );
-    return idx < 0 ? 0 : idx;
+    return idx < 0 ? null : idx;
   }
 
   void _navigate(BuildContext context, String route) {
@@ -205,33 +214,53 @@ class HomeShellPage extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
+      isScrollControlled: true,
       builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Notificações',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 8),
-              if (notificacoes.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 24),
-                  child: Center(child: Text('Nenhuma notificação no momento.')),
-                )
-              else
-                ...notificacoes.map(
-                  (n) => ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: Icon(n.icone),
-                    title: Text(n.titulo),
-                    subtitle: Text(n.subtitulo),
+        return SafeArea(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(context).height * 0.72,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Notificações',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-            ],
+                  const SizedBox(height: 8),
+                  if (notificacoes.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 24),
+                      child: Center(
+                        child: Text('Nenhuma notificação no momento.'),
+                      ),
+                    )
+                  else
+                    Flexible(
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        itemCount: notificacoes.length,
+                        separatorBuilder: (_, _) => const Divider(height: 1),
+                        itemBuilder: (context, index) {
+                          final notificacao = notificacoes[index];
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: Icon(notificacao.icone),
+                            title: Text(notificacao.titulo),
+                            subtitle: Text(notificacao.subtitulo),
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
         );
       },
@@ -334,6 +363,78 @@ class HomeShellPage extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+/// Mantém os três destinos principais disponíveis em módulos secundários sem
+/// anunciar ou destacar falsamente a Visão geral como a rota atual.
+class _UnselectedMobileNavigationBar extends StatelessWidget {
+  const _UnselectedMobileNavigationBar({
+    required this.items,
+    required this.onDestinationSelected,
+  });
+
+  final List<Map<String, Object>> items;
+  final ValueChanged<int> onDestinationSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return Material(
+      color: colors.surface,
+      elevation: 0,
+      child: SafeArea(
+        top: false,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 70),
+          child: Row(
+            children: [
+              for (var index = 0; index < items.length; index++)
+                Expanded(
+                  child: Semantics(
+                    button: true,
+                    label: items[index]['label'] as String,
+                    child: InkWell(
+                      onTap: () => onDestinationSelected(index),
+                      child: ExcludeSemantics(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 8,
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                items[index]['icon'] as IconData,
+                                size: 23,
+                                color: colors.onSurfaceVariant,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                items[index]['label'] as String,
+                                maxLines: 2,
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: colors.onSurfaceVariant,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

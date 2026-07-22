@@ -262,6 +262,15 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    final primeiroDiaDoMes = find.bySemanticsLabel(RegExp(r'^Dia 1(?:,|$)'));
+    await Scrollable.ensureVisible(
+      tester.element(primeiroDiaDoMes),
+      alignment: 0.2,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(primeiroDiaDoMes);
+    await tester.pumpAndSettle();
+
     final primeiraCelulaLivre = find.text('Livre').first;
     final celulaInterativa = find
         .ancestor(of: primeiraCelulaLivre, matching: find.byType(InkWell))
@@ -287,7 +296,9 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  int semanaAtual() => ((DateTime.now().day - 1) ~/ 7) + 1;
+  // O helper seleciona explicitamente o primeiro dia para que os cenários de
+  // recorrência não dependam da data em que a suíte é executada.
+  int semanaAtual() => 1;
 
   Finder checkboxDaSemana(int semana) => find.ancestor(
     of: find.text('${semana}a semana'),
@@ -534,6 +545,15 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
+
+      final primeiroDiaDoMes = find.bySemanticsLabel(RegExp(r'^Dia 1(?:,|$)'));
+      await Scrollable.ensureVisible(
+        tester.element(primeiroDiaDoMes),
+        alignment: 0.2,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(primeiroDiaDoMes);
       await tester.pumpAndSettle();
 
       final primeiraCelulaLivre = find.text('Livre').first;

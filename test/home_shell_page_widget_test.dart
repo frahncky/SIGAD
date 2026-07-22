@@ -14,7 +14,13 @@ import 'package:sigad/features/home/presentation/pages/home_shell_page.dart';
 Widget _buildShell({
   required UserContextProvider userContext,
   String route = AppRoutes.dashboard,
+  double textScale = 1,
 }) {
+  final shell = HomeShellPage(
+    currentRoute: route,
+    child: const SizedBox.expand(child: Center(child: Text('Conteúdo'))),
+  );
+
   return MultiProvider(
     providers: [
       ChangeNotifierProvider<UserContextProvider>.value(value: userContext),
@@ -22,9 +28,13 @@ Widget _buildShell({
     ],
     child: MaterialApp(
       theme: AppTheme.light(),
-      home: HomeShellPage(
-        currentRoute: route,
-        child: const SizedBox.expand(child: Center(child: Text('Conteúdo'))),
+      home: Builder(
+        builder: (context) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(textScale)),
+          child: shell,
+        ),
       ),
     ),
   );
@@ -178,5 +188,77 @@ void main() {
     expect(find.text('Calendário'), findsOneWidget);
     expect(find.text('Anotações'), findsOneWidget);
     expect(find.text('Mais'), findsNothing);
+  });
+
+  testWidgets(
+    'rota secundária mantém atalhos sem destacar falsamente a visão geral',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 568);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final userContext = UserContextProvider();
+      await userContext.login(
+        User(
+          id: 'u-secondary-route',
+          name: 'Marina',
+          email: 'marina@ifma.edu.br',
+          role: UserRole.coordenador,
+          createdAt: DateTime.now(),
+        ),
+      );
+
+      await tester.pumpWidget(
+        _buildShell(
+          userContext: userContext,
+          route: AppRoutes.demandas,
+          textScale: 2,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(NavigationBar), findsNothing);
+      expect(find.byType(NavigationDestination), findsNothing);
+      expect(find.text('Visão geral'), findsOneWidget);
+      expect(find.text('Calendário'), findsOneWidget);
+      expect(find.text('Anotações'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('notificações são apresentadas em lista rolável', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final userContext = UserContextProvider();
+    await userContext.login(
+      User(
+        id: 'u-notifications',
+        name: 'Marina',
+        email: 'marina@ifma.edu.br',
+        role: UserRole.coordenador,
+        createdAt: DateTime.now(),
+      ),
+    );
+
+    await tester.pumpWidget(
+      _buildShell(userContext: userContext, route: AppRoutes.calendario),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Notificações'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Notificações'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(BottomSheet),
+        matching: find.byType(ListView),
+      ),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
   });
 }
