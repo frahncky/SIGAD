@@ -22,6 +22,7 @@ void main() {
           id: 'RES-1',
           professor: 'Ana',
           laboratorio: 'Lab A',
+          ano: 2031,
           mes: 4,
           semanaDoMes: 2,
           diaSemana: 'Seg',
@@ -37,30 +38,50 @@ void main() {
       expect(carregadas, hasLength(1));
       expect(carregadas.first.turno, Turno.noturno);
       expect(carregadas.first.disciplina, 'Química');
+      expect(carregadas.first.ano, 2031);
     });
 
-    test('ignora registros inválidos durante leitura', () async {
-      SharedPreferences.setMockInitialValues({
-        'test_sigad_reservas': jsonEncode([
-          {
-            'id': 'RES-2',
-            'professor': 'Bruno',
-            'laboratorio': 'Lab B',
-            'mes': 4,
-            'semanaDoMes': 1,
-            'diaSemana': 'Ter',
-            'turno': 'matutino',
-            'periodo': 2,
-          },
-          {'id': 'quebrado'},
-        ]),
-      });
+    test(
+      'migra ano legado uma única vez e persiste o valor injetado',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          'test_sigad_reservas': jsonEncode([
+            {
+              'id': 'RES-2',
+              'professor': 'Bruno',
+              'laboratorio': 'Lab B',
+              'mes': 4,
+              'semanaDoMes': 1,
+              'diaSemana': 'Ter',
+              'turno': 'matutino',
+              'periodo': 2,
+            },
+            {'id': 'quebrado'},
+          ]),
+        });
 
-      repository = ReservaRepository(storageKey: 'test_sigad_reservas');
-      final carregadas = await repository.loadReservas();
+        repository = ReservaRepository(
+          storageKey: 'test_sigad_reservas',
+          legacyYear: 2026,
+        );
+        final carregadas = await repository.loadReservas();
 
-      expect(carregadas, hasLength(1));
-      expect(carregadas.first.id, 'RES-2');
-    });
+        expect(carregadas, hasLength(1));
+        expect(carregadas.first.id, 'RES-2');
+        expect(carregadas.first.ano, 2026);
+
+        final prefs = await SharedPreferences.getInstance();
+        final migratedJson =
+            jsonDecode(prefs.getString('test_sigad_reservas')!)
+                as List<dynamic>;
+        expect((migratedJson.single as Map<String, dynamic>)['ano'], 2026);
+
+        final reloaded = await ReservaRepository(
+          storageKey: 'test_sigad_reservas',
+          legacyYear: 2027,
+        ).loadReservas();
+        expect(reloaded.single.ano, 2026);
+      },
+    );
   });
 }

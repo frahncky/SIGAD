@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../app/theme/sigad_colors.dart';
-
 class PageStatusView extends StatelessWidget {
   const PageStatusView({
     super.key,
@@ -49,63 +47,105 @@ class PageStatusView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final textTheme = theme.textTheme;
+    final normalizedSubtitle = subtitle?.trim();
+    final hasSubtitle =
+        normalizedSubtitle != null && normalizedSubtitle.isNotEmpty;
+    final semanticLabel = hasSubtitle
+        ? '${title.trim()}. $normalizedSubtitle'
+        : title.trim();
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 360),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 72,
-                height: 72,
-                decoration: BoxDecoration(
-                  color: SigadColors.surfaceAlt,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(icon, size: 36, color: SigadColors.muted),
-              ),
-              if (showProgress) ...[
-                const SizedBox(height: 14),
-                const SizedBox(
-                  width: 26,
-                  height: 26,
-                  child: CircularProgressIndicator(strokeWidth: 2.2),
-                ),
-              ],
-              const SizedBox(height: 14),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              if (subtitle != null && subtitle!.trim().isNotEmpty) ...[
-                const SizedBox(height: 6),
-                Text(
-                  subtitle!,
-                  textAlign: TextAlign.center,
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: SigadColors.muted,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final content = Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 360),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Semantics(
+                    container: true,
+                    liveRegion: true,
+                    label: semanticLabel,
+                    child: ExcludeSemantics(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 72,
+                            height: 72,
+                            decoration: BoxDecoration(
+                              color: colors.surfaceContainer,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Icon(
+                              icon,
+                              size: 36,
+                              color: colors.onSurfaceVariant,
+                            ),
+                          ),
+                          if (showProgress) ...[
+                            const SizedBox(height: 14),
+                            const SizedBox(
+                              width: 26,
+                              height: 26,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.2,
+                              ),
+                            ),
+                          ],
+                          const SizedBox(height: 14),
+                          Text(
+                            title,
+                            textAlign: TextAlign.center,
+                            style: textTheme.titleMedium?.copyWith(
+                              color: colors.onSurface,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          if (hasSubtitle) ...[
+                            const SizedBox(height: 6),
+                            Text(
+                              normalizedSubtitle,
+                              textAlign: TextAlign.center,
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ],
-              if (actionLabel != null && onAction != null) ...[
-                const SizedBox(height: 14),
-                OutlinedButton.icon(
-                  onPressed: onAction,
-                  icon: const Icon(Icons.refresh),
-                  label: Text(actionLabel!),
-                ),
-              ],
-            ],
+                  if (actionLabel != null && onAction != null) ...[
+                    const SizedBox(height: 14),
+                    OutlinedButton.icon(
+                      onPressed: onAction,
+                      icon: const Icon(Icons.refresh),
+                      label: Text(actionLabel!),
+                    ),
+                  ],
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+
+        if (!constraints.hasBoundedHeight) {
+          return content;
+        }
+
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: content,
+          ),
+        );
+      },
     );
   }
 }

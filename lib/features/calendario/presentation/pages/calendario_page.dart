@@ -58,7 +58,10 @@ class _CalendarioPageState extends State<CalendarioPage> {
   Future<void> _carregarReservas() async {
     final armazenadas = await _reservaRepository.loadReservas();
     final reservas = armazenadas.isEmpty
-        ? ReservaService.defaultReservas(DateTime.now().month)
+        ? ReservaService.defaultReservas(
+            ano: DateTime.now().year,
+            mes: DateTime.now().month,
+          )
         : armazenadas;
     if (!mounted) return;
     setState(() {
@@ -102,7 +105,9 @@ class _CalendarioPageState extends State<CalendarioPage> {
       DateTime(ano, mes, 27): [SigadColors.accent, SigadColors.risk],
       DateTime(ano, mes, 30): [SigadColors.info],
     };
-    for (final reserva in _reservasFiltradas.where((r) => r.mes == mes)) {
+    for (final reserva in _reservasFiltradas.where(
+      (r) => r.ano == ano && r.mes == mes,
+    )) {
       final data = _dataDaReserva(reserva, ano);
       if (data != null) {
         marcadores.putIfAbsent(data, () => []).add(SigadColors.success);
@@ -112,6 +117,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
   }
 
   DateTime? _dataDaReserva(ReservaLaboratorio reserva, int ano) {
+    if (reserva.ano != ano) return null;
     const weekdays = {'Seg': 1, 'Ter': 2, 'Qua': 3, 'Qui': 4, 'Sex': 5};
     final weekday = weekdays[reserva.diaSemana];
     if (weekday == null) return null;
@@ -149,26 +155,43 @@ class _CalendarioPageState extends State<CalendarioPage> {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Agenda completa',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 12),
-              if (eventos.isEmpty)
-                const _EmptyAgenda()
-              else
-                ...eventos.map((evento) => _EventoTile(evento: evento)),
-            ],
+      isScrollControlled: true,
+      builder: (sheetContext) {
+        final alturaMaxima = MediaQuery.sizeOf(sheetContext).height * 0.9;
+        return SafeArea(
+          child: ConstrainedBox(
+            key: const Key('calendario-agenda-completa'),
+            constraints: BoxConstraints(maxHeight: alturaMaxima),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+                  child: Text(
+                    'Agenda completa',
+                    style: Theme.of(sheetContext).textTheme.titleLarge,
+                  ),
+                ),
+                Flexible(
+                  child: eventos.isEmpty
+                      ? const SingleChildScrollView(
+                          padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
+                          child: _EmptyAgenda(),
+                        )
+                      : ListView.builder(
+                          key: const Key('calendario-agenda-completa-lista'),
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                          itemCount: eventos.length,
+                          itemBuilder: (context, index) =>
+                              _EventoTile(evento: eventos[index]),
+                        ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -243,9 +266,10 @@ class _CalendarioPageState extends State<CalendarioPage> {
   }
 
   Widget _calendarCard() {
+    final usarPaddingCompacto = MediaQuery.sizeOf(context).width <= 360;
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(18),
+        padding: EdgeInsets.all(usarPaddingCompacto ? 12 : 18),
         child: CalendarioMesWidget(
           mesAtual: _mesAtual,
           diaSelecionado: _diaSelecionado,
@@ -270,7 +294,7 @@ class _ResumoDaSemana extends StatelessWidget {
     final inicioSemana = hoje.subtract(Duration(days: hoje.weekday % 7));
     final fimSemana = inicioSemana.add(const Duration(days: 6));
     final reservasNaSemana = reservas.where((reserva) {
-      if (reserva.mes != hoje.month) return false;
+      if (reserva.ano != hoje.year || reserva.mes != hoje.month) return false;
       final semanaAtual = ((hoje.day - 1) ~/ 7) + 1;
       return reserva.semanaDoMes == semanaAtual;
     }).length;
@@ -279,94 +303,121 @@ class _ResumoDaSemana extends StatelessWidget {
         "${DateFormat("d 'de' MMMM", 'pt_BR').format(fimSemana)}";
     final colors = Theme.of(context).colorScheme;
 
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: colors.outlineVariant),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: SigadColors.brandLight,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: const Icon(
-                  Icons.calendar_month_rounded,
-                  color: SigadColors.brand,
-                ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final escalaTexto = MediaQuery.textScalerOf(context).scale(14) / 14;
+        final usarLayoutVertical =
+            constraints.maxWidth < 400 || escalaTexto >= 1.4;
+        final identificacao = Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: SigadColors.brandLight,
+                borderRadius: BorderRadius.circular(14),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              child: const Icon(
+                Icons.calendar_month_rounded,
+                color: SigadColors.brand,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Resumo da semana',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  Text(
+                    periodo,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+        final botaoAgenda = OutlinedButton.icon(
+          onPressed: onVerAgenda,
+          icon: const Icon(Icons.arrow_forward_rounded, size: 15),
+          label: const Text('Ver agenda'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: SigadColors.brand,
+            side: const BorderSide(color: SigadColors.brand),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+        );
+        final estatisticas = <_ResumoStat>[
+          const _ResumoStat(
+            icon: Icons.event_note_outlined,
+            value: '—',
+            label: 'Eventos agendados',
+            tone: SigadColors.violet,
+          ),
+          _ResumoStat(
+            icon: Icons.science_outlined,
+            value: '$reservasNaSemana',
+            label: 'Reservas de laboratório',
+            tone: SigadColors.success,
+          ),
+          const _ResumoStat(
+            icon: Icons.groups_outlined,
+            value: '—',
+            label: 'Reunião marcada',
+            tone: SigadColors.info,
+          ),
+        ];
+
+        return Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: colors.outlineVariant),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (usarLayoutVertical) ...[
+                identificacao,
+                const SizedBox(height: 12),
+                botaoAgenda,
+              ] else
+                Row(
                   children: [
-                    Text(
-                      'Resumo da semana',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    Text(
-                      periodo,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
+                    Expanded(child: identificacao),
+                    const SizedBox(width: 8),
+                    botaoAgenda,
                   ],
                 ),
-              ),
-              const SizedBox(width: 8),
-              OutlinedButton.icon(
-                onPressed: onVerAgenda,
-                icon: const Icon(Icons.arrow_forward_rounded, size: 15),
-                label: const Text('Ver agenda'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: SigadColors.brand,
-                  side: const BorderSide(color: SigadColors.brand),
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              const SizedBox(height: 16),
+              if (usarLayoutVertical)
+                ...estatisticas.map(
+                  (stat) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: stat,
+                  ),
+                )
+              else
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: estatisticas
+                      .map((stat) => Expanded(child: stat))
+                      .toList(),
                 ),
-              ),
             ],
           ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              const _ResumoStat(
-                icon: Icons.event_note_outlined,
-                value: '—',
-                label: 'Eventos agendados',
-                tone: SigadColors.accent,
-              ),
-              _ResumoStat(
-                icon: Icons.science_outlined,
-                value: '$reservasNaSemana',
-                label: 'Reservas de laboratório',
-                tone: SigadColors.success,
-              ),
-              const _ResumoStat(
-                icon: Icons.groups_outlined,
-                value: '—',
-                label: 'Reunião marcada',
-                tone: SigadColors.info,
-              ),
-            ],
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -386,32 +437,25 @@ class _ResumoStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              SigadIconAvatar(
-                icon: icon,
-                tone: tone,
-                size: 28,
-                iconSize: 15,
-                borderRadius: 9,
-              ),
-              const SizedBox(width: 6),
-              Text(value, style: const TextStyle(fontWeight: FontWeight.w800)),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            SigadIconAvatar(
+              icon: icon,
+              tone: tone,
+              size: 28,
+              iconSize: 15,
+              borderRadius: 9,
+            ),
+            const SizedBox(width: 6),
+            Text(value, style: const TextStyle(fontWeight: FontWeight.w800)),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(label, style: Theme.of(context).textTheme.bodySmall),
+      ],
     );
   }
 }
@@ -437,42 +481,61 @@ class _FiltrosCalendario extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: _FiltroChip(
-            icon: Icons.groups_2_outlined,
-            label: 'Departamento',
-            value: departamento,
-            options: const [
-              'Eletroeletrônica (DEE)',
-              'Informática',
-              'Mecânica',
-            ],
-            onChanged: onDepartamentoChanged,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _FiltroChip(
-            icon: Icons.sell_outlined,
-            label: 'Tipo de item',
-            value: tipoItem,
-            options: const ['Todos', 'Reunião', 'Laboratório', 'Comunicação'],
-            onChanged: onTipoItemChanged,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _FiltroChip(
-            icon: Icons.science_outlined,
-            label: 'Laboratórios',
-            value: laboratorio,
-            options: laboratorios,
-            onChanged: onLaboratorioChanged,
-          ),
-        ),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final escalaTexto = MediaQuery.textScalerOf(context).scale(14) / 14;
+        final empilharFiltros =
+            constraints.maxWidth < 600 || escalaTexto >= 1.4;
+        final larguraFiltro = empilharFiltros
+            ? constraints.maxWidth
+            : (constraints.maxWidth - 16) / 3;
+
+        return Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            SizedBox(
+              width: larguraFiltro,
+              child: _FiltroChip(
+                icon: Icons.groups_2_outlined,
+                label: 'Departamento',
+                value: departamento,
+                options: const [
+                  'Eletroeletrônica (DEE)',
+                  'Informática',
+                  'Mecânica',
+                ],
+                onChanged: onDepartamentoChanged,
+              ),
+            ),
+            SizedBox(
+              width: larguraFiltro,
+              child: _FiltroChip(
+                icon: Icons.sell_outlined,
+                label: 'Tipo de item',
+                value: tipoItem,
+                options: const [
+                  'Todos',
+                  'Reunião',
+                  'Laboratório',
+                  'Comunicação',
+                ],
+                onChanged: onTipoItemChanged,
+              ),
+            ),
+            SizedBox(
+              width: larguraFiltro,
+              child: _FiltroChip(
+                icon: Icons.science_outlined,
+                label: 'Laboratórios',
+                value: laboratorio,
+                options: laboratorios,
+                onChanged: onLaboratorioChanged,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -495,81 +558,93 @@ class _FiltroChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
+    return Semantics(
+      button: true,
+      label: '$label: $value',
+      hint: 'Toque para alterar',
       onTap: () => _abrirSelecao(context),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: colors.outlineVariant),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, size: 15, color: SigadColors.brand),
-                const SizedBox(width: 5),
-                Expanded(
-                  child: Text(
-                    label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: colors.onSurfaceVariant,
+      excludeSemantics: true,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => _abrirSelecao(context),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: colors.outlineVariant),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(icon, size: 15, color: SigadColors.brand),
+                  const SizedBox(width: 5),
+                  Expanded(
+                    child: Text(
+                      label,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 3),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    value,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.w700),
+                ],
+              ),
+              const SizedBox(height: 3),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      value,
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
                   ),
-                ),
-                const Icon(Icons.expand_more_rounded, size: 16),
-              ],
-            ),
-          ],
+                  const Icon(Icons.expand_more_rounded, size: 16),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   void _abrirSelecao(BuildContext context) {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: options
-              .map(
-                (option) => ListTile(
-                  title: Text(option),
-                  trailing: option == value
-                      ? const Icon(
-                          Icons.check_rounded,
-                          color: SigadColors.brand,
-                        )
-                      : null,
-                  onTap: () {
-                    Navigator.pop(context);
-                    onChanged(option);
-                  },
-                ),
-              )
-              .toList(),
-        ),
-      ),
+      builder: (sheetContext) {
+        final alturaMaxima = MediaQuery.sizeOf(sheetContext).height * 0.75;
+        return SafeArea(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: alturaMaxima),
+            child: ListView(
+              shrinkWrap: true,
+              padding: const EdgeInsets.only(bottom: 8),
+              children: options
+                  .map(
+                    (option) => ListTile(
+                      title: Text(option),
+                      trailing: option == value
+                          ? const Icon(
+                              Icons.check_rounded,
+                              color: SigadColors.brand,
+                            )
+                          : null,
+                      onTap: () {
+                        Navigator.pop(sheetContext);
+                        onChanged(option);
+                      },
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -597,7 +672,7 @@ Color _corCategoria(String categoria) {
     case 'Laboratório':
       return SigadColors.success;
     case 'Comunicação':
-      return SigadColors.accent;
+      return SigadColors.violet;
     default:
       return SigadColors.brand;
   }
@@ -628,7 +703,7 @@ class _ProximosCompromissos extends StatelessWidget {
         reservas
             .map(
               (reserva) =>
-                  (reserva: reserva, data: dataDaReserva(reserva, agora.year)),
+                  (reserva: reserva, data: dataDaReserva(reserva, reserva.ano)),
             )
             .where(
               (item) => item.data != null && !item.data!.isBefore(inicioHoje),
@@ -647,7 +722,7 @@ class _ProximosCompromissos extends StatelessWidget {
             'Reserva: ${reserva.laboratorio}',
             reserva.disciplina ?? 'Responsável: ${reserva.professor}',
             'Laboratório',
-            '${DateFormat('dd/MM').format(item.data!)} • $horario',
+            '${DateFormat('dd/MM/yyyy').format(item.data!)} • $horario',
             Icons.science_outlined,
           );
         })
@@ -659,26 +734,46 @@ class _ProximosCompromissos extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                const Icon(
-                  Icons.calendar_today_outlined,
-                  color: SigadColors.brand,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Próximos compromissos',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final escalaTexto =
+                    MediaQuery.textScalerOf(context).scale(14) / 14;
+                final usarLayoutVertical =
+                    constraints.maxWidth < 400 || escalaTexto >= 1.4;
+                final titulo = Row(
+                  children: [
+                    const Icon(
+                      Icons.calendar_today_outlined,
+                      color: SigadColors.brand,
                     ),
-                  ),
-                ),
-                TextButton(
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Próximos compromissos',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w800),
+                      ),
+                    ),
+                  ],
+                );
+                final acao = TextButton(
                   onPressed: onVerTodos,
                   child: const Text('Ver todos'),
-                ),
-              ],
+                );
+
+                if (usarLayoutVertical) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [titulo, const SizedBox(height: 4), acao],
+                  );
+                }
+                return Row(
+                  children: [
+                    Expanded(child: titulo),
+                    acao,
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 6),
             if (compromissos.isEmpty)
@@ -707,10 +802,12 @@ class _CompromissoTile extends StatelessWidget {
     final cor = _corCategoria(item.categoria);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final escalaTexto = MediaQuery.textScalerOf(context).scale(14) / 14;
+          final usarLayoutVertical =
+              constraints.maxWidth < 520 || escalaTexto >= 1.4;
+          final icone = Container(
             width: 40,
             height: 40,
             decoration: BoxDecoration(
@@ -718,52 +815,84 @@ class _CompromissoTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(item.icone, color: cor, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
+          );
+          final informacoes = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                item.titulo,
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                item.subtitulo,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          );
+          final categoria = Container(
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+            decoration: BoxDecoration(
+              color: cor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              item.categoria,
+              style: TextStyle(
+                color: cor,
+                fontWeight: FontWeight.w700,
+                fontSize: 11,
+              ),
+            ),
+          );
+          final quando = Text(
+            item.quando,
+            style: Theme.of(context).textTheme.bodySmall,
+          );
+
+          if (usarLayoutVertical) {
+            return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  item.titulo,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    icone,
+                    const SizedBox(width: 12),
+                    Expanded(child: informacoes),
+                  ],
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  item.subtitulo,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.only(left: 52),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [categoria, const SizedBox(height: 4), quando],
                   ),
                 ),
               ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+            );
+          }
+
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
-                decoration: BoxDecoration(
-                  color: cor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  item.categoria,
-                  style: TextStyle(
-                    color: cor,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 11,
-                  ),
+              icone,
+              const SizedBox(width: 12),
+              Expanded(child: informacoes),
+              const SizedBox(width: 8),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 180),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [categoria, const SizedBox(height: 4), quando],
                 ),
               ),
-              const SizedBox(height: 4),
-              Text(item.quando, style: Theme.of(context).textTheme.bodySmall),
             ],
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -789,34 +918,60 @@ class _AgendaDoDia extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                const Icon(Icons.today_outlined, color: SigadColors.brand),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Agenda do dia',
-                        style: textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final escalaTexto =
+                    MediaQuery.textScalerOf(context).scale(14) / 14;
+                final usarLayoutVertical =
+                    constraints.maxWidth < 400 || escalaTexto >= 1.4;
+                final titulo = Row(
+                  children: [
+                    const Icon(Icons.today_outlined, color: SigadColors.brand),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Agenda do dia',
+                            style: textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          Text(
+                            DateFormat(
+                              "d 'de' MMMM 'de' y",
+                              'pt_BR',
+                            ).format(dia),
+                            style: textTheme.bodySmall?.copyWith(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        DateFormat("d 'de' MMMM 'de' y", 'pt_BR').format(dia),
-                        style: textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                TextButton(
+                    ),
+                  ],
+                );
+                final acao = TextButton(
                   onPressed: onVerCompleta,
                   child: const Text('Ver agenda completa'),
-                ),
-              ],
+                );
+
+                if (usarLayoutVertical) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [titulo, const SizedBox(height: 4), acao],
+                  );
+                }
+                return Row(
+                  children: [
+                    Expanded(child: titulo),
+                    acao,
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 10),
             if (eventos.isEmpty)
@@ -850,10 +1005,12 @@ class _EventoTile extends StatelessWidget {
     final cor = _corCategoria(evento.categoria);
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final escalaTexto = MediaQuery.textScalerOf(context).scale(14) / 14;
+          final usarLayoutVertical =
+              constraints.maxWidth < 480 || escalaTexto >= 1.4;
+          final horario = SizedBox(
             width: 52,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -865,8 +1022,8 @@ class _EventoTile extends StatelessWidget {
                 Text(evento.fim, style: Theme.of(context).textTheme.bodySmall),
               ],
             ),
-          ),
-          Column(
+          );
+          final marcador = Column(
             children: [
               Container(
                 width: 10,
@@ -879,27 +1036,24 @@ class _EventoTile extends StatelessWidget {
                 color: cor.withValues(alpha: 0.25),
               ),
             ],
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  evento.titulo,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
+          );
+          final informacoes = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                evento.titulo,
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                evento.local,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
-                const SizedBox(height: 3),
-                Text(
-                  evento.local,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
+              ),
+            ],
+          );
+          final categoria = Container(
             padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
             decoration: BoxDecoration(
               color: cor.withValues(alpha: 0.12),
@@ -913,8 +1067,45 @@ class _EventoTile extends StatelessWidget {
                 fontSize: 11,
               ),
             ),
-          ),
-        ],
+          );
+
+          if (usarLayoutVertical) {
+            final periodo = evento.fim.isEmpty
+                ? evento.inicio
+                : '${evento.inicio} – ${evento.fim}';
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  periodo,
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 4),
+                categoria,
+                const SizedBox(height: 8),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    marcador,
+                    const SizedBox(width: 12),
+                    Expanded(child: informacoes),
+                  ],
+                ),
+              ],
+            );
+          }
+
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              horario,
+              marcador,
+              const SizedBox(width: 12),
+              Expanded(child: informacoes),
+              categoria,
+            ],
+          );
+        },
       ),
     );
   }
@@ -986,6 +1177,7 @@ class _OcupacaoLaboratorios extends StatelessWidget {
     final indicadores = ReservaService.calcularOcupacaoLaboratorios(
       reservas: reservas,
       laboratorios: nomes,
+      ano: hoje.year,
       mes: hoje.month,
       semanaDoMes: semana,
     );
@@ -1002,26 +1194,49 @@ class _OcupacaoLaboratorios extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            const SigadIconAvatar(
-              icon: Icons.bar_chart_rounded,
-              tone: SigadColors.brand,
-              size: 34,
-              iconSize: 18,
-              borderRadius: 10,
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                'Ocupação dos laboratórios (hoje)',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-              ),
-            ),
-            TextButton(onPressed: onVerTodos, child: const Text('Ver todos')),
-          ],
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final escalaTexto = MediaQuery.textScalerOf(context).scale(14) / 14;
+            final usarLayoutVertical =
+                constraints.maxWidth < 400 || escalaTexto >= 1.4;
+            final titulo = Row(
+              children: [
+                const SigadIconAvatar(
+                  icon: Icons.bar_chart_rounded,
+                  tone: SigadColors.brand,
+                  size: 34,
+                  iconSize: 18,
+                  borderRadius: 10,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Ocupação dos laboratórios (hoje)',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ],
+            );
+            final acao = TextButton(
+              onPressed: onVerTodos,
+              child: const Text('Ver todos'),
+            );
+
+            if (usarLayoutVertical) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [titulo, const SizedBox(height: 4), acao],
+              );
+            }
+            return Row(
+              children: [
+                Expanded(child: titulo),
+                acao,
+              ],
+            );
+          },
         ),
         const SizedBox(height: 10),
         if (loading)

@@ -48,7 +48,7 @@ Color _corCategoria(String categoria) {
     case 'Carga horária':
       return SigadColors.success;
     case 'Eventos':
-      return SigadColors.accent;
+      return SigadColors.violet;
     default:
       return SigadColors.muted;
   }
@@ -139,13 +139,15 @@ class _NotasPageState extends State<NotasPage> {
 
   List<Nota> get _notasFiltradas {
     final query = _busca.trim().toLowerCase();
-    return _notasOrdenadas.where((nota) {
-      final matchesQuery =
-          query.isEmpty || nota.texto.toLowerCase().contains(query);
-      final matchesCategoria =
-          _categoriaFiltro == 'Todas' || nota.categoria == _categoriaFiltro;
-      return matchesQuery && matchesCategoria;
-    }).toList(growable: false);
+    return _notasOrdenadas
+        .where((nota) {
+          final matchesQuery =
+              query.isEmpty || nota.texto.toLowerCase().contains(query);
+          final matchesCategoria =
+              _categoriaFiltro == 'Todas' || nota.categoria == _categoriaFiltro;
+          return matchesQuery && matchesCategoria;
+        })
+        .toList(growable: false);
   }
 
   List<Nota> get _notasFixadas =>
@@ -202,7 +204,8 @@ class _NotasPageState extends State<NotasPage> {
                 decoration: const InputDecoration(labelText: 'Categoria'),
                 items: kCategoriasAnotacao
                     .map(
-                      (item) => DropdownMenuItem(value: item, child: Text(item)),
+                      (item) =>
+                          DropdownMenuItem(value: item, child: Text(item)),
                     )
                     .toList(),
                 onChanged: (value) {
@@ -525,7 +528,8 @@ class _NotasPageState extends State<NotasPage> {
   void _abrirMaisCategorias() {
     final outras = kCategoriasAnotacao
         .where(
-          (item) => !['Reuniões', 'Laboratórios', 'Planejamento'].contains(item),
+          (item) =>
+              !['Reuniões', 'Laboratórios', 'Planejamento'].contains(item),
         )
         .toList();
     showModalBottomSheet(
@@ -635,7 +639,9 @@ class _NoteCard extends StatelessWidget {
         color: destacada ? SigadColors.brandLight : colors.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: destacada ? SigadColors.brand.withValues(alpha: 0.3) : colors.outlineVariant,
+          color: destacada
+              ? SigadColors.brand.withValues(alpha: 0.3)
+              : colors.outlineVariant,
         ),
       ),
       child: Padding(
@@ -685,7 +691,9 @@ class _NoteCard extends StatelessWidget {
                     nota.fixada
                         ? Icons.bookmark_rounded
                         : Icons.bookmark_border_rounded,
-                    color: nota.fixada ? SigadColors.brand : colors.onSurfaceVariant,
+                    color: nota.fixada
+                        ? SigadColors.brand
+                        : colors.onSurfaceVariant,
                   ),
                 ),
               ],

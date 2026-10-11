@@ -114,7 +114,10 @@ class _LoginPageState extends State<LoginPage> {
         const SizedBox(height: 8),
         LayoutBuilder(
           builder: (context, constraints) {
-            final itemWidth = (constraints.maxWidth - 8) / 2;
+            final itemWidth = ((constraints.maxWidth - 8) / 2).clamp(
+              0.0,
+              double.infinity,
+            );
             return Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -438,7 +441,7 @@ class _FeatureLine extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         children: [
-          Icon(icon, color: SigadColors.accent, size: 20),
+          Icon(icon, color: Colors.white, size: 20),
           const SizedBox(width: 9),
           Expanded(
             child: Text(

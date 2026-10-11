@@ -1,6 +1,6 @@
-import '../data/configuracoes_repository.dart';
-import 'configuracoes_models.dart';
-import 'configuracoes_service.dart';
+import 'configuracoes_repository.dart';
+import '../domain/configuracoes_models.dart';
+import '../domain/configuracoes_service.dart';
 
 abstract final class AgendaConvitesService {
   static Future<void> registrarConviteRecebido({

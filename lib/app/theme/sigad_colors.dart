@@ -32,4 +32,7 @@ abstract final class SigadColors {
   static const Color riskSoft = Color(0xFFF9E1E1);
 
   static const Color mint = Color(0xFFBFE3D0);
+
+  static const Color violet = Color(0xFF664072);
+  static const Color violetDark = Color(0xFFD0B6D8);
 }

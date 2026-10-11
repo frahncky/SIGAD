@@ -148,7 +148,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
           _ConfigSection(
             titulo: 'Preferências',
             icon: Icons.tune_outlined,
-            tone: SigadColors.accent,
+            tone: SigadColors.warning,
             children: [
               _ConfigToggle(
                 icon: Icons.notifications,
@@ -159,7 +159,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                   setState(() => _notificacoesAtivas = value);
                   _saveData();
                 },
-                tone: SigadColors.accent,
+                tone: SigadColors.warning,
               ),
               _ConfigToggle(
                 icon: Icons.dark_mode,
@@ -226,7 +226,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                       setState(() => _antecedenciaNotificacaoMinutos = minutos);
                       _saveData();
                     },
-                    tone: SigadColors.accent,
+                    tone: SigadColors.warning,
                   ),
               ],
             ),
@@ -256,7 +256,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                   setState(() => _tamanhoFonte = valor);
                   _saveData();
                 },
-                tone: SigadColors.accent,
+                tone: SigadColors.warning,
               ),
             ],
           ),
@@ -871,78 +871,129 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
 
   void _showSobre(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Sobre o SIGAD',
-                  style: textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (sheetContext) {
+        final screenWidth = MediaQuery.sizeOf(sheetContext).width;
+        final horizontalPadding = screenWidth <= 360 ? 16.0 : 24.0;
+
+        return FractionallySizedBox(
+          heightFactor: 0.92,
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 560),
+              child: SizedBox(
+                width: double.infinity,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    8,
+                    horizontalPadding,
+                    horizontalPadding,
                   ),
-                ),
-                IconButton(
-                  tooltip: 'Fechar sobre o SIGAD',
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Center(
-              child: Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: SigadColors.brand,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Center(
-                  child: Text(
-                    'SIGAD',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Sobre o SIGAD',
+                              style: textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton(
+                            tooltip: 'Fechar sobre o SIGAD',
+                            onPressed: () => Navigator.pop(sheetContext),
+                            icon: const Icon(Icons.close),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 8),
+                              Center(
+                                child: Semantics(
+                                  image: true,
+                                  label: 'SIGAD',
+                                  child: ExcludeSemantics(
+                                    child: Container(
+                                      width: 80,
+                                      height: 80,
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: SigadColors.brand,
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: const FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Text(
+                                          'SIGAD',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              const _DetailSection(
+                                label: 'Versão',
+                                value: '1.0.0 (Build 42)',
+                              ),
+                              const _DetailSection(
+                                label: 'Desenvolvido por',
+                                value: 'Equipe de Desenvolvimento SIGAD',
+                              ),
+                              const _DetailSection(
+                                label: 'Data de lançamento',
+                                value: '15/03/2026',
+                              ),
+                              const _DetailSection(
+                                label: 'Compatibilidade',
+                                value: 'Android 8.0+, iOS 12.0+',
+                              ),
+                              const SizedBox(height: 24),
+                              Text(
+                                'O SIGAD é um sistema integrado de gestão acadêmica desenvolvido para otimizar processos administrativos e acadêmicos.',
+                                style: textTheme.bodyMedium,
+                              ),
+                              const SizedBox(height: 8),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.pop(sheetContext),
+                          child: const Text('Fechar'),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 24),
-            _DetailSection(label: 'Versão', value: '1.0.0 (Build 42)'),
-            _DetailSection(
-              label: 'Desenvolvido por',
-              value: 'Equipe de Desenvolvimento SIGAD',
-            ),
-            _DetailSection(label: 'Data de lançamento', value: '15/03/2026'),
-            _DetailSection(
-              label: 'Compatibilidade',
-              value: 'Android 8.0+, iOS 12.0+',
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'O SIGAD é um sistema integrado de gestão acadêmica desenvolvido para otimizar processos administrativos e acadêmicos.',
-              style: textTheme.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Fechar'),
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -1122,11 +1173,13 @@ class _ConfigSection extends StatelessWidget {
             children: [
               SigadIconAvatar(icon: icon, tone: tone, size: 30, iconSize: 16),
               const SizedBox(width: 10),
-              Text(
-                titulo,
-                style: textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: SigadColors.muted,
+              Expanded(
+                child: Text(
+                  titulo,
+                  style: textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: SigadColors.muted,
+                  ),
                 ),
               ),
             ],

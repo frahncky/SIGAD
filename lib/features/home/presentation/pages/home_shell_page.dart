@@ -27,8 +27,11 @@ class HomeShellPage extends StatelessWidget {
         final colors = Theme.of(context).colorScheme;
         final userContext = context.watch<UserContextProvider>();
         final userRole = userContext.userRole;
+        final isDashboard = currentRoute == AppRoutes.dashboard;
         // unreadChatCount removido pois não é mais utilizado
-        final notifCount = NotificacoesService.porRole(userRole).length;
+        final notifCount = isDashboard
+            ? 0
+            : NotificacoesService.porRole(userRole).length;
 
         final availableItems = userRole == null
             ? kNavigationItems
@@ -38,6 +41,7 @@ class HomeShellPage extends StatelessWidget {
         final selectedIndex = availableItems.indexWhere(
           (item) => item.route == currentRoute,
         );
+        final bottomNavIndex = _bottomNavIndex();
 
         return Scaffold(
           drawer: isWide
@@ -52,25 +56,24 @@ class HomeShellPage extends StatelessWidget {
           appBar: isWide
               ? null
               : AppBar(
-                  toolbarHeight: 76,
-                  titleSpacing: 4,
-                  title: const BrandTitle(),
+                  toolbarHeight: isDashboard ? 52 : 64,
                   backgroundColor: colors.surface,
                   surfaceTintColor: Colors.transparent,
                   elevation: 0,
                   actions: [
-                    IconButton(
-                      onPressed: () => _showNotifications(context),
-                      tooltip: 'Notificações',
-                      icon: notifCount > 0
-                          ? Badge(
-                              label: Text(
-                                notifCount > 99 ? '99+' : '$notifCount',
-                              ),
-                              child: const Icon(Icons.notifications_outlined),
-                            )
-                          : const Icon(Icons.notifications_outlined),
-                    ),
+                    if (!isDashboard)
+                      IconButton(
+                        onPressed: () => _showNotifications(context),
+                        tooltip: 'Notificações',
+                        icon: notifCount > 0
+                            ? Badge(
+                                label: Text(
+                                  notifCount > 99 ? '99+' : '$notifCount',
+                                ),
+                                child: const Icon(Icons.notifications_outlined),
+                              )
+                            : const Icon(Icons.notifications_outlined),
+                      ),
                     IconButton(
                       onPressed: () => _showProfileMenu(context, userContext),
                       tooltip: 'Perfil',
@@ -81,8 +84,16 @@ class HomeShellPage extends StatelessWidget {
                 ),
           bottomNavigationBar: isWide
               ? null
+              : bottomNavIndex == null
+              ? _UnselectedMobileNavigationBar(
+                  items: _bottomNavItems,
+                  onDestinationSelected: (index) {
+                    final item = _bottomNavItems[index];
+                    _navigate(context, item['route'] as String);
+                  },
+                )
               : NavigationBar(
-                  selectedIndex: _bottomNavIndex(),
+                  selectedIndex: bottomNavIndex,
                   onDestinationSelected: (index) {
                     final item = _bottomNavItems[index];
                     _navigate(context, item['route'] as String);
@@ -175,11 +186,11 @@ class HomeShellPage extends StatelessWidget {
     },
   ];
 
-  int _bottomNavIndex() {
+  int? _bottomNavIndex() {
     final idx = _bottomNavItems.indexWhere(
       (item) => item['route'] == currentRoute,
     );
-    return idx < 0 ? 0 : idx;
+    return idx < 0 ? null : idx;
   }
 
   void _navigate(BuildContext context, String route) {
@@ -203,33 +214,53 @@ class HomeShellPage extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
+      isScrollControlled: true,
       builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Notificações',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 8),
-              if (notificacoes.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 24),
-                  child: Center(child: Text('Nenhuma notificação no momento.')),
-                )
-              else
-                ...notificacoes.map(
-                  (n) => ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: Icon(n.icone),
-                    title: Text(n.titulo),
-                    subtitle: Text(n.subtitulo),
+        return SafeArea(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(context).height * 0.72,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Notificações',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-            ],
+                  const SizedBox(height: 8),
+                  if (notificacoes.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 24),
+                      child: Center(
+                        child: Text('Nenhuma notificação no momento.'),
+                      ),
+                    )
+                  else
+                    Flexible(
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        itemCount: notificacoes.length,
+                        separatorBuilder: (_, _) => const Divider(height: 1),
+                        itemBuilder: (context, index) {
+                          final notificacao = notificacoes[index];
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: Icon(notificacao.icone),
+                            title: Text(notificacao.titulo),
+                            subtitle: Text(notificacao.subtitulo),
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
         );
       },
@@ -332,6 +363,78 @@ class HomeShellPage extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+/// Mantém os três destinos principais disponíveis em módulos secundários sem
+/// anunciar ou destacar falsamente a Visão geral como a rota atual.
+class _UnselectedMobileNavigationBar extends StatelessWidget {
+  const _UnselectedMobileNavigationBar({
+    required this.items,
+    required this.onDestinationSelected,
+  });
+
+  final List<Map<String, Object>> items;
+  final ValueChanged<int> onDestinationSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return Material(
+      color: colors.surface,
+      elevation: 0,
+      child: SafeArea(
+        top: false,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 70),
+          child: Row(
+            children: [
+              for (var index = 0; index < items.length; index++)
+                Expanded(
+                  child: Semantics(
+                    button: true,
+                    label: items[index]['label'] as String,
+                    child: InkWell(
+                      onTap: () => onDestinationSelected(index),
+                      child: ExcludeSemantics(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 8,
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                items[index]['icon'] as IconData,
+                                size: 23,
+                                color: colors.onSurfaceVariant,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                items[index]['label'] as String,
+                                maxLines: 2,
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: colors.onSurfaceVariant,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -529,7 +632,11 @@ class _NavigationTile extends StatelessWidget {
                   : colors.surfaceContainerLow,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(item.icon, size: 19),
+            child: Icon(
+              item.icon,
+              size: 19,
+              color: selected ? colors.primary : SigadColors.muted,
+            ),
           ),
           title: Text(
             item.label,
@@ -665,30 +772,87 @@ class _ProfileMenu extends StatelessWidget {
     if (user == null) return const SizedBox.shrink();
 
     return SafeArea(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            16,
-            16,
-            16,
-            16 + MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CircleAvatar(
-                radius: 38,
-                backgroundColor: SigadColors.brand.withValues(alpha: 0.14),
-                child: Text(
-                  user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: SigadColors.brand,
-                    fontWeight: FontWeight.w700,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          20,
+          8,
+          20,
+          16 + MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: SigadColors.brand.withValues(alpha: 0.14),
+                  child: Text(
+                    user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: SigadColors.brand,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        user.name,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w700),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        user.role.displayName,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: SigadColors.muted,
+                        ),
+                      ),
+                      Text(
+                        user.email,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: SigadColors.muted,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            const Divider(height: 1),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(
+                Icons.settings_outlined,
+                color: SigadColors.brand,
               ),
-            ],
-          ),
+              title: const Text('Configurações'),
+              onTap: () {
+                final navigator = Navigator.of(context);
+                navigator.pop();
+                navigator.pushNamed(AppRoutes.configuracoes);
+              },
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.logout, color: SigadColors.risk),
+              title: const Text('Sair'),
+              onTap: () {
+                final navigator = Navigator.of(context);
+                navigator.pop();
+                _confirmLogout(navigator.context, userContext);
+              },
+            ),
+          ],
         ),
       ),
     );

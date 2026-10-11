@@ -17,6 +17,12 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(2)),
+          child: child!,
+        ),
         home: Scaffold(body: LaboratoriosCatalogoPage(onAbrirReservas: () {})),
       ),
     );
@@ -31,8 +37,11 @@ void main() {
       300,
       scrollable: find.byType(Scrollable).first,
     );
+    await tester.ensureVisible(find.text('Lab. de Medidas Elétricas'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Lab. de Medidas Elétricas'));
     await tester.pumpAndSettle();
+    expect(find.text('Responsável técnico'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }

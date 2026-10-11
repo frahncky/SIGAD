@@ -543,7 +543,10 @@ class _AtividadesPageState extends State<AtividadesPage> {
               Navigator.pop(context);
               _mostrarFeedback('Atividade excluída com sucesso!');
             },
-            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+            child: Text(
+              'Excluir',
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
           ),
         ],
       ),
@@ -768,15 +771,21 @@ class _AtividadeCard extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'excluir',
                         child: Row(
                           children: [
-                            Icon(Icons.delete, color: Colors.red, size: 18),
-                            SizedBox(width: 8),
+                            Icon(
+                              Icons.delete,
+                              color: Theme.of(context).colorScheme.error,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 8),
                             Text(
                               'Excluir',
-                              style: TextStyle(color: Colors.red),
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.error,
+                              ),
                             ),
                           ],
                         ),

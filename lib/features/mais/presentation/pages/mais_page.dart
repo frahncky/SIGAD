@@ -244,8 +244,9 @@ class _AvisosCard extends StatelessWidget {
                   children: [
                     Text(
                       'Avisos importantes',
-                      style: Theme.of(context).textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w800),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -290,7 +291,10 @@ class _AvisosCard extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                const Icon(Icons.chevron_right_rounded, color: SigadColors.brand),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: SigadColors.brand,
+                ),
               ],
             ),
           ),
@@ -364,8 +368,7 @@ class _QuickAccessCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(20),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
-        onTap: () =>
-            Navigator.of(context).pushReplacementNamed(item.route),
+        onTap: () => Navigator.of(context).pushReplacementNamed(item.route),
         child: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
@@ -387,8 +390,9 @@ class _QuickAccessCard extends StatelessWidget {
                 item.label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodySmall
-                    ?.copyWith(fontWeight: FontWeight.w800),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 2),
               Text(
@@ -493,7 +497,10 @@ class _SuporteCard extends StatelessWidget {
             children: [
               const CircleAvatar(
                 backgroundColor: Colors.white,
-                child: Icon(Icons.headset_mic_outlined, color: SigadColors.brand),
+                child: Icon(
+                  Icons.headset_mic_outlined,
+                  color: SigadColors.brand,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -528,7 +535,13 @@ class _SuporteCard extends StatelessWidget {
               children: [text, const SizedBox(height: 12), button],
             );
           }
-          return Row(children: [Expanded(child: text), const SizedBox(width: 12), button]);
+          return Row(
+            children: [
+              Expanded(child: text),
+              const SizedBox(width: 12),
+              button,
+            ],
+          );
         },
       ),
     );

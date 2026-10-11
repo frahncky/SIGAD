@@ -1,28 +1,37 @@
+import 'dart:ui' show Color;
+
 import '../../../../app/theme/sigad_colors.dart';
-import 'package:flutter/material.dart';
 
 class ReservaLaboratorio {
   const ReservaLaboratorio({
     required this.id,
     required this.professor,
     required this.laboratorio,
+    required this.ano,
     required this.mes,
     required this.semanaDoMes,
     required this.diaSemana,
     required this.turno,
     required this.periodo,
     this.disciplina,
-  });
+    String? grupoId,
+  }) : grupoId = grupoId ?? id;
 
   final String id;
   final String professor;
   final String laboratorio;
+  final int ano;
   final int mes;
   final int semanaDoMes;
   final String diaSemana;
   final Turno turno;
   final int periodo;
   final String? disciplina;
+
+  /// Identifica reservas criadas juntas (mesmo dia/horário repetido em
+  /// várias semanas, ou vários dias/horários reservados de uma vez). Reservas
+  /// avulsas têm [grupoId] igual ao próprio [id].
+  final String grupoId;
 }
 
 class HorarioGridRow {

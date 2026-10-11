@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'dart:ui' show Color;
 
 import '../../../../app/theme/sigad_colors.dart';
 import 'atividade_models.dart';
@@ -113,7 +113,7 @@ abstract final class AtividadesService {
       case 'Agendada':
         return SigadColors.warning;
       case 'Pendente':
-        return SigadColors.accent;
+        return SigadColors.warning;
       default:
         return SigadColors.muted;
     }
