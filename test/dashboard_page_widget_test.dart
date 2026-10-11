@@ -10,27 +10,6 @@ import 'package:sigad/core/services/user_context_provider.dart';
 import 'package:sigad/features/dashboard/presentation/pages/dashboard_page.dart';
 
 void main() {
-  const testAlerts = [
-    DashboardAlertItem(
-      icon: Icons.event_note_outlined,
-      title: 'Atividades do departamento',
-      subtitle: '3 atividades registradas',
-      tone: Color(0xFF1B7F5C),
-    ),
-    DashboardAlertItem(
-      icon: Icons.view_kanban_outlined,
-      title: 'Quadro de trabalho',
-      subtitle: '4 itens no fluxo de trabalho',
-      tone: Color(0xFF2F6F91),
-    ),
-    DashboardAlertItem(
-      icon: Icons.assignment_outlined,
-      title: 'Demandas do departamento',
-      subtitle: '2 demandas registradas',
-      tone: Color(0xFFB86724),
-    ),
-  ];
-
   setUp(() {
     SharedPreferences.setMockInitialValues({});
   });
@@ -49,7 +28,7 @@ void main() {
     await userContext.login(
       User(
         id: 'coord_1',
-        name: 'Maria',
+        name: 'Maria Santos',
         email: 'maria.santos@ifma.edu.br',
         role: role,
         createdAt: DateTime.now(),
@@ -58,12 +37,14 @@ void main() {
     return userContext;
   }
 
-  Future<void> pumpCard(
+  Future<void> pumpDashboard(
     WidgetTester tester, {
-    required Size size,
+    UserRole role = UserRole.coordenador,
+    Size size = const Size(390, 844),
     double textScale = 1,
   }) async {
     configureView(tester, size: size);
+    final userContext = await loggedInContext(role: role);
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light(),
@@ -73,104 +54,77 @@ void main() {
           ).copyWith(textScaler: TextScaler.linear(textScale)),
           child: child!,
         ),
-        home: const Scaffold(
-          body: SingleChildScrollView(
-            padding: EdgeInsets.all(10),
-            child: DashboardAlertsCard(alerts: testAlerts),
-          ),
+        home: ChangeNotifierProvider<UserContextProvider>.value(
+          value: userContext,
+          child: const Scaffold(body: DashboardPage()),
         ),
       ),
     );
     await tester.pumpAndSettle();
   }
 
-  testWidgets('dashboard real usa card de avisos sem saudação', (tester) async {
-    final userContext = await loggedInContext();
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light(),
-        home: ChangeNotifierProvider<UserContextProvider>.value(
-          value: userContext,
-          child: const Scaffold(body: DashboardPage()),
-        ),
-      ),
-    );
+  Future<void> irParaSlide(WidgetTester tester, String rotulo) async {
+    final dot = find.bySemanticsLabel('Mostrar $rotulo');
+    await tester.ensureVisible(dot);
+    await tester.tap(dot);
     await tester.pumpAndSettle();
+  }
 
-    expect(find.byKey(const Key('dashboard-alerts-card')), findsOneWidget);
-    expect(find.text('Atividades do departamento'), findsOneWidget);
-    expect(find.text('Quadro de trabalho'), findsOneWidget);
-    expect(find.text('Demandas do departamento'), findsOneWidget);
-    expect(find.text('0 atividades registradas'), findsOneWidget);
-    expect(find.text('0 itens no fluxo de trabalho'), findsOneWidget);
-    expect(find.text('0 demandas registradas'), findsOneWidget);
-    expect(find.text('Maria'), findsNothing);
+  testWidgets('topo mostra boas-vindas e não exibe card de resumo separado', (
+    tester,
+  ) async {
+    await pumpDashboard(tester);
+
+    expect(find.byKey(const Key('welcome-hero')), findsOneWidget);
+    expect(find.textContaining(RegExp(r', Maria!$')), findsOneWidget);
+    expect(find.byKey(const Key('dashboard-alerts-card')), findsNothing);
     expect(find.text('Acesso rápido'), findsOneWidget);
     expect(find.byTooltip('Personalizar atalhos'), findsOneWidget);
     expect(find.text('Atenção agora'), findsOneWidget);
   });
 
-  testWidgets('professor recebe resumo compatível com o perfil', (
+  testWidgets('resumo do departamento é um slide do card do topo', (
     tester,
   ) async {
-    final userContext = await loggedInContext(role: UserRole.professor);
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light(),
-        home: ChangeNotifierProvider<UserContextProvider>.value(
-          value: userContext,
-          child: const Scaffold(body: DashboardPage()),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
+    await pumpDashboard(tester);
 
-    expect(find.text('Acesso ao departamento'), findsOneWidget);
-    expect(find.text('Demandas do departamento'), findsNothing);
-  });
-
-  testWidgets('card mantém densidade compacta em 390x844', (tester) async {
-    await pumpCard(tester, size: const Size(390, 844));
-
+    await irParaSlide(tester, 'Resumo do departamento');
     expect(find.text('Atividades do departamento'), findsOneWidget);
     expect(find.text('Quadro de trabalho'), findsOneWidget);
     expect(find.text('Demandas do departamento'), findsOneWidget);
-    expect(find.text('Ver tudo'), findsOneWidget);
+    expect(find.text('0 atividades registradas'), findsOneWidget);
+    expect(find.text('0 demandas registradas'), findsOneWidget);
 
-    final cardHeight = tester
-        .getSize(find.byKey(const Key('dashboard-alerts-card')))
-        .height;
-    final rowHeights = [
-      for (final title in [
-        'Atividades do departamento',
-        'Quadro de trabalho',
-        'Demandas do departamento',
-      ])
-        tester.getSize(find.byKey(ValueKey('dashboard-alert-$title'))).height,
-    ];
-    final footerHeight = tester
-        .getSize(find.byKey(const Key('dashboard-alerts-footer')))
-        .height;
-    expect(
-      cardHeight,
-      lessThanOrEqualTo(380),
-      reason: 'linhas=$rowHeights, rodapé=$footerHeight',
-    );
-
-    await tester.tap(find.text('Atividades do departamento'));
+    await tester.tap(find.text('Ver tudo'));
     await tester.pumpAndSettle();
     expect(find.text('Fechar'), findsOneWidget);
+  });
+
+  testWidgets('rotação automática passa pelos avisos', (tester) async {
+    await pumpDashboard(tester);
+
+    await tester.pump(const Duration(seconds: 7));
+    await tester.pumpAndSettle();
+    expect(find.text('Ver todos os avisos'), findsOneWidget);
+  });
+
+  testWidgets('professor recebe resumo compatível com o perfil', (
+    tester,
+  ) async {
+    await pumpDashboard(tester, role: UserRole.professor);
+
+    await irParaSlide(tester, 'Resumo do departamento');
+    expect(find.text('Acesso ao departamento'), findsOneWidget);
+    expect(find.text('Demandas do departamento'), findsNothing);
   });
 
   testWidgets('não apresenta overflow em 320x568 com texto a 200%', (
     tester,
   ) async {
-    await pumpCard(tester, size: const Size(320, 568), textScale: 2);
+    await pumpDashboard(tester, size: const Size(320, 568), textScale: 2);
 
-    expect(find.byKey(const Key('dashboard-alerts-card')), findsOneWidget);
-    expect(find.text('Atividades do departamento'), findsOneWidget);
-    expect(find.text('Quadro de trabalho'), findsOneWidget);
-    expect(find.text('Demandas do departamento'), findsOneWidget);
-    expect(tester.takeException(), isNull);
+    for (final rotulo in ['Avisos', 'Resumo do departamento', 'Boas-vindas']) {
+      await irParaSlide(tester, rotulo);
+    }
   });
 }

@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
-import '../../../../core/config/institutional_context.dart';
 import '../../../../core/models/navigation_item.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/navigation/navigation_items.dart';
@@ -19,6 +18,7 @@ import '../../../demandas/domain/demandas_service.dart';
 import '../../../kanban/data/kanban_repository.dart';
 import '../../../kanban/domain/kanban_models.dart';
 import '../../../../shared/widgets/icon_avatar.dart';
+import '../../../../shared/widgets/welcome_hero.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -92,7 +92,17 @@ class _DashboardPageState extends State<DashboardPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      DashboardAlertsCard(alerts: alerts),
+                      WelcomeHero(
+                        resumo: [
+                          for (final alert in alerts)
+                            WelcomeHeroItem(
+                              icon: alert.icon,
+                              title: alert.title,
+                              subtitle: alert.subtitle,
+                              color: alert.tone,
+                            ),
+                        ],
+                      ),
                       const SizedBox(height: 20),
                       _CustomizableIndicators(role: role),
                       const SizedBox(height: 20),
@@ -172,231 +182,6 @@ List<DashboardAlertItem> _buildDashboardAlerts(
   ];
 }
 
-/// Resumo compacto das informações prioritárias do departamento.
-class DashboardAlertsCard extends StatelessWidget {
-  const DashboardAlertsCard({super.key, required this.alerts});
-
-  final List<DashboardAlertItem> alerts;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      key: const Key('dashboard-alerts-card'),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [SigadColors.brand, SigadColors.brandDark],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: SigadColors.brand.withValues(alpha: 0.22),
-            blurRadius: 16,
-            offset: const Offset(0, 7),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (var index = 0; index < alerts.length; index++) ...[
-            _AlertRow(alert: alerts[index]),
-            if (index < alerts.length - 1)
-              Divider(
-                height: 1,
-                indent: 44,
-                color: Colors.white.withValues(alpha: 0.16),
-              ),
-          ],
-          Divider(height: 1, color: Colors.white.withValues(alpha: 0.22)),
-          _DepartmentFooter(alerts: alerts),
-        ],
-      ),
-    );
-  }
-}
-
-class _AlertRow extends StatelessWidget {
-  const _AlertRow({required this.alert});
-
-  final DashboardAlertItem alert;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Semantics(
-      button: true,
-      label: '${alert.title}. ${alert.subtitle}',
-      onTap: () => _showAlertDialog(context, alert),
-      child: Material(
-        key: ValueKey('dashboard-alert-${alert.title}'),
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: () => _showAlertDialog(context, alert),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 60),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
-              child: Row(
-                children: [
-                  _AlertIcon(icon: alert.icon, tone: alert.tone),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          alert.title,
-                          style: textTheme.labelLarge?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            height: 1.15,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          alert.subtitle,
-                          style: textTheme.bodySmall?.copyWith(
-                            color: Colors.white.withValues(alpha: 0.78),
-                            fontSize: 12,
-                            height: 1.15,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  const Icon(
-                    Icons.chevron_right_rounded,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _AlertIcon extends StatelessWidget {
-  const _AlertIcon({required this.icon, required this.tone});
-
-  final IconData icon;
-  final Color tone;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    width: 40,
-    height: 40,
-    decoration: BoxDecoration(
-      color: tone.withValues(alpha: 0.82),
-      borderRadius: BorderRadius.circular(11),
-    ),
-    child: Icon(icon, size: 23, color: Colors.white),
-  );
-}
-
-class _DepartmentFooter extends StatelessWidget {
-  const _DepartmentFooter({required this.alerts});
-
-  final List<DashboardAlertItem> alerts;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final mediaQuery = MediaQuery.of(context);
-    final stackActions =
-        mediaQuery.size.width < 350 || mediaQuery.textScaler.scale(1) > 1.3;
-    final department = Row(
-      children: [
-        const _AlertIcon(
-          icon: Icons.business_outlined,
-          tone: SigadColors.success,
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                InstitutionalContext.department,
-                style: textTheme.labelMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 13,
-                  height: 1.15,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                '${InstitutionalContext.acronym} ${InstitutionalContext.campus}',
-                style: textTheme.bodySmall?.copyWith(
-                  color: Colors.white.withValues(alpha: 0.76),
-                  fontSize: 11.5,
-                  height: 1.15,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-    final action = Semantics(
-      button: true,
-      onTap: () => _showAllAlertsDialog(context, alerts),
-      child: TextButton(
-        style: TextButton.styleFrom(
-          foregroundColor: Colors.white,
-          minimumSize: const Size(48, 48),
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          shape: RoundedRectangleBorder(
-            side: BorderSide(color: Colors.white.withValues(alpha: 0.34)),
-            borderRadius: BorderRadius.circular(18),
-          ),
-        ),
-        onPressed: () => _showAllAlertsDialog(context, alerts),
-        child: const Text('Ver tudo', style: TextStyle(fontSize: 12.5)),
-      ),
-    );
-
-    return Padding(
-      key: const Key('dashboard-alerts-footer'),
-      padding: const EdgeInsets.only(top: 6),
-      child: stackActions
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                ConstrainedBox(
-                  constraints: const BoxConstraints(minHeight: 58),
-                  child: department,
-                ),
-                Align(alignment: Alignment.centerRight, child: action),
-              ],
-            )
-          : Row(
-              children: [
-                Expanded(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minHeight: 58),
-                    child: department,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                action,
-              ],
-            ),
-    );
-  }
-}
-
 class DashboardAlertItem {
   const DashboardAlertItem({
     required this.icon,
@@ -410,56 +195,6 @@ class DashboardAlertItem {
   final String subtitle;
   final Color tone;
 }
-
-Future<void> _showAlertDialog(BuildContext context, DashboardAlertItem alert) =>
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        scrollable: true,
-        title: Text(alert.title),
-        content: Text(alert.subtitle),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Fechar'),
-          ),
-        ],
-      ),
-    );
-
-Future<void> _showAllAlertsDialog(
-  BuildContext context,
-  List<DashboardAlertItem> alerts,
-) => showDialog<void>(
-  context: context,
-  builder: (dialogContext) => AlertDialog(
-    scrollable: true,
-    title: const Text('Avisos do departamento'),
-    content: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (var index = 0; index < alerts.length; index++) ...[
-          Text(
-            alerts[index].title,
-            style: Theme.of(
-              dialogContext,
-            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 2),
-          Text(alerts[index].subtitle),
-          if (index < alerts.length - 1) const Divider(height: 24),
-        ],
-      ],
-    ),
-    actions: [
-      TextButton(
-        onPressed: () => Navigator.of(dialogContext).pop(),
-        child: const Text('Fechar'),
-      ),
-    ],
-  ),
-);
 
 class _DashboardData {
   const _DashboardData({
@@ -718,7 +453,12 @@ class _DashboardPanel extends StatelessWidget {
                     ],
                   ),
                 ),
-                TextButton(onPressed: onAction, child: Text(actionLabel)),
+                Flexible(
+                  child: TextButton(
+                    onPressed: onAction,
+                    child: Text(actionLabel, textAlign: TextAlign.end),
+                  ),
+                ),
               ],
             ),
             const Divider(height: 20),
@@ -741,7 +481,11 @@ class _CompactEmptyState extends StatelessWidget {
     padding: const EdgeInsets.symmetric(vertical: 22),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [Icon(icon, size: 20), const SizedBox(width: 8), Text(message)],
+      children: [
+        Icon(icon, size: 20),
+        const SizedBox(width: 8),
+        Flexible(child: Text(message)),
+      ],
     ),
   );
 }
@@ -764,7 +508,7 @@ class _DashboardLoading extends StatelessWidget {
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
           SizedBox(width: 12),
-          Text('Atualizando visão operacional...'),
+          Flexible(child: Text('Atualizando visão operacional...')),
         ],
       ),
     ),
