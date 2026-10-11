@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-/// Mantém, no mesmo módulo, a nova visão gerencial e a operação já existente.
+/// Apresenta a operação funcional do módulo.
 ///
-/// O redesign não substitui fluxos funcionais: o usuário pode alternar entre a
-/// leitura executiva e a tela operacional sem sair do módulo.
-class ModuleWorkspacePage extends StatefulWidget {
+/// A visão gerencial é reservada para integração futura com dados reais.
+/// Ela não é exibida enquanto depender de conteúdo demonstrativo.
+class ModuleWorkspacePage extends StatelessWidget {
   const ModuleWorkspacePage({
     super.key,
     required this.overview,
@@ -19,12 +19,7 @@ class ModuleWorkspacePage extends StatefulWidget {
   final String operationLabel;
 
   @override
-  State<ModuleWorkspacePage> createState() => _ModuleWorkspacePageState();
-}
-
-class _ModuleWorkspacePageState extends State<ModuleWorkspacePage> {
-  @override
   Widget build(BuildContext context) {
-    return widget.operation;
+    return operation;
   }
 }

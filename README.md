@@ -104,7 +104,7 @@ Arquitetura e operação detalhadas:
 
 ## Funcionalidades implementadas
 
-- Autenticação inicial e seleção de perfil
+- Acesso demonstrativo local com seleção de perfil; autenticação institucional pendente
 - Navegação responsiva com menu lateral/drawer
 - Dashboard por perfil
 - Bate-papo: conversas entre usuários por perfil
@@ -131,12 +131,21 @@ Arquitetura e operação detalhadas:
 
 ## Observações
 
-- Os fluxos de CRUD atuais são em memória (sem backend persistente).
+- Os fluxos locais usam persistência no dispositivo; não constituem um backend institucional compartilhado.
 - O projeto está preparado para evolução com API e armazenamento remoto.
 - O modo de dados pode alternar entre local/remoto via `--dart-define=SIGAD_DATA_SOURCE`.
-- Sessão de usuário é persistida localmente com expiração e restauração na splash.
+- Somente sessões demonstrativas explícitas são persistidas localmente com expiração. Sessões antigas com token ou marcador são invalidadas; nenhuma credencial de API é restaurada.
 - Existe gate de qualidade em CI com `flutter analyze`, `flutter test --coverage` e mínimo de 35%.
 
+## Limites da demonstração e integração pendente
+
+- O botão de demonstração só está disponível em build debug, com `SIGAD_FLAVOR=dev` e `SIGAD_DATA_SOURCE=local`. A entrada institucional informa que o serviço ainda não está integrado; não valida senha nem cria identidade simulada.
+- Builds release, staging, prod e modo remoto não aceitam identidade demonstrativa. O perfil selecionado serve apenas à demonstração; os perfis efetivos deverão vir do servidor.
+- `SIGAD_ENABLE_REMOTE_FALLBACK` agora é `false` por padrão. Em demandas, falhas de gravação remota sempre são propagadas, mesmo com fallback habilitado. O fallback opcional de leitura não implementa sincronização.
+- O CRUD de demandas aguarda persistência antes de atualizar a lista e mostrar sucesso. Falhas mantêm o formulário e os dados anteriores; novas ações ficam bloqueadas durante a gravação.
+- Reservas permanecem locais: concorrência entre dispositivos, idempotência e confirmação institucional dependem de um contrato de backend aprovado.
+- As visões gerenciais do redesign permanecem reservadas, sem exibir os dados de exemplo como indicadores institucionais.
+- Para integrar autenticação e reservas, são necessários o contrato da API, a origem dos perfis, a validade/renovação de sessão e a política de conflitos. Nenhum desses contratos foi inventado nesta correção.
 ## Estado atual dos sprints
 
 - Sprint 1: fluxos base e navegacao responsiva concluídos

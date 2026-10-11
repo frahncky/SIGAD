@@ -8,6 +8,7 @@ import 'package:sigad/core/network/api_request.dart';
 import 'package:sigad/core/network/api_response.dart';
 import 'package:sigad/core/network/app_http_client.dart';
 import 'package:sigad/features/demandas/data/demanda_repository.dart';
+import 'package:sigad/features/demandas/domain/demandas_service.dart';
 
 class _AlwaysFailingHttpClient implements AppHttpClient {
   @override
@@ -41,6 +42,42 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('DemandaRepository remote adapter', () {
+    test('escrita confirmada remotamente atualiza cache local', () async {
+      SharedPreferences.setMockInitialValues({});
+      final repo = DemandaRepository(
+        storageKey: 'test_commit_cache',
+        remoteClient: _SuccessfulHttpClient(),
+        dataSourceMode: DataSourceMode.remote,
+      );
+      final data = DemandasService.defaultDemandas();
+      await repo.saveDemandas(data);
+      final local = DemandaRepository(
+        storageKey: 'test_commit_cache',
+        dataSourceMode: DataSourceMode.local,
+      );
+      expect(
+        (await local.loadDemandas()).map((d) => d.id),
+        data.map((d) => d.id),
+      );
+    });
+    test(
+      'falha de escrita remota não grava fallback nem confirma sucesso',
+      () async {
+        SharedPreferences.setMockInitialValues({'test_write': '[]'});
+        final repo = DemandaRepository(
+          storageKey: 'test_write',
+          remoteClient: _AlwaysFailingHttpClient(),
+          dataSourceMode: DataSourceMode.remote,
+          enableRemoteFallback: true,
+        );
+        await expectLater(
+          repo.saveDemandas(DemandasService.defaultDemandas()),
+          throwsA(isA<ApiError>()),
+        );
+        final prefs = await SharedPreferences.getInstance();
+        expect(prefs.getString('test_write'), '[]');
+      },
+    );
     test('usa fallback local quando remoto falha', () async {
       SharedPreferences.setMockInitialValues({
         'test_demandas_remote': jsonEncode([

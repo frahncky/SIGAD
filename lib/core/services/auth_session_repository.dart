@@ -1,3 +1,4 @@
+import '../config/app_runtime_config.dart';
 import '../models/user.dart';
 import '../models/user_role.dart';
 import 'local_storage_service.dart';
@@ -22,6 +23,11 @@ class AuthSessionRepository {
   Future<AuthSessionData?> load() async {
     final raw = await LocalStorageService.loadMap(storageKey);
     if (raw == null) return null;
+    // A saved profile or token hint is not proof of remote authentication.
+    if (!AppRuntimeConfig.allowLocalDemo || raw['sessionKind'] != 'demo') {
+      await clear();
+      return null;
+    }
 
     try {
       final roleName = raw['role'] as String;
@@ -40,7 +46,7 @@ class AuthSessionRepository {
 
       return AuthSessionData(
         user: user,
-        sessionToken: _restoreSessionToken(raw),
+        sessionToken: 'local_demo',
         expiresAt: DateTime.parse(raw['expiresAt'] as String),
       );
     } catch (_) {
@@ -52,7 +58,10 @@ class AuthSessionRepository {
     required User user,
     required String sessionToken,
     DateTime? expiresAt,
-  }) {
+  }) async {
+    if (!AppRuntimeConfig.allowLocalDemo) {
+      throw StateError('Autenticação institucional não integrada.');
+    }
     final expiry = expiresAt ?? DateTime.now().add(const Duration(hours: 8));
     return LocalStorageService.saveMap(storageKey, {
       'id': user.id,
@@ -61,35 +70,12 @@ class AuthSessionRepository {
       'role': user.role.name,
       'createdAt': user.createdAt.toIso8601String(),
       'lastLogin': user.lastLogin?.toIso8601String(),
-      // Não persistimos o token completo para reduzir exposição em storage local.
-      'sessionTokenHint': _tokenHint(sessionToken),
+      'sessionKind': 'demo',
       'expiresAt': expiry.toIso8601String(),
     });
   }
 
   Future<void> clear() {
     return LocalStorageService.remove(storageKey);
-  }
-
-  String _restoreSessionToken(Map<String, dynamic> raw) {
-    final hinted = raw['sessionTokenHint'] as String?;
-    if (hinted != null && hinted.trim().isNotEmpty) {
-      return 'restored_$hinted';
-    }
-
-    // Migração para payloads antigos que persistiam token completo.
-    final legacy = raw['sessionToken'] as String?;
-    if (legacy != null && legacy.trim().isNotEmpty) {
-      return 'legacy_${_tokenHint(legacy)}';
-    }
-
-    return 'local_session';
-  }
-
-  String _tokenHint(String token) {
-    final clean = token.trim();
-    if (clean.isEmpty) return 'session';
-    if (clean.length <= 4) return clean;
-    return clean.substring(clean.length - 4);
   }
 }

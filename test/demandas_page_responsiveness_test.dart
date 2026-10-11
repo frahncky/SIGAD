@@ -8,6 +8,15 @@ import 'package:sigad/core/models/user.dart';
 import 'package:sigad/core/models/user_role.dart';
 import 'package:sigad/core/services/user_context_provider.dart';
 import 'package:sigad/features/demandas/presentation/pages/demandas_page.dart';
+import 'package:sigad/features/demandas/data/demanda_repository.dart';
+import 'package:sigad/features/demandas/domain/demanda_models.dart';
+import 'package:sigad/features/demandas/domain/demandas_service.dart';
+
+class _FixtureRepository extends DemandaRepository {
+  @override
+  Future<List<Demanda>> loadDemandas() async =>
+      DemandasService.defaultDemandas();
+}
 
 const _keyboardHeight = 260.0;
 const _landscapeKeyboardHeight = 180.0;
@@ -26,7 +35,8 @@ void _configureCompactView(WidgetTester tester) {
 
 Future<UserContextProvider> _coordinatorContext() async {
   final userContext = UserContextProvider();
-  await userContext.updateUser(
+  addTearDown(userContext.dispose);
+  await userContext.login(
     User(
       id: 'coordenador-demandas',
       name: 'Coordenação Teste',
@@ -53,7 +63,7 @@ Widget _buildApp(
         ).copyWith(textScaler: TextScaler.linear(textScale)),
         child: child!,
       ),
-      home: const DemandasPage(),
+      home: DemandasPage(repository: _FixtureRepository()),
     ),
   );
 }
