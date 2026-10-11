@@ -92,6 +92,20 @@ Substitua `assets/images/app_icon.png` por outro arquivo PNG e execute:
 flutter pub run flutter_launcher_icons:main -f pubspec_launcher.yaml
 ```
 
+### Ícones de desktop (macOS e Windows)
+
+O `flutter_launcher_icons` está configurado (em `pubspec.yaml`) para Android, iOS e Web. Os ícones de macOS e Windows são gerados a partir do mesmo arte-final, `assets/images/app_icon_full.png`, pelo script abaixo (requer Python 3 com Pillow):
+
+```bash
+python3 tool/gerar_icones_desktop.py
+```
+
+O script gera:
+- `macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_*.png` — corpo arredondado com margem e sombra, seguindo a grade de ícones do macOS;
+- `windows/runner/resources/app_icon.ico` — quadrado arredondado com tamanhos de 16 a 256 px.
+
+Execute o script sempre que o ícone principal mudar.
+
 ## Troubleshooting
 
 Se os ícones não forem gerados:
