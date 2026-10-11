@@ -1341,15 +1341,22 @@ def local(g):
 
 @icone("Laboratório")
 def laboratorio(g):
-    g.contorno(
-        ("M", 9.5, 3.5), ("L", 9.5, 9), ("L", 4.5, 18), ("C", 3.8, 19.3, 4.7, 20.5, 6, 20.5),
-        ("L", 18, 20.5), ("C", 19.3, 20.5, 20.2, 19.3, 19.5, 18), ("L", 14.5, 9), ("L", 14.5, 3.5),
-    )
-    g.linha(8, 3.5, 16, 3.5)
+    # Bancada de trabalho prático, neutra quanto à área (biologia, elétrica,
+    # mecânica, robótica, física, matemática...): mesa, monitor e uma
+    # engrenagem em destaque.
+    g.linha(2.5, 14.5, 21.5, 14.5)
+    g.linha(5, 14.5, 5, 20.5)
+    g.linha(19, 14.5, 19, 20.5)
+    g.ret(4, 4, 10, 7.5, 2)
+    g.linha(9, 11.5, 9, 14.5)
     with g.destaque():
-        g.preencher_poli([(7.4, 14), (16.6, 14), (18.2, 17.4, 0.8), (17.6, 18.6, 0.8), (6.4, 18.6, 0.8), (5.8, 17.4, 0.8)],
-                         raio=0.6)
-    g.ponto(13.2, 10.2, 0.8)
+        pontos = []
+        for k in range(6):
+            base = k * 60 - 90
+            for ang, r in ((base - 17, 2.9), (base - 9, 4), (base + 9, 4), (base + 17, 2.9)):
+                pontos.append((*_ponto(17, 8.5, r, ang), 0.4))
+        g.preencher_poli(pontos)
+    g.recortar_circulo(17, 8.5, 1.3)
 
 
 @icone("Equipamento")
