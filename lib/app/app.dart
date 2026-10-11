@@ -64,7 +64,14 @@ class SigadApp extends StatelessWidget {
 
             return AnnotatedRegion<SystemUiOverlayStyle>(
               value: overlayStyle,
-              child: _FlavorBanner(child: child ?? const SizedBox.shrink()),
+              child: MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: AmpliacaoDeTexto(
+                    MediaQuery.textScalerOf(context),
+                  ),
+                ),
+                child: _FlavorBanner(child: child ?? const SizedBox.shrink()),
+              ),
             );
           },
         ),
@@ -93,4 +100,28 @@ class _FlavorBanner extends StatelessWidget {
       child: child,
     );
   }
+}
+
+/// Amplia todos os textos do app sobre a escala escolhida no sistema,
+/// facilitando a leitura sem ignorar a preferência do usuário.
+class AmpliacaoDeTexto extends TextScaler {
+  const AmpliacaoDeTexto(this.base);
+
+  static const fator = 1.1;
+
+  final TextScaler base;
+
+  @override
+  double scale(double fontSize) => base.scale(fontSize) * fator;
+
+  @override
+  // ignore: deprecated_member_use
+  double get textScaleFactor => base.textScaleFactor * fator;
+
+  @override
+  bool operator ==(Object other) =>
+      other is AmpliacaoDeTexto && other.base == base;
+
+  @override
+  int get hashCode => base.hashCode;
 }

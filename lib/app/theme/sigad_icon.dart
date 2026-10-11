@@ -29,8 +29,12 @@ class SigadIcon extends StatelessWidget {
   final Color? accentColor;
   final String? semanticLabel;
 
+  /// Ampliação aplicada a todos os ícones para facilitar a leitura.
+  static const escala = 1.1;
+
   @override
   Widget build(BuildContext context) {
+    final size = (this.size ?? IconTheme.of(context).size ?? 24) * escala;
     final principal = Icon(
       icon,
       size: size,
