@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -6,6 +5,7 @@ import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
+import '../../../../core/config/app_runtime_config.dart';
 import '../../../../core/models/user.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/services/app_event_logger.dart';
@@ -112,39 +112,42 @@ class _LoginPageState extends State<LoginPage> {
               : theme.textTheme.headlineSmall,
         ),
         const SizedBox(height: 14),
-        Text('Perfil de acesso', style: theme.textTheme.labelLarge),
-        const SizedBox(height: 8),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final itemWidth = ((constraints.maxWidth - 8) / 2).clamp(
-              0.0,
-              double.infinity,
-            );
-            return Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: UserRole.values
-                  .map(
-                    (role) => SizedBox(
-                      width: itemWidth,
-                      child: ChoiceChip(
-                        avatar: SigadIcon(_roleIcon(role), size: 16),
-                        label: Text(
-                          role.displayName,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+        if (AppRuntimeConfig.allowLocalDemo) ...[
+          Text('Perfil de demonstração', style: theme.textTheme.labelLarge),
+          const SizedBox(height: 8),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final itemWidth = ((constraints.maxWidth - 8) / 2).clamp(
+                0.0,
+                double.infinity,
+              );
+              return Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: UserRole.values
+                    .map(
+                      (role) => SizedBox(
+                        width: itemWidth,
+                        child: ChoiceChip(
+                          avatar: SigadIcon(_roleIcon(role), size: 16),
+                          label: Text(
+                            role.displayName,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          selected: _selectedRole == role,
+                          onSelected: (_) =>
+                              setState(() => _selectedRole = role),
+                          visualDensity: VisualDensity.compact,
                         ),
-                        selected: _selectedRole == role,
-                        onSelected: (_) => setState(() => _selectedRole = role),
-                        visualDensity: VisualDensity.compact,
                       ),
-                    ),
-                  )
-                  .toList(growable: false),
-            );
-          },
-        ),
-        const SizedBox(height: 14),
+                    )
+                    .toList(growable: false),
+              );
+            },
+          ),
+          const SizedBox(height: 14),
+        ],
         AutofillGroup(
           child: Column(
             children: [
@@ -214,7 +217,7 @@ class _LoginPageState extends State<LoginPage> {
             label: const Text('Entrar'),
           ),
         ),
-        if (kDebugMode) ...[
+        if (AppRuntimeConfig.allowLocalDemo) ...[
           const SizedBox(height: 8),
           SizedBox(
             width: double.infinity,
@@ -262,43 +265,13 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    final normalizedEmail = email.toLowerCase();
-    AppEventLogger.action(
-      'login_attempt',
-      details: {
-        'emailDomain': normalizedEmail.split('@').last,
-        'role': _selectedRole.name,
-      },
+    _showError(
+      'Autenticação institucional indisponível. A integração com o serviço de acesso ainda não foi concluída.',
     );
-
-    setState(() => _isLoading = true);
-    try {
-      await Future<void>.delayed(const Duration(milliseconds: 500));
-      final user = User(
-        id: 'user_email_$normalizedEmail',
-        name: email.split('@').first,
-        email: normalizedEmail,
-        role: _selectedRole,
-        createdAt: DateTime.now(),
-        lastLogin: DateTime.now(),
-      );
-
-      if (!mounted) return;
-      await context.read<UserContextProvider>().login(
-        user,
-        sessionToken: 'session_$normalizedEmail',
-      );
-      if (!mounted) return;
-      await Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
-    } catch (error, stackTrace) {
-      AppEventLogger.error('login_error', error, stackTrace: stackTrace);
-      if (mounted) _showError('Não foi possível entrar. Tente novamente.');
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
   }
 
   Future<void> _handleDemoLogin() async {
+    if (!AppRuntimeConfig.allowLocalDemo) return;
     setState(() => _isLoading = true);
     try {
       await Future<void>.delayed(const Duration(milliseconds: 300));
@@ -313,10 +286,7 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (!mounted) return;
-      await context.read<UserContextProvider>().login(
-        user,
-        sessionToken: 'session_demo_${role.name}',
-      );
+      await context.read<UserContextProvider>().login(user);
       if (!mounted) return;
       await Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
     } catch (error, stackTrace) {

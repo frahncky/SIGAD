@@ -9,7 +9,10 @@ class LocalStorageService {
     List<Map<String, dynamic>> data,
   ) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(key, jsonEncode(data));
+    final saved = await prefs.setString(key, jsonEncode(data));
+    if (!saved) {
+      throw StateError('Não foi possível salvar os dados locais.');
+    }
   }
 
   /// Carrega uma lista de mapas de JSON.  Retorna lista vazia se não existir.
@@ -27,7 +30,10 @@ class LocalStorageService {
   /// Salva um mapa serializado em JSON.
   static Future<void> saveMap(String key, Map<String, dynamic> data) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(key, jsonEncode(data));
+    final saved = await prefs.setString(key, jsonEncode(data));
+    if (!saved) {
+      throw StateError('Não foi possível salvar os dados locais.');
+    }
   }
 
   /// Carrega um mapa de JSON.  Retorna null se não existir.
@@ -41,6 +47,9 @@ class LocalStorageService {
   /// Remove um registro salvo por chave.
   static Future<void> remove(String key) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(key);
+    final removed = await prefs.remove(key);
+    if (!removed) {
+      throw StateError('Não foi possível remover os dados locais.');
+    }
   }
 }

@@ -61,18 +61,23 @@ class DemandaRepository implements EntityRepository<Demanda> {
 
     try {
       await _saveRemoteDemandas(demandas);
-      await _saveLocalDemandas(demandas);
     } catch (error, stackTrace) {
       AppEventLogger.error(
         'demandas_remote_save_error',
         error,
         stackTrace: stackTrace,
       );
-      if (_enableRemoteFallback) {
-        AppEventLogger.action('demandas_remote_save_fallback_local');
-        return _saveLocalDemandas(demandas);
-      }
       rethrow;
+    }
+    // O servidor confirmou a gravação; falha de cache não desfaz o commit.
+    try {
+      await _saveLocalDemandas(demandas);
+    } catch (error, stackTrace) {
+      AppEventLogger.error(
+        'demandas_cache_save_error',
+        error,
+        stackTrace: stackTrace,
+      );
     }
   }
 

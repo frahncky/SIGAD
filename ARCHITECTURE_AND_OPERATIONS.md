@@ -23,24 +23,21 @@ Configurações principais:
 
 ## Sessão e Autenticação
 
-A sessão atual é persistida em storage local com:
+A autenticação institucional ainda não está integrada. A entrada normal não cria usuário a partir do email, senha ou perfil selecionado.
 
-- `sessionToken`
-- `expiresAt`
-- dados do usuário autenticado
+Somente a demonstração local em debug/dev permite sessão. Ela persiste dados do perfil demonstrativo, `sessionKind=demo` e `expiresAt`. Não persiste token nem fragmentos de credenciais. O token público do provider permanece nulo.
 
-Fluxo:
-
-1. Login salva sessão via `UserContextProvider.login`
-2. Splash restaura sessão via `restoreSession`
-3. Sessão expirada é invalidada com reautenticação obrigatória
+Sessões legadas com token ou hint são invalidadas. A restauração de demonstração é restrita ao mesmo ambiente local permitido, com expiração obrigatória. Rotas de módulos exigem sessão válida antes de montar o conteúdo.
 
 Arquivos:
 
+- `lib/core/config/app_runtime_config.dart`
 - `lib/core/services/auth_session_repository.dart`
 - `lib/core/services/user_context_provider.dart`
-- `lib/features/splash/presentation/pages/splash_page.dart`
+- `lib/main.dart`
+- `lib/app/routes/app_router.dart`
 
+A integração futura requer identidade e perfis confirmados pelo servidor, expiração/revogação, armazenamento adequado às credenciais e tratamento de sessão inválida. O estado local demonstrativo não autoriza uma API.
 ## Autorização por Role
 
 A autorização de ações críticas é centralizada em:
@@ -76,7 +73,7 @@ O client HTTP tem:
 - correlação simples por `operationId`
 - logs de sucesso/erro/timeout
 
-Repositories remotos usam fallback local quando habilitado.
+Fallback remoto é desabilitado por padrão. Em demandas, o fallback opcional limita-se à leitura: gravações precisam de confirmação remota e não são convertidas em sucesso local. Falhas no cache após confirmação remota são registradas sem exigir repetição do commit. Não há fila de sincronização implementada.
 
 ## Operação e Qualidade
 
