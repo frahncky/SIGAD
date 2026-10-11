@@ -82,7 +82,8 @@ void main() {
       tester,
       ChangeNotifierProvider<UserContextProvider>.value(
         value: userContext,
-        child: const DashboardPage(),
+        // No app, o painel sempre fica dentro do Scaffold do shell.
+        child: const Scaffold(body: DashboardPage()),
       ),
       size: const Size(1440, 900),
     );
