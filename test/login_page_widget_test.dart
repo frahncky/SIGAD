@@ -79,6 +79,31 @@ void main() {
     expect(find.textContaining('pelo menos 4 caracteres'), findsOneWidget);
   });
 
+  testWidgets('credenciais válidas não criam sessão simulada', (tester) async {
+    await tester.pumpWidget(_buildApp());
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).first, 'usuario@ifma.edu.br');
+    await tester.enterText(find.byType(TextField).at(1), 'senha_teste');
+    final enterButton = find.widgetWithText(FilledButton, 'Entrar');
+    await tester.ensureVisible(enterButton);
+    await tester.tap(enterButton);
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('Autenticação institucional indisponível'),
+      findsOneWidget,
+    );
+    final provider = tester
+        .element(find.byType(LoginPage))
+        .read<UserContextProvider>();
+    expect(provider.isAuthenticated, isFalse);
+    expect(provider.sessionToken, isNull);
+    expect(
+      await SharedPreferences.getInstance().then(
+        (p) => p.getString('sigad_auth_session'),
+      ),
+      isNull,
+    );
+  });
   testWidgets('alterna visibilidade da senha', (tester) async {
     await tester.pumpWidget(_buildApp());
     await tester.pumpAndSettle();

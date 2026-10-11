@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 enum DataSourceMode { local, remote }
 
 abstract final class AppRuntimeConfig {
@@ -28,12 +30,18 @@ abstract final class AppRuntimeConfig {
 
   static const bool enableRemoteFallback = bool.fromEnvironment(
     'SIGAD_ENABLE_REMOTE_FALLBACK',
-    defaultValue: true,
+    defaultValue: false,
   );
 
   static final DataSourceMode dataSourceMode = _resolveDataSourceMode(
     _dataSourceValue,
   );
+
+  /// A identidade simulada é restrita à demonstração local de desenvolvimento.
+  static bool get allowLocalDemo =>
+      kDebugMode &&
+      flavor.toLowerCase() == 'dev' &&
+      dataSourceMode == DataSourceMode.local;
 
   static DataSourceMode _resolveDataSourceMode(String value) {
     switch (value.toLowerCase()) {

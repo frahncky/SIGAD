@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../core/services/user_context_provider.dart';
 
 import '../../features/atividades/presentation/pages/atividades_page.dart';
 import '../../features/aulas_praticas/presentation/pages/aulas_praticas_page.dart';
@@ -22,8 +25,8 @@ import 'app_routes.dart';
 
 /// Gera as rotas do SIGAD e preserva os fluxos funcionais existentes.
 ///
-/// Cada módulo principal reúne duas experiências: a nova visão gerencial e a
-/// operação completa que já existia no sistema.
+/// Cada módulo apresenta a operação funcional. As visões gerenciais
+/// permanecem reservadas até que sejam integradas a dados reais.
 abstract final class AppRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     final routeName = settings.name ?? AppRoutes.dashboard;
@@ -140,7 +143,11 @@ abstract final class AppRouter {
   static MaterialPageRoute<void> _shell(String routeName, Widget page) {
     return MaterialPageRoute<void>(
       settings: RouteSettings(name: routeName),
-      builder: (_) => HomeShellPage(currentRoute: routeName, child: page),
+      builder: (_) => Consumer<UserContextProvider>(
+        builder: (context, userContext, _) => userContext.isAuthenticated
+            ? HomeShellPage(currentRoute: routeName, child: page)
+            : const LoginPage(),
+      ),
     );
   }
 }
