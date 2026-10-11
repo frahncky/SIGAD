@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
 import '../../../../core/models/navigation_item.dart';
 import '../../../../core/models/user_role.dart';
@@ -339,7 +340,7 @@ class _ActivitiesPanel extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: Row(
                         children: [
-                          Icon(
+                          SigadIcon(
                             SigadIcons.eventoNota,
                             color: AtividadesService.statusColor(
                               atividade.status,
@@ -483,7 +484,7 @@ class _CompactEmptyState extends StatelessWidget {
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, size: 20),
+        SigadIcon(icon, size: 20),
         const SizedBox(width: 8),
         Flexible(child: Text(message)),
       ],
@@ -529,14 +530,17 @@ class _DashboardInlineError extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       child: Row(
         children: [
-          const Icon(SigadIcons.sincronizacaoErro, color: SigadColors.risk),
+          const SigadIcon(
+            SigadIcons.sincronizacaoErro,
+            color: SigadColors.risk,
+          ),
           const SizedBox(width: 12),
           const Expanded(
             child: Text('Não foi possível atualizar os indicadores.'),
           ),
           TextButton.icon(
             onPressed: onRetry,
-            icon: const Icon(SigadIcons.atualizar),
+            icon: const SigadIcon(SigadIcons.atualizar),
             label: const Text('Tentar novamente'),
           ),
         ],
@@ -633,7 +637,7 @@ class _CustomizableIndicatorsState extends State<_CustomizableIndicators> {
                     contentPadding: EdgeInsets.zero,
                     value: _visiveis.contains(item.route),
                     title: Text(item.label),
-                    secondary: Icon(item.icon, color: SigadColors.brand),
+                    secondary: SigadIcon(item.icon, color: SigadColors.brand),
                     onChanged: (selecionado) {
                       setModalState(() {
                         if (selecionado ?? false) {
@@ -666,7 +670,11 @@ class _CustomizableIndicatorsState extends State<_CustomizableIndicators> {
       children: [
         Row(
           children: [
-            const Icon(SigadIcons.raio, color: SigadColors.brand, size: 20),
+            const SigadIcon(
+              SigadIcons.raio,
+              color: SigadColors.brand,
+              size: 20,
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -679,7 +687,7 @@ class _CustomizableIndicatorsState extends State<_CustomizableIndicators> {
             IconButton(
               onPressed: _abrirSeletorDeAtalhos,
               tooltip: 'Personalizar atalhos',
-              icon: const Icon(SigadIcons.painelPersonalizar),
+              icon: const SigadIcon(SigadIcons.painelPersonalizar),
               visualDensity: VisualDensity.compact,
             ),
           ],
@@ -696,7 +704,7 @@ class _CustomizableIndicatorsState extends State<_CustomizableIndicators> {
             ),
             child: Column(
               children: [
-                Icon(
+                SigadIcon(
                   SigadIcons.painelPersonalizar,
                   size: 26,
                   color: colors.onSurfaceVariant,
@@ -764,7 +772,7 @@ class _AtalhoCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
             child: Column(
               children: [
-                Icon(item.icon, color: SigadColors.brand, size: 24),
+                SigadIcon(item.icon, color: SigadColors.brand, size: 24),
                 const SizedBox(height: 8),
                 Text(
                   item.label,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
 import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../data/laboratorio_repository.dart';
@@ -401,7 +402,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                     );
                     final action = OutlinedButton.icon(
                       onPressed: () => setState(() => _mostrarCatalogo = true),
-                      icon: const Icon(SigadIcons.laboratorio),
+                      icon: const SigadIcon(SigadIcons.laboratorio),
                       label: const Text('Laboratórios'),
                     );
 
@@ -678,7 +679,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
             onPressed: () =>
                 Navigator.of(dialogContext).pop(_AcaoReserva.editar),
             child: const ListTile(
-              leading: Icon(SigadIcons.editar),
+              leading: SigadIcon(SigadIcons.editar),
               title: Text('Editar reserva'),
               contentPadding: EdgeInsets.zero,
             ),
@@ -687,7 +688,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
             onPressed: () =>
                 Navigator.of(dialogContext).pop(_AcaoReserva.excluir),
             child: const ListTile(
-              leading: Icon(SigadIcons.excluir, color: SigadColors.risk),
+              leading: SigadIcon(SigadIcons.excluir, color: SigadColors.risk),
               title: Text('Excluir reserva'),
               contentPadding: EdgeInsets.zero,
             ),
@@ -1340,7 +1341,7 @@ class _FiltroPeriodoRow extends StatelessWidget {
                 ? null
                 : onAnterior,
             tooltip: 'Mês anterior',
-            icon: const Icon(SigadIcons.chevronEsquerda),
+            icon: const SigadIcon(SigadIcons.chevronEsquerda),
           ),
           Expanded(
             child: Tooltip(
@@ -1356,7 +1357,7 @@ class _FiltroPeriodoRow extends StatelessWidget {
                 ? null
                 : onProximo,
             tooltip: 'Próximo mês',
-            icon: const Icon(SigadIcons.chevronDireita),
+            icon: const SigadIcon(SigadIcons.chevronDireita),
           ),
         ],
       ),
@@ -1505,7 +1506,7 @@ class _SelecaoDiaMesRow extends StatelessWidget {
                             Positioned(
                               right: 2,
                               top: 2,
-                              child: Icon(
+                              child: SigadIcon(
                                 SigadIcons.bandeira,
                                 size: 10,
                                 color: isSelected
@@ -1528,7 +1529,7 @@ class _SelecaoDiaMesRow extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(
+                    const SigadIcon(
                       SigadIcons.bandeira,
                       size: 18,
                       color: SigadColors.warning,
@@ -2003,7 +2004,7 @@ class _GradeReservaCell extends StatelessWidget {
               Flexible(
                 child: Row(
                   children: [
-                    Icon(
+                    SigadIcon(
                       livre ? SigadIcons.concluido : SigadIcons.eventoOcupado,
                       size: 12,
                       color: tone,
@@ -2140,7 +2141,11 @@ class _AccessDenied extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(SigadIcons.cadeado, size: 54, color: SigadColors.muted),
+            const SigadIcon(
+              SigadIcons.cadeado,
+              size: 54,
+              color: SigadColors.muted,
+            ),
             const SizedBox(height: 12),
             Text(
               'Acesso restrito',
@@ -2261,7 +2266,10 @@ class _PainelOtimizacaoLaboratorio extends StatelessWidget {
                         alignment: Alignment.centerRight,
                         child: TextButton.icon(
                           onPressed: onAplicarSugestao,
-                          icon: const Icon(SigadIcons.automatico, size: 16),
+                          icon: const SigadIcon(
+                            SigadIcons.automatico,
+                            size: 16,
+                          ),
                           label: const Text('Reservar sugestão'),
                         ),
                       ),
@@ -2276,7 +2284,7 @@ class _PainelOtimizacaoLaboratorio extends StatelessWidget {
                   if (onAplicarSugestao != null)
                     TextButton.icon(
                       onPressed: onAplicarSugestao,
-                      icon: const Icon(SigadIcons.automatico, size: 16),
+                      icon: const SigadIcon(SigadIcons.automatico, size: 16),
                       label: const Text('Reservar sugestão'),
                     ),
                 ],

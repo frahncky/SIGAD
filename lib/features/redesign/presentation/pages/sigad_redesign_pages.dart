@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
 import '../../../../shared/widgets/welcome_hero.dart';
 
@@ -118,7 +119,7 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
                         contentPadding: EdgeInsets.zero,
                         value: _visiveis.contains(metrica.id),
                         title: Text(metrica.label),
-                        secondary: Icon(
+                        secondary: SigadIcon(
                           metrica.icon,
                           color: _toneColor(metrica.tone),
                         ),
@@ -161,7 +162,7 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
           trailingAction: IconButton(
             onPressed: _abrirSeletorDeIndicadores,
             tooltip: 'Personalizar indicadores',
-            icon: const Icon(SigadIcons.painelPersonalizar),
+            icon: const SigadIcon(SigadIcons.painelPersonalizar),
             visualDensity: VisualDensity.compact,
           ),
         ),
@@ -281,7 +282,7 @@ class _OverviewSectionTitle extends StatelessWidget {
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     final titleRow = Row(
       children: [
-        Icon(icon, color: colors.primary),
+        SigadIcon(icon, color: colors.primary),
         const SizedBox(width: 10),
         Expanded(
           child: Text(
@@ -363,7 +364,7 @@ class _EmptyMetricsPlaceholder extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(
+          SigadIcon(
             SigadIcons.painelPersonalizar,
             size: 28,
             color: colors.onSurfaceVariant,
@@ -558,7 +559,7 @@ class _SigadCargaDocentePageState extends State<SigadCargaDocentePage> {
               child: TextField(
                 decoration: InputDecoration(
                   hintText: 'Buscar professor',
-                  prefixIcon: Icon(SigadIcons.buscar),
+                  prefixIcon: SigadIcon(SigadIcons.buscar),
                 ),
               ),
             ),
@@ -708,7 +709,7 @@ class _SigadProfessoresPageState extends State<SigadProfessoresPage> {
                 onChanged: (value) => setState(() => _query = value),
                 decoration: const InputDecoration(
                   hintText: 'Buscar nome ou área',
-                  prefixIcon: Icon(SigadIcons.buscar),
+                  prefixIcon: SigadIcon(SigadIcons.buscar),
                 ),
               ),
             ),
@@ -854,7 +855,7 @@ class _SigadDemandasPageState extends State<SigadDemandasPage> {
                 onChanged: (value) => setState(() => _query = value),
                 decoration: const InputDecoration(
                   hintText: 'Buscar demanda',
-                  prefixIcon: Icon(SigadIcons.buscar),
+                  prefixIcon: SigadIcon(SigadIcons.buscar),
                 ),
               ),
             ),
@@ -1152,7 +1153,7 @@ class _SigadAtividadesPageState extends State<SigadAtividadesPage> {
               child: TextField(
                 decoration: InputDecoration(
                   hintText: 'Buscar atividade',
-                  prefixIcon: Icon(SigadIcons.buscar),
+                  prefixIcon: SigadIcon(SigadIcons.buscar),
                 ),
               ),
             ),
@@ -1369,7 +1370,7 @@ class _SigadConfiguracoesPageState extends State<SigadConfiguracoesPage> {
                       title: 'Editar perfil',
                       message: 'Atualize dados pessoais e preferências.',
                     ),
-                    icon: const Icon(SigadIcons.editar),
+                    icon: const SigadIcon(SigadIcons.editar),
                     label: const Text('Editar perfil'),
                   ),
                 ),
@@ -1450,7 +1451,7 @@ class _SigadConfiguracoesPageState extends State<SigadConfiguracoesPage> {
                       message:
                           'Esta ação remove apenas caches e preferências locais.',
                     ),
-                    icon: const Icon(SigadIcons.limpeza),
+                    icon: const SigadIcon(SigadIcons.limpeza),
                     label: const Text('Limpar dados locais'),
                   ),
                 ),
@@ -1593,7 +1594,7 @@ class _PageHeader extends StatelessWidget {
               .map(
                 (action) => FilledButton.tonalIcon(
                   onPressed: action.onPressed,
-                  icon: Icon(action.icon),
+                  icon: SigadIcon(action.icon),
                   label: Text(action.label),
                   style: FilledButton.styleFrom(
                     backgroundColor: colors.primary,
@@ -1692,7 +1693,7 @@ class _SectionCard extends StatelessWidget {
                     color: colors.primaryContainer,
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Icon(icon, color: colors.onPrimaryContainer),
+                  child: SigadIcon(icon, color: colors.onPrimaryContainer),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -1835,7 +1836,7 @@ class _MetricCard extends StatelessWidget {
               color: color.withValues(alpha: 0.12),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: color, size: 25),
+            child: SigadIcon(icon, color: color, size: 25),
           ),
           const SizedBox(height: 14),
           Text(
@@ -1888,11 +1889,11 @@ class _PriorityTile extends StatelessWidget {
       contentPadding: EdgeInsets.zero,
       leading: CircleAvatar(
         backgroundColor: color.withValues(alpha: 0.12),
-        child: Icon(icon, color: color, size: 20),
+        child: SigadIcon(icon, color: color, size: 20),
       ),
       title: Text(title),
       subtitle: Text(subtitle),
-      trailing: const Icon(SigadIcons.chevronDireita),
+      trailing: const SigadIcon(SigadIcons.chevronDireita),
     );
   }
 }
@@ -1930,12 +1931,12 @@ class _QuickAction extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: colors.primary),
+            SigadIcon(icon, color: colors.primary),
             const SizedBox(width: 10),
             Expanded(
               child: Text(label, style: Theme.of(context).textTheme.labelLarge),
             ),
-            const Icon(SigadIcons.setaDireita, size: 18),
+            const SigadIcon(SigadIcons.setaDireita, size: 18),
           ],
         ),
       ),
@@ -2067,7 +2068,7 @@ class _ConversationList extends StatelessWidget {
             onChanged: onQueryChanged,
             decoration: const InputDecoration(
               hintText: 'Buscar conversa',
-              prefixIcon: Icon(SigadIcons.buscar),
+              prefixIcon: SigadIcon(SigadIcons.buscar),
             ),
           ),
           const SizedBox(height: 12),
@@ -2099,7 +2100,7 @@ class _ConversationList extends StatelessWidget {
                           foregroundColor: selected
                               ? colors.onPrimary
                               : colors.onSurfaceVariant,
-                          child: Icon(
+                          child: SigadIcon(
                             item.group ? SigadIcons.grupo : SigadIcons.pessoa,
                           ),
                         ),
@@ -2177,7 +2178,7 @@ class _ChatPanel extends StatelessWidget {
                 ListTile(
                   leading: CircleAvatar(
                     backgroundColor: colors.primaryContainer,
-                    child: Icon(
+                    child: SigadIcon(
                       conversation!.group
                           ? SigadIcons.grupo
                           : SigadIcons.pessoa,
@@ -2190,11 +2191,11 @@ class _ChatPanel extends StatelessWidget {
                     children: [
                       IconButton(
                         onPressed: () {},
-                        icon: const Icon(SigadIcons.buscar),
+                        icon: const SigadIcon(SigadIcons.buscar),
                       ),
                       IconButton(
                         onPressed: () {},
-                        icon: const Icon(SigadIcons.maisOpcoes),
+                        icon: const SigadIcon(SigadIcons.maisOpcoes),
                       ),
                     ],
                   ),
@@ -2229,7 +2230,7 @@ class _ChatPanel extends StatelessWidget {
                     children: [
                       IconButton(
                         onPressed: () {},
-                        icon: const Icon(SigadIcons.anexo),
+                        icon: const SigadIcon(SigadIcons.anexo),
                       ),
                       Expanded(
                         child: TextField(
@@ -2243,7 +2244,7 @@ class _ChatPanel extends StatelessWidget {
                       const SizedBox(width: 8),
                       IconButton.filled(
                         onPressed: onSend,
-                        icon: const Icon(SigadIcons.enviar),
+                        icon: const SigadIcon(SigadIcons.enviar),
                       ),
                     ],
                   ),
@@ -2448,7 +2449,7 @@ class _TeacherCard extends StatelessWidget {
             const SizedBox(height: 12),
             Row(
               children: [
-                const Icon(SigadIcons.relogio, size: 18),
+                const SigadIcon(SigadIcons.relogio, size: 18),
                 const SizedBox(width: 6),
                 Text('Carga atual: ${teacher.load}'),
               ],
@@ -2500,7 +2501,7 @@ class _DemandTile extends StatelessWidget {
           color: color.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(14),
         ),
-        child: Icon(SigadIcons.demanda, color: color),
+        child: SigadIcon(SigadIcons.demanda, color: color),
       ),
       title: Text(item.title),
       subtitle: Text('${item.id} · ${item.owner} · Prazo ${item.deadline}'),
@@ -2552,7 +2553,7 @@ class _KanbanColumn extends StatelessWidget {
               _StatusPill(label: '${items.length}', color: colors.primary),
               IconButton(
                 onPressed: onAdd,
-                icon: const Icon(SigadIcons.adicionar),
+                icon: const SigadIcon(SigadIcons.adicionar),
               ),
             ],
           ),
@@ -2782,7 +2783,7 @@ class _ReportCard extends StatelessWidget {
               color: colors.primaryContainer,
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(report.icon, color: colors.onPrimaryContainer),
+            child: SigadIcon(report.icon, color: colors.onPrimaryContainer),
           ),
           const SizedBox(height: 14),
           Text(report.title, style: Theme.of(context).textTheme.titleMedium),
@@ -2800,7 +2801,7 @@ class _ReportCard extends StatelessWidget {
               const SizedBox(width: 8),
               IconButton.filledTonal(
                 onPressed: onExport,
-                icon: const Icon(SigadIcons.baixar),
+                icon: const SigadIcon(SigadIcons.baixar),
                 tooltip: 'Exportar',
               ),
             ],
@@ -2826,7 +2827,7 @@ class _SettingInfoTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      leading: Icon(icon),
+      leading: SigadIcon(icon),
       title: Text(title),
       subtitle: Text(value),
     );

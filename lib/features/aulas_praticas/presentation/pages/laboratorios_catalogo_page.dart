@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
 import '../../data/laboratorio_repository.dart';
 import '../../data/reserva_repository.dart';
@@ -315,7 +316,7 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                               backgroundColor: Colors.white.withValues(
                                 alpha: .22,
                               ),
-                              child: const Icon(
+                              child: const SigadIcon(
                                 SigadIcons.laboratorio,
                                 color: Colors.white,
                                 size: 26,
@@ -341,7 +342,7 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                                   const SizedBox(height: 4),
                                   Row(
                                     children: [
-                                      const Icon(
+                                      const SigadIcon(
                                         SigadIcons.local,
                                         size: 14,
                                         color: Colors.white,
@@ -403,7 +404,7 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                                     radius: 18,
                                     backgroundColor: SigadColors.info
                                         .withValues(alpha: .12),
-                                    child: const Icon(
+                                    child: const SigadIcon(
                                       SigadIcons.eventoConfirmado,
                                       color: SigadColors.info,
                                       size: 18,
@@ -440,7 +441,7 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                               backgroundColor: SigadColors.brand.withValues(
                                 alpha: .12,
                               ),
-                              child: const Icon(
+                              child: const SigadIcon(
                                 SigadIcons.equipamento,
                                 color: SigadColors.brand,
                                 size: 18,
@@ -479,7 +480,7 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                                 backgroundColor: SigadColors.warning.withValues(
                                   alpha: .12,
                                 ),
-                                child: const Icon(
+                                child: const SigadIcon(
                                   SigadIcons.manutencao,
                                   color: SigadColors.warning,
                                   size: 18,
@@ -523,7 +524,7 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                                             ? SigadColors.success
                                             : SigadColors.risk)
                                         .withValues(alpha: .12),
-                                child: Icon(
+                                child: SigadIcon(
                                   item.resolvida
                                       ? SigadIcons.concluido
                                       : SigadIcons.erro,
@@ -551,12 +552,12 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                   children: [
                     FilledButton.icon(
                       onPressed: _abrirReservas,
-                      icon: const Icon(SigadIcons.calendario),
+                      icon: const SigadIcon(SigadIcons.calendario),
                       label: const Text('Reservar'),
                     ),
                     OutlinedButton.icon(
                       onPressed: _reportarProblema,
-                      icon: const Icon(SigadIcons.alerta),
+                      icon: const SigadIcon(SigadIcons.alerta),
                       label: const Text('Reportar problema'),
                     ),
                   ],
@@ -590,7 +591,7 @@ class _Header extends StatelessWidget {
       );
       final action = FilledButton.icon(
         onPressed: onAbrirReservas,
-        icon: const Icon(SigadIcons.calendario),
+        icon: const SigadIcon(SigadIcons.calendario),
         label: const Text('Reservas'),
       );
       if (constraints.maxWidth < 430) {
@@ -672,7 +673,7 @@ class _Metric extends StatelessWidget {
     ),
     child: Row(
       children: [
-        Icon(icon, color: color),
+        SigadIcon(icon, color: color),
         const SizedBox(width: 10),
         Text(
           value,
@@ -712,7 +713,7 @@ class _LaboratorioCard extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     backgroundColor: SigadColors.brandLight,
-                    child: const Icon(
+                    child: const SigadIcon(
                       SigadIcons.laboratorio,
                       color: SigadColors.brand,
                     ),
@@ -724,7 +725,7 @@ class _LaboratorioCard extends StatelessWidget {
                       style: const TextStyle(fontWeight: FontWeight.w800),
                     ),
                   ),
-                  const Icon(SigadIcons.chevronDireita),
+                  const SigadIcon(SigadIcons.chevronDireita),
                 ],
               ),
               const SizedBox(height: 12),
@@ -789,7 +790,7 @@ class _Section extends StatelessWidget {
                   color: tone.withValues(alpha: .12),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(icon, size: 18, color: tone),
+                child: SigadIcon(icon, size: 18, color: tone),
               ),
               const SizedBox(width: 10),
             ],
@@ -836,7 +837,7 @@ class _SectionEmptyState extends StatelessWidget {
     padding: const EdgeInsets.symmetric(vertical: 18),
     child: Column(
       children: [
-        Icon(icon, size: 28, color: SigadColors.muted),
+        SigadIcon(icon, size: 28, color: SigadColors.muted),
         const SizedBox(height: 8),
         Text(
           message,
@@ -939,7 +940,7 @@ class _InfoTile extends StatelessWidget {
             color: tone.withValues(alpha: .12),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, color: tone, size: 20),
+          child: SigadIcon(icon, color: tone, size: 20),
         ),
         const SizedBox(height: 10),
         Text(

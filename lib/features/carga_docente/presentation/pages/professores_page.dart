@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
 import '../../domain/docente_models.dart';
 import '../../data/docente_repository.dart';
@@ -79,7 +80,7 @@ class _ProfessoresPageState extends State<ProfessoresPage> {
                     decoration: const InputDecoration(
                       hintText:
                           'Buscar docente por nome, e-mail ou departamento',
-                      prefixIcon: Icon(
+                      prefixIcon: SigadIcon(
                         SigadIcons.buscar,
                         color: SigadColors.brand,
                       ),
@@ -91,7 +92,7 @@ class _ProfessoresPageState extends State<ProfessoresPage> {
                   tooltip: _ordemCrescente
                       ? 'Ordem crescente'
                       : 'Ordem decrescente',
-                  icon: Icon(
+                  icon: SigadIcon(
                     _ordemCrescente
                         ? SigadIcons.setaBaixo
                         : SigadIcons.setaCima,
@@ -163,7 +164,7 @@ class _ProfessoresPageState extends State<ProfessoresPage> {
                 // Adicionar novo docente
               },
               tooltip: 'Adicionar docente',
-              child: const Icon(SigadIcons.adicionar),
+              child: const SigadIcon(SigadIcons.adicionar),
             )
           : null,
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sigad/app/theme/sigad_icon.dart';
 import 'package:sigad/app/theme/sigad_icons.dart';
 
 abstract final class AppFeedbackService {
@@ -54,7 +55,11 @@ abstract final class AppFeedbackService {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(kind.icon, color: colors.foreground, size: 22),
+                          SigadIcon(
+                            kind.icon,
+                            color: colors.foreground,
+                            size: 22,
+                          ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
@@ -79,7 +84,7 @@ abstract final class AppFeedbackService {
                 ),
               ),
               IconButton(
-                icon: const Icon(SigadIcons.fechar),
+                icon: const SigadIcon(SigadIcons.fechar),
                 color: colors.foreground,
                 tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
                 onPressed: () => messenger.hideCurrentSnackBar(

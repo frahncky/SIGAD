@@ -18,6 +18,7 @@ import '../../features/notas/presentation/pages/notas_page.dart';
 import '../../features/redesign/presentation/pages/module_workspace_page.dart';
 import '../../features/redesign/presentation/pages/sigad_redesign_pages.dart';
 import '../../features/relatorios/presentation/pages/relatorios_page.dart';
+import '../theme/sigad_icon.dart';
 import '../theme/sigad_icons.dart';
 import 'app_routes.dart';
 
@@ -158,7 +159,7 @@ class _NotFoundPage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
+              SigadIcon(
                 SigadIcons.globo,
                 size: 72,
                 color: Theme.of(context).colorScheme.primary,
@@ -179,7 +180,7 @@ class _NotFoundPage extends StatelessWidget {
                   context,
                   AppRoutes.dashboard,
                 ),
-                icon: const Icon(SigadIcons.inicio),
+                icon: const SigadIcon(SigadIcons.inicio),
                 label: const Text('Voltar à visão geral'),
               ),
             ],

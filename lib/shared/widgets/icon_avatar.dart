@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sigad/app/theme/sigad_icon.dart';
 
 /// Selo circular/arredondado colorido usado para dar identidade visual a
 /// cabeçalhos de painel, linhas de lista e cards de atalho.
@@ -27,7 +28,7 @@ class SigadIconAvatar extends StatelessWidget {
         color: tone.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(borderRadius),
       ),
-      child: Icon(icon, color: tone, size: iconSize ?? size * 0.5),
+      child: SigadIcon(icon, color: tone, size: iconSize ?? size * 0.5),
     );
   }
 }

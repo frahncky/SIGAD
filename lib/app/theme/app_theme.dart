@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:sigad/app/theme/sigad_icon.dart';
 import 'sigad_colors.dart';
 import 'sigad_icons.dart';
 
@@ -111,10 +112,11 @@ abstract final class AppTheme {
       dividerColor: divider,
       visualDensity: VisualDensity.standard,
       actionIconTheme: ActionIconThemeData(
-        backButtonIconBuilder: (_) => const Icon(SigadIcons.chevronEsquerda),
-        closeButtonIconBuilder: (_) => const Icon(SigadIcons.fechar),
-        drawerButtonIconBuilder: (_) => const Icon(SigadIcons.menu),
-        endDrawerButtonIconBuilder: (_) => const Icon(SigadIcons.menu),
+        backButtonIconBuilder: (_) =>
+            const SigadIcon(SigadIcons.chevronEsquerda),
+        closeButtonIconBuilder: (_) => const SigadIcon(SigadIcons.fechar),
+        drawerButtonIconBuilder: (_) => const SigadIcon(SigadIcons.menu),
+        endDrawerButtonIconBuilder: (_) => const SigadIcon(SigadIcons.menu),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: canvas,

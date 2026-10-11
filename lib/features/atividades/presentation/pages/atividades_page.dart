@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
@@ -34,7 +35,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
-                  icon: const Icon(SigadIcons.fechar),
+                  icon: const SigadIcon(SigadIcons.fechar),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -179,7 +180,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                         decoration: const InputDecoration(
                           hintText:
                               'Buscar por título, descrição ou responsável',
-                          prefixIcon: Icon(SigadIcons.buscar),
+                          prefixIcon: SigadIcon(SigadIcons.buscar),
                         ),
                       ),
                     ),
@@ -194,7 +195,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                           padding: EdgeInsets.zero,
                           minimumSize: const Size(48, 48),
                         ),
-                        child: const Icon(SigadIcons.filtro),
+                        child: const SigadIcon(SigadIcons.filtro),
                       ),
                     ),
                   ],
@@ -248,7 +249,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
         tooltip: 'Criar nova atividade',
         backgroundColor: SigadColors.brand,
         foregroundColor: Colors.white,
-        child: const Icon(SigadIcons.adicionar),
+        child: const SigadIcon(SigadIcons.adicionar),
       ),
     );
   }
@@ -288,7 +289,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                     IconButton(
                       tooltip: 'Fechar formulário',
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(SigadIcons.fechar),
+                      icon: const SigadIcon(SigadIcons.fechar),
                     ),
                   ],
                 ),
@@ -427,7 +428,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                     IconButton(
                       tooltip: 'Fechar formulário',
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(SigadIcons.fechar),
+                      icon: const SigadIcon(SigadIcons.fechar),
                     ),
                   ],
                 ),
@@ -766,7 +767,7 @@ class _AtividadeCard extends StatelessWidget {
                         value: 'editar',
                         child: Row(
                           children: [
-                            Icon(SigadIcons.editar, size: 18),
+                            SigadIcon(SigadIcons.editar, size: 18),
                             SizedBox(width: 8),
                             Text('Editar'),
                           ],
@@ -776,7 +777,7 @@ class _AtividadeCard extends StatelessWidget {
                         value: 'excluir',
                         child: Row(
                           children: [
-                            Icon(
+                            SigadIcon(
                               SigadIcons.excluir,
                               color: Theme.of(context).colorScheme.error,
                               size: 18,
@@ -792,7 +793,7 @@ class _AtividadeCard extends StatelessWidget {
                         ),
                       ),
                     ],
-                    icon: const Icon(SigadIcons.maisOpcoes, size: 18),
+                    icon: const SigadIcon(SigadIcons.maisOpcoes, size: 18),
                   ),
                 ],
               ),
@@ -880,7 +881,7 @@ class _AtividadeCard extends StatelessWidget {
                   IconButton(
                     tooltip: 'Fechar detalhes da atividade',
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(SigadIcons.fechar),
+                    icon: const SigadIcon(SigadIcons.fechar),
                   ),
                 ],
               ),
@@ -933,7 +934,7 @@ class _InfoChip extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14, color: SigadColors.muted),
+        SigadIcon(icon, size: 14, color: SigadColors.muted),
         const SizedBox(width: 6),
         Flexible(
           child: Text(

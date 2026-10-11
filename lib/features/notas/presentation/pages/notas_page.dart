@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
 import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../../../core/services/local_storage_service.dart';
@@ -367,7 +368,7 @@ class _NotasPageState extends State<NotasPage> {
       floatingActionButton: FloatingActionButton.extended(
         tooltip: 'Nova anotação',
         onPressed: () => _criarOuEditarNota(),
-        icon: const Icon(SigadIcons.adicionar),
+        icon: const SigadIcon(SigadIcons.adicionar),
         label: const Text('Nova anotação'),
       ),
       body: ListView(
@@ -378,8 +379,8 @@ class _NotasPageState extends State<NotasPage> {
               onChanged: (value) => setState(() => _busca = value),
               decoration: InputDecoration(
                 hintText: 'Buscar anotações, reuniões, temas...',
-                prefixIcon: const Icon(SigadIcons.buscar),
-                suffixIcon: const Icon(SigadIcons.ajustes),
+                prefixIcon: const SigadIcon(SigadIcons.buscar),
+                suffixIcon: const SigadIcon(SigadIcons.ajustes),
                 filled: true,
                 fillColor: colors.surface,
               ),
@@ -421,7 +422,7 @@ class _NotasPageState extends State<NotasPage> {
           if (fixadas.isNotEmpty) ...[
             Row(
               children: [
-                const Icon(SigadIcons.fixar, color: SigadColors.brand),
+                const SigadIcon(SigadIcons.fixar, color: SigadColors.brand),
                 const SizedBox(width: 8),
                 Text(
                   'Fixadas',
@@ -453,7 +454,7 @@ class _NotasPageState extends State<NotasPage> {
           ],
           Row(
             children: [
-              const Icon(SigadIcons.editarNota, color: SigadColors.brand),
+              const SigadIcon(SigadIcons.editarNota, color: SigadColors.brand),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -480,7 +481,7 @@ class _NotasPageState extends State<NotasPage> {
                         color: colors.onSurfaceVariant,
                       ),
                     ),
-                    const Icon(SigadIcons.chevronBaixo, size: 18),
+                    const SigadIcon(SigadIcons.chevronBaixo, size: 18),
                   ],
                 ),
               ),
@@ -499,7 +500,11 @@ class _NotasPageState extends State<NotasPage> {
               padding: const EdgeInsets.symmetric(vertical: 56),
               child: Column(
                 children: [
-                  Icon(SigadIcons.buscarVazio, size: 48, color: colors.outline),
+                  SigadIcon(
+                    SigadIcons.buscarVazio,
+                    size: 48,
+                    color: colors.outline,
+                  ),
                   const SizedBox(height: 12),
                   const Text('Nenhuma anotação encontrada.'),
                 ],
@@ -538,7 +543,7 @@ class _NotasPageState extends State<NotasPage> {
           children: outras
               .map(
                 (categoria) => ListTile(
-                  leading: Icon(
+                  leading: SigadIcon(
                     _iconeCategoria(categoria),
                     color: _corCategoria(categoria),
                   ),
@@ -580,7 +585,7 @@ class _EmptyNotes extends StatelessWidget {
               color: SigadColors.brandLight,
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: const SigadIcon(
               SigadIcons.documentoAdicionar,
               size: 42,
               color: SigadColors.brand,
@@ -603,7 +608,7 @@ class _EmptyNotes extends StatelessWidget {
           const SizedBox(height: 18),
           OutlinedButton.icon(
             onPressed: onCreate,
-            icon: const Icon(SigadIcons.adicionar),
+            icon: const SigadIcon(SigadIcons.adicionar),
             label: const Text('Criar primeira anotação'),
           ),
         ],
@@ -656,7 +661,7 @@ class _NoteCard extends StatelessWidget {
                     color: cor.withValues(alpha: 0.14),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(_iconeCategoria(nota.categoria), color: cor),
+                  child: SigadIcon(_iconeCategoria(nota.categoria), color: cor),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -684,7 +689,7 @@ class _NoteCard extends StatelessWidget {
                 IconButton(
                   tooltip: nota.fixada ? 'Desafixar' : 'Fixar anotação',
                   onPressed: onTogglePin,
-                  icon: Icon(
+                  icon: SigadIcon(
                     nota.fixada
                         ? SigadIcons.marcadorPreenchido
                         : SigadIcons.marcador,
@@ -698,7 +703,7 @@ class _NoteCard extends StatelessWidget {
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(
+                SigadIcon(
                   SigadIcons.relogio,
                   size: 16,
                   color: colors.onSurfaceVariant,
@@ -714,12 +719,12 @@ class _NoteCard extends StatelessWidget {
                 IconButton(
                   tooltip: 'Editar anotação',
                   onPressed: onEdit,
-                  icon: const Icon(SigadIcons.editar),
+                  icon: const SigadIcon(SigadIcons.editar),
                 ),
                 IconButton(
                   tooltip: 'Excluir anotação',
                   onPressed: onDelete,
-                  icon: Icon(SigadIcons.excluir, color: colors.error),
+                  icon: SigadIcon(SigadIcons.excluir, color: colors.error),
                 ),
               ],
             ),

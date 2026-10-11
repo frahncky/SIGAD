@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../app/routes/app_routes.dart';
+import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
 import '../../../aulas_praticas/data/reserva_repository.dart';
 import '../../../aulas_praticas/domain/reserva_models.dart';
@@ -318,7 +319,7 @@ class _ResumoDaSemana extends StatelessWidget {
                 color: SigadColors.brandLight,
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: const Icon(
+              child: const SigadIcon(
                 SigadIcons.calendario,
                 color: SigadColors.brand,
               ),
@@ -347,7 +348,7 @@ class _ResumoDaSemana extends StatelessWidget {
         );
         final botaoAgenda = OutlinedButton.icon(
           onPressed: onVerAgenda,
-          icon: const Icon(SigadIcons.setaDireita, size: 15),
+          icon: const SigadIcon(SigadIcons.setaDireita, size: 15),
           label: const Text('Ver agenda'),
           style: OutlinedButton.styleFrom(
             foregroundColor: SigadColors.brand,
@@ -581,7 +582,7 @@ class _FiltroChip extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(icon, size: 15, color: SigadColors.brand),
+                  SigadIcon(icon, size: 15, color: SigadColors.brand),
                   const SizedBox(width: 5),
                   Expanded(
                     child: Text(
@@ -603,7 +604,7 @@ class _FiltroChip extends StatelessWidget {
                       style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ),
-                  const Icon(SigadIcons.chevronBaixo, size: 16),
+                  const SigadIcon(SigadIcons.chevronBaixo, size: 16),
                 ],
               ),
             ],
@@ -630,7 +631,7 @@ class _FiltroChip extends StatelessWidget {
                     (option) => ListTile(
                       title: Text(option),
                       trailing: option == value
-                          ? const Icon(
+                          ? const SigadIcon(
                               SigadIcons.confirmar,
                               color: SigadColors.brand,
                             )
@@ -743,7 +744,10 @@ class _ProximosCompromissos extends StatelessWidget {
                     constraints.maxWidth < 400 || escalaTexto >= 1.4;
                 final titulo = Row(
                   children: [
-                    const Icon(SigadIcons.calendario, color: SigadColors.brand),
+                    const SigadIcon(
+                      SigadIcons.calendario,
+                      color: SigadColors.brand,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -812,7 +816,7 @@ class _CompromissoTile extends StatelessWidget {
               color: cor.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(item.icone, color: cor, size: 20),
+            child: SigadIcon(item.icone, color: cor, size: 20),
           );
           final informacoes = Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -924,7 +928,10 @@ class _AgendaDoDia extends StatelessWidget {
                     constraints.maxWidth < 400 || escalaTexto >= 1.4;
                 final titulo = Row(
                   children: [
-                    const Icon(SigadIcons.calendario, color: SigadColors.brand),
+                    const SigadIcon(
+                      SigadIcons.calendario,
+                      color: SigadColors.brand,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Column(
@@ -1123,7 +1130,7 @@ class _EmptyAgenda extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(
+          SigadIcon(
             SigadIcons.eventoConfirmado,
             size: 40,
             color: Theme.of(context).colorScheme.primary,
@@ -1262,7 +1269,7 @@ class _OcupacaoLaboratorios extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(
+                        SigadIcon(
                           lab.icone,
                           color: _corOcupacao(lab.ocupacao),
                           size: 18,

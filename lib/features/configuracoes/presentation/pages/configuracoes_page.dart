@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
 import '../../../../core/security/authorization_policy.dart';
 import '../../../../core/services/app_feedback_service.dart';
@@ -314,7 +315,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
             child: ElevatedButton.icon(
               onPressed: () => _showConfirmacaoLogout(context),
-              icon: const Icon(SigadIcons.sair),
+              icon: const SigadIcon(SigadIcons.sair),
               label: const Text('Sair'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: SigadColors.risk,
@@ -403,7 +404,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 IconButton(
                   tooltip: 'Fechar edição de perfil',
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(SigadIcons.fechar),
+                  icon: const SigadIcon(SigadIcons.fechar),
                 ),
               ],
             ),
@@ -490,7 +491,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 IconButton(
                   tooltip: 'Fechar alteração de email',
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(SigadIcons.fechar),
+                  icon: const SigadIcon(SigadIcons.fechar),
                 ),
               ],
             ),
@@ -574,7 +575,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 IconButton(
                   tooltip: 'Fechar alteração de senha',
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(SigadIcons.fechar),
+                  icon: const SigadIcon(SigadIcons.fechar),
                 ),
               ],
             ),
@@ -676,7 +677,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                   IconButton(
                     tooltip: 'Fechar backup automático',
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(SigadIcons.fechar),
+                    icon: const SigadIcon(SigadIcons.fechar),
                   ),
                 ],
               ),
@@ -760,7 +761,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 IconButton(
                   tooltip: 'Fechar política de privacidade',
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(SigadIcons.fechar),
+                  icon: const SigadIcon(SigadIcons.fechar),
                 ),
               ],
             ),
@@ -825,7 +826,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 IconButton(
                   tooltip: 'Fechar termos de serviço',
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(SigadIcons.fechar),
+                  icon: const SigadIcon(SigadIcons.fechar),
                 ),
               ],
             ),
@@ -913,7 +914,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                           IconButton(
                             tooltip: 'Fechar sobre o SIGAD',
                             onPressed: () => Navigator.pop(sheetContext),
-                            icon: const Icon(SigadIcons.fechar),
+                            icon: const SigadIcon(SigadIcons.fechar),
                           ),
                         ],
                       ),
@@ -1024,7 +1025,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 IconButton(
                   tooltip: 'Fechar relato de problema',
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(SigadIcons.fechar),
+                  icon: const SigadIcon(SigadIcons.fechar),
                 ),
               ],
             ),
@@ -1135,7 +1136,7 @@ class _ConfiguracoesAccessDenied extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(SigadIcons.cadeado, size: 56),
+            const SigadIcon(SigadIcons.cadeado, size: 56),
             const SizedBox(height: 12),
             Text(
               'Faça login para acessar configurações.',
@@ -1224,7 +1225,7 @@ class _ConfigItem extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      leading: Icon(icon, color: tone),
+      leading: SigadIcon(icon, color: tone),
       title: Text(
         titulo,
         style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
@@ -1233,7 +1234,7 @@ class _ConfigItem extends StatelessWidget {
         subtitulo,
         style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
       ),
-      trailing: Icon(SigadIcons.chevronDireita, color: SigadColors.muted),
+      trailing: SigadIcon(SigadIcons.chevronDireita, color: SigadColors.muted),
       onTap: onTap,
     );
   }
@@ -1261,7 +1262,7 @@ class _ConfigToggle extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      leading: Icon(icon, color: tone),
+      leading: SigadIcon(icon, color: tone),
       title: Text(
         titulo,
         style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
@@ -1332,7 +1333,7 @@ class _ConfigDropdown extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          Icon(icon, color: tone),
+          SigadIcon(icon, color: tone),
           const SizedBox(width: 16),
           Expanded(
             child: Column(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
 import '../../../../core/security/authorization_policy.dart';
 import '../../../../core/services/app_event_logger.dart';
@@ -141,7 +142,7 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
             onChanged: (value) => setState(() => _busca = value),
             decoration: const InputDecoration(
               hintText: 'Buscar por titulo, descricao ou autor',
-              prefixIcon: Icon(SigadIcons.buscar),
+              prefixIcon: SigadIcon(SigadIcons.buscar),
             ),
           ),
           const SizedBox(height: 12),
@@ -181,7 +182,7 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
             ),
             child: Row(
               children: [
-                const Icon(SigadIcons.info, color: SigadColors.brand),
+                const SigadIcon(SigadIcons.info, color: SigadColors.brand),
                 const SizedBox(width: 12),
                 Text(
                   '${relatoriosFiltrados.length}',
@@ -268,7 +269,7 @@ class _RelatoriosAccessDenied extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(SigadIcons.cadeado, size: 56),
+            const SigadIcon(SigadIcons.cadeado, size: 56),
             const SizedBox(height: 12),
             Text(
               'Acesso nao permitido para este perfil.',
@@ -540,7 +541,7 @@ class _RelatorioCard extends StatelessWidget {
                         value: 'visualizar',
                         child: Row(
                           children: [
-                            Icon(SigadIcons.visivel, size: 18),
+                            SigadIcon(SigadIcons.visivel, size: 18),
                             SizedBox(width: 8),
                             Text('Visualizar'),
                           ],
@@ -550,7 +551,7 @@ class _RelatorioCard extends StatelessWidget {
                         value: 'baixar',
                         child: Row(
                           children: [
-                            Icon(SigadIcons.baixar, size: 18),
+                            SigadIcon(SigadIcons.baixar, size: 18),
                             SizedBox(width: 8),
                             Text('Baixar PDF'),
                           ],
@@ -560,14 +561,14 @@ class _RelatorioCard extends StatelessWidget {
                         value: 'compartilhar',
                         child: Row(
                           children: [
-                            Icon(SigadIcons.compartilhar, size: 18),
+                            SigadIcon(SigadIcons.compartilhar, size: 18),
                             SizedBox(width: 8),
                             Text('Compartilhar'),
                           ],
                         ),
                       ),
                     ],
-                    icon: const Icon(SigadIcons.maisOpcoes, size: 18),
+                    icon: const SigadIcon(SigadIcons.maisOpcoes, size: 18),
                   ),
                 ],
               ),
@@ -662,7 +663,7 @@ class _RelatorioCard extends StatelessWidget {
                   IconButton(
                     tooltip: 'Fechar detalhes do relatório',
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(SigadIcons.fechar),
+                    icon: const SigadIcon(SigadIcons.fechar),
                   ),
                 ],
               ),
@@ -689,7 +690,7 @@ class _RelatorioCard extends StatelessWidget {
                         Navigator.pop(context);
                         onBaixar();
                       },
-                      icon: const Icon(SigadIcons.baixar),
+                      icon: const SigadIcon(SigadIcons.baixar),
                       label: const Text('Baixar PDF'),
                     ),
                   ),
@@ -700,7 +701,7 @@ class _RelatorioCard extends StatelessWidget {
                         Navigator.pop(context);
                         onCompartilhar();
                       },
-                      icon: const Icon(SigadIcons.compartilhar),
+                      icon: const SigadIcon(SigadIcons.compartilhar),
                       label: const Text('Compartilhar'),
                     ),
                   ),
@@ -726,7 +727,7 @@ class _InfoChip extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14, color: SigadColors.muted),
+        SigadIcon(icon, size: 14, color: SigadColors.muted),
         const SizedBox(width: 6),
         Flexible(
           child: Text(

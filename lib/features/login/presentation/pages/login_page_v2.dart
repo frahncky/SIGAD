@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
 import '../../../../core/models/user.dart';
 import '../../../../core/models/user_role.dart';
@@ -127,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                     (role) => SizedBox(
                       width: itemWidth,
                       child: ChoiceChip(
-                        avatar: Icon(_roleIcon(role), size: 16),
+                        avatar: SigadIcon(_roleIcon(role), size: 16),
                         label: Text(
                           role.displayName,
                           maxLines: 2,
@@ -159,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: const InputDecoration(
                   labelText: 'Email institucional',
                   hintText: 'nome@ifma.edu.br',
-                  prefixIcon: Icon(SigadIcons.arroba),
+                  prefixIcon: SigadIcon(SigadIcons.arroba),
                 ),
               ),
               const SizedBox(height: 10),
@@ -173,14 +174,14 @@ class _LoginPageState extends State<LoginPage> {
                 },
                 decoration: InputDecoration(
                   labelText: 'Senha',
-                  prefixIcon: const Icon(SigadIcons.cadeado),
+                  prefixIcon: const SigadIcon(SigadIcons.cadeado),
                   suffixIcon: IconButton(
                     tooltip: _obscurePassword
                         ? 'Mostrar senha'
                         : 'Ocultar senha',
                     onPressed: () =>
                         setState(() => _obscurePassword = !_obscurePassword),
-                    icon: Icon(
+                    icon: SigadIcon(
                       _obscurePassword ? SigadIcons.visivel : SigadIcons.oculto,
                     ),
                   ),
@@ -209,7 +210,7 @@ class _LoginPageState extends State<LoginPage> {
                     height: 18,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Icon(SigadIcons.entrar),
+                : const SigadIcon(SigadIcons.entrar),
             label: const Text('Entrar'),
           ),
         ),
@@ -219,7 +220,7 @@ class _LoginPageState extends State<LoginPage> {
             width: double.infinity,
             child: OutlinedButton.icon(
               onPressed: _isLoading ? null : _handleDemoLogin,
-              icon: const Icon(SigadIcons.laboratorio),
+              icon: const SigadIcon(SigadIcons.laboratorio),
               label: const Text('Acesso demo do perfil selecionado'),
             ),
           ),
@@ -440,7 +441,7 @@ class _FeatureLine extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         children: [
-          Icon(icon, color: Colors.white, size: 20),
+          SigadIcon(icon, color: Colors.white, size: 20),
           const SizedBox(width: 9),
           Expanded(
             child: Text(

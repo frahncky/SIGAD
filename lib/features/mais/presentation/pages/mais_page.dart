@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
 import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../../../core/services/notificacoes_service.dart';
@@ -141,7 +142,7 @@ class MaisPage extends StatelessWidget {
               ...avisos.map(
                 (aviso) => ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: Icon(aviso.icone, color: SigadColors.brand),
+                  leading: SigadIcon(aviso.icone, color: SigadColors.brand),
                   title: Text(aviso.titulo),
                   subtitle: Text(aviso.subtitulo),
                 ),
@@ -182,7 +183,7 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, color: SigadColors.brand, size: 22),
+        SigadIcon(icon, color: SigadColors.brand, size: 22),
         const SizedBox(width: 8),
         Text(
           title,
@@ -231,7 +232,10 @@ class _AvisosCard extends StatelessWidget {
                   color: SigadColors.brandLight,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(SigadIcons.aviso, color: SigadColors.brand),
+                child: const SigadIcon(
+                  SigadIcons.aviso,
+                  color: SigadColors.brand,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -289,7 +293,10 @@ class _AvisosCard extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                const Icon(SigadIcons.chevronDireita, color: SigadColors.brand),
+                const SigadIcon(
+                  SigadIcons.chevronDireita,
+                  color: SigadColors.brand,
+                ),
               ],
             ),
           ),
@@ -464,7 +471,7 @@ class _AdminTile extends StatelessWidget {
         style: const TextStyle(fontWeight: FontWeight.w700),
       ),
       subtitle: Text(item.subtitle),
-      trailing: const Icon(SigadIcons.chevronDireita),
+      trailing: const SigadIcon(SigadIcons.chevronDireita),
       onTap:
           item.onTap ??
           () => Navigator.of(context).pushReplacementNamed(item.route!),
@@ -492,7 +499,7 @@ class _SuporteCard extends StatelessWidget {
             children: [
               const CircleAvatar(
                 backgroundColor: Colors.white,
-                child: Icon(SigadIcons.suporte, color: SigadColors.brand),
+                child: SigadIcon(SigadIcons.suporte, color: SigadColors.brand),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -518,7 +525,7 @@ class _SuporteCard extends StatelessWidget {
           );
           final button = OutlinedButton.icon(
             onPressed: () => _abrirChamado(context),
-            icon: const Icon(SigadIcons.abrirExterno, size: 18),
+            icon: const SigadIcon(SigadIcons.abrirExterno, size: 18),
             label: const Text('Abrir chamado'),
           );
           if (compact) {

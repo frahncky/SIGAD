@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/theme/sigad_colors.dart';
+import '../../app/theme/sigad_icon.dart';
 import '../../app/theme/sigad_icons.dart';
 import '../../core/services/notificacoes_service.dart';
 import '../../core/services/user_context_provider.dart';
@@ -253,7 +254,7 @@ class _WelcomeCard extends StatelessWidget {
               color: SigadColors.accent.withValues(alpha: 0.22),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icone, color: SigadColors.accent, size: 26),
+            child: SigadIcon(icone, color: SigadColors.accent, size: 26),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -320,7 +321,7 @@ class _ListaHeroCard extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(icone, color: SigadColors.accent),
+            SigadIcon(icone, color: SigadColors.accent),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -347,7 +348,7 @@ class _ListaHeroCard extends StatelessWidget {
                     color: item.color.withValues(alpha: 0.22),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(item.icon, color: item.color, size: 20),
+                  child: SigadIcon(item.icon, color: item.color, size: 20),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -402,7 +403,7 @@ class _ListaHeroCard extends StatelessWidget {
             for (final item in itens)
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: Icon(item.icon, color: SigadColors.brand),
+                leading: SigadIcon(item.icon, color: SigadColors.brand),
                 title: Text(item.title),
                 subtitle: Text(item.subtitle),
               ),

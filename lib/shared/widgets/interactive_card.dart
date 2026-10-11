@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../app/theme/sigad_colors.dart';
+import '../../app/theme/sigad_icon.dart';
 
 class InteractiveCard extends StatefulWidget {
   const InteractiveCard({
@@ -204,7 +205,7 @@ class _InteractiveButtonState extends State<InteractiveButton>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if (widget.icon != null) ...[
-                      Icon(
+                      SigadIcon(
                         widget.icon,
                         size: _getIconSize(),
                         color: isDarkVariant ? Colors.white : SigadColors.brand,

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
 import '../../../../core/models/navigation_item.dart';
 import '../../../../core/navigation/navigation_items.dart';
@@ -71,9 +72,9 @@ class HomeShellPage extends StatelessWidget {
                                 label: Text(
                                   notifCount > 99 ? '99+' : '$notifCount',
                                 ),
-                                child: const Icon(SigadIcons.notificacao),
+                                child: const SigadIcon(SigadIcons.notificacao),
                               )
-                            : const Icon(SigadIcons.notificacao),
+                            : const SigadIcon(SigadIcons.notificacao),
                       ),
                     IconButton(
                       onPressed: () => _showProfileMenu(context, userContext),
@@ -102,7 +103,7 @@ class HomeShellPage extends StatelessWidget {
                   destinations: [
                     for (final item in _bottomNavItems)
                       NavigationDestination(
-                        icon: Icon(item['icon'] as IconData),
+                        icon: SigadIcon(item['icon'] as IconData),
                         label: item['label'] as String,
                       ),
                   ],
@@ -252,7 +253,7 @@ class HomeShellPage extends StatelessWidget {
                           final notificacao = notificacoes[index];
                           return ListTile(
                             contentPadding: EdgeInsets.zero,
-                            leading: Icon(notificacao.icone),
+                            leading: SigadIcon(notificacao.icone),
                             title: Text(notificacao.titulo),
                             subtitle: Text(notificacao.subtitulo),
                           );
@@ -308,7 +309,7 @@ class HomeShellPage extends StatelessWidget {
                     onChanged: (value) => setModalState(() => query = value),
                     decoration: const InputDecoration(
                       hintText: 'Buscar módulo',
-                      prefixIcon: Icon(SigadIcons.buscar),
+                      prefixIcon: SigadIcon(SigadIcons.buscar),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -343,7 +344,7 @@ class HomeShellPage extends StatelessWidget {
                                 tileColor: Theme.of(
                                   context,
                                 ).colorScheme.surfaceContainerHighest,
-                                leading: Icon(
+                                leading: SigadIcon(
                                   item.icon,
                                   color: SigadColors.brand,
                                 ),
@@ -411,7 +412,7 @@ class _UnselectedMobileNavigationBar extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
+                              SigadIcon(
                                 items[index]['icon'] as IconData,
                                 size: 23,
                                 color: colors.onSurfaceVariant,
@@ -493,7 +494,7 @@ class _SideNav extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: OutlinedButton.icon(
                 onPressed: onQuickAccess,
-                icon: const Icon(SigadIcons.buscar, size: 19),
+                icon: const SigadIcon(SigadIcons.buscar, size: 19),
                 label: const Text('Acesso rápido'),
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(46),
@@ -522,7 +523,10 @@ class _SideNav extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                leading: const Icon(SigadIcons.sair, color: SigadColors.risk),
+                leading: const SigadIcon(
+                  SigadIcons.sair,
+                  color: SigadColors.risk,
+                ),
                 title: const Text('Sair'),
               ),
             ),
@@ -587,7 +591,10 @@ class _AppDrawer extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                leading: const Icon(SigadIcons.sair, color: SigadColors.risk),
+                leading: const SigadIcon(
+                  SigadIcons.sair,
+                  color: SigadColors.risk,
+                ),
                 title: const Text('Sair'),
               ),
             ),
@@ -633,7 +640,7 @@ class _NavigationTile extends StatelessWidget {
                   : colors.surfaceContainerLow,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(
+            child: SigadIcon(
               item.icon,
               size: 19,
               color: selected ? colors.primary : SigadColors.muted,
@@ -832,7 +839,7 @@ class _ProfileMenu extends StatelessWidget {
             const Divider(height: 1),
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(
+              leading: const SigadIcon(
                 SigadIcons.configuracoes,
                 color: SigadColors.brand,
               ),
@@ -845,7 +852,10 @@ class _ProfileMenu extends StatelessWidget {
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(SigadIcons.sair, color: SigadColors.risk),
+              leading: const SigadIcon(
+                SigadIcons.sair,
+                color: SigadColors.risk,
+              ),
               title: const Text('Sair'),
               onTap: () {
                 final navigator = Navigator.of(context);

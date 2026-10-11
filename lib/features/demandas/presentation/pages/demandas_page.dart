@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
 import '../../../../core/security/authorization_policy.dart';
 import '../../../../core/services/app_event_logger.dart';
@@ -139,7 +140,7 @@ class _DemandasPageState extends State<DemandasPage> {
                           labelText: 'Buscar demandas',
                           floatingLabelBehavior: FloatingLabelBehavior.always,
                           hintText: 'Título, descrição ou responsável',
-                          prefixIcon: Icon(SigadIcons.buscar),
+                          prefixIcon: SigadIcon(SigadIcons.buscar),
                         ),
                       ),
                     ),
@@ -158,7 +159,7 @@ class _DemandasPageState extends State<DemandasPage> {
                           padding: EdgeInsets.zero,
                           minimumSize: const Size(48, 48),
                         ),
-                        child: const Icon(SigadIcons.filtro),
+                        child: const SigadIcon(SigadIcons.filtro),
                       ),
                     ),
                   ),
@@ -218,7 +219,7 @@ class _DemandasPageState extends State<DemandasPage> {
         tooltip: 'Criar nova demanda',
         backgroundColor: SigadColors.brand,
         foregroundColor: Colors.white,
-        child: const Icon(SigadIcons.adicionar),
+        child: const SigadIcon(SigadIcons.adicionar),
       ),
     );
   }
@@ -246,7 +247,7 @@ class _DemandasPageState extends State<DemandasPage> {
                   IconButton(
                     tooltip: 'Fechar filtros',
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(SigadIcons.fechar),
+                    icon: const SigadIcon(SigadIcons.fechar),
                   ),
                 ],
               ),
@@ -402,7 +403,7 @@ class _DemandasPageState extends State<DemandasPage> {
                     IconButton(
                       tooltip: 'Fechar formulário da demanda',
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(SigadIcons.fechar),
+                      icon: const SigadIcon(SigadIcons.fechar),
                     ),
                   ],
                 ),
@@ -547,7 +548,7 @@ class _DemandasPageState extends State<DemandasPage> {
                     IconButton(
                       tooltip: 'Fechar formulário da demanda',
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(SigadIcons.fechar),
+                      icon: const SigadIcon(SigadIcons.fechar),
                     ),
                   ],
                 ),
@@ -955,7 +956,7 @@ class _DemandasCard extends StatelessWidget {
                             child: Text('Excluir'),
                           ),
                         ],
-                        icon: Icon(
+                        icon: SigadIcon(
                           SigadIcons.maisOpcoes,
                           color: SigadColors.muted,
                           size: 20,
@@ -1024,7 +1025,7 @@ class _DemandasCard extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(
+                  SigadIcon(
                     SigadIcons.calendario,
                     size: 16,
                     color: SigadColors.muted,
@@ -1090,7 +1091,7 @@ class _DemandasCard extends StatelessWidget {
                   IconButton(
                     tooltip: 'Fechar detalhes da demanda',
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(SigadIcons.fechar),
+                    icon: const SigadIcon(SigadIcons.fechar),
                   ),
                 ],
               ),

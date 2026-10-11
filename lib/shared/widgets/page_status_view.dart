@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sigad/app/theme/sigad_icon.dart';
 import 'package:sigad/app/theme/sigad_icons.dart';
 
 class PageStatusView extends StatelessWidget {
@@ -83,7 +84,7 @@ class PageStatusView extends StatelessWidget {
                               color: colors.surfaceContainer,
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            child: Icon(
+                            child: SigadIcon(
                               icon,
                               size: 36,
                               color: colors.onSurfaceVariant,
@@ -126,7 +127,7 @@ class PageStatusView extends StatelessWidget {
                     const SizedBox(height: 14),
                     OutlinedButton.icon(
                       onPressed: onAction,
-                      icon: const Icon(SigadIcons.atualizar),
+                      icon: const SigadIcon(SigadIcons.atualizar),
                       label: Text(actionLabel!),
                     ),
                   ],

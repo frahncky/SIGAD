@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
 import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../../../core/services/app_event_logger.dart';
@@ -75,7 +76,7 @@ class _KanbanPageState extends State<KanbanPage> {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(SigadIcons.adicionar),
+            icon: const SigadIcon(SigadIcons.adicionar),
             onPressed: () => _showCriarCard(context),
           ),
         ],
@@ -466,14 +467,14 @@ class _KanbanCard extends StatelessWidget {
                         value: 'excluir',
                         child: Row(
                           children: [
-                            Icon(SigadIcons.excluir, size: 18),
+                            SigadIcon(SigadIcons.excluir, size: 18),
                             SizedBox(width: 8),
                             Text('Excluir'),
                           ],
                         ),
                       ),
                     ],
-                    icon: Icon(
+                    icon: SigadIcon(
                       SigadIcons.maisOpcoes,
                       size: 18,
                       color: SigadColors.muted,
