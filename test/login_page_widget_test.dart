@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:sigad/app/theme/app_theme.dart';
+import 'package:sigad/app/theme/sigad_icons.dart';
 import 'package:sigad/core/services/user_context_provider.dart';
 import 'package:sigad/features/login/presentation/pages/login_page.dart';
 
@@ -31,7 +32,7 @@ void main() {
     expect(find.text('Senha'), findsOneWidget);
     expect(find.text('Entrar'), findsNWidgets(2));
     expect(find.byIcon(Icons.account_balance_outlined), findsNothing);
-    expect(find.byIcon(Icons.verified_user_outlined), findsNothing);
+    expect(find.byIcon(SigadIcons.escudoVerificado), findsNothing);
     expect(find.text('Entrar no SIGAD'), findsNothing);
     expect(find.textContaining('Use suas credenciais'), findsNothing);
   });
@@ -113,7 +114,7 @@ void main() {
     );
     expect(passwordField.obscureText, isTrue);
 
-    await tester.tap(find.byIcon(Icons.visibility_outlined));
+    await tester.tap(find.byIcon(SigadIcons.visivel));
     await tester.pumpAndSettle();
 
     final passwordFieldAfter = tester.widget<TextField>(

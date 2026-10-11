@@ -4,6 +4,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icon.dart';
+import '../../../../app/theme/sigad_icons.dart';
 import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../../../core/services/notificacoes_service.dart';
 import '../../../../core/services/user_context_provider.dart';
@@ -26,54 +28,54 @@ class MaisPage extends StatelessWidget {
           onVerTodos: () => _showAvisos(context, avisos),
         ),
         const SizedBox(height: 24),
-        const _SectionTitle(icon: Icons.bolt_outlined, title: 'Acesso rápido'),
+        const _SectionTitle(icon: SigadIcons.raio, title: 'Acesso rápido'),
         const SizedBox(height: 12),
         _QuickAccessGrid(
           items: [
             _QuickAccessItem(
-              icon: Icons.co_present_outlined,
+              icon: SigadIcons.aula,
               label: 'Carga docente',
               description: 'Planeje e acompanhe a carga horária.',
               route: AppRoutes.cargaDocente,
             ),
             _QuickAccessItem(
-              icon: Icons.groups_outlined,
+              icon: SigadIcons.grupo,
               label: 'Professores',
               description: 'Gerencie docentes do departamento.',
               route: AppRoutes.professores,
             ),
             _QuickAccessItem(
-              icon: Icons.science_outlined,
+              icon: SigadIcons.laboratorio,
               label: 'Laboratórios',
               description: 'Recursos, reservas e ocupação.',
               route: AppRoutes.aulasPraticas,
             ),
             _QuickAccessItem(
-              icon: Icons.event_available_outlined,
+              icon: SigadIcons.eventoConfirmado,
               label: 'Reuniões',
               description: 'Pautas, atas e participantes.',
               route: AppRoutes.calendario,
             ),
             _QuickAccessItem(
-              icon: Icons.assignment_outlined,
+              icon: SigadIcons.demanda,
               label: 'Demandas',
               description: 'Acompanhe e gerencie solicitações.',
               route: AppRoutes.demandas,
             ),
             _QuickAccessItem(
-              icon: Icons.campaign_outlined,
+              icon: SigadIcons.aviso,
               label: 'Notícias',
               description: 'Comunicados e informativos.',
               route: AppRoutes.batePapo,
             ),
             _QuickAccessItem(
-              icon: Icons.bar_chart_rounded,
+              icon: SigadIcons.graficoBarras,
               label: 'Relatórios',
               description: 'Indicadores e dados do departamento.',
               route: AppRoutes.relatorios,
             ),
             _QuickAccessItem(
-              icon: Icons.school_outlined,
+              icon: SigadIcons.professor,
               label: 'Cursos',
               description: 'Disciplinas e ofertas acadêmicas.',
               route: AppRoutes.atividades,
@@ -82,26 +84,26 @@ class MaisPage extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         const _SectionTitle(
-          icon: Icons.verified_user_outlined,
+          icon: SigadIcons.escudoVerificado,
           title: 'Administração',
         ),
         const SizedBox(height: 12),
         _AdminCard(
           items: [
             _AdminItem(
-              icon: Icons.calendar_month_outlined,
+              icon: SigadIcons.calendario,
               title: 'Agenda integrada',
               subtitle: 'Visualize eventos e compromissos do departamento.',
               route: AppRoutes.calendario,
             ),
             _AdminItem(
-              icon: Icons.settings_outlined,
+              icon: SigadIcons.configuracoes,
               title: 'Configurações',
               subtitle: 'Personalize preferências do aplicativo.',
               route: AppRoutes.configuracoes,
             ),
             _AdminItem(
-              icon: Icons.help_outline_rounded,
+              icon: SigadIcons.ajuda,
               title: 'Ajuda',
               subtitle: 'Central de ajuda, tutoriais e suporte.',
               onTap: () => _showAjuda(context),
@@ -140,7 +142,7 @@ class MaisPage extends StatelessWidget {
               ...avisos.map(
                 (aviso) => ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: Icon(aviso.icone, color: SigadColors.brand),
+                  leading: SigadIcon(aviso.icone, color: SigadColors.brand),
                   title: Text(aviso.titulo),
                   subtitle: Text(aviso.subtitulo),
                 ),
@@ -181,7 +183,7 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, color: SigadColors.brand, size: 22),
+        SigadIcon(icon, color: SigadColors.brand, size: 22),
         const SizedBox(width: 8),
         Text(
           title,
@@ -230,8 +232,8 @@ class _AvisosCard extends StatelessWidget {
                   color: SigadColors.brandLight,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.campaign_outlined,
+                child: const SigadIcon(
+                  SigadIcons.aviso,
                   color: SigadColors.brand,
                 ),
               ),
@@ -291,8 +293,8 @@ class _AvisosCard extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                const Icon(
-                  Icons.chevron_right_rounded,
+                const SigadIcon(
+                  SigadIcons.chevronDireita,
                   color: SigadColors.brand,
                 ),
               ],
@@ -469,7 +471,7 @@ class _AdminTile extends StatelessWidget {
         style: const TextStyle(fontWeight: FontWeight.w700),
       ),
       subtitle: Text(item.subtitle),
-      trailing: const Icon(Icons.chevron_right_rounded),
+      trailing: const SigadIcon(SigadIcons.chevronDireita),
       onTap:
           item.onTap ??
           () => Navigator.of(context).pushReplacementNamed(item.route!),
@@ -497,10 +499,7 @@ class _SuporteCard extends StatelessWidget {
             children: [
               const CircleAvatar(
                 backgroundColor: Colors.white,
-                child: Icon(
-                  Icons.headset_mic_outlined,
-                  color: SigadColors.brand,
-                ),
+                child: SigadIcon(SigadIcons.suporte, color: SigadColors.brand),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -526,7 +525,7 @@ class _SuporteCard extends StatelessWidget {
           );
           final button = OutlinedButton.icon(
             onPressed: () => _abrirChamado(context),
-            icon: const Icon(Icons.open_in_new_rounded, size: 18),
+            icon: const SigadIcon(SigadIcons.abrirExterno, size: 18),
             label: const Text('Abrir chamado'),
           );
           if (compact) {

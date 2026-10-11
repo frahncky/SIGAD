@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icon.dart';
+import '../../../../app/theme/sigad_icons.dart';
 import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../../configuracoes/data/agenda_convites_service.dart';
 import '../../data/docente_repository.dart';
@@ -353,7 +355,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                         IconButton(
                           tooltip: 'Fechar formulário do docente',
                           onPressed: () => Navigator.pop(context),
-                          icon: const Icon(Icons.close),
+                          icon: const SigadIcon(SigadIcons.fechar),
                         ),
                       ],
                     ),
@@ -481,7 +483,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                           ),
                         ),
                         TextButton.icon(
-                          icon: const Icon(Icons.add, size: 16),
+                          icon: const SigadIcon(SigadIcons.adicionar, size: 16),
                           label: const Text('Adicionar'),
                           onPressed: () => _showAdicionarHorario(
                             context,
@@ -1078,7 +1080,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
               onChanged: (value) => setState(() => _busca = value),
               decoration: const InputDecoration(
                 hintText: 'Buscar docente por nome, e-mail ou departamento',
-                prefixIcon: Icon(Icons.search_outlined),
+                prefixIcon: SigadIcon(SigadIcons.buscar),
               ),
             ),
           ),
@@ -1108,8 +1110,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.person_outline,
+                          SigadIcon(
+                            SigadIcons.pessoa,
                             size: 64,
                             color: SigadColors.muted.withValues(alpha: 0.3),
                           ),
@@ -1161,7 +1163,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
               onPressed: () => _showAdicionarDocente(context),
               tooltip: 'Adicionar docente',
               backgroundColor: SigadColors.brand,
-              child: const Icon(Icons.add),
+              child: const SigadIcon(SigadIcons.adicionar),
             )
           : null,
     );
@@ -1228,7 +1230,7 @@ class _DocenteCard extends StatelessWidget {
                       value: 'editar',
                       child: Row(
                         children: [
-                          Icon(Icons.edit, size: 18),
+                          SigadIcon(SigadIcons.editar, size: 18),
                           SizedBox(width: 8),
                           Text('Editar'),
                         ],
@@ -1238,7 +1240,7 @@ class _DocenteCard extends StatelessWidget {
                       value: 'excluir',
                       child: Row(
                         children: [
-                          Icon(Icons.delete, size: 18),
+                          SigadIcon(SigadIcons.excluir, size: 18),
                           SizedBox(width: 8),
                           Text('Excluir'),
                         ],
@@ -1341,7 +1343,7 @@ class _PainelDistribuicaoInteligente extends StatelessWidget {
           Row(
             children: [
               const SigadIconAvatar(
-                icon: Icons.tune_outlined,
+                icon: SigadIcons.ajustes,
                 tone: SigadColors.brand,
               ),
               const SizedBox(width: 10),
@@ -1355,7 +1357,7 @@ class _PainelDistribuicaoInteligente extends StatelessWidget {
               ),
               TextButton.icon(
                 onPressed: onSimularRedistribuicao,
-                icon: const Icon(Icons.auto_graph_outlined, size: 16),
+                icon: const SigadIcon(SigadIcons.tendencia, size: 16),
                 label: const Text('Simular'),
               ),
             ],
@@ -1552,8 +1554,8 @@ class _AccessDenied extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.lock_outline,
+            SigadIcon(
+              SigadIcons.cadeado,
               size: 56,
               color: SigadColors.muted.withValues(alpha: 0.5),
             ),
@@ -1803,7 +1805,7 @@ class _AgendaDocentePage extends StatelessWidget {
                         'Convite enviado com sucesso para a agenda do docente.',
                       );
                     },
-                    icon: const Icon(Icons.send),
+                    icon: const SigadIcon(SigadIcons.enviar),
                     label: const Text('Enviar convite'),
                   ),
                 ),
@@ -2395,10 +2397,8 @@ class _GradeAgendaCell extends StatelessWidget {
               Flexible(
                 child: Row(
                   children: [
-                    Icon(
-                      livre
-                          ? Icons.check_circle_outline
-                          : Icons.event_busy_outlined,
+                    SigadIcon(
+                      livre ? SigadIcons.concluido : SigadIcons.eventoOcupado,
                       size: iconSize,
                       color: tone,
                     ),
@@ -2520,7 +2520,7 @@ class _HorarioTile extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.delete_outline, size: 18),
+            icon: const SigadIcon(SigadIcons.excluir, size: 18),
             color: SigadColors.risk,
             onPressed: onDelete,
             padding: EdgeInsets.zero,

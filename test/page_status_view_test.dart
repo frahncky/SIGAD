@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sigad/app/theme/app_theme.dart';
+import 'package:sigad/app/theme/sigad_icons.dart';
 import 'package:sigad/shared/widgets/page_status_view.dart';
 
 void main() {
@@ -30,14 +31,12 @@ void main() {
           ),
         );
 
-        final statusIcon = tester.widget<Icon>(
-          find.byIcon(Icons.error_outline),
-        );
+        final statusIcon = tester.widget<Icon>(find.byIcon(SigadIcons.erro));
         expect(statusIcon.color, scheme.onSurfaceVariant);
 
         final iconContainer = tester.widget<Container>(
           find.ancestor(
-            of: find.byIcon(Icons.error_outline),
+            of: find.byIcon(SigadIcons.erro),
             matching: find.byType(Container),
           ),
         );

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sigad/app/theme/sigad_icons.dart';
 import 'package:sigad/core/models/user.dart';
 import 'package:sigad/core/models/user_role.dart';
 import 'package:sigad/core/services/user_context_provider.dart';
@@ -74,7 +75,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Nenhuma demanda encontrada'), findsOneWidget);
-    expect(find.byIcon(Icons.more_vert), findsNothing);
+    expect(find.byIcon(SigadIcons.maisOpcoes), findsNothing);
     expect(tester.takeException(), isNull);
   });
   testWidgets('aguarda gravação e bloqueia envio duplicado antes do sucesso', (

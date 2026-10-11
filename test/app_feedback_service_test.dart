@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sigad/app/theme/app_theme.dart';
+import 'package:sigad/app/theme/sigad_icons.dart';
 import 'package:sigad/core/services/app_feedback_service.dart';
 
 void main() {
@@ -12,7 +13,7 @@ void main() {
     _FeedbackCase(
       name: 'informação',
       label: 'Informação',
-      icon: Icons.info_outline_rounded,
+      icon: SigadIcons.info,
       show: AppFeedbackService.info,
       background: (scheme) => scheme.tertiaryContainer,
       foreground: (scheme) => scheme.onTertiaryContainer,
@@ -20,7 +21,7 @@ void main() {
     _FeedbackCase(
       name: 'sucesso',
       label: 'Sucesso',
-      icon: Icons.check_circle_outline_rounded,
+      icon: SigadIcons.concluido,
       show: AppFeedbackService.success,
       background: (scheme) => scheme.primaryContainer,
       foreground: (scheme) => scheme.onPrimaryContainer,
@@ -28,7 +29,7 @@ void main() {
     _FeedbackCase(
       name: 'atenção',
       label: 'Atenção',
-      icon: Icons.warning_amber_rounded,
+      icon: SigadIcons.alerta,
       show: AppFeedbackService.warning,
       background: (scheme) => scheme.secondaryContainer,
       foreground: (scheme) => scheme.onSecondaryContainer,
@@ -36,7 +37,7 @@ void main() {
     _FeedbackCase(
       name: 'erro',
       label: 'Erro',
-      icon: Icons.error_outline_rounded,
+      icon: SigadIcons.erro,
       show: AppFeedbackService.error,
       background: (scheme) => scheme.errorContainer,
       foreground: (scheme) => scheme.onErrorContainer,
@@ -77,8 +78,11 @@ void main() {
           final expectedForeground = feedbackCase.foreground(scheme);
 
           expect(snackBar.backgroundColor, expectedBackground);
-          expect(snackBar.closeIconColor, expectedForeground);
-          expect(snackBar.showCloseIcon, isTrue);
+          final closeButton = tester.widget<IconButton>(
+            find.widgetWithIcon(IconButton, SigadIcons.fechar),
+          );
+          expect(closeButton.color, expectedForeground);
+          expect(closeButton.tooltip, isNotEmpty);
           expect(find.byIcon(feedbackCase.icon), findsOneWidget);
           expect(find.text(feedbackCase.label), findsOneWidget);
           expect(find.text(message), findsOneWidget);
@@ -102,8 +106,8 @@ void main() {
           );
           expect(semantics.properties.liveRegion, isTrue);
 
-          expect(find.byIcon(Icons.close), findsOneWidget);
-          await tester.tap(find.byIcon(Icons.close));
+          expect(find.byIcon(SigadIcons.fechar), findsOneWidget);
+          await tester.tap(find.byIcon(SigadIcons.fechar));
           await tester.pumpAndSettle();
           expect(find.byType(SnackBar), findsNothing);
         },
@@ -152,8 +156,8 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.text('Atenção'), findsOneWidget);
-    expect(find.byIcon(Icons.close), findsOneWidget);
-    await tester.tap(find.byIcon(Icons.close));
+    expect(find.byIcon(SigadIcons.fechar), findsOneWidget);
+    await tester.tap(find.byIcon(SigadIcons.fechar));
     await tester.pumpAndSettle();
     expect(find.byType(SnackBar), findsNothing);
   });

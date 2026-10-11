@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icon.dart';
+import '../../../../app/theme/sigad_icons.dart';
 
 class CalendarioMesWidget extends StatelessWidget {
   final DateTime mesAtual;
@@ -70,7 +72,7 @@ class CalendarioMesWidget extends StatelessWidget {
               children: [
                 IconButton(
                   tooltip: 'Mês anterior',
-                  icon: const Icon(Icons.chevron_left_rounded),
+                  icon: const SigadIcon(SigadIcons.chevronEsquerda),
                   onPressed: onDiaSelecionado == null
                       ? null
                       : () => onDiaSelecionado!(
@@ -89,7 +91,7 @@ class CalendarioMesWidget extends StatelessWidget {
                 ),
                 IconButton(
                   tooltip: 'Próximo mês',
-                  icon: const Icon(Icons.chevron_right_rounded),
+                  icon: const SigadIcon(SigadIcons.chevronDireita),
                   onPressed: onDiaSelecionado == null
                       ? null
                       : () => onDiaSelecionado!(

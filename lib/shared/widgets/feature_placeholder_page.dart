@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../app/theme/sigad_colors.dart';
+import '../../app/theme/sigad_icon.dart';
+import '../../app/theme/sigad_icons.dart';
 
 class FeaturePlaceholderPage extends StatefulWidget {
   const FeaturePlaceholderPage({
@@ -70,8 +72,8 @@ class _FeaturePlaceholderPageState extends State<FeaturePlaceholderPage>
                     color: SigadColors.brand.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Icon(
-                    Icons.construction,
+                  child: const SigadIcon(
+                    SigadIcons.manutencao,
                     size: 40,
                     color: SigadColors.brand,
                   ),

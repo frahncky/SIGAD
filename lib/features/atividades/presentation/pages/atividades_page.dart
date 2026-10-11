@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icon.dart';
+import '../../../../app/theme/sigad_icons.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../shared/widgets/page_status_view.dart';
@@ -33,7 +35,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close),
+                  icon: const SigadIcon(SigadIcons.fechar),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -178,7 +180,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                         decoration: const InputDecoration(
                           hintText:
                               'Buscar por título, descrição ou responsável',
-                          prefixIcon: Icon(Icons.search_outlined),
+                          prefixIcon: SigadIcon(SigadIcons.buscar),
                         ),
                       ),
                     ),
@@ -193,7 +195,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                           padding: EdgeInsets.zero,
                           minimumSize: const Size(48, 48),
                         ),
-                        child: const Icon(Icons.filter_list),
+                        child: const SigadIcon(SigadIcons.filtro),
                       ),
                     ),
                   ],
@@ -215,7 +217,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                   )
                 : atividadesFiltradas.isEmpty
                 ? const PageStatusView.empty(
-                    icon: Icons.checklist,
+                    icon: SigadIcons.checklist,
                     title: 'Nenhuma atividade encontrada',
                     subtitle: 'Ajuste os filtros ou crie uma nova atividade.',
                   )
@@ -247,7 +249,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
         tooltip: 'Criar nova atividade',
         backgroundColor: SigadColors.brand,
         foregroundColor: Colors.white,
-        child: const Icon(Icons.add),
+        child: const SigadIcon(SigadIcons.adicionar),
       ),
     );
   }
@@ -287,7 +289,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                     IconButton(
                       tooltip: 'Fechar formulário',
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close),
+                      icon: const SigadIcon(SigadIcons.fechar),
                     ),
                   ],
                 ),
@@ -426,7 +428,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                     IconButton(
                       tooltip: 'Fechar formulário',
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close),
+                      icon: const SigadIcon(SigadIcons.fechar),
                     ),
                   ],
                 ),
@@ -581,7 +583,7 @@ class _AtividadesSummaryBanner extends StatelessWidget {
           Row(
             children: [
               const SigadIconAvatar(
-                icon: Icons.fact_check_outlined,
+                icon: SigadIcons.checklist,
                 tone: SigadColors.brand,
               ),
               const SizedBox(width: 12),
@@ -765,7 +767,7 @@ class _AtividadeCard extends StatelessWidget {
                         value: 'editar',
                         child: Row(
                           children: [
-                            Icon(Icons.edit, size: 18),
+                            SigadIcon(SigadIcons.editar, size: 18),
                             SizedBox(width: 8),
                             Text('Editar'),
                           ],
@@ -775,8 +777,8 @@ class _AtividadeCard extends StatelessWidget {
                         value: 'excluir',
                         child: Row(
                           children: [
-                            Icon(
-                              Icons.delete,
+                            SigadIcon(
+                              SigadIcons.excluir,
                               color: Theme.of(context).colorScheme.error,
                               size: 18,
                             ),
@@ -791,7 +793,7 @@ class _AtividadeCard extends StatelessWidget {
                         ),
                       ),
                     ],
-                    icon: const Icon(Icons.more_vert, size: 18),
+                    icon: const SigadIcon(SigadIcons.maisOpcoes, size: 18),
                   ),
                 ],
               ),
@@ -808,14 +810,14 @@ class _AtividadeCard extends StatelessWidget {
                 children: [
                   Flexible(
                     child: _InfoChip(
-                      icon: Icons.person_outline,
+                      icon: SigadIcons.pessoa,
                       label: atividade.responsavel,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Flexible(
                     child: _InfoChip(
-                      icon: Icons.calendar_today,
+                      icon: SigadIcons.calendario,
                       label: atividade.data,
                     ),
                   ),
@@ -879,7 +881,7 @@ class _AtividadeCard extends StatelessWidget {
                   IconButton(
                     tooltip: 'Fechar detalhes da atividade',
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
+                    icon: const SigadIcon(SigadIcons.fechar),
                   ),
                 ],
               ),
@@ -932,7 +934,7 @@ class _InfoChip extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14, color: SigadColors.muted),
+        SigadIcon(icon, size: 14, color: SigadColors.muted),
         const SizedBox(width: 6),
         Flexible(
           child: Text(

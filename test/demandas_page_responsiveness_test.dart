@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:sigad/app/theme/app_theme.dart';
+import 'package:sigad/app/theme/sigad_icons.dart';
 import 'package:sigad/core/models/user.dart';
 import 'package:sigad/core/models/user_role.dart';
 import 'package:sigad/core/services/user_context_provider.dart';
@@ -145,7 +146,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
 
-      final menuButton = find.byIcon(Icons.more_vert).first;
+      final menuButton = find.byIcon(SigadIcons.maisOpcoes).first;
       await tester.ensureVisible(menuButton);
       await tester.pumpAndSettle();
       await tester.tap(menuButton);
@@ -252,7 +253,7 @@ void main() {
 
     final title = tester.widget<Text>(find.text('Resumo das demandas'));
     expect(title.style?.color, theme.colorScheme.onSurface);
-    final icon = tester.widget<Icon>(find.byIcon(Icons.assignment_outlined));
+    final icon = tester.widget<Icon>(find.byIcon(SigadIcons.demanda));
     expect(icon.color, theme.colorScheme.primary);
     final kpiLabel = tester.widget<Text>(find.text('No total'));
     expect(kpiLabel.style?.color, theme.colorScheme.onSurfaceVariant);

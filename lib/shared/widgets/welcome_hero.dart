@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/theme/sigad_colors.dart';
+import '../../app/theme/sigad_icon.dart';
+import '../../app/theme/sigad_icons.dart';
 import '../../core/services/notificacoes_service.dart';
 import '../../core/services/user_context_provider.dart';
 
@@ -96,7 +98,7 @@ class _WelcomeHeroState extends State<WelcomeHero> {
           'Avisos',
           _ListaHeroCard(
             key: const ValueKey('hero-avisos'),
-            icone: Icons.campaign_outlined,
+            icone: SigadIcons.aviso,
             titulo: avisos.length == 1 ? '1 aviso' : '${avisos.length} avisos',
             tituloDialogo: 'Avisos',
             botao: 'Ver todos os avisos',
@@ -115,7 +117,7 @@ class _WelcomeHeroState extends State<WelcomeHero> {
           'Resumo do departamento',
           _ListaHeroCard(
             key: const ValueKey('hero-resumo'),
-            icone: Icons.apartment_rounded,
+            icone: SigadIcons.predio,
             titulo: 'Resumo do departamento',
             tituloDialogo: 'Resumo do departamento',
             botao: 'Ver tudo',
@@ -226,10 +228,10 @@ class _WelcomeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final hora = agora.hour;
     final (saudacao, icone) = hora >= 5 && hora < 12
-        ? ('Bom dia', Icons.wb_sunny_outlined)
+        ? ('Bom dia', SigadIcons.sol)
         : hora >= 12 && hora < 18
-        ? ('Boa tarde', Icons.wb_twilight_outlined)
-        : ('Boa noite', Icons.nights_stay_outlined);
+        ? ('Boa tarde', SigadIcons.entardecer)
+        : ('Boa noite', SigadIcons.lua);
     final primeiroNome = nome?.trim().split(RegExp(r'\s+')).first ?? '';
     final titulo = primeiroNome.isEmpty
         ? '$saudacao!'
@@ -252,7 +254,7 @@ class _WelcomeCard extends StatelessWidget {
               color: SigadColors.accent.withValues(alpha: 0.22),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icone, color: SigadColors.accent, size: 26),
+            child: SigadIcon(icone, color: SigadColors.accent, size: 26),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -319,7 +321,7 @@ class _ListaHeroCard extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(icone, color: SigadColors.accent),
+            SigadIcon(icone, color: SigadColors.accent),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -346,7 +348,7 @@ class _ListaHeroCard extends StatelessWidget {
                     color: item.color.withValues(alpha: 0.22),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(item.icon, color: item.color, size: 20),
+                  child: SigadIcon(item.icon, color: item.color, size: 20),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -401,7 +403,7 @@ class _ListaHeroCard extends StatelessWidget {
             for (final item in itens)
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: Icon(item.icon, color: SigadColors.brand),
+                leading: SigadIcon(item.icon, color: SigadColors.brand),
                 title: Text(item.title),
                 subtitle: Text(item.subtitle),
               ),

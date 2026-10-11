@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../app/routes/app_routes.dart';
+import '../../../../app/theme/sigad_icon.dart';
+import '../../../../app/theme/sigad_icons.dart';
 import '../../../aulas_praticas/data/reserva_repository.dart';
 import '../../../aulas_praticas/domain/reserva_models.dart';
 import '../../../aulas_praticas/domain/reserva_service.dart';
@@ -317,8 +319,8 @@ class _ResumoDaSemana extends StatelessWidget {
                 color: SigadColors.brandLight,
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: const Icon(
-                Icons.calendar_month_rounded,
+              child: const SigadIcon(
+                SigadIcons.calendario,
                 color: SigadColors.brand,
               ),
             ),
@@ -346,7 +348,7 @@ class _ResumoDaSemana extends StatelessWidget {
         );
         final botaoAgenda = OutlinedButton.icon(
           onPressed: onVerAgenda,
-          icon: const Icon(Icons.arrow_forward_rounded, size: 15),
+          icon: const SigadIcon(SigadIcons.setaDireita, size: 15),
           label: const Text('Ver agenda'),
           style: OutlinedButton.styleFrom(
             foregroundColor: SigadColors.brand,
@@ -358,19 +360,19 @@ class _ResumoDaSemana extends StatelessWidget {
         );
         final estatisticas = <_ResumoStat>[
           const _ResumoStat(
-            icon: Icons.event_note_outlined,
+            icon: SigadIcons.eventoNota,
             value: '—',
             label: 'Eventos agendados',
             tone: SigadColors.violet,
           ),
           _ResumoStat(
-            icon: Icons.science_outlined,
+            icon: SigadIcons.laboratorio,
             value: '$reservasNaSemana',
             label: 'Reservas de laboratório',
             tone: SigadColors.success,
           ),
           const _ResumoStat(
-            icon: Icons.groups_outlined,
+            icon: SigadIcons.grupo,
             value: '—',
             label: 'Reunião marcada',
             tone: SigadColors.info,
@@ -497,7 +499,7 @@ class _FiltrosCalendario extends StatelessWidget {
             SizedBox(
               width: larguraFiltro,
               child: _FiltroChip(
-                icon: Icons.groups_2_outlined,
+                icon: SigadIcons.grupo,
                 label: 'Departamento',
                 value: departamento,
                 options: const [
@@ -511,7 +513,7 @@ class _FiltrosCalendario extends StatelessWidget {
             SizedBox(
               width: larguraFiltro,
               child: _FiltroChip(
-                icon: Icons.sell_outlined,
+                icon: SigadIcons.etiqueta,
                 label: 'Tipo de item',
                 value: tipoItem,
                 options: const [
@@ -526,7 +528,7 @@ class _FiltrosCalendario extends StatelessWidget {
             SizedBox(
               width: larguraFiltro,
               child: _FiltroChip(
-                icon: Icons.science_outlined,
+                icon: SigadIcons.laboratorio,
                 label: 'Laboratórios',
                 value: laboratorio,
                 options: laboratorios,
@@ -580,7 +582,7 @@ class _FiltroChip extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(icon, size: 15, color: SigadColors.brand),
+                  SigadIcon(icon, size: 15, color: SigadColors.brand),
                   const SizedBox(width: 5),
                   Expanded(
                     child: Text(
@@ -602,7 +604,7 @@ class _FiltroChip extends StatelessWidget {
                       style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ),
-                  const Icon(Icons.expand_more_rounded, size: 16),
+                  const SigadIcon(SigadIcons.chevronBaixo, size: 16),
                 ],
               ),
             ],
@@ -629,8 +631,8 @@ class _FiltroChip extends StatelessWidget {
                     (option) => ListTile(
                       title: Text(option),
                       trailing: option == value
-                          ? const Icon(
-                              Icons.check_rounded,
+                          ? const SigadIcon(
+                              SigadIcons.confirmar,
                               color: SigadColors.brand,
                             )
                           : null,
@@ -723,7 +725,7 @@ class _ProximosCompromissos extends StatelessWidget {
             reserva.disciplina ?? 'Responsável: ${reserva.professor}',
             'Laboratório',
             '${DateFormat('dd/MM/yyyy').format(item.data!)} • $horario',
-            Icons.science_outlined,
+            SigadIcons.laboratorio,
           );
         })
         .toList(growable: false);
@@ -742,8 +744,8 @@ class _ProximosCompromissos extends StatelessWidget {
                     constraints.maxWidth < 400 || escalaTexto >= 1.4;
                 final titulo = Row(
                   children: [
-                    const Icon(
-                      Icons.calendar_today_outlined,
+                    const SigadIcon(
+                      SigadIcons.calendario,
                       color: SigadColors.brand,
                     ),
                     const SizedBox(width: 8),
@@ -814,7 +816,7 @@ class _CompromissoTile extends StatelessWidget {
               color: cor.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(item.icone, color: cor, size: 20),
+            child: SigadIcon(item.icone, color: cor, size: 20),
           );
           final informacoes = Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -926,7 +928,10 @@ class _AgendaDoDia extends StatelessWidget {
                     constraints.maxWidth < 400 || escalaTexto >= 1.4;
                 final titulo = Row(
                   children: [
-                    const Icon(Icons.today_outlined, color: SigadColors.brand),
+                    const SigadIcon(
+                      SigadIcons.calendario,
+                      color: SigadColors.brand,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Column(
@@ -1125,8 +1130,8 @@ class _EmptyAgenda extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(
-            Icons.event_available_rounded,
+          SigadIcon(
+            SigadIcons.eventoConfirmado,
             size: 40,
             color: Theme.of(context).colorScheme.primary,
           ),
@@ -1184,7 +1189,7 @@ class _OcupacaoLaboratorios extends StatelessWidget {
     final laboratorios = indicadores.map(
       (indicador) => _LabOcupacao(
         indicador.laboratorio,
-        Icons.science_outlined,
+        SigadIcons.laboratorio,
         indicador.taxaOcupacao,
         indicador.slotsReservados,
         indicador.totalSlots,
@@ -1202,7 +1207,7 @@ class _OcupacaoLaboratorios extends StatelessWidget {
             final titulo = Row(
               children: [
                 const SigadIconAvatar(
-                  icon: Icons.bar_chart_rounded,
+                  icon: SigadIcons.graficoBarras,
                   tone: SigadColors.brand,
                   size: 34,
                   iconSize: 18,
@@ -1264,7 +1269,7 @@ class _OcupacaoLaboratorios extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(
+                        SigadIcon(
                           lab.icone,
                           color: _corOcupacao(lab.ocupacao),
                           size: 18,
