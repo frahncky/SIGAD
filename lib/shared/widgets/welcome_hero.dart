@@ -263,7 +263,7 @@ class _WelcomeCard extends StatelessWidget {
               children: [
                 Text(
                   titulo,
-                  style: textTheme.titleLarge?.copyWith(
+                  style: textTheme.headlineSmall?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w800,
                     height: 1.2,
@@ -272,7 +272,7 @@ class _WelcomeCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   frase,
-                  style: textTheme.bodyMedium?.copyWith(
+                  style: textTheme.bodyLarge?.copyWith(
                     color: Colors.white.withValues(alpha: 0.86),
                     height: 1.35,
                   ),
@@ -280,7 +280,7 @@ class _WelcomeCard extends StatelessWidget {
                 const SizedBox(height: 10),
                 Text(
                   'Departamento de Eletroeletrônica · IFMA Campus Monte Castelo',
-                  style: textTheme.bodySmall?.copyWith(
+                  style: textTheme.bodyMedium?.copyWith(
                     color: Colors.white.withValues(alpha: 0.66),
                     height: 1.25,
                   ),
@@ -326,7 +326,7 @@ class _ListaHeroCard extends StatelessWidget {
             Expanded(
               child: Text(
                 titulo,
-                style: textTheme.titleMedium?.copyWith(
+                style: textTheme.titleLarge?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w800,
                 ),
@@ -342,13 +342,17 @@ class _ListaHeroCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 36,
-                  height: 36,
+                  width: 42,
+                  height: 42,
                   decoration: BoxDecoration(
-                    color: item.color.withValues(alpha: 0.22),
+                    color: Colors.white.withValues(alpha: 0.14),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: SigadIcon(item.icon, color: item.color, size: 20),
+                  child: SigadIcon(
+                    item.icon,
+                    color: _tomClaro(item.color),
+                    size: 24,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -357,7 +361,7 @@ class _ListaHeroCard extends StatelessWidget {
                     children: [
                       Text(
                         item.title,
-                        style: textTheme.titleSmall?.copyWith(
+                        style: textTheme.titleMedium?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
                           height: 1.25,
@@ -365,7 +369,7 @@ class _ListaHeroCard extends StatelessWidget {
                       ),
                       Text(
                         item.subtitle,
-                        style: textTheme.bodySmall?.copyWith(
+                        style: textTheme.bodyMedium?.copyWith(
                           color: Colors.white.withValues(alpha: 0.76),
                           height: 1.3,
                         ),
@@ -384,7 +388,7 @@ class _ListaHeroCard extends StatelessWidget {
               foregroundColor: Colors.white,
               minimumSize: const Size(48, 48),
             ),
-            child: Text(botao),
+            child: Text(botao, style: const TextStyle(fontSize: 16)),
           ),
         ),
       ],
@@ -468,3 +472,6 @@ class _HeroDots extends StatelessWidget {
     );
   }
 }
+
+/// Clareia o tom para manter contraste sobre o fundo verde escuro do card.
+Color _tomClaro(Color tom) => Color.lerp(tom, Colors.white, 0.72)!;
