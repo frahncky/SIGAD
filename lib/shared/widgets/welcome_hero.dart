@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/theme/sigad_colors.dart';
+import '../../app/theme/sigad_icons.dart';
 import '../../core/services/notificacoes_service.dart';
 import '../../core/services/user_context_provider.dart';
 
@@ -96,7 +97,7 @@ class _WelcomeHeroState extends State<WelcomeHero> {
           'Avisos',
           _ListaHeroCard(
             key: const ValueKey('hero-avisos'),
-            icone: Icons.campaign_outlined,
+            icone: SigadIcons.aviso,
             titulo: avisos.length == 1 ? '1 aviso' : '${avisos.length} avisos',
             tituloDialogo: 'Avisos',
             botao: 'Ver todos os avisos',
@@ -115,7 +116,7 @@ class _WelcomeHeroState extends State<WelcomeHero> {
           'Resumo do departamento',
           _ListaHeroCard(
             key: const ValueKey('hero-resumo'),
-            icone: Icons.apartment_rounded,
+            icone: SigadIcons.predio,
             titulo: 'Resumo do departamento',
             tituloDialogo: 'Resumo do departamento',
             botao: 'Ver tudo',
@@ -226,10 +227,10 @@ class _WelcomeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final hora = agora.hour;
     final (saudacao, icone) = hora >= 5 && hora < 12
-        ? ('Bom dia', Icons.wb_sunny_outlined)
+        ? ('Bom dia', SigadIcons.sol)
         : hora >= 12 && hora < 18
-        ? ('Boa tarde', Icons.wb_twilight_outlined)
-        : ('Boa noite', Icons.nights_stay_outlined);
+        ? ('Boa tarde', SigadIcons.entardecer)
+        : ('Boa noite', SigadIcons.lua);
     final primeiroNome = nome?.trim().split(RegExp(r'\s+')).first ?? '';
     final titulo = primeiroNome.isEmpty
         ? '$saudacao!'

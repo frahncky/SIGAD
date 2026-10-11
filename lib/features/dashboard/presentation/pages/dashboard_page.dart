@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icons.dart';
 import '../../../../core/models/navigation_item.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/navigation/navigation_items.dart';
@@ -154,27 +155,27 @@ List<DashboardAlertItem> _buildDashboardAlerts(
 
   return [
     DashboardAlertItem(
-      icon: Icons.event_note_outlined,
+      icon: SigadIcons.eventoNota,
       title: 'Atividades do departamento',
       subtitle: atividades,
       tone: SigadColors.success,
     ),
     DashboardAlertItem(
-      icon: Icons.view_kanban_outlined,
+      icon: SigadIcons.kanban,
       title: 'Quadro de trabalho',
       subtitle: cards,
       tone: SigadColors.info,
     ),
     if (canManageDemandas)
       DashboardAlertItem(
-        icon: Icons.assignment_outlined,
+        icon: SigadIcons.demanda,
         title: 'Demandas do departamento',
         subtitle: demandas,
         tone: SigadColors.warning,
       )
     else
       const DashboardAlertItem(
-        icon: Icons.admin_panel_settings_outlined,
+        icon: SigadIcons.escudo,
         title: 'Acesso ao departamento',
         subtitle: 'Informações exibidas conforme seu perfil',
         tone: SigadColors.info,
@@ -227,13 +228,13 @@ class _AttentionPanel extends StatelessWidget {
       title: 'Atenção agora',
       subtitle: 'Itens abertos ordenados por impacto',
       actionLabel: 'Ver todas',
-      icon: Icons.priority_high_rounded,
+      icon: SigadIcons.prioridade,
       tone: SigadColors.risk,
       onAction: () =>
           Navigator.of(context).pushReplacementNamed(AppRoutes.demandas),
       child: abertas.isEmpty
           ? const _CompactEmptyState(
-              icon: Icons.task_alt_rounded,
+              icon: SigadIcons.concluido,
               message: 'Nenhuma demanda aberta.',
             )
           : Column(
@@ -322,13 +323,13 @@ class _ActivitiesPanel extends StatelessWidget {
       title: 'Próximas atividades',
       subtitle: 'Compromissos que ainda pedem atenção',
       actionLabel: 'Ver todas',
-      icon: Icons.event_note_outlined,
+      icon: SigadIcons.eventoNota,
       tone: SigadColors.info,
       onAction: () =>
           Navigator.of(context).pushReplacementNamed(AppRoutes.atividades),
       child: abertas.isEmpty
           ? const _CompactEmptyState(
-              icon: Icons.task_alt_rounded,
+              icon: SigadIcons.concluido,
               message: 'Nenhuma atividade aberta.',
             )
           : Column(
@@ -339,7 +340,7 @@ class _ActivitiesPanel extends StatelessWidget {
                       child: Row(
                         children: [
                           Icon(
-                            Icons.event_note_outlined,
+                            SigadIcons.eventoNota,
                             color: AtividadesService.statusColor(
                               atividade.status,
                             ),
@@ -528,14 +529,14 @@ class _DashboardInlineError extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       child: Row(
         children: [
-          const Icon(Icons.sync_problem_outlined, color: SigadColors.risk),
+          const Icon(SigadIcons.sincronizacaoErro, color: SigadColors.risk),
           const SizedBox(width: 12),
           const Expanded(
             child: Text('Não foi possível atualizar os indicadores.'),
           ),
           TextButton.icon(
             onPressed: onRetry,
-            icon: const Icon(Icons.refresh_rounded),
+            icon: const Icon(SigadIcons.atualizar),
             label: const Text('Tentar novamente'),
           ),
         ],
@@ -665,7 +666,7 @@ class _CustomizableIndicatorsState extends State<_CustomizableIndicators> {
       children: [
         Row(
           children: [
-            const Icon(Icons.bolt_outlined, color: SigadColors.brand, size: 20),
+            const Icon(SigadIcons.raio, color: SigadColors.brand, size: 20),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -678,7 +679,7 @@ class _CustomizableIndicatorsState extends State<_CustomizableIndicators> {
             IconButton(
               onPressed: _abrirSeletorDeAtalhos,
               tooltip: 'Personalizar atalhos',
-              icon: const Icon(Icons.dashboard_customize_outlined),
+              icon: const Icon(SigadIcons.painelPersonalizar),
               visualDensity: VisualDensity.compact,
             ),
           ],
@@ -696,7 +697,7 @@ class _CustomizableIndicatorsState extends State<_CustomizableIndicators> {
             child: Column(
               children: [
                 Icon(
-                  Icons.dashboard_customize_outlined,
+                  SigadIcons.painelPersonalizar,
                   size: 26,
                   color: colors.onSurfaceVariant,
                 ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icons.dart';
 import '../../../../core/security/authorization_policy.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/models/user_role.dart';
@@ -121,23 +122,23 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
         children: [
           _ConfigSection(
             titulo: 'Conta',
-            icon: Icons.person_outline,
+            icon: SigadIcons.pessoa,
             children: [
               _ConfigItem(
-                icon: Icons.person,
+                icon: SigadIcons.pessoa,
                 titulo: 'Perfil',
                 subtitulo: 'Nome: $_nomePerfil',
                 onTap: () => _showAlerta(context, 'Perfil'),
               ),
               _ConfigItem(
-                icon: Icons.email,
+                icon: SigadIcons.email,
                 titulo: 'Email',
                 subtitulo: _emailUsuario,
                 onTap: () => _showAlerta(context, 'Email'),
                 tone: SigadColors.info,
               ),
               _ConfigItem(
-                icon: Icons.lock,
+                icon: SigadIcons.cadeado,
                 titulo: 'Senha',
                 subtitulo: 'Última alteração: $_ultimaAlteracaoSenha',
                 onTap: () => _showAlerta(context, 'Alterar Senha'),
@@ -147,11 +148,11 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
           ),
           _ConfigSection(
             titulo: 'Preferências',
-            icon: Icons.tune_outlined,
+            icon: SigadIcons.ajustes,
             tone: SigadColors.warning,
             children: [
               _ConfigToggle(
-                icon: Icons.notifications,
+                icon: SigadIcons.notificacao,
                 titulo: 'Notificações',
                 subtitulo: 'Receber alertas de demandas e atividades',
                 value: _notificacoesAtivas,
@@ -162,7 +163,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 tone: SigadColors.warning,
               ),
               _ConfigToggle(
-                icon: Icons.dark_mode,
+                icon: SigadIcons.lua,
                 titulo: 'Modo noturno',
                 subtitulo: 'Ativar tema escuro',
                 value: _modoDark,
@@ -174,7 +175,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 tone: SigadColors.info,
               ),
               _ConfigToggle(
-                icon: Icons.fingerprint,
+                icon: SigadIcons.biometria,
                 titulo: 'Autenticação biométrica',
                 subtitulo: 'Usar impressão digital ou rosto',
                 value: _biometriaAtiva,
@@ -189,11 +190,11 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
           if (_isDocenteComLembrete(role))
             _ConfigSection(
               titulo: 'Disciplinas e lembretes',
-              icon: Icons.school_outlined,
+              icon: SigadIcons.professor,
               tone: SigadColors.warning,
               children: [
                 _ConfigToggle(
-                  icon: Icons.schedule,
+                  icon: SigadIcons.relogio,
                   titulo: 'Lembrete da próxima disciplina',
                   subtitulo: _notificarAntesDaDisciplina
                       ? 'Notificar $_antecedenciaNotificacaoMinutos min antes do início'
@@ -207,7 +208,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 ),
                 if (_notificarAntesDaDisciplina)
                   _ConfigDropdown(
-                    icon: Icons.timer_outlined,
+                    icon: SigadIcons.cronometro,
                     titulo: 'Antecedência do lembrete',
                     valor: '$_antecedenciaNotificacaoMinutos min',
                     opcoes: ConfiguracoesService.opcoesAntecedenciaMinutos
@@ -233,11 +234,11 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
           // Removed Agenda de compromissos section
           _ConfigSection(
             titulo: 'Idioma e Aparência',
-            icon: Icons.translate_outlined,
+            icon: SigadIcons.idioma,
             tone: SigadColors.info,
             children: [
               _ConfigDropdown(
-                icon: Icons.language,
+                icon: SigadIcons.globo,
                 titulo: 'Idioma',
                 valor: _idioma,
                 opcoes: ['Português (Brasil)', 'English', 'Español'],
@@ -248,7 +249,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 tone: SigadColors.info,
               ),
               _ConfigDropdown(
-                icon: Icons.text_fields,
+                icon: SigadIcons.texto,
                 titulo: 'Tamanho da fonte',
                 valor: _tamanhoFonte,
                 opcoes: ['Pequeno', 'Médio', 'Grande'],
@@ -262,25 +263,25 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
           ),
           _ConfigSection(
             titulo: 'Dados e Privacidade',
-            icon: Icons.shield_outlined,
+            icon: SigadIcons.escudo,
             tone: SigadColors.risk,
             children: [
               _ConfigItem(
-                icon: Icons.backup,
+                icon: SigadIcons.nuvemSincronizar,
                 titulo: 'Backup automático',
                 subtitulo: 'Próximo backup em: $_proximoBackup',
                 onTap: () => _showAlerta(context, 'Backup'),
                 tone: SigadColors.success,
               ),
               _ConfigItem(
-                icon: Icons.privacy_tip,
+                icon: SigadIcons.escudo,
                 titulo: 'Política de privacidade',
                 subtitulo: 'Versão 2.1 (efetivo desde 01/01/2026)',
                 onTap: () => _showAlerta(context, 'Política de Privacidade'),
                 tone: SigadColors.risk,
               ),
               _ConfigItem(
-                icon: Icons.description,
+                icon: SigadIcons.documento,
                 titulo: 'Termos de serviço',
                 subtitulo: 'Versão 1.5',
                 onTap: () => _showAlerta(context, 'Termos de Serviço'),
@@ -290,16 +291,16 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
           ),
           _ConfigSection(
             titulo: 'Sobre',
-            icon: Icons.info_outline,
+            icon: SigadIcons.info,
             children: [
               _ConfigItem(
-                icon: Icons.info,
+                icon: SigadIcons.info,
                 titulo: 'Sobre o SIGAD',
                 subtitulo: 'Versão 1.0.0 (Build 42)',
                 onTap: () => _showAlerta(context, 'Sobre'),
               ),
               _ConfigItem(
-                icon: Icons.bug_report,
+                icon: SigadIcons.bug,
                 titulo: 'Reportar problema',
                 subtitulo: _problemasReportados == 0
                     ? 'Enviar feedback ou relatar bugs'
@@ -313,7 +314,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
             child: ElevatedButton.icon(
               onPressed: () => _showConfirmacaoLogout(context),
-              icon: const Icon(Icons.logout),
+              icon: const Icon(SigadIcons.sair),
               label: const Text('Sair'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: SigadColors.risk,
@@ -402,7 +403,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 IconButton(
                   tooltip: 'Fechar edição de perfil',
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
+                  icon: const Icon(SigadIcons.fechar),
                 ),
               ],
             ),
@@ -489,7 +490,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 IconButton(
                   tooltip: 'Fechar alteração de email',
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
+                  icon: const Icon(SigadIcons.fechar),
                 ),
               ],
             ),
@@ -573,7 +574,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 IconButton(
                   tooltip: 'Fechar alteração de senha',
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
+                  icon: const Icon(SigadIcons.fechar),
                 ),
               ],
             ),
@@ -675,7 +676,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                   IconButton(
                     tooltip: 'Fechar backup automático',
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
+                    icon: const Icon(SigadIcons.fechar),
                   ),
                 ],
               ),
@@ -688,7 +689,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               ),
               const SizedBox(height: 16),
               _ConfigToggle(
-                icon: Icons.backup,
+                icon: SigadIcons.nuvemSincronizar,
                 titulo: 'Backup automático',
                 subtitulo: 'Realizar backup diariamente',
                 value: _backupAutomaticoAtivo,
@@ -759,7 +760,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 IconButton(
                   tooltip: 'Fechar política de privacidade',
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
+                  icon: const Icon(SigadIcons.fechar),
                 ),
               ],
             ),
@@ -824,7 +825,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 IconButton(
                   tooltip: 'Fechar termos de serviço',
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
+                  icon: const Icon(SigadIcons.fechar),
                 ),
               ],
             ),
@@ -912,7 +913,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                           IconButton(
                             tooltip: 'Fechar sobre o SIGAD',
                             onPressed: () => Navigator.pop(sheetContext),
-                            icon: const Icon(Icons.close),
+                            icon: const Icon(SigadIcons.fechar),
                           ),
                         ],
                       ),
@@ -1023,7 +1024,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 IconButton(
                   tooltip: 'Fechar relato de problema',
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
+                  icon: const Icon(SigadIcons.fechar),
                 ),
               ],
             ),
@@ -1134,7 +1135,7 @@ class _ConfiguracoesAccessDenied extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.lock_outline, size: 56),
+            const Icon(SigadIcons.cadeado, size: 56),
             const SizedBox(height: 12),
             Text(
               'Faça login para acessar configurações.',
@@ -1232,7 +1233,7 @@ class _ConfigItem extends StatelessWidget {
         subtitulo,
         style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
       ),
-      trailing: Icon(Icons.chevron_right, color: SigadColors.muted),
+      trailing: Icon(SigadIcons.chevronDireita, color: SigadColors.muted),
       onTap: onTap,
     );
   }

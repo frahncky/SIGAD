@@ -18,6 +18,7 @@ import '../../features/notas/presentation/pages/notas_page.dart';
 import '../../features/redesign/presentation/pages/module_workspace_page.dart';
 import '../../features/redesign/presentation/pages/sigad_redesign_pages.dart';
 import '../../features/relatorios/presentation/pages/relatorios_page.dart';
+import '../theme/sigad_icons.dart';
 import 'app_routes.dart';
 
 /// Gera as rotas do SIGAD e preserva os fluxos funcionais existentes.
@@ -158,7 +159,7 @@ class _NotFoundPage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                Icons.travel_explore_outlined,
+                SigadIcons.globo,
                 size: 72,
                 color: Theme.of(context).colorScheme.primary,
               ),
@@ -178,7 +179,7 @@ class _NotFoundPage extends StatelessWidget {
                   context,
                   AppRoutes.dashboard,
                 ),
-                icon: const Icon(Icons.home_outlined),
+                icon: const Icon(SigadIcons.inicio),
                 label: const Text('Voltar à visão geral'),
               ),
             ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icons.dart';
 import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
@@ -74,7 +75,7 @@ class _KanbanPageState extends State<KanbanPage> {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
+            icon: const Icon(SigadIcons.adicionar),
             onPressed: () => _showCriarCard(context),
           ),
         ],
@@ -85,7 +86,7 @@ class _KanbanPageState extends State<KanbanPage> {
           ? PageStatusView.error(subtitle: _loadError, onAction: _loadData)
           : _cards.isEmpty
           ? PageStatusView.empty(
-              icon: Icons.view_kanban_outlined,
+              icon: SigadIcons.kanban,
               title: 'Nenhum card criado',
               subtitle: 'Toque no + para adicionar o primeiro card ao quadro.',
               actionLabel: 'Criar card',
@@ -465,7 +466,7 @@ class _KanbanCard extends StatelessWidget {
                         value: 'excluir',
                         child: Row(
                           children: [
-                            Icon(Icons.delete, size: 18),
+                            Icon(SigadIcons.excluir, size: 18),
                             SizedBox(width: 8),
                             Text('Excluir'),
                           ],
@@ -473,7 +474,7 @@ class _KanbanCard extends StatelessWidget {
                       ),
                     ],
                     icon: Icon(
-                      Icons.more_vert,
+                      SigadIcons.maisOpcoes,
                       size: 18,
                       color: SigadColors.muted,
                     ),

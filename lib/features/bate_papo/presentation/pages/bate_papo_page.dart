@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icons.dart';
 import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../../../core/models/user.dart';
 import '../../../../core/services/chat_provider.dart';
@@ -273,7 +274,7 @@ class _ConversationListPanel extends StatelessWidget {
                     ),
                     IconButton(
                       onPressed: onNewConversation,
-                      icon: const Icon(Icons.edit_outlined),
+                      icon: const Icon(SigadIcons.editar),
                       tooltip: 'Nova conversa',
                       visualDensity: VisualDensity.compact,
                     ),
@@ -288,7 +289,7 @@ class _ConversationListPanel extends StatelessWidget {
                         ? IconButton(
                             tooltip: 'Limpar busca',
                             onPressed: () => onSearchChanged(''),
-                            icon: const Icon(Icons.close_rounded),
+                            icon: const Icon(SigadIcons.fechar),
                           )
                         : null,
                   ),
@@ -306,7 +307,7 @@ class _ConversationListPanel extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            Icons.forum_outlined,
+                            SigadIcons.conversa,
                             size: 40,
                             color: SigadColors.muted,
                           ),
@@ -500,10 +501,7 @@ class _ChatPanel extends StatelessWidget {
                 if (onBack != null)
                   IconButton(
                     onPressed: onBack,
-                    icon: const Icon(
-                      Icons.arrow_back_ios_new_rounded,
-                      size: 18,
-                    ),
+                    icon: const Icon(SigadIcons.chevronEsquerda, size: 18),
                     visualDensity: VisualDensity.compact,
                   ),
                 CircleAvatar(
@@ -604,7 +602,7 @@ class _ChatPanel extends StatelessWidget {
                     maxLines: 4,
                     decoration: const InputDecoration(
                       hintText: 'Digite sua mensagem',
-                      prefixIcon: Icon(Icons.chat_bubble_outline),
+                      prefixIcon: Icon(SigadIcons.mensagem),
                     ),
                     onSubmitted: (_) => onSend(),
                   ),
@@ -612,7 +610,7 @@ class _ChatPanel extends StatelessWidget {
                 const SizedBox(width: 8),
                 FilledButton.icon(
                   onPressed: onSend,
-                  icon: const Icon(Icons.send_rounded),
+                  icon: const Icon(SigadIcons.enviar),
                   label: const Text('Enviar'),
                 ),
               ],
@@ -674,7 +672,7 @@ class _EmptyChatPlaceholder extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.forum_outlined, size: 56, color: SigadColors.muted),
+            Icon(SigadIcons.conversa, size: 56, color: SigadColors.muted),
             const SizedBox(height: 16),
             Text(
               'Selecione uma conversa\nou inicie uma nova',
@@ -686,7 +684,7 @@ class _EmptyChatPlaceholder extends StatelessWidget {
             const SizedBox(height: 20),
             FilledButton.icon(
               onPressed: onNewConversation,
-              icon: const Icon(Icons.edit_outlined),
+              icon: const Icon(SigadIcons.editar),
               label: const Text('Nova conversa'),
             ),
           ],
@@ -766,7 +764,7 @@ class _NewConversationSheetState extends State<_NewConversationSheet> {
                     onChanged: (v) => setState(() => _query = v),
                     decoration: InputDecoration(
                       hintText: 'Buscar por nome, e-mail ou cargo',
-                      prefixIcon: const Icon(Icons.search_rounded),
+                      prefixIcon: const Icon(SigadIcons.buscar),
                       suffixIcon: _query.isNotEmpty
                           ? IconButton(
                               tooltip: 'Limpar busca',
@@ -774,7 +772,7 @@ class _NewConversationSheetState extends State<_NewConversationSheet> {
                                 _searchController.clear();
                                 setState(() => _query = '');
                               },
-                              icon: const Icon(Icons.close_rounded),
+                              icon: const Icon(SigadIcons.fechar),
                             )
                           : null,
                     ),

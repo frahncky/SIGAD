@@ -73,6 +73,12 @@ flutter:
   assets:
     - assets/images/
 
+  # Ícones próprios do SIGAD, gerados por tool/icones/gerar_fonte_icones.py.
+  fonts:
+    - family: SigadIcons
+      fonts:
+        - asset: assets/fonts/SigadIcons.ttf
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

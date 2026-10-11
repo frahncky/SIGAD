@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sigad/app/theme/sigad_icons.dart';
 
 class PageStatusView extends StatelessWidget {
   const PageStatusView({
@@ -15,14 +16,14 @@ class PageStatusView extends StatelessWidget {
     super.key,
     this.title = 'Carregando dados...',
     this.subtitle,
-  }) : icon = Icons.hourglass_top_rounded,
+  }) : icon = SigadIcons.ampulheta,
        actionLabel = null,
        onAction = null,
        showProgress = true;
 
   const PageStatusView.empty({
     super.key,
-    this.icon = Icons.inbox_outlined,
+    this.icon = SigadIcons.caixaEntrada,
     this.title = 'Nenhum registro encontrado',
     this.subtitle,
     this.actionLabel,
@@ -31,7 +32,7 @@ class PageStatusView extends StatelessWidget {
 
   const PageStatusView.error({
     super.key,
-    this.icon = Icons.error_outline,
+    this.icon = SigadIcons.erro,
     this.title = 'Não foi possível carregar os dados',
     this.subtitle,
     this.actionLabel = 'Tentar novamente',
@@ -125,7 +126,7 @@ class PageStatusView extends StatelessWidget {
                     const SizedBox(height: 14),
                     OutlinedButton.icon(
                       onPressed: onAction,
-                      icon: const Icon(Icons.refresh),
+                      icon: const Icon(SigadIcons.atualizar),
                       label: Text(actionLabel!),
                     ),
                   ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/theme/sigad_colors.dart';
+import '../../app/theme/sigad_icons.dart';
 
 class HorizontalScrollHint extends StatelessWidget {
   const HorizontalScrollHint({super.key, required this.message});
@@ -19,11 +20,7 @@ class HorizontalScrollHint extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(
-            Icons.swipe_left_alt_rounded,
-            size: 18,
-            color: SigadColors.brand,
-          ),
+          const Icon(SigadIcons.deslizar, size: 18, color: SigadColors.brand),
           const SizedBox(width: 8),
           Expanded(
             child: Text(

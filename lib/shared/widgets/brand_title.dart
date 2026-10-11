@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../app/theme/sigad_colors.dart';
+import '../../app/theme/sigad_icons.dart';
 import '../../core/config/institutional_context.dart';
 
 class BrandTitle extends StatelessWidget {
@@ -33,7 +34,7 @@ class BrandTitle extends StatelessWidget {
             ],
           ),
           child: Icon(
-            Icons.school_rounded,
+            SigadIcons.professor,
             color: Colors.white,
             size: compact ? 21 : 25,
           ),

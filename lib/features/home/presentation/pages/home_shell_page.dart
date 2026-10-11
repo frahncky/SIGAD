@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icons.dart';
 import '../../../../core/models/navigation_item.dart';
 import '../../../../core/navigation/navigation_items.dart';
 import '../../../../core/services/notificacoes_service.dart';
@@ -70,9 +71,9 @@ class HomeShellPage extends StatelessWidget {
                                 label: Text(
                                   notifCount > 99 ? '99+' : '$notifCount',
                                 ),
-                                child: const Icon(Icons.notifications_outlined),
+                                child: const Icon(SigadIcons.notificacao),
                               )
-                            : const Icon(Icons.notifications_outlined),
+                            : const Icon(SigadIcons.notificacao),
                       ),
                     IconButton(
                       onPressed: () => _showProfileMenu(context, userContext),
@@ -172,17 +173,17 @@ class HomeShellPage extends StatelessWidget {
     {
       'route': AppRoutes.dashboard,
       'label': 'Visão geral',
-      'icon': Icons.dashboard_outlined,
+      'icon': SigadIcons.painel,
     },
     {
       'route': AppRoutes.calendario,
       'label': 'Calendário',
-      'icon': Icons.calendar_month_outlined,
+      'icon': SigadIcons.calendario,
     },
     {
       'route': AppRoutes.notas,
       'label': 'Anotações',
-      'icon': Icons.edit_note_rounded,
+      'icon': SigadIcons.editarNota,
     },
   ];
 
@@ -307,7 +308,7 @@ class HomeShellPage extends StatelessWidget {
                     onChanged: (value) => setModalState(() => query = value),
                     decoration: const InputDecoration(
                       hintText: 'Buscar módulo',
-                      prefixIcon: Icon(Icons.search_outlined),
+                      prefixIcon: Icon(SigadIcons.buscar),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -492,7 +493,7 @@ class _SideNav extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: OutlinedButton.icon(
                 onPressed: onQuickAccess,
-                icon: const Icon(Icons.search_rounded, size: 19),
+                icon: const Icon(SigadIcons.buscar, size: 19),
                 label: const Text('Acesso rápido'),
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(46),
@@ -521,7 +522,7 @@ class _SideNav extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                leading: const Icon(Icons.logout, color: SigadColors.risk),
+                leading: const Icon(SigadIcons.sair, color: SigadColors.risk),
                 title: const Text('Sair'),
               ),
             ),
@@ -586,7 +587,7 @@ class _AppDrawer extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                leading: const Icon(Icons.logout, color: SigadColors.risk),
+                leading: const Icon(SigadIcons.sair, color: SigadColors.risk),
                 title: const Text('Sair'),
               ),
             ),
@@ -832,7 +833,7 @@ class _ProfileMenu extends StatelessWidget {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(
-                Icons.settings_outlined,
+                SigadIcons.configuracoes,
                 color: SigadColors.brand,
               ),
               title: const Text('Configurações'),
@@ -844,7 +845,7 @@ class _ProfileMenu extends StatelessWidget {
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.logout, color: SigadColors.risk),
+              leading: const Icon(SigadIcons.sair, color: SigadColors.risk),
               title: const Text('Sair'),
               onTap: () {
                 final navigator = Navigator.of(context);

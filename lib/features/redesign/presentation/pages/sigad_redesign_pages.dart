@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icons.dart';
 import '../../../../shared/widgets/welcome_hero.dart';
 
 class SigadDashboardPage extends StatefulWidget {
@@ -18,7 +19,7 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
   static const _todasMetricas = [
     _OverviewMetricDef(
       id: 'carga_horaria',
-      icon: Icons.schedule_outlined,
+      icon: SigadIcons.relogio,
       label: 'Carga horária alocada',
       value: '412h',
       detail: '↑ 6% vs. mês anterior',
@@ -26,7 +27,7 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
     ),
     _OverviewMetricDef(
       id: 'laboratorios',
-      icon: Icons.science_outlined,
+      icon: SigadIcons.laboratorio,
       label: 'Laboratórios em uso',
       value: '62%',
       detail: '↑ 12% vs. semana anterior',
@@ -34,7 +35,7 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
     ),
     _OverviewMetricDef(
       id: 'noticias',
-      icon: Icons.campaign_outlined,
+      icon: SigadIcons.aviso,
       label: 'Notícias enviadas',
       value: '8',
       detail: '↑ 3 vs. semana anterior',
@@ -42,7 +43,7 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
     ),
     _OverviewMetricDef(
       id: 'pendencias',
-      icon: Icons.error_outline_rounded,
+      icon: SigadIcons.erro,
       label: 'Pendências em aberto',
       value: '7',
       detail: '↓ 1 vs. semana anterior',
@@ -154,13 +155,13 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
       topPadding: 4,
       children: [
         _OverviewSectionTitle(
-          icon: Icons.monitor_heart_outlined,
+          icon: SigadIcons.monitoramento,
           title: 'Panorama do departamento',
           trailing: 'Atualizado agora',
           trailingAction: IconButton(
             onPressed: _abrirSeletorDeIndicadores,
             tooltip: 'Personalizar indicadores',
-            icon: const Icon(Icons.dashboard_customize_outlined),
+            icon: const Icon(SigadIcons.painelPersonalizar),
             visualDensity: VisualDensity.compact,
           ),
         ),
@@ -183,7 +184,7 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
           ),
         const SizedBox(height: 24),
         const _OverviewSectionTitle(
-          icon: Icons.outlined_flag_rounded,
+          icon: SigadIcons.bandeira,
           title: 'Próximas prioridades',
           trailing: 'Ver todas',
         ),
@@ -191,26 +192,26 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
         const _SectionCard(
           title: 'Prioridades do departamento',
           subtitle: 'Planejamento e atividades mais próximas',
-          icon: Icons.flag_outlined,
+          icon: SigadIcons.bandeira,
           showHeader: false,
           child: Column(
             children: [
               _PriorityTile(
                 title: 'Planejamento da carga horária 2025.2',
                 subtitle: 'Consolidar propostas e validar alocações',
-                icon: Icons.calendar_month_outlined,
+                icon: SigadIcons.calendario,
                 tone: _MetricTone.risk,
               ),
               _PriorityTile(
                 title: 'Otimizar uso dos laboratórios',
                 subtitle: 'Ajustar grade de reservas e ocupação',
-                icon: Icons.science_outlined,
+                icon: SigadIcons.laboratorio,
                 tone: _MetricTone.warning,
               ),
               _PriorityTile(
                 title: 'Reunião departamental',
                 subtitle: 'Pauta: projetos, avaliações e demandas',
-                icon: Icons.groups_outlined,
+                icon: SigadIcons.grupo,
                 tone: _MetricTone.info,
               ),
             ],
@@ -218,7 +219,7 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
         ),
         const SizedBox(height: 24),
         const _OverviewSectionTitle(
-          icon: Icons.bolt_outlined,
+          icon: SigadIcons.raio,
           title: 'Acesso rápido',
           trailing: 'Personalizar',
         ),
@@ -227,7 +228,7 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
           minItemWidth: 180,
           children: [
             _QuickAction(
-              icon: Icons.co_present_outlined,
+              icon: SigadIcons.aula,
               label: 'Carga docente',
               onTap: () => Navigator.pushReplacementNamed(
                 context,
@@ -235,7 +236,7 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
               ),
             ),
             _QuickAction(
-              icon: Icons.science_outlined,
+              icon: SigadIcons.laboratorio,
               label: 'Laboratórios',
               onTap: () => Navigator.pushReplacementNamed(
                 context,
@@ -243,13 +244,13 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
               ),
             ),
             _QuickAction(
-              icon: Icons.campaign_outlined,
+              icon: SigadIcons.aviso,
               label: 'Notícias',
               onTap: () =>
                   Navigator.pushReplacementNamed(context, AppRoutes.batePapo),
             ),
             _QuickAction(
-              icon: Icons.event_available_outlined,
+              icon: SigadIcons.eventoConfirmado,
               label: 'Reuniões',
               onTap: () =>
                   Navigator.pushReplacementNamed(context, AppRoutes.calendario),
@@ -363,7 +364,7 @@ class _EmptyMetricsPlaceholder extends StatelessWidget {
       child: Column(
         children: [
           Icon(
-            Icons.dashboard_customize_outlined,
+            SigadIcons.painelPersonalizar,
             size: 28,
             color: colors.onSurfaceVariant,
           ),
@@ -444,7 +445,7 @@ class _SigadChatPageState extends State<SigadChatPage> {
             'Conversas, grupos e avisos internos do DEE — Campus Monte Castelo.',
         actions: [
           _HeaderAction(
-            icon: Icons.add_comment_outlined,
+            icon: SigadIcons.comentarioAdicionar,
             label: 'Nova conversa',
             onPressed: () => _showActionDialog(
               context,
@@ -528,7 +529,7 @@ class _SigadCargaDocentePageState extends State<SigadCargaDocentePage> {
             'Distribuição, limites, conflitos e validação das atividades.',
         actions: [
           _HeaderAction(
-            icon: Icons.add_rounded,
+            icon: SigadIcons.adicionar,
             label: 'Nova distribuição',
             onPressed: () => _showActionDialog(
               context,
@@ -557,7 +558,7 @@ class _SigadCargaDocentePageState extends State<SigadCargaDocentePage> {
               child: TextField(
                 decoration: InputDecoration(
                   hintText: 'Buscar professor',
-                  prefixIcon: Icon(Icons.search_outlined),
+                  prefixIcon: Icon(SigadIcons.buscar),
                 ),
               ),
             ),
@@ -568,28 +569,28 @@ class _SigadCargaDocentePageState extends State<SigadCargaDocentePage> {
           minItemWidth: 210,
           children: [
             _MetricCard(
-              icon: Icons.groups_2_outlined,
+              icon: SigadIcons.grupo,
               label: 'Docentes',
               value: '32',
               detail: 'Período 2026.2',
               tone: _MetricTone.primary,
             ),
             _MetricCard(
-              icon: Icons.check_circle_outline,
+              icon: SigadIcons.concluido,
               label: 'Carga regular',
               value: '24',
               detail: '75% do quadro',
               tone: _MetricTone.success,
             ),
             _MetricCard(
-              icon: Icons.warning_amber_rounded,
+              icon: SigadIcons.alerta,
               label: 'Requer atenção',
               value: '06',
               detail: 'Abaixo ou acima do limite',
               tone: _MetricTone.warning,
             ),
             _MetricCard(
-              icon: Icons.sync_problem_outlined,
+              icon: SigadIcons.sincronizacaoErro,
               label: 'Conflitos',
               value: '02',
               detail: 'Horários sobrepostos',
@@ -601,7 +602,7 @@ class _SigadCargaDocentePageState extends State<SigadCargaDocentePage> {
         _SectionCard(
           title: 'Distribuição por docente',
           subtitle: 'Ensino, pesquisa, extensão, gestão e orientações',
-          icon: Icons.balance_outlined,
+          icon: SigadIcons.balanca,
           child: Column(
             children: const [
               _WorkloadRow(
@@ -689,7 +690,7 @@ class _SigadProfessoresPageState extends State<SigadProfessoresPage> {
         subtitle: 'Quadro docente, áreas, situação funcional e carga atual.',
         actions: [
           _HeaderAction(
-            icon: Icons.person_add_alt_1_outlined,
+            icon: SigadIcons.pessoaAdicionar,
             label: 'Cadastrar',
             onPressed: () => _showActionDialog(
               context,
@@ -707,7 +708,7 @@ class _SigadProfessoresPageState extends State<SigadProfessoresPage> {
                 onChanged: (value) => setState(() => _query = value),
                 decoration: const InputDecoration(
                   hintText: 'Buscar nome ou área',
-                  prefixIcon: Icon(Icons.search_outlined),
+                  prefixIcon: Icon(SigadIcons.buscar),
                 ),
               ),
             ),
@@ -808,7 +809,7 @@ class _SigadDemandasPageState extends State<SigadDemandasPage> {
         subtitle: 'Solicitações, responsáveis, prazos e acompanhamento.',
         actions: [
           _HeaderAction(
-            icon: Icons.add_task_outlined,
+            icon: SigadIcons.tarefaAdicionar,
             label: 'Nova demanda',
             onPressed: () => _showActionDialog(
               context,
@@ -823,21 +824,21 @@ class _SigadDemandasPageState extends State<SigadDemandasPage> {
           minItemWidth: 210,
           children: [
             _MetricCard(
-              icon: Icons.inbox_outlined,
+              icon: SigadIcons.caixaEntrada,
               label: 'Abertas',
               value: '12',
               detail: 'No período atual',
               tone: _MetricTone.primary,
             ),
             _MetricCard(
-              icon: Icons.timelapse_outlined,
+              icon: SigadIcons.progressoTempo,
               label: 'Em andamento',
               value: '07',
               detail: '58% do total',
               tone: _MetricTone.info,
             ),
             _MetricCard(
-              icon: Icons.error_outline_rounded,
+              icon: SigadIcons.erro,
               label: 'Atrasadas',
               value: '03',
               detail: 'Ação necessária',
@@ -853,7 +854,7 @@ class _SigadDemandasPageState extends State<SigadDemandasPage> {
                 onChanged: (value) => setState(() => _query = value),
                 decoration: const InputDecoration(
                   hintText: 'Buscar demanda',
-                  prefixIcon: Icon(Icons.search_outlined),
+                  prefixIcon: Icon(SigadIcons.buscar),
                 ),
               ),
             ),
@@ -875,7 +876,7 @@ class _SigadDemandasPageState extends State<SigadDemandasPage> {
         _SectionCard(
           title: 'Lista de demandas',
           subtitle: '${filtered.length} resultados',
-          icon: Icons.assignment_outlined,
+          icon: SigadIcons.demanda,
           child: Column(
             children: filtered
                 .map(
@@ -928,7 +929,7 @@ class _SigadKanbanPageState extends State<SigadKanbanPage> {
         subtitle: 'Quadro visual para acompanhar atividades e responsáveis.',
         actions: [
           _HeaderAction(
-            icon: Icons.add_rounded,
+            icon: SigadIcons.adicionar,
             label: 'Nova tarefa',
             onPressed: () => _showActionDialog(
               context,
@@ -993,7 +994,7 @@ class _SigadLaboratoriosPageState extends State<SigadLaboratoriosPage> {
         subtitle: 'Disponibilidade, reservas, conflitos e manutenção.',
         actions: [
           _HeaderAction(
-            icon: Icons.add_circle_outline,
+            icon: SigadIcons.adicionarCirculo,
             label: 'Nova reserva',
             onPressed: () => _showActionDialog(
               context,
@@ -1009,28 +1010,28 @@ class _SigadLaboratoriosPageState extends State<SigadLaboratoriosPage> {
           minItemWidth: 210,
           children: [
             _MetricCard(
-              icon: Icons.event_available_outlined,
+              icon: SigadIcons.eventoConfirmado,
               label: 'Reservas hoje',
               value: '09',
               detail: '5 laboratórios',
               tone: _MetricTone.primary,
             ),
             _MetricCard(
-              icon: Icons.meeting_room_outlined,
+              icon: SigadIcons.sala,
               label: 'Em uso',
               value: '05',
               detail: 'Neste horário',
               tone: _MetricTone.success,
             ),
             _MetricCard(
-              icon: Icons.build_circle_outlined,
+              icon: SigadIcons.manutencao,
               label: 'Em manutenção',
               value: '01',
               detail: 'Acesso temporariamente restrito',
               tone: _MetricTone.warning,
             ),
             _MetricCard(
-              icon: Icons.sync_problem_outlined,
+              icon: SigadIcons.sincronizacaoErro,
               label: 'Conflitos',
               value: '00',
               detail: 'Nenhuma sobreposição',
@@ -1066,21 +1067,21 @@ class _SigadLaboratoriosPageState extends State<SigadLaboratoriosPage> {
           _SectionCard(
             title: 'Agenda semanal',
             subtitle: 'Períodos de segunda a sexta',
-            icon: Icons.calendar_view_week_outlined,
+            icon: SigadIcons.calendarioSemana,
             child: const _LabSchedule(),
           )
         else if (_view == 'Calendário mensal')
           _SectionCard(
             title: 'Calendário de reservas',
             subtitle: 'Visão consolidada do mês',
-            icon: Icons.calendar_month_outlined,
+            icon: SigadIcons.calendario,
             child: const _MonthOverview(),
           )
         else
           _SectionCard(
             title: 'Ocupação e otimização',
             subtitle: 'Uso médio e horários disponíveis',
-            icon: Icons.analytics_outlined,
+            icon: SigadIcons.analise,
             child: const _LabOccupancy(),
           ),
       ],
@@ -1128,7 +1129,7 @@ class _SigadAtividadesPageState extends State<SigadAtividadesPage> {
             'Ações acadêmicas e administrativas com prazos e responsáveis.',
         actions: [
           _HeaderAction(
-            icon: Icons.add_task_outlined,
+            icon: SigadIcons.tarefaAdicionar,
             label: 'Nova atividade',
             onPressed: () => _showActionDialog(
               context,
@@ -1151,7 +1152,7 @@ class _SigadAtividadesPageState extends State<SigadAtividadesPage> {
               child: TextField(
                 decoration: InputDecoration(
                   hintText: 'Buscar atividade',
-                  prefixIcon: Icon(Icons.search_outlined),
+                  prefixIcon: Icon(SigadIcons.buscar),
                 ),
               ),
             ),
@@ -1161,7 +1162,7 @@ class _SigadAtividadesPageState extends State<SigadAtividadesPage> {
         _SectionCard(
           title: 'Atividades do período',
           subtitle: '${filtered.length} itens',
-          icon: Icons.fact_check_outlined,
+          icon: SigadIcons.checklist,
           child: Column(
             children: filtered
                 .map(
@@ -1201,25 +1202,25 @@ class _SigadRelatoriosPageState extends State<SigadRelatoriosPage> {
         'Distribuição de carga docente',
         'Acadêmico',
         'Atualizado hoje',
-        Icons.balance_outlined,
+        SigadIcons.balanca,
       ),
       _ReportData(
         'Ocupação dos laboratórios',
         'Infraestrutura',
         'Atualizado ontem',
-        Icons.science_outlined,
+        SigadIcons.laboratorio,
       ),
       _ReportData(
         'Demandas por situação',
         'Gestão',
         'Atualizado hoje',
-        Icons.assignment_outlined,
+        SigadIcons.demanda,
       ),
       _ReportData(
         'Atividades do departamento',
         'Produtividade',
         'Atualizado em 15/07',
-        Icons.analytics_outlined,
+        SigadIcons.analise,
       ),
     ];
 
@@ -1230,7 +1231,7 @@ class _SigadRelatoriosPageState extends State<SigadRelatoriosPage> {
         subtitle: 'Indicadores, documentos e exportações para apoio à gestão.',
         actions: [
           _HeaderAction(
-            icon: Icons.auto_graph_outlined,
+            icon: SigadIcons.tendencia,
             label: 'Gerar relatório',
             onPressed: () => _showActionDialog(
               context,
@@ -1268,21 +1269,21 @@ class _SigadRelatoriosPageState extends State<SigadRelatoriosPage> {
           minItemWidth: 210,
           children: [
             _MetricCard(
-              icon: Icons.description_outlined,
+              icon: SigadIcons.documento,
               label: 'Relatórios disponíveis',
               value: '12',
               detail: '4 categorias',
               tone: _MetricTone.primary,
             ),
             _MetricCard(
-              icon: Icons.download_done_outlined,
+              icon: SigadIcons.baixado,
               label: 'Exportados no mês',
               value: '18',
               detail: 'PDF, XLSX e CSV',
               tone: _MetricTone.success,
             ),
             _MetricCard(
-              icon: Icons.schedule_outlined,
+              icon: SigadIcons.relogio,
               label: 'Agendados',
               value: '03',
               detail: 'Envio automático',
@@ -1331,7 +1332,7 @@ class _SigadConfiguracoesPageState extends State<SigadConfiguracoesPage> {
         subtitle: 'Conta, notificações, aparência, segurança e dados.',
         actions: [
           _HeaderAction(
-            icon: Icons.save_outlined,
+            icon: SigadIcons.salvar,
             label: 'Salvar',
             onPressed: () => _notify(context, 'Configurações salvas.'),
           ),
@@ -1342,21 +1343,21 @@ class _SigadConfiguracoesPageState extends State<SigadConfiguracoesPage> {
           primary: _SectionCard(
             title: 'Perfil e conta',
             subtitle: 'Dados da sessão atual',
-            icon: Icons.manage_accounts_outlined,
+            icon: SigadIcons.contaGerenciar,
             child: Column(
               children: [
                 const _SettingInfoTile(
-                  icon: Icons.person_outline,
+                  icon: SigadIcons.pessoa,
                   title: 'Nome de exibição',
                   value: 'Usuário institucional',
                 ),
                 const _SettingInfoTile(
-                  icon: Icons.alternate_email,
+                  icon: SigadIcons.arroba,
                   title: 'E-mail',
                   value: 'Conta institucional',
                 ),
                 const _SettingInfoTile(
-                  icon: Icons.badge_outlined,
+                  icon: SigadIcons.cracha,
                   title: 'Perfil de acesso',
                   value: 'Definido pela autenticação',
                 ),
@@ -1368,7 +1369,7 @@ class _SigadConfiguracoesPageState extends State<SigadConfiguracoesPage> {
                       title: 'Editar perfil',
                       message: 'Atualize dados pessoais e preferências.',
                     ),
-                    icon: const Icon(Icons.edit_outlined),
+                    icon: const Icon(SigadIcons.editar),
                     label: const Text('Editar perfil'),
                   ),
                 ),
@@ -1378,7 +1379,7 @@ class _SigadConfiguracoesPageState extends State<SigadConfiguracoesPage> {
           secondary: _SectionCard(
             title: 'Notificações',
             subtitle: 'Canais e alertas',
-            icon: Icons.notifications_outlined,
+            icon: SigadIcons.notificacao,
             child: Column(
               children: [
                 SwitchListTile.adaptive(
@@ -1404,7 +1405,7 @@ class _SigadConfiguracoesPageState extends State<SigadConfiguracoesPage> {
           primary: _SectionCard(
             title: 'Aparência',
             subtitle: 'Densidade e visualização',
-            icon: Icons.palette_outlined,
+            icon: SigadIcons.paleta,
             child: Column(
               children: [
                 SwitchListTile.adaptive(
@@ -1415,7 +1416,7 @@ class _SigadConfiguracoesPageState extends State<SigadConfiguracoesPage> {
                   subtitle: const Text('Exibe mais informações por tela'),
                 ),
                 const _SettingInfoTile(
-                  icon: Icons.contrast_outlined,
+                  icon: SigadIcons.contraste,
                   title: 'Tema',
                   value: 'Segue a configuração do aplicativo',
                 ),
@@ -1425,7 +1426,7 @@ class _SigadConfiguracoesPageState extends State<SigadConfiguracoesPage> {
           secondary: _SectionCard(
             title: 'Segurança e dados',
             subtitle: 'Sessão, acesso e armazenamento',
-            icon: Icons.security_outlined,
+            icon: SigadIcons.escudo,
             child: Column(
               children: [
                 SwitchListTile.adaptive(
@@ -1436,7 +1437,7 @@ class _SigadConfiguracoesPageState extends State<SigadConfiguracoesPage> {
                   subtitle: const Text('Usar autenticação do dispositivo'),
                 ),
                 const _SettingInfoTile(
-                  icon: Icons.cloud_sync_outlined,
+                  icon: SigadIcons.nuvemSincronizar,
                   title: 'Sincronização',
                   value: 'Automática quando disponível',
                 ),
@@ -1449,7 +1450,7 @@ class _SigadConfiguracoesPageState extends State<SigadConfiguracoesPage> {
                       message:
                           'Esta ação remove apenas caches e preferências locais.',
                     ),
-                    icon: const Icon(Icons.cleaning_services_outlined),
+                    icon: const Icon(SigadIcons.limpeza),
                     label: const Text('Limpar dados locais'),
                   ),
                 ),
@@ -1891,7 +1892,7 @@ class _PriorityTile extends StatelessWidget {
       ),
       title: Text(title),
       subtitle: Text(subtitle),
-      trailing: const Icon(Icons.chevron_right_rounded),
+      trailing: const Icon(SigadIcons.chevronDireita),
     );
   }
 }
@@ -1934,7 +1935,7 @@ class _QuickAction extends StatelessWidget {
             Expanded(
               child: Text(label, style: Theme.of(context).textTheme.labelLarge),
             ),
-            const Icon(Icons.arrow_forward_rounded, size: 18),
+            const Icon(SigadIcons.setaDireita, size: 18),
           ],
         ),
       ),
@@ -2066,7 +2067,7 @@ class _ConversationList extends StatelessWidget {
             onChanged: onQueryChanged,
             decoration: const InputDecoration(
               hintText: 'Buscar conversa',
-              prefixIcon: Icon(Icons.search_outlined),
+              prefixIcon: Icon(SigadIcons.buscar),
             ),
           ),
           const SizedBox(height: 12),
@@ -2099,9 +2100,7 @@ class _ConversationList extends StatelessWidget {
                               ? colors.onPrimary
                               : colors.onSurfaceVariant,
                           child: Icon(
-                            item.group
-                                ? Icons.groups_2_outlined
-                                : Icons.person_outline,
+                            item.group ? SigadIcons.grupo : SigadIcons.pessoa,
                           ),
                         ),
                         title: Text(
@@ -2180,8 +2179,8 @@ class _ChatPanel extends StatelessWidget {
                     backgroundColor: colors.primaryContainer,
                     child: Icon(
                       conversation!.group
-                          ? Icons.groups_2_outlined
-                          : Icons.person_outline,
+                          ? SigadIcons.grupo
+                          : SigadIcons.pessoa,
                       color: colors.onPrimaryContainer,
                     ),
                   ),
@@ -2191,11 +2190,11 @@ class _ChatPanel extends StatelessWidget {
                     children: [
                       IconButton(
                         onPressed: () {},
-                        icon: const Icon(Icons.search_outlined),
+                        icon: const Icon(SigadIcons.buscar),
                       ),
                       IconButton(
                         onPressed: () {},
-                        icon: const Icon(Icons.more_vert),
+                        icon: const Icon(SigadIcons.maisOpcoes),
                       ),
                     ],
                   ),
@@ -2230,7 +2229,7 @@ class _ChatPanel extends StatelessWidget {
                     children: [
                       IconButton(
                         onPressed: () {},
-                        icon: const Icon(Icons.attach_file_outlined),
+                        icon: const Icon(SigadIcons.anexo),
                       ),
                       Expanded(
                         child: TextField(
@@ -2244,7 +2243,7 @@ class _ChatPanel extends StatelessWidget {
                       const SizedBox(width: 8),
                       IconButton.filled(
                         onPressed: onSend,
-                        icon: const Icon(Icons.send_rounded),
+                        icon: const Icon(SigadIcons.enviar),
                       ),
                     ],
                   ),
@@ -2449,7 +2448,7 @@ class _TeacherCard extends StatelessWidget {
             const SizedBox(height: 12),
             Row(
               children: [
-                const Icon(Icons.schedule_outlined, size: 18),
+                const Icon(SigadIcons.relogio, size: 18),
                 const SizedBox(width: 6),
                 Text('Carga atual: ${teacher.load}'),
               ],
@@ -2501,7 +2500,7 @@ class _DemandTile extends StatelessWidget {
           color: color.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(14),
         ),
-        child: Icon(Icons.assignment_outlined, color: color),
+        child: Icon(SigadIcons.demanda, color: color),
       ),
       title: Text(item.title),
       subtitle: Text('${item.id} · ${item.owner} · Prazo ${item.deadline}'),
@@ -2551,7 +2550,10 @@ class _KanbanColumn extends StatelessWidget {
                 ),
               ),
               _StatusPill(label: '${items.length}', color: colors.primary),
-              IconButton(onPressed: onAdd, icon: const Icon(Icons.add_rounded)),
+              IconButton(
+                onPressed: onAdd,
+                icon: const Icon(SigadIcons.adicionar),
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -2798,7 +2800,7 @@ class _ReportCard extends StatelessWidget {
               const SizedBox(width: 8),
               IconButton.filledTonal(
                 onPressed: onExport,
-                icon: const Icon(Icons.download_outlined),
+                icon: const Icon(SigadIcons.baixar),
                 tooltip: 'Exportar',
               ),
             ],

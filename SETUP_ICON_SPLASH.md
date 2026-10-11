@@ -106,6 +106,22 @@ O script gera:
 
 Execute o script sempre que o ícone principal mudar.
 
+### Ícones das telas (SigadIcons)
+
+As telas usam um conjunto de ícones próprio do SIGAD, e não os ícones Material. Os ícones são desenhados em uma grade de 24 px, com traço de 2 px e pontas arredondadas, e ficam na fonte `assets/fonts/SigadIcons.ttf`.
+
+- Para usar: `Icon(SigadIcons.laboratorio)` (import `package:sigad/app/theme/sigad_icons.dart`).
+- O botão de menu, voltar e fechar das AppBars usa os ícones próprios via `actionIconTheme` em `app_theme.dart`.
+- Para criar ou alterar um ícone, edite `tool/icones/gerar_fonte_icones.py` (adicione novos ícones sempre no fim) e rode:
+
+```bash
+pip install fonttools skia-pathops
+python3 tool/icones/gerar_fonte_icones.py
+dart format lib/app/theme/sigad_icons.dart
+```
+
+`tool/icones/mapa_material.py` registra qual ícone Material cada `SigadIcons` substituiu.
+
 ## Troubleshooting
 
 Se os ícones não forem gerados:

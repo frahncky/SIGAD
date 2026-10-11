@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:sigad/app/routes/app_routes.dart';
 import 'package:sigad/app/theme/app_theme.dart';
+import 'package:sigad/app/theme/sigad_icons.dart';
 import 'package:sigad/core/models/user.dart';
 import 'package:sigad/core/models/user_role.dart';
 import 'package:sigad/core/services/chat_provider.dart';
@@ -68,8 +69,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(AppBar), findsOneWidget);
-    expect(find.byIcon(Icons.menu), findsOneWidget);
-    expect(find.byIcon(Icons.notifications_outlined), findsNothing);
+    expect(find.byIcon(SigadIcons.menu), findsOneWidget);
+    expect(find.byIcon(SigadIcons.notificacao), findsNothing);
     expect(find.byTooltip('Perfil'), findsOneWidget);
     expect(tester.widget<AppBar>(find.byType(AppBar)).toolbarHeight, 52);
   });
@@ -98,8 +99,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byIcon(Icons.menu), findsOneWidget);
-    expect(find.byIcon(Icons.notifications_outlined), findsOneWidget);
+    expect(find.byIcon(SigadIcons.menu), findsOneWidget);
+    expect(find.byIcon(SigadIcons.notificacao), findsOneWidget);
     expect(find.byTooltip('Perfil'), findsOneWidget);
     expect(tester.widget<AppBar>(find.byType(AppBar)).toolbarHeight, 64);
   });
@@ -154,7 +155,7 @@ void main() {
     await tester.pumpWidget(_buildShell(userContext: userContext));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.menu));
+    await tester.tap(find.byIcon(SigadIcons.menu));
     await tester.pumpAndSettle();
 
     expect(find.byType(Drawer), findsOneWidget);

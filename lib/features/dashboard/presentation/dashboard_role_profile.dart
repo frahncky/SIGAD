@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../app/theme/sigad_colors.dart';
+import '../../../app/theme/sigad_icons.dart';
 import '../../../core/models/user_role.dart';
 
 class RoleMetric {
@@ -57,36 +58,36 @@ class RoleProfile {
             RoleMetric(
               label: 'Disciplinas',
               value: '5',
-              icon: Icons.menu_book_outlined,
+              icon: SigadIcons.livro,
               tone: SigadColors.brand,
             ),
             RoleMetric(
               label: 'Carga semanal',
               value: '32h',
-              icon: Icons.schedule_outlined,
+              icon: SigadIcons.relogio,
               tone: SigadColors.info,
             ),
             RoleMetric(
               label: 'Pendências',
               value: '3',
-              icon: Icons.pending_actions_outlined,
+              icon: SigadIcons.pendente,
               tone: SigadColors.warning,
             ),
           ],
           priorities: [
             PriorityItem(
               label: 'Confirmar plano de aula da semana',
-              icon: Icons.checklist_outlined,
+              icon: SigadIcons.checklist,
               tone: SigadColors.info,
             ),
             PriorityItem(
               label: 'Atualizar registro de atividades',
-              icon: Icons.fact_check_outlined,
+              icon: SigadIcons.checklist,
               tone: SigadColors.brand,
             ),
             PriorityItem(
               label: 'Validar horas complementares',
-              icon: Icons.timer_outlined,
+              icon: SigadIcons.cronometro,
               tone: SigadColors.warning,
             ),
           ],
@@ -101,36 +102,36 @@ class RoleProfile {
             RoleMetric(
               label: 'Demandas abertas',
               value: '24',
-              icon: Icons.assignment_outlined,
+              icon: SigadIcons.demanda,
               tone: SigadColors.info,
             ),
             RoleMetric(
               label: 'Docentes ativos',
               value: '38',
-              icon: Icons.school_outlined,
+              icon: SigadIcons.professor,
               tone: SigadColors.success,
             ),
             RoleMetric(
               label: 'Sprints em curso',
               value: '2',
-              icon: Icons.flag_outlined,
+              icon: SigadIcons.bandeira,
               tone: SigadColors.brand,
             ),
           ],
           priorities: [
             PriorityItem(
               label: 'Priorizar demandas críticas da semana',
-              icon: Icons.priority_high_outlined,
+              icon: SigadIcons.prioridade,
               tone: SigadColors.risk,
             ),
             PriorityItem(
               label: 'Fechar horários dos docentes',
-              icon: Icons.balance_outlined,
+              icon: SigadIcons.balanca,
               tone: SigadColors.info,
             ),
             PriorityItem(
               label: 'Aprovar tarefas do curso',
-              icon: Icons.view_kanban_outlined,
+              icon: SigadIcons.kanban,
               tone: SigadColors.brand,
             ),
           ],
@@ -146,36 +147,36 @@ class RoleProfile {
             RoleMetric(
               label: 'Processos hoje',
               value: '18',
-              icon: Icons.folder_open_outlined,
+              icon: SigadIcons.pasta,
               tone: SigadColors.warning,
             ),
             RoleMetric(
               label: 'Solicitações',
               value: '11',
-              icon: Icons.request_page_outlined,
+              icon: SigadIcons.documentoResumo,
               tone: SigadColors.info,
             ),
             RoleMetric(
               label: 'Concluídos',
               value: '9',
-              icon: Icons.task_alt_outlined,
+              icon: SigadIcons.concluido,
               tone: SigadColors.success,
             ),
           ],
           priorities: [
             PriorityItem(
               label: 'Conferir documentos de laboratório',
-              icon: Icons.description_outlined,
+              icon: SigadIcons.documento,
               tone: SigadColors.info,
             ),
             PriorityItem(
               label: 'Atualizar status de protocolos',
-              icon: Icons.swap_horiz_outlined,
+              icon: SigadIcons.trocar,
               tone: SigadColors.warning,
             ),
             PriorityItem(
               label: 'Enviar relatório diário para coordenação',
-              icon: Icons.send_outlined,
+              icon: SigadIcons.enviar,
               tone: SigadColors.brand,
             ),
           ],
@@ -190,36 +191,36 @@ class RoleProfile {
             RoleMetric(
               label: 'Indicadores-chave',
               value: '12',
-              icon: Icons.analytics_outlined,
+              icon: SigadIcons.analise,
               tone: SigadColors.brandDark,
             ),
             RoleMetric(
               label: 'Demandas críticas',
               value: '4',
-              icon: Icons.warning_amber_outlined,
+              icon: SigadIcons.alerta,
               tone: SigadColors.risk,
             ),
             RoleMetric(
               label: 'Cumprimento SLA',
               value: '92%',
-              icon: Icons.av_timer_outlined,
+              icon: SigadIcons.cronometro,
               tone: SigadColors.success,
             ),
           ],
           priorities: [
             PriorityItem(
               label: 'Validar plano de metas do mês',
-              icon: Icons.track_changes_outlined,
+              icon: SigadIcons.alvo,
               tone: SigadColors.brandDark,
             ),
             PriorityItem(
               label: 'Aprovar redistribuição de equipe',
-              icon: Icons.groups_outlined,
+              icon: SigadIcons.grupo,
               tone: SigadColors.info,
             ),
             PriorityItem(
               label: 'Revisar painel de desempenho institucional',
-              icon: Icons.query_stats_outlined,
+              icon: SigadIcons.tendencia,
               tone: SigadColors.success,
             ),
           ],
@@ -235,31 +236,31 @@ class RoleProfile {
             RoleMetric(
               label: 'Módulos ativos',
               value: '6',
-              icon: Icons.dashboard_outlined,
+              icon: SigadIcons.painel,
               tone: SigadColors.brand,
             ),
             RoleMetric(
               label: 'Usuários online',
               value: '42',
-              icon: Icons.groups_outlined,
+              icon: SigadIcons.grupo,
               tone: SigadColors.info,
             ),
             RoleMetric(
               label: 'Demandas no sistema',
               value: '24',
-              icon: Icons.inbox_outlined,
+              icon: SigadIcons.caixaEntrada,
               tone: SigadColors.success,
             ),
           ],
           priorities: [
             PriorityItem(
               label: 'Realize login com um dos perfis',
-              icon: Icons.login_outlined,
+              icon: SigadIcons.entrar,
               tone: SigadColors.brand,
             ),
             PriorityItem(
               label: 'Explore os módulos disponíveis',
-              icon: Icons.apps_outlined,
+              icon: SigadIcons.painel,
               tone: SigadColors.info,
             ),
           ],

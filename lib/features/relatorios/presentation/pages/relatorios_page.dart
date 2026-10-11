@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icons.dart';
 import '../../../../core/security/authorization_policy.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
@@ -140,7 +141,7 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
             onChanged: (value) => setState(() => _busca = value),
             decoration: const InputDecoration(
               hintText: 'Buscar por titulo, descricao ou autor',
-              prefixIcon: Icon(Icons.search_outlined),
+              prefixIcon: Icon(SigadIcons.buscar),
             ),
           ),
           const SizedBox(height: 12),
@@ -180,7 +181,7 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.info, color: SigadColors.brand),
+                const Icon(SigadIcons.info, color: SigadColors.brand),
                 const SizedBox(width: 12),
                 Text(
                   '${relatoriosFiltrados.length}',
@@ -219,7 +220,7 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
             const SizedBox(
               height: 320,
               child: PageStatusView.empty(
-                icon: Icons.description_outlined,
+                icon: SigadIcons.documento,
                 title: 'Nenhum relatorio encontrado',
                 subtitle: 'Ajuste os filtros para visualizar resultados.',
               ),
@@ -267,7 +268,7 @@ class _RelatoriosAccessDenied extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.lock_outline, size: 56),
+            const Icon(SigadIcons.cadeado, size: 56),
             const SizedBox(height: 12),
             Text(
               'Acesso nao permitido para este perfil.',
@@ -308,7 +309,7 @@ class _RelatoriosSummaryBanner extends StatelessWidget {
           Row(
             children: [
               const SigadIconAvatar(
-                icon: Icons.summarize_outlined,
+                icon: SigadIcons.documentoResumo,
                 tone: SigadColors.brand,
               ),
               const SizedBox(width: 12),
@@ -453,7 +454,7 @@ class _RelatorioCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SigadIconAvatar(
-                    icon: Icons.description,
+                    icon: SigadIcons.documento,
                     tone: _toneParaTipo(relatorio.tipo),
                     size: 40,
                     iconSize: 20,
@@ -539,7 +540,7 @@ class _RelatorioCard extends StatelessWidget {
                         value: 'visualizar',
                         child: Row(
                           children: [
-                            Icon(Icons.visibility, size: 18),
+                            Icon(SigadIcons.visivel, size: 18),
                             SizedBox(width: 8),
                             Text('Visualizar'),
                           ],
@@ -549,7 +550,7 @@ class _RelatorioCard extends StatelessWidget {
                         value: 'baixar',
                         child: Row(
                           children: [
-                            Icon(Icons.download, size: 18),
+                            Icon(SigadIcons.baixar, size: 18),
                             SizedBox(width: 8),
                             Text('Baixar PDF'),
                           ],
@@ -559,14 +560,14 @@ class _RelatorioCard extends StatelessWidget {
                         value: 'compartilhar',
                         child: Row(
                           children: [
-                            Icon(Icons.share, size: 18),
+                            Icon(SigadIcons.compartilhar, size: 18),
                             SizedBox(width: 8),
                             Text('Compartilhar'),
                           ],
                         ),
                       ),
                     ],
-                    icon: const Icon(Icons.more_vert, size: 18),
+                    icon: const Icon(SigadIcons.maisOpcoes, size: 18),
                   ),
                 ],
               ),
@@ -576,14 +577,14 @@ class _RelatorioCard extends StatelessWidget {
                 children: [
                   Flexible(
                     child: _InfoChip(
-                      icon: Icons.calendar_today,
+                      icon: SigadIcons.calendario,
                       label: relatorio.data,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Flexible(
                     child: _InfoChip(
-                      icon: Icons.person_outline,
+                      icon: SigadIcons.pessoa,
                       label: relatorio.autor,
                     ),
                   ),
@@ -661,7 +662,7 @@ class _RelatorioCard extends StatelessWidget {
                   IconButton(
                     tooltip: 'Fechar detalhes do relatório',
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
+                    icon: const Icon(SigadIcons.fechar),
                   ),
                 ],
               ),
@@ -688,7 +689,7 @@ class _RelatorioCard extends StatelessWidget {
                         Navigator.pop(context);
                         onBaixar();
                       },
-                      icon: const Icon(Icons.download),
+                      icon: const Icon(SigadIcons.baixar),
                       label: const Text('Baixar PDF'),
                     ),
                   ),
@@ -699,7 +700,7 @@ class _RelatorioCard extends StatelessWidget {
                         Navigator.pop(context);
                         onCompartilhar();
                       },
-                      icon: const Icon(Icons.share),
+                      icon: const Icon(SigadIcons.compartilhar),
                       label: const Text('Compartilhar'),
                     ),
                   ),
