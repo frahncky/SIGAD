@@ -1,3 +1,6 @@
+import '../../../../l10n/l10n.dart';
+import '../../../aulas_praticas/presentation/laboratorio_l10n.dart';
+import '../visao_geral_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -52,6 +55,24 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
     ),
   ];
 
+  String _rotuloMetrica(AppLocalizations l10n, _OverviewMetricDef m) =>
+      switch (m.id) {
+        'carga_horaria' => l10n.vgCargaAlocada,
+        'laboratorios' => l10n.vgLabsEmUso,
+        'noticias' => l10n.vgNoticiasEnviadas,
+        'pendencias' => l10n.vgPendenciasAbertas,
+        _ => m.label,
+      };
+
+  String _detalheMetrica(AppLocalizations l10n, _OverviewMetricDef m) =>
+      switch (m.id) {
+        'carga_horaria' => l10n.vgVsMesAnterior6,
+        'laboratorios' => l10n.vgVsSemana12,
+        'noticias' => l10n.vgVsSemana3,
+        'pendencias' => l10n.vgVsSemana1,
+        _ => m.detail,
+      };
+
   Set<String> _visiveis = _todasMetricas.map((item) => item.id).toSet();
 
   @override
@@ -103,14 +124,14 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
                       ),
                     ),
                     Text(
-                      'Indicadores do painel',
+                      context.l10n.vgIndicadoresPainel,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Escolha quais indicadores aparecem no panorama.',
+                      context.l10n.vgEscolhaIndicadores,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                     const SizedBox(height: 4),
@@ -118,7 +139,7 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
                       CheckboxListTile(
                         contentPadding: EdgeInsets.zero,
                         value: _visiveis.contains(metrica.id),
-                        title: Text(metrica.label),
+                        title: Text(_rotuloMetrica(context.l10n, metrica)),
                         secondary: SigadIcon(
                           metrica.icon,
                           color: _toneColor(metrica.tone),
@@ -157,11 +178,11 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
       children: [
         _OverviewSectionTitle(
           icon: SigadIcons.monitoramento,
-          title: 'Panorama do departamento',
-          trailing: 'Atualizado agora',
+          title: context.l10n.vgPanorama,
+          trailing: context.l10n.vgAtualizadoAgora,
           trailingAction: IconButton(
             onPressed: _abrirSeletorDeIndicadores,
-            tooltip: 'Personalizar indicadores',
+            tooltip: context.l10n.vgPersonalizarIndicadores,
             icon: const SigadIcon(SigadIcons.painelPersonalizar),
             visualDensity: VisualDensity.compact,
           ),
@@ -176,23 +197,23 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
               for (final metrica in metricasVisiveis)
                 _MetricCard(
                   icon: metrica.icon,
-                  label: metrica.label,
+                  label: _rotuloMetrica(context.l10n, metrica),
                   value: metrica.value,
-                  detail: metrica.detail,
+                  detail: _detalheMetrica(context.l10n, metrica),
                   tone: metrica.tone,
                 ),
             ],
           ),
         const SizedBox(height: 24),
-        const _OverviewSectionTitle(
+        _OverviewSectionTitle(
           icon: SigadIcons.bandeira,
-          title: 'Próximas prioridades',
-          trailing: 'Ver todas',
+          title: context.l10n.vgProximasPrioridades,
+          trailing: context.l10n.verTodas,
         ),
         const SizedBox(height: 12),
-        const _SectionCard(
-          title: 'Prioridades do departamento',
-          subtitle: 'Planejamento e atividades mais próximas',
+        _SectionCard(
+          title: context.l10n.vgPrioridadesDepartamento,
+          subtitle: context.l10n.vgPrioridadesSub,
           icon: SigadIcons.bandeira,
           showHeader: false,
           child: Column(
@@ -219,10 +240,10 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
           ),
         ),
         const SizedBox(height: 24),
-        const _OverviewSectionTitle(
+        _OverviewSectionTitle(
           icon: SigadIcons.raio,
-          title: 'Acesso rápido',
-          trailing: 'Personalizar',
+          title: context.l10n.acessoRapido,
+          trailing: context.l10n.vgPersonalizar,
         ),
         const SizedBox(height: 12),
         _ResponsiveGrid(
@@ -230,7 +251,7 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
           children: [
             _QuickAction(
               icon: SigadIcons.aula,
-              label: 'Carga docente',
+              label: context.l10n.navCargaDocente,
               onTap: () => Navigator.pushReplacementNamed(
                 context,
                 AppRoutes.cargaDocente,
@@ -238,7 +259,7 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
             ),
             _QuickAction(
               icon: SigadIcons.laboratorio,
-              label: 'Laboratórios',
+              label: context.l10n.navLaboratorios,
               onTap: () => Navigator.pushReplacementNamed(
                 context,
                 AppRoutes.aulasPraticas,
@@ -246,13 +267,13 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
             ),
             _QuickAction(
               icon: SigadIcons.aviso,
-              label: 'Notícias',
+              label: context.l10n.maisNoticias,
               onTap: () =>
                   Navigator.pushReplacementNamed(context, AppRoutes.batePapo),
             ),
             _QuickAction(
               icon: SigadIcons.eventoConfirmado,
-              label: 'Reuniões',
+              label: context.l10n.maisReunioes,
               onTap: () =>
                   Navigator.pushReplacementNamed(context, AppRoutes.calendario),
             ),
@@ -371,7 +392,7 @@ class _EmptyMetricsPlaceholder extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Nenhum indicador selecionado. Toque no ícone ao lado para escolher.',
+            context.l10n.vgNenhumIndicador,
             textAlign: TextAlign.center,
             style: Theme.of(
               context,
@@ -440,18 +461,17 @@ class _SigadChatPageState extends State<SigadChatPage> {
 
     return _PageFrame(
       header: _PageHeader(
-        eyebrow: 'COMUNICAÇÃO',
-        title: 'Bate-papo',
-        subtitle: 'Conversas, grupos e avisos internos do DEE.',
+        eyebrow: context.l10n.vgComunicacao,
+        title: context.l10n.navBatePapo,
+        subtitle: context.l10n.vgChatSub,
         actions: [
           _HeaderAction(
             icon: SigadIcons.comentarioAdicionar,
-            label: 'Nova conversa',
+            label: context.l10n.chatNovaConversa,
             onPressed: () => _showActionDialog(
               context,
-              title: 'Nova conversa',
-              message:
-                  'Selecione usuários ou grupos para iniciar uma conversa.',
+              title: context.l10n.chatNovaConversa,
+              message: context.l10n.vgSelecioneUsuarios,
             ),
           ),
         ],
@@ -475,7 +495,7 @@ class _SigadChatPageState extends State<SigadChatPage> {
               controller: _controller,
               onSend: () {
                 if (_controller.text.trim().isEmpty) return;
-                _notify(context, 'Mensagem enviada.');
+                _notify(context, context.l10n.vgMensagemEnviada);
                 _controller.clear();
               },
             );
@@ -523,18 +543,17 @@ class _SigadCargaDocentePageState extends State<SigadCargaDocentePage> {
   Widget build(BuildContext context) {
     return _PageFrame(
       header: _PageHeader(
-        eyebrow: 'GESTÃO ACADÊMICA',
-        title: 'Carga docente',
-        subtitle:
-            'Distribuição, limites, conflitos e validação das atividades.',
+        eyebrow: context.l10n.vgGestaoAcademica,
+        title: context.l10n.navCargaDocente,
+        subtitle: context.l10n.vgCargaSub,
         actions: [
           _HeaderAction(
             icon: SigadIcons.adicionar,
-            label: 'Nova distribuição',
+            label: context.l10n.vgNovaDistribuicao,
             onPressed: () => _showActionDialog(
               context,
-              title: 'Nova distribuição',
-              message: 'Cadastre disciplinas, atividades e carga do docente.',
+              title: context.l10n.vgNovaDistribuicao,
+              message: context.l10n.vgNovaDistribuicaoMsg,
             ),
           ),
         ],
@@ -543,21 +562,21 @@ class _SigadCargaDocentePageState extends State<SigadCargaDocentePage> {
         _FilterToolbar(
           children: [
             _DropdownFilter(
-              label: 'Período',
+              label: context.l10n.vgPeriodo,
               value: _periodo,
               items: const ['2026.1', '2026.2', '2027.1'],
               onChanged: (value) => setState(() => _periodo = value),
             ),
             _DropdownFilter(
-              label: 'Status',
+              label: context.l10n.demStatus,
               value: _status,
               items: const ['Todos', 'Regular', 'Atenção', 'Excedida'],
               onChanged: (value) => setState(() => _status = value),
             ),
-            const Expanded(
+            Expanded(
               child: TextField(
                 decoration: InputDecoration(
-                  hintText: 'Buscar professor',
+                  hintText: context.l10n.vgBuscarProfessor,
                   prefixIcon: SigadIcon(SigadIcons.buscar),
                 ),
               ),
@@ -565,43 +584,43 @@ class _SigadCargaDocentePageState extends State<SigadCargaDocentePage> {
           ],
         ),
         const SizedBox(height: 16),
-        const _ResponsiveGrid(
+        _ResponsiveGrid(
           minItemWidth: 210,
           children: [
             _MetricCard(
               icon: SigadIcons.grupo,
-              label: 'Docentes',
+              label: context.l10n.vgDocentes,
               value: '32',
-              detail: 'Período 2026.2',
+              detail: context.l10n.vgPeriodoValor('2026.2'),
               tone: _MetricTone.primary,
             ),
             _MetricCard(
               icon: SigadIcons.concluido,
-              label: 'Carga regular',
+              label: context.l10n.vgCargaRegular,
               value: '24',
-              detail: '75% do quadro',
+              detail: context.l10n.vgDoQuadro,
               tone: _MetricTone.success,
             ),
             _MetricCard(
               icon: SigadIcons.alerta,
-              label: 'Requer atenção',
+              label: context.l10n.vgRequerAtencao,
               value: '06',
-              detail: 'Abaixo ou acima do limite',
+              detail: context.l10n.vgAbaixoAcima,
               tone: _MetricTone.warning,
             ),
             _MetricCard(
               icon: SigadIcons.sincronizacaoErro,
-              label: 'Conflitos',
+              label: context.l10n.vgConflitos,
               value: '02',
-              detail: 'Horários sobrepostos',
+              detail: context.l10n.vgHorariosSobrepostos,
               tone: _MetricTone.risk,
             ),
           ],
         ),
         const SizedBox(height: 16),
         _SectionCard(
-          title: 'Distribuição por docente',
-          subtitle: 'Ensino, pesquisa, extensão, gestão e orientações',
+          title: context.l10n.vgDistribuicaoPorDocente,
+          subtitle: context.l10n.vgDistribuicaoSub,
           icon: SigadIcons.balanca,
           child: Column(
             children: const [
@@ -685,17 +704,17 @@ class _SigadProfessoresPageState extends State<SigadProfessoresPage> {
 
     return _PageFrame(
       header: _PageHeader(
-        eyebrow: 'GESTÃO DE PESSOAS',
-        title: 'Professores',
-        subtitle: 'Quadro docente, áreas, situação funcional e carga atual.',
+        eyebrow: context.l10n.vgGestaoPessoas,
+        title: context.l10n.navProfessores,
+        subtitle: context.l10n.vgProfessoresSub,
         actions: [
           _HeaderAction(
             icon: SigadIcons.pessoaAdicionar,
-            label: 'Cadastrar',
+            label: context.l10n.vgCadastrar,
             onPressed: () => _showActionDialog(
               context,
-              title: 'Cadastrar professor',
-              message: 'Informe dados funcionais, área e vínculo.',
+              title: context.l10n.vgCadastrarProfessor,
+              message: context.l10n.vgCadastrarProfessorMsg,
             ),
           ),
         ],
@@ -706,14 +725,14 @@ class _SigadProfessoresPageState extends State<SigadProfessoresPage> {
             Expanded(
               child: TextField(
                 onChanged: (value) => setState(() => _query = value),
-                decoration: const InputDecoration(
-                  hintText: 'Buscar nome ou área',
+                decoration: InputDecoration(
+                  hintText: context.l10n.vgBuscarNomeArea,
                   prefixIcon: SigadIcon(SigadIcons.buscar),
                 ),
               ),
             ),
             _DropdownFilter(
-              label: 'Área',
+              label: context.l10n.vgArea,
               value: _area,
               items: const [
                 'Todas',
@@ -737,8 +756,11 @@ class _SigadProfessoresPageState extends State<SigadProfessoresPage> {
                   onTap: () => _showActionDialog(
                     context,
                     title: teacher.name,
-                    message:
-                        'Área: ${teacher.area}\nCarga atual: ${teacher.load}\nSituação: ${teacher.status}',
+                    message: context.l10n.vgProfessorDetalhe(
+                      teacher.area,
+                      teacher.load,
+                      context.l10n.opcaoVisaoGeral(teacher.status),
+                    ),
                   ),
                 ),
               )
@@ -804,44 +826,44 @@ class _SigadDemandasPageState extends State<SigadDemandasPage> {
 
     return _PageFrame(
       header: _PageHeader(
-        eyebrow: 'PLANEJAMENTO',
-        title: 'Demandas',
-        subtitle: 'Solicitações, responsáveis, prazos e acompanhamento.',
+        eyebrow: context.l10n.vgPlanejamento,
+        title: context.l10n.navDemandas,
+        subtitle: context.l10n.vgDemandasSub,
         actions: [
           _HeaderAction(
             icon: SigadIcons.tarefaAdicionar,
-            label: 'Nova demanda',
+            label: context.l10n.vgNovaDemanda,
             onPressed: () => _showActionDialog(
               context,
-              title: 'Nova demanda',
-              message: 'Cadastre descrição, responsável, prazo e prioridade.',
+              title: context.l10n.vgNovaDemanda,
+              message: context.l10n.vgNovaDemandaMsg,
             ),
           ),
         ],
       ),
       children: [
-        const _ResponsiveGrid(
+        _ResponsiveGrid(
           minItemWidth: 210,
           children: [
             _MetricCard(
               icon: SigadIcons.caixaEntrada,
-              label: 'Abertas',
+              label: context.l10n.demAbertas,
               value: '12',
-              detail: 'No período atual',
+              detail: context.l10n.vgNoPeriodoAtual,
               tone: _MetricTone.primary,
             ),
             _MetricCard(
               icon: SigadIcons.progressoTempo,
-              label: 'Em andamento',
+              label: context.l10n.vgOpEmAndamento,
               value: '07',
-              detail: '58% do total',
+              detail: context.l10n.vgDoTotal58,
               tone: _MetricTone.info,
             ),
             _MetricCard(
               icon: SigadIcons.erro,
-              label: 'Atrasadas',
+              label: context.l10n.vgAtrasadas,
               value: '03',
-              detail: 'Ação necessária',
+              detail: context.l10n.vgAcaoNecessaria,
               tone: _MetricTone.risk,
             ),
           ],
@@ -852,14 +874,14 @@ class _SigadDemandasPageState extends State<SigadDemandasPage> {
             Expanded(
               child: TextField(
                 onChanged: (value) => setState(() => _query = value),
-                decoration: const InputDecoration(
-                  hintText: 'Buscar demanda',
+                decoration: InputDecoration(
+                  hintText: context.l10n.vgBuscarDemanda,
                   prefixIcon: SigadIcon(SigadIcons.buscar),
                 ),
               ),
             ),
             _DropdownFilter(
-              label: 'Status',
+              label: context.l10n.demStatus,
               value: _status,
               items: const [
                 'Todas',
@@ -874,8 +896,8 @@ class _SigadDemandasPageState extends State<SigadDemandasPage> {
         ),
         const SizedBox(height: 16),
         _SectionCard(
-          title: 'Lista de demandas',
-          subtitle: '${filtered.length} resultados',
+          title: context.l10n.vgListaDemandas,
+          subtitle: context.l10n.vgResultados(filtered.length),
           icon: SigadIcons.demanda,
           child: Column(
             children: filtered
@@ -885,8 +907,12 @@ class _SigadDemandasPageState extends State<SigadDemandasPage> {
                     onTap: () => _showActionDialog(
                       context,
                       title: item.title,
-                      message:
-                          '${item.id}\nResponsável: ${item.owner}\nPrazo: ${item.deadline}\nPrioridade: ${item.priority}',
+                      message: context.l10n.vgDemandaDetalhe(
+                        item.id,
+                        item.owner,
+                        item.deadline,
+                        context.l10n.opcaoVisaoGeral(item.priority),
+                      ),
                     ),
                   ),
                 )
@@ -924,17 +950,17 @@ class _SigadKanbanPageState extends State<SigadKanbanPage> {
   Widget build(BuildContext context) {
     return _PageFrame(
       header: _PageHeader(
-        eyebrow: 'EXECUÇÃO',
-        title: 'Tarefas',
-        subtitle: 'Quadro visual para acompanhar atividades e responsáveis.',
+        eyebrow: context.l10n.vgExecucao,
+        title: context.l10n.navTarefas,
+        subtitle: context.l10n.vgTarefasSub,
         actions: [
           _HeaderAction(
             icon: SigadIcons.adicionar,
-            label: 'Nova tarefa',
+            label: context.l10n.vgNovaTarefa,
             onPressed: () => _showActionDialog(
               context,
-              title: 'Nova tarefa',
-              message: 'Defina título, responsável, prazo e prioridade.',
+              title: context.l10n.vgNovaTarefa,
+              message: context.l10n.vgNovaTarefaMsg,
             ),
           ),
         ],
@@ -956,11 +982,13 @@ class _SigadKanbanPageState extends State<SigadKanbanPage> {
                   return SizedBox(
                     width: width,
                     child: _KanbanColumn(
-                      title: entry.key,
+                      title: context.l10n.opcaoVisaoGeral(entry.key),
                       items: entry.value,
                       onAdd: () => _notify(
                         context,
-                        'Ação para adicionar tarefa em ${entry.key}.',
+                        context.l10n.vgAdicionarTarefaEm(
+                          context.l10n.opcaoVisaoGeral(entry.key),
+                        ),
                       ),
                     ),
                   );
@@ -989,52 +1017,51 @@ class _SigadLaboratoriosPageState extends State<SigadLaboratoriosPage> {
   Widget build(BuildContext context) {
     return _PageFrame(
       header: _PageHeader(
-        eyebrow: 'INFRAESTRUTURA',
-        title: 'Laboratórios',
-        subtitle: 'Disponibilidade, reservas, conflitos e manutenção.',
+        eyebrow: context.l10n.vgInfraestrutura,
+        title: context.l10n.navLaboratorios,
+        subtitle: context.l10n.vgLabsSub,
         actions: [
           _HeaderAction(
             icon: SigadIcons.adicionarCirculo,
-            label: 'Nova reserva',
+            label: context.l10n.vgNovaReserva,
             onPressed: () => _showActionDialog(
               context,
-              title: 'Nova reserva',
-              message:
-                  'Selecione laboratório, data, turno, disciplina e responsável.',
+              title: context.l10n.vgNovaReserva,
+              message: context.l10n.vgNovaReservaMsg,
             ),
           ),
         ],
       ),
       children: [
-        const _ResponsiveGrid(
+        _ResponsiveGrid(
           minItemWidth: 210,
           children: [
             _MetricCard(
               icon: SigadIcons.eventoConfirmado,
-              label: 'Reservas hoje',
+              label: context.l10n.vgReservasHoje,
               value: '09',
-              detail: '5 laboratórios',
+              detail: context.l10n.vgCincoLabs,
               tone: _MetricTone.primary,
             ),
             _MetricCard(
               icon: SigadIcons.sala,
-              label: 'Em uso',
+              label: context.l10n.vgEmUso,
               value: '05',
-              detail: 'Neste horário',
+              detail: context.l10n.vgNesteHorario,
               tone: _MetricTone.success,
             ),
             _MetricCard(
               icon: SigadIcons.manutencao,
-              label: 'Em manutenção',
+              label: context.l10n.vgEmManutencao,
               value: '01',
-              detail: 'Acesso temporariamente restrito',
+              detail: context.l10n.vgAcessoRestrito,
               tone: _MetricTone.warning,
             ),
             _MetricCard(
               icon: SigadIcons.sincronizacaoErro,
-              label: 'Conflitos',
+              label: context.l10n.vgConflitos,
               value: '00',
-              detail: 'Nenhuma sobreposição',
+              detail: context.l10n.vgNenhumaSobreposicao,
               tone: _MetricTone.info,
             ),
           ],
@@ -1043,7 +1070,7 @@ class _SigadLaboratoriosPageState extends State<SigadLaboratoriosPage> {
         _FilterToolbar(
           children: [
             _DropdownFilter(
-              label: 'Laboratório',
+              label: context.l10n.vgLaboratorio,
               value: _lab,
               items: const [
                 'Todos',
@@ -1055,7 +1082,7 @@ class _SigadLaboratoriosPageState extends State<SigadLaboratoriosPage> {
               onChanged: (value) => setState(() => _lab = value),
             ),
             _DropdownFilter(
-              label: 'Visualização',
+              label: context.l10n.vgVisualizacao,
               value: _view,
               items: const ['Agenda semanal', 'Calendário mensal', 'Ocupação'],
               onChanged: (value) => setState(() => _view = value),
@@ -1065,22 +1092,22 @@ class _SigadLaboratoriosPageState extends State<SigadLaboratoriosPage> {
         const SizedBox(height: 16),
         if (_view == 'Agenda semanal')
           _SectionCard(
-            title: 'Agenda semanal',
-            subtitle: 'Períodos de segunda a sexta',
+            title: context.l10n.vgOpAgendaSemanal,
+            subtitle: context.l10n.vgAgendaSemanalSub,
             icon: SigadIcons.calendarioSemana,
             child: const _LabSchedule(),
           )
         else if (_view == 'Calendário mensal')
           _SectionCard(
-            title: 'Calendário de reservas',
-            subtitle: 'Visão consolidada do mês',
+            title: context.l10n.vgCalendarioReservas,
+            subtitle: context.l10n.vgVisaoMes,
             icon: SigadIcons.calendario,
             child: const _MonthOverview(),
           )
         else
           _SectionCard(
-            title: 'Ocupação e otimização',
-            subtitle: 'Uso médio e horários disponíveis',
+            title: context.l10n.vgOcupacaoOtimizacao,
+            subtitle: context.l10n.vgUsoMedio,
             icon: SigadIcons.analise,
             child: const _LabOccupancy(),
           ),
@@ -1123,18 +1150,17 @@ class _SigadAtividadesPageState extends State<SigadAtividadesPage> {
 
     return _PageFrame(
       header: _PageHeader(
-        eyebrow: 'ACOMPANHAMENTO',
-        title: 'Atividades',
-        subtitle:
-            'Ações acadêmicas e administrativas com prazos e responsáveis.',
+        eyebrow: context.l10n.vgAcompanhamento,
+        title: context.l10n.navAtividades,
+        subtitle: context.l10n.vgAtividadesSub,
         actions: [
           _HeaderAction(
             icon: SigadIcons.tarefaAdicionar,
-            label: 'Nova atividade',
+            label: context.l10n.vgNovaAtividade,
             onPressed: () => _showActionDialog(
               context,
-              title: 'Nova atividade',
-              message: 'Cadastre título, categoria, prazo e responsável.',
+              title: context.l10n.vgNovaAtividade,
+              message: context.l10n.vgNovaAtividadeMsg,
             ),
           ),
         ],
@@ -1143,15 +1169,15 @@ class _SigadAtividadesPageState extends State<SigadAtividadesPage> {
         _FilterToolbar(
           children: [
             _DropdownFilter(
-              label: 'Status',
+              label: context.l10n.demStatus,
               value: _status,
               items: const ['Todas', 'Pendente', 'Em progresso', 'Concluída'],
               onChanged: (value) => setState(() => _status = value),
             ),
-            const Expanded(
+            Expanded(
               child: TextField(
                 decoration: InputDecoration(
-                  hintText: 'Buscar atividade',
+                  hintText: context.l10n.vgBuscarAtividade,
                   prefixIcon: SigadIcon(SigadIcons.buscar),
                 ),
               ),
@@ -1160,8 +1186,8 @@ class _SigadAtividadesPageState extends State<SigadAtividadesPage> {
         ),
         const SizedBox(height: 16),
         _SectionCard(
-          title: 'Atividades do período',
-          subtitle: '${filtered.length} itens',
+          title: context.l10n.vgAtividadesPeriodo,
+          subtitle: context.l10n.vgItens(filtered.length),
           icon: SigadIcons.checklist,
           child: Column(
             children: filtered
@@ -1171,8 +1197,11 @@ class _SigadAtividadesPageState extends State<SigadAtividadesPage> {
                     onTap: () => _showActionDialog(
                       context,
                       title: item.title,
-                      message:
-                          'Categoria: ${item.category}\nPrazo: ${item.deadline}\nStatus: ${item.status}',
+                      message: context.l10n.vgAtividadeDetalhe(
+                        item.category,
+                        item.deadline,
+                        context.l10n.opcaoVisaoGeral(item.status),
+                      ),
                     ),
                   ),
                 )
@@ -1226,17 +1255,17 @@ class _SigadRelatoriosPageState extends State<SigadRelatoriosPage> {
 
     return _PageFrame(
       header: _PageHeader(
-        eyebrow: 'ANÁLISE',
-        title: 'Relatórios',
-        subtitle: 'Indicadores, documentos e exportações para apoio à gestão.',
+        eyebrow: context.l10n.vgAnalise,
+        title: context.l10n.navRelatorios,
+        subtitle: context.l10n.vgRelatoriosSub,
         actions: [
           _HeaderAction(
             icon: SigadIcons.tendencia,
-            label: 'Gerar relatório',
+            label: context.l10n.vgGerarRelatorio,
             onPressed: () => _showActionDialog(
               context,
-              title: 'Gerar relatório',
-              message: 'Selecione fonte, período, formato e filtros.',
+              title: context.l10n.vgGerarRelatorio,
+              message: context.l10n.vgGerarRelatorioMsg,
             ),
           ),
         ],
@@ -1245,13 +1274,13 @@ class _SigadRelatoriosPageState extends State<SigadRelatoriosPage> {
         _FilterToolbar(
           children: [
             _DropdownFilter(
-              label: 'Período',
+              label: context.l10n.vgPeriodo,
               value: _periodo,
               items: const ['2026.1', '2026.2', '2027.1'],
               onChanged: (value) => setState(() => _periodo = value),
             ),
             _DropdownFilter(
-              label: 'Tipo',
+              label: context.l10n.vgTipo,
               value: _tipo,
               items: const [
                 'Todos',
@@ -1265,28 +1294,28 @@ class _SigadRelatoriosPageState extends State<SigadRelatoriosPage> {
           ],
         ),
         const SizedBox(height: 16),
-        const _ResponsiveGrid(
+        _ResponsiveGrid(
           minItemWidth: 210,
           children: [
             _MetricCard(
               icon: SigadIcons.documento,
-              label: 'Relatórios disponíveis',
+              label: context.l10n.vgRelatoriosDisponiveis,
               value: '12',
-              detail: '4 categorias',
+              detail: context.l10n.vgQuatroCategorias,
               tone: _MetricTone.primary,
             ),
             _MetricCard(
               icon: SigadIcons.baixado,
-              label: 'Exportados no mês',
+              label: context.l10n.vgExportadosMes,
               value: '18',
               detail: 'PDF, XLSX e CSV',
               tone: _MetricTone.success,
             ),
             _MetricCard(
               icon: SigadIcons.relogio,
-              label: 'Agendados',
+              label: context.l10n.vgAgendados,
               value: '03',
-              detail: 'Envio automático',
+              detail: context.l10n.vgEnvioAutomatico,
               tone: _MetricTone.info,
             ),
           ],
@@ -1299,8 +1328,10 @@ class _SigadRelatoriosPageState extends State<SigadRelatoriosPage> {
               .map(
                 (report) => _ReportCard(
                   report: report,
-                  onOpen: () => _notify(context, 'Abrindo ${report.title}.'),
-                  onExport: () => _notify(context, 'Exportação preparada.'),
+                  onOpen: () =>
+                      _notify(context, context.l10n.vgAbrindo(report.title)),
+                  onExport: () =>
+                      _notify(context, context.l10n.vgExportacaoPreparada),
                 ),
               )
               .toList(),
@@ -1327,58 +1358,58 @@ class _SigadConfiguracoesPageState extends State<SigadConfiguracoesPage> {
   Widget build(BuildContext context) {
     return _PageFrame(
       header: _PageHeader(
-        eyebrow: 'PREFERÊNCIAS',
-        title: 'Configurações',
-        subtitle: 'Conta, notificações, aparência, segurança e dados.',
+        eyebrow: context.l10n.vgPreferencias,
+        title: context.l10n.navConfiguracoes,
+        subtitle: context.l10n.vgConfigSub,
         actions: [
           _HeaderAction(
             icon: SigadIcons.salvar,
-            label: 'Salvar',
-            onPressed: () => _notify(context, 'Configurações salvas.'),
+            label: context.l10n.salvar,
+            onPressed: () => _notify(context, context.l10n.vgConfigSalvas),
           ),
         ],
       ),
       children: [
         _ResponsiveSplit(
           primary: _SectionCard(
-            title: 'Perfil e conta',
-            subtitle: 'Dados da sessão atual',
+            title: context.l10n.vgPerfilConta,
+            subtitle: context.l10n.vgDadosSessao,
             icon: SigadIcons.contaGerenciar,
             child: Column(
               children: [
-                const _SettingInfoTile(
+                _SettingInfoTile(
                   icon: SigadIcons.pessoa,
-                  title: 'Nome de exibição',
-                  value: 'Usuário institucional',
+                  title: context.l10n.vgNomeExibicao,
+                  value: context.l10n.vgUsuarioInstitucional,
                 ),
-                const _SettingInfoTile(
+                _SettingInfoTile(
                   icon: SigadIcons.arroba,
-                  title: 'E-mail',
-                  value: 'Conta institucional',
+                  title: context.l10n.vgEmail,
+                  value: context.l10n.vgContaInstitucional,
                 ),
-                const _SettingInfoTile(
+                _SettingInfoTile(
                   icon: SigadIcons.cracha,
-                  title: 'Perfil de acesso',
-                  value: 'Definido pela autenticação',
+                  title: context.l10n.vgPerfilAcesso,
+                  value: context.l10n.vgDefinidoAutenticacao,
                 ),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: OutlinedButton.icon(
                     onPressed: () => _showActionDialog(
                       context,
-                      title: 'Editar perfil',
-                      message: 'Atualize dados pessoais e preferências.',
+                      title: context.l10n.vgEditarPerfil,
+                      message: context.l10n.vgEditarPerfilMsg,
                     ),
                     icon: const SigadIcon(SigadIcons.editar),
-                    label: const Text('Editar perfil'),
+                    label: Text(context.l10n.vgEditarPerfil),
                   ),
                 ),
               ],
             ),
           ),
           secondary: _SectionCard(
-            title: 'Notificações',
-            subtitle: 'Canais e alertas',
+            title: context.l10n.notificacoes,
+            subtitle: context.l10n.vgCanaisAlertas,
             icon: SigadIcons.notificacao,
             child: Column(
               children: [
@@ -1386,15 +1417,15 @@ class _SigadConfiguracoesPageState extends State<SigadConfiguracoesPage> {
                   contentPadding: EdgeInsets.zero,
                   value: _notifications,
                   onChanged: (value) => setState(() => _notifications = value),
-                  title: const Text('Notificações no aplicativo'),
-                  subtitle: const Text('Alertas, convites e prazos'),
+                  title: Text(context.l10n.vgNotifApp),
+                  subtitle: Text(context.l10n.vgNotifAppSub),
                 ),
                 SwitchListTile.adaptive(
                   contentPadding: EdgeInsets.zero,
                   value: _email,
                   onChanged: (value) => setState(() => _email = value),
-                  title: const Text('Notificações por e-mail'),
-                  subtitle: const Text('Resumo e comunicações importantes'),
+                  title: Text(context.l10n.vgNotifEmail),
+                  subtitle: Text(context.l10n.vgNotifEmailSub),
                 ),
               ],
             ),
@@ -1403,8 +1434,8 @@ class _SigadConfiguracoesPageState extends State<SigadConfiguracoesPage> {
         const SizedBox(height: 16),
         _ResponsiveSplit(
           primary: _SectionCard(
-            title: 'Aparência',
-            subtitle: 'Densidade e visualização',
+            title: context.l10n.vgAparencia,
+            subtitle: context.l10n.vgDensidade,
             icon: SigadIcons.paleta,
             child: Column(
               children: [
@@ -1412,20 +1443,20 @@ class _SigadConfiguracoesPageState extends State<SigadConfiguracoesPage> {
                   contentPadding: EdgeInsets.zero,
                   value: _compact,
                   onChanged: (value) => setState(() => _compact = value),
-                  title: const Text('Modo compacto'),
-                  subtitle: const Text('Exibe mais informações por tela'),
+                  title: Text(context.l10n.vgModoCompacto),
+                  subtitle: Text(context.l10n.vgModoCompactoSub),
                 ),
-                const _SettingInfoTile(
+                _SettingInfoTile(
                   icon: SigadIcons.contraste,
-                  title: 'Tema',
-                  value: 'Segue a configuração do aplicativo',
+                  title: context.l10n.vgTema,
+                  value: context.l10n.vgTemaValor,
                 ),
               ],
             ),
           ),
           secondary: _SectionCard(
-            title: 'Segurança e dados',
-            subtitle: 'Sessão, acesso e armazenamento',
+            title: context.l10n.vgSegurancaDados,
+            subtitle: context.l10n.vgSessaoAcesso,
             icon: SigadIcons.escudo,
             child: Column(
               children: [
@@ -1433,25 +1464,24 @@ class _SigadConfiguracoesPageState extends State<SigadConfiguracoesPage> {
                   contentPadding: EdgeInsets.zero,
                   value: _biometrics,
                   onChanged: (value) => setState(() => _biometrics = value),
-                  title: const Text('Biometria'),
-                  subtitle: const Text('Usar autenticação do dispositivo'),
+                  title: Text(context.l10n.vgBiometria),
+                  subtitle: Text(context.l10n.vgBiometriaSub),
                 ),
-                const _SettingInfoTile(
+                _SettingInfoTile(
                   icon: SigadIcons.nuvemSincronizar,
-                  title: 'Sincronização',
-                  value: 'Automática quando disponível',
+                  title: context.l10n.vgSincronizacao,
+                  value: context.l10n.vgSincronizacaoValor,
                 ),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: TextButton.icon(
                     onPressed: () => _showActionDialog(
                       context,
-                      title: 'Limpar dados locais',
-                      message:
-                          'Esta ação remove apenas caches e preferências locais.',
+                      title: context.l10n.vgLimparDados,
+                      message: context.l10n.vgLimparDadosMsg,
                     ),
                     icon: const SigadIcon(SigadIcons.limpeza),
-                    label: const Text('Limpar dados locais'),
+                    label: Text(context.l10n.vgLimparDados),
                   ),
                 ),
               ],
@@ -1716,7 +1746,9 @@ class _SectionCard extends StatelessWidget {
             ),
             const SizedBox(height: 16),
           ],
-          child,
+          // Material próprio para o efeito de toque dos ListTile aparecer
+          // sobre o fundo do card.
+          Material(type: MaterialType.transparency, child: child),
         ],
       ),
     );
@@ -2008,9 +2040,15 @@ class _DropdownFilter extends StatelessWidget {
       width: 190,
       child: DropdownButtonFormField<String>(
         initialValue: value,
+        isExpanded: true,
         decoration: InputDecoration(labelText: label),
         items: items
-            .map((item) => DropdownMenuItem(value: item, child: Text(item)))
+            .map(
+              (item) => DropdownMenuItem(
+                value: item,
+                child: Text(context.l10n.opcaoVisaoGeral(item)),
+              ),
+            )
             .toList(),
         onChanged: (value) {
           if (value != null) onChanged(value);
@@ -2054,7 +2092,7 @@ class _ConversationList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return Container(
+    return Ink(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: colors.surface,
@@ -2065,15 +2103,15 @@ class _ConversationList extends StatelessWidget {
         children: [
           TextField(
             onChanged: onQueryChanged,
-            decoration: const InputDecoration(
-              hintText: 'Buscar conversa',
+            decoration: InputDecoration(
+              hintText: context.l10n.chatBuscarConversa,
               prefixIcon: SigadIcon(SigadIcons.buscar),
             ),
           ),
           const SizedBox(height: 12),
           Expanded(
             child: conversations.isEmpty
-                ? const Center(child: Text('Nenhuma conversa encontrada.'))
+                ? Center(child: Text(context.l10n.chatNenhumaEncontrada))
                 : ListView.separated(
                     itemCount: conversations.length,
                     separatorBuilder: (_, _) => const Divider(height: 1),
@@ -2117,7 +2155,7 @@ class _ConversationList extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              item.time,
+                              context.l10n.opcaoVisaoGeral(item.time),
                               style: Theme.of(context).textTheme.labelSmall,
                             ),
                             if (item.unread > 0)
@@ -2171,7 +2209,7 @@ class _ChatPanel extends StatelessWidget {
         border: Border.all(color: colors.outlineVariant),
       ),
       child: conversation == null
-          ? const Center(child: Text('Selecione uma conversa.'))
+          ? Center(child: Text(context.l10n.vgSelecioneConversa))
           : Column(
               children: [
                 ListTile(
@@ -2185,7 +2223,7 @@ class _ChatPanel extends StatelessWidget {
                     ),
                   ),
                   title: Text(conversation!.name),
-                  subtitle: const Text('Disponível'),
+                  subtitle: Text(context.l10n.vgDisponivel),
                   trailing: Wrap(
                     children: [
                       IconButton(
@@ -2235,8 +2273,8 @@ class _ChatPanel extends StatelessWidget {
                         child: TextField(
                           controller: controller,
                           onSubmitted: (_) => onSend(),
-                          decoration: const InputDecoration(
-                            hintText: 'Escrever mensagem',
+                          decoration: InputDecoration(
+                            hintText: context.l10n.vgEscreverMensagem,
                           ),
                         ),
                       ),
@@ -2335,7 +2373,7 @@ class _WorkloadRow extends StatelessWidget {
                   children: [
                     Text(name, style: Theme.of(context).textTheme.titleSmall),
                     Text(
-                      'Ensino: ${teaching}h · Outras atividades: ${other}h',
+                      context.l10n.vgEnsinoOutras('$teaching', '$other'),
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
@@ -2346,7 +2384,10 @@ class _WorkloadRow extends StatelessWidget {
           final meter = Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              _StatusPill(label: status, color: color),
+              _StatusPill(
+                label: context.l10n.opcaoVisaoGeral(status),
+                color: color,
+              ),
               const SizedBox(height: 8),
               SizedBox(
                 width: 180,
@@ -2358,7 +2399,7 @@ class _WorkloadRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              Text('$total h de $maximum h'),
+              Text(context.l10n.vgTotalDeMaximo('$total', '$maximum')),
             ],
           );
           if (compact) {
@@ -2436,7 +2477,7 @@ class _TeacherCard extends StatelessWidget {
                 ),
                 const Spacer(),
                 _StatusPill(
-                  label: teacher.status,
+                  label: context.l10n.opcaoVisaoGeral(teacher.status),
                   color: active ? SigadColors.success : SigadColors.warning,
                 ),
               ],
@@ -2450,7 +2491,7 @@ class _TeacherCard extends StatelessWidget {
               children: [
                 const SigadIcon(SigadIcons.relogio, size: 18),
                 const SizedBox(width: 6),
-                Text('Carga atual: ${teacher.load}'),
+                Flexible(child: Text(context.l10n.vgCargaAtual(teacher.load))),
               ],
             ),
           ],
@@ -2503,8 +2544,13 @@ class _DemandTile extends StatelessWidget {
         child: SigadIcon(SigadIcons.demanda, color: color),
       ),
       title: Text(item.title),
-      subtitle: Text('${item.id} · ${item.owner} · Prazo ${item.deadline}'),
-      trailing: _StatusPill(label: item.status, color: color),
+      subtitle: Text(
+        '${item.id} · ${item.owner} · ${context.l10n.vgPrazo(item.deadline)}',
+      ),
+      trailing: _StatusPill(
+        label: context.l10n.opcaoVisaoGeral(item.status),
+        color: color,
+      ),
       onTap: onTap,
     );
   }
@@ -2586,7 +2632,10 @@ class _KanbanColumn extends StatelessWidget {
                       Row(
                         children: [
                           Expanded(child: Text(item.area)),
-                          _StatusPill(label: item.priority, color: color),
+                          _StatusPill(
+                            label: context.l10n.opcaoVisaoGeral(item.priority),
+                            color: color,
+                          ),
                         ],
                       ),
                     ],
@@ -2612,8 +2661,10 @@ class _LabSchedule extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: DataTable(
         columns: [
-          const DataColumn(label: Text('Período')),
-          ...days.map((day) => DataColumn(label: Text(day))),
+          DataColumn(label: Text(context.l10n.vgPeriodo)),
+          ...days.map(
+            (day) => DataColumn(label: Text(context.l10n.diaAbrev(day))),
+          ),
         ],
         rows: slots.asMap().entries.map((entry) {
           final index = entry.key;
@@ -2625,7 +2676,9 @@ class _LabSchedule extends StatelessWidget {
                 final occupied = (index + day.key) % 3 != 0;
                 return DataCell(
                   _StatusPill(
-                    label: occupied ? 'Reservado' : 'Livre',
+                    label: occupied
+                        ? context.l10n.vgReservado
+                        : context.l10n.vgLivre,
                     color: occupied ? SigadColors.brand : SigadColors.success,
                   ),
                 );
@@ -2660,7 +2713,11 @@ class _MonthOverview extends StatelessWidget {
             children: [
               Text('$day', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 6),
-              Text(occupied ? 'Com reservas' : 'Disponível'),
+              Text(
+                occupied
+                    ? context.l10n.vgComReservas
+                    : context.l10n.vgDisponivel,
+              ),
             ],
           ),
         );
@@ -2735,8 +2792,13 @@ class _ActivityTile extends StatelessWidget {
       contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
       leading: Checkbox(value: item.status == 'Concluída', onChanged: (_) {}),
       title: Text(item.title),
-      subtitle: Text('${item.category} · Prazo ${item.deadline}'),
-      trailing: _StatusPill(label: item.status, color: color),
+      subtitle: Text(
+        '${item.category} · ${context.l10n.vgPrazo(item.deadline)}',
+      ),
+      trailing: _StatusPill(
+        label: context.l10n.opcaoVisaoGeral(item.status),
+        color: color,
+      ),
       onTap: onTap,
     );
   }
@@ -2787,21 +2849,24 @@ class _ReportCard extends StatelessWidget {
           const SizedBox(height: 14),
           Text(report.title, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 4),
-          Text('${report.category} · ${report.updated}'),
+          Text(
+            '${context.l10n.opcaoVisaoGeral(report.category)} · '
+            '${context.l10n.opcaoVisaoGeral(report.updated)}',
+          ),
           const SizedBox(height: 16),
           Row(
             children: [
               Expanded(
                 child: OutlinedButton(
                   onPressed: onOpen,
-                  child: const Text('Visualizar'),
+                  child: Text(context.l10n.relVisualizar),
                 ),
               ),
               const SizedBox(width: 8),
               IconButton.filledTonal(
                 onPressed: onExport,
                 icon: const SigadIcon(SigadIcons.baixar),
-                tooltip: 'Exportar',
+                tooltip: context.l10n.vgExportar,
               ),
             ],
           ),
@@ -2877,14 +2942,14 @@ Future<void> _showActionDialog(
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Fechar'),
+          child: Text(context.l10n.fechar),
         ),
         FilledButton(
           onPressed: () {
             Navigator.pop(context);
-            _notify(context, 'Ação registrada.');
+            _notify(context, context.l10n.vgAcaoRegistrada);
           },
-          child: const Text('Continuar'),
+          child: Text(context.l10n.vgContinuar),
         ),
       ],
     ),

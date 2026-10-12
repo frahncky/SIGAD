@@ -1451,5 +1451,295 @@
         "type": "String"
       }
     }
-  }
+  },
+  "vgCargaAlocada": "Carga horária alocada",
+  "vgVsMesAnterior6": "↑ 6% vs. mês anterior",
+  "vgLabsEmUso": "Laboratórios em uso",
+  "vgVsSemana12": "↑ 12% vs. semana anterior",
+  "vgNoticiasEnviadas": "Notícias enviadas",
+  "vgVsSemana3": "↑ 3 vs. semana anterior",
+  "vgPendenciasAbertas": "Pendências em aberto",
+  "vgVsSemana1": "↓ 1 vs. semana anterior",
+  "vgIndicadoresPainel": "Indicadores do painel",
+  "vgEscolhaIndicadores": "Escolha quais indicadores aparecem no panorama.",
+  "vgPanorama": "Panorama do departamento",
+  "vgAtualizadoAgora": "Atualizado agora",
+  "vgPersonalizarIndicadores": "Personalizar indicadores",
+  "vgProximasPrioridades": "Próximas prioridades",
+  "vgPrioridadesDepartamento": "Prioridades do departamento",
+  "vgPrioridadesSub": "Planejamento e atividades mais próximas",
+  "vgPersonalizar": "Personalizar",
+  "vgNenhumIndicador": "Nenhum indicador selecionado. Toque no ícone ao lado para escolher.",
+  "vgOntem": "Ontem",
+  "vgMensagemEnviada": "Mensagem enviada.",
+  "vgSelecioneUsuarios": "Selecione usuários ou grupos para iniciar uma conversa.",
+  "vgPeriodo": "Período",
+  "vgTipo": "Tipo",
+  "vgArea": "Área",
+  "vgLaboratorio": "Laboratório",
+  "vgVisualizacao": "Visualização",
+  "vgAcaoRegistrada": "Ação registrada.",
+  "vgContinuar": "Continuar",
+  "vgResultados": "{count, plural, =1{1 resultado} other{{count} resultados}}",
+  "@vgResultados": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vgItens": "{count, plural, =1{1 item} other{{count} itens}}",
+  "@vgItens": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vgPrazo": "Prazo {data}",
+  "@vgPrazo": {
+    "placeholders": {
+      "data": {
+        "type": "String"
+      }
+    }
+  },
+  "vgComunicacao": "COMUNICAÇÃO",
+  "vgChatSub": "Conversas, grupos e avisos internos do DEE.",
+  "vgSelecioneConversa": "Selecione uma conversa.",
+  "vgDisponivel": "Disponível",
+  "vgEscreverMensagem": "Escrever mensagem",
+  "vgGestaoAcademica": "GESTÃO ACADÊMICA",
+  "vgCargaSub": "Distribuição, limites, conflitos e validação das atividades.",
+  "vgNovaDistribuicao": "Nova distribuição",
+  "vgNovaDistribuicaoMsg": "Cadastre disciplinas, atividades e carga do docente.",
+  "vgBuscarProfessor": "Buscar professor",
+  "vgDocentes": "Docentes",
+  "vgPeriodoValor": "Período {periodo}",
+  "@vgPeriodoValor": {
+    "placeholders": {
+      "periodo": {
+        "type": "String"
+      }
+    }
+  },
+  "vgCargaRegular": "Carga regular",
+  "vgDoQuadro": "75% do quadro",
+  "vgRequerAtencao": "Requer atenção",
+  "vgAbaixoAcima": "Abaixo ou acima do limite",
+  "vgConflitos": "Conflitos",
+  "vgHorariosSobrepostos": "Horários sobrepostos",
+  "vgDistribuicaoPorDocente": "Distribuição por docente",
+  "vgDistribuicaoSub": "Ensino, pesquisa, extensão, gestão e orientações",
+  "vgEnsinoOutras": "Ensino: {ensino}h · Outras atividades: {outras}h",
+  "@vgEnsinoOutras": {
+    "placeholders": {
+      "ensino": {
+        "type": "String"
+      },
+      "outras": {
+        "type": "String"
+      }
+    }
+  },
+  "vgTotalDeMaximo": "{total} h de {maximo} h",
+  "@vgTotalDeMaximo": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      },
+      "maximo": {
+        "type": "String"
+      }
+    }
+  },
+  "vgGestaoPessoas": "GESTÃO DE PESSOAS",
+  "vgProfessoresSub": "Quadro docente, áreas, situação funcional e carga atual.",
+  "vgCadastrar": "Cadastrar",
+  "vgCadastrarProfessor": "Cadastrar professor",
+  "vgCadastrarProfessorMsg": "Informe dados funcionais, área e vínculo.",
+  "vgBuscarNomeArea": "Buscar nome ou área",
+  "vgProfessorDetalhe": "Área: {area}\nCarga atual: {carga}\nSituação: {situacao}",
+  "@vgProfessorDetalhe": {
+    "placeholders": {
+      "area": {
+        "type": "String"
+      },
+      "carga": {
+        "type": "String"
+      },
+      "situacao": {
+        "type": "String"
+      }
+    }
+  },
+  "vgCargaAtual": "Carga atual: {carga}",
+  "@vgCargaAtual": {
+    "placeholders": {
+      "carga": {
+        "type": "String"
+      }
+    }
+  },
+  "vgPlanejamento": "PLANEJAMENTO",
+  "vgDemandasSub": "Solicitações, responsáveis, prazos e acompanhamento.",
+  "vgNovaDemanda": "Nova demanda",
+  "vgNovaDemandaMsg": "Cadastre descrição, responsável, prazo e prioridade.",
+  "vgNoPeriodoAtual": "No período atual",
+  "vgDoTotal58": "58% do total",
+  "vgAtrasadas": "Atrasadas",
+  "vgAcaoNecessaria": "Ação necessária",
+  "vgBuscarDemanda": "Buscar demanda",
+  "vgListaDemandas": "Lista de demandas",
+  "vgDemandaDetalhe": "{id}\nResponsável: {responsavel}\nPrazo: {prazo}\nPrioridade: {prioridade}",
+  "@vgDemandaDetalhe": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      },
+      "responsavel": {
+        "type": "String"
+      },
+      "prazo": {
+        "type": "String"
+      },
+      "prioridade": {
+        "type": "String"
+      }
+    }
+  },
+  "vgExecucao": "EXECUÇÃO",
+  "vgTarefasSub": "Quadro visual para acompanhar atividades e responsáveis.",
+  "vgNovaTarefa": "Nova tarefa",
+  "vgNovaTarefaMsg": "Defina título, responsável, prazo e prioridade.",
+  "vgAdicionarTarefaEm": "Ação para adicionar tarefa em {coluna}.",
+  "@vgAdicionarTarefaEm": {
+    "placeholders": {
+      "coluna": {
+        "type": "String"
+      }
+    }
+  },
+  "vgInfraestrutura": "INFRAESTRUTURA",
+  "vgLabsSub": "Disponibilidade, reservas, conflitos e manutenção.",
+  "vgNovaReserva": "Nova reserva",
+  "vgNovaReservaMsg": "Selecione laboratório, data, turno, disciplina e responsável.",
+  "vgReservasHoje": "Reservas hoje",
+  "vgCincoLabs": "5 laboratórios",
+  "vgEmUso": "Em uso",
+  "vgNesteHorario": "Neste horário",
+  "vgEmManutencao": "Em manutenção",
+  "vgAcessoRestrito": "Acesso temporariamente restrito",
+  "vgNenhumaSobreposicao": "Nenhuma sobreposição",
+  "vgAgendaSemanalSub": "Períodos de segunda a sexta",
+  "vgCalendarioReservas": "Calendário de reservas",
+  "vgVisaoMes": "Visão consolidada do mês",
+  "vgOcupacaoOtimizacao": "Ocupação e otimização",
+  "vgUsoMedio": "Uso médio e horários disponíveis",
+  "vgReservado": "Reservado",
+  "vgLivre": "Livre",
+  "vgComReservas": "Com reservas",
+  "vgAcompanhamento": "ACOMPANHAMENTO",
+  "vgAtividadesSub": "Ações acadêmicas e administrativas com prazos e responsáveis.",
+  "vgNovaAtividade": "Nova atividade",
+  "vgNovaAtividadeMsg": "Cadastre título, categoria, prazo e responsável.",
+  "vgBuscarAtividade": "Buscar atividade",
+  "vgAtividadesPeriodo": "Atividades do período",
+  "vgAtividadeDetalhe": "Categoria: {categoria}\nPrazo: {prazo}\nStatus: {status}",
+  "@vgAtividadeDetalhe": {
+    "placeholders": {
+      "categoria": {
+        "type": "String"
+      },
+      "prazo": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "vgAnalise": "ANÁLISE",
+  "vgRelatoriosSub": "Indicadores, documentos e exportações para apoio à gestão.",
+  "vgGerarRelatorio": "Gerar relatório",
+  "vgGerarRelatorioMsg": "Selecione fonte, período, formato e filtros.",
+  "vgRelatoriosDisponiveis": "Relatórios disponíveis",
+  "vgQuatroCategorias": "4 categorias",
+  "vgExportadosMes": "Exportados no mês",
+  "vgAgendados": "Agendados",
+  "vgEnvioAutomatico": "Envio automático",
+  "vgAbrindo": "Abrindo {titulo}.",
+  "@vgAbrindo": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "vgExportacaoPreparada": "Exportação preparada.",
+  "vgExportar": "Exportar",
+  "vgAtualizadoHoje": "Atualizado hoje",
+  "vgAtualizadoOntem": "Atualizado ontem",
+  "vgAtualizadoEm": "Atualizado em {data}",
+  "@vgAtualizadoEm": {
+    "placeholders": {
+      "data": {
+        "type": "String"
+      }
+    }
+  },
+  "vgPreferencias": "PREFERÊNCIAS",
+  "vgConfigSub": "Conta, notificações, aparência, segurança e dados.",
+  "vgConfigSalvas": "Configurações salvas.",
+  "vgPerfilConta": "Perfil e conta",
+  "vgDadosSessao": "Dados da sessão atual",
+  "vgNomeExibicao": "Nome de exibição",
+  "vgUsuarioInstitucional": "Usuário institucional",
+  "vgEmail": "E-mail",
+  "vgContaInstitucional": "Conta institucional",
+  "vgPerfilAcesso": "Perfil de acesso",
+  "vgDefinidoAutenticacao": "Definido pela autenticação",
+  "vgEditarPerfil": "Editar perfil",
+  "vgEditarPerfilMsg": "Atualize dados pessoais e preferências.",
+  "vgCanaisAlertas": "Canais e alertas",
+  "vgNotifApp": "Notificações no aplicativo",
+  "vgNotifAppSub": "Alertas, convites e prazos",
+  "vgNotifEmail": "Notificações por e-mail",
+  "vgNotifEmailSub": "Resumo e comunicações importantes",
+  "vgAparencia": "Aparência",
+  "vgDensidade": "Densidade e visualização",
+  "vgModoCompacto": "Modo compacto",
+  "vgModoCompactoSub": "Exibe mais informações por tela",
+  "vgTema": "Tema",
+  "vgTemaValor": "Segue a configuração do aplicativo",
+  "vgSegurancaDados": "Segurança e dados",
+  "vgSessaoAcesso": "Sessão, acesso e armazenamento",
+  "vgBiometria": "Biometria",
+  "vgBiometriaSub": "Usar autenticação do dispositivo",
+  "vgSincronizacao": "Sincronização",
+  "vgSincronizacaoValor": "Automática quando disponível",
+  "vgLimparDados": "Limpar dados locais",
+  "vgLimparDadosMsg": "Esta ação remove apenas caches e preferências locais.",
+  "vgOpTodos": "Todos",
+  "vgOpTodas": "Todas",
+  "vgOpRegular": "Regular",
+  "vgOpAtencao": "Atenção",
+  "vgOpExcedida": "Excedida",
+  "vgOpAtivo": "Ativo",
+  "vgOpAfastamento": "Afastamento",
+  "vgOpEmAnalise": "Em análise",
+  "vgOpEmAndamento": "Em andamento",
+  "vgOpAguardando": "Aguardando",
+  "vgOpAtrasada": "Atrasada",
+  "vgOpAFazer": "A fazer",
+  "vgOpConcluido": "Concluído",
+  "vgOpPendente": "Pendente",
+  "vgOpEmProgresso": "Em progresso",
+  "vgOpConcluida": "Concluída",
+  "vgOpAgendaSemanal": "Agenda semanal",
+  "vgOpCalendarioMensal": "Calendário mensal",
+  "vgOpOcupacao": "Ocupação",
+  "vgOpAcademico": "Acadêmico",
+  "vgOpGestao": "Gestão",
+  "vgOpProdutividade": "Produtividade"
 }

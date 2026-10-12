@@ -4410,6 +4410,1043 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Já existe horário cadastrado em conflito para {dia}.'**
   String cdConflitoHorario(String dia);
+
+  /// No description provided for @vgCargaAlocada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carga horária alocada'**
+  String get vgCargaAlocada;
+
+  /// No description provided for @vgVsMesAnterior6.
+  ///
+  /// In pt, this message translates to:
+  /// **'↑ 6% vs. mês anterior'**
+  String get vgVsMesAnterior6;
+
+  /// No description provided for @vgLabsEmUso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Laboratórios em uso'**
+  String get vgLabsEmUso;
+
+  /// No description provided for @vgVsSemana12.
+  ///
+  /// In pt, this message translates to:
+  /// **'↑ 12% vs. semana anterior'**
+  String get vgVsSemana12;
+
+  /// No description provided for @vgNoticiasEnviadas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Notícias enviadas'**
+  String get vgNoticiasEnviadas;
+
+  /// No description provided for @vgVsSemana3.
+  ///
+  /// In pt, this message translates to:
+  /// **'↑ 3 vs. semana anterior'**
+  String get vgVsSemana3;
+
+  /// No description provided for @vgPendenciasAbertas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pendências em aberto'**
+  String get vgPendenciasAbertas;
+
+  /// No description provided for @vgVsSemana1.
+  ///
+  /// In pt, this message translates to:
+  /// **'↓ 1 vs. semana anterior'**
+  String get vgVsSemana1;
+
+  /// No description provided for @vgIndicadoresPainel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Indicadores do painel'**
+  String get vgIndicadoresPainel;
+
+  /// No description provided for @vgEscolhaIndicadores.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escolha quais indicadores aparecem no panorama.'**
+  String get vgEscolhaIndicadores;
+
+  /// No description provided for @vgPanorama.
+  ///
+  /// In pt, this message translates to:
+  /// **'Panorama do departamento'**
+  String get vgPanorama;
+
+  /// No description provided for @vgAtualizadoAgora.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atualizado agora'**
+  String get vgAtualizadoAgora;
+
+  /// No description provided for @vgPersonalizarIndicadores.
+  ///
+  /// In pt, this message translates to:
+  /// **'Personalizar indicadores'**
+  String get vgPersonalizarIndicadores;
+
+  /// No description provided for @vgProximasPrioridades.
+  ///
+  /// In pt, this message translates to:
+  /// **'Próximas prioridades'**
+  String get vgProximasPrioridades;
+
+  /// No description provided for @vgPrioridadesDepartamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prioridades do departamento'**
+  String get vgPrioridadesDepartamento;
+
+  /// No description provided for @vgPrioridadesSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Planejamento e atividades mais próximas'**
+  String get vgPrioridadesSub;
+
+  /// No description provided for @vgPersonalizar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Personalizar'**
+  String get vgPersonalizar;
+
+  /// No description provided for @vgNenhumIndicador.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum indicador selecionado. Toque no ícone ao lado para escolher.'**
+  String get vgNenhumIndicador;
+
+  /// No description provided for @vgOntem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ontem'**
+  String get vgOntem;
+
+  /// No description provided for @vgMensagemEnviada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mensagem enviada.'**
+  String get vgMensagemEnviada;
+
+  /// No description provided for @vgSelecioneUsuarios.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione usuários ou grupos para iniciar uma conversa.'**
+  String get vgSelecioneUsuarios;
+
+  /// No description provided for @vgPeriodo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Período'**
+  String get vgPeriodo;
+
+  /// No description provided for @vgTipo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tipo'**
+  String get vgTipo;
+
+  /// No description provided for @vgArea.
+  ///
+  /// In pt, this message translates to:
+  /// **'Área'**
+  String get vgArea;
+
+  /// No description provided for @vgLaboratorio.
+  ///
+  /// In pt, this message translates to:
+  /// **'Laboratório'**
+  String get vgLaboratorio;
+
+  /// No description provided for @vgVisualizacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Visualização'**
+  String get vgVisualizacao;
+
+  /// No description provided for @vgAcaoRegistrada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ação registrada.'**
+  String get vgAcaoRegistrada;
+
+  /// No description provided for @vgContinuar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Continuar'**
+  String get vgContinuar;
+
+  /// No description provided for @vgResultados.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =1{1 resultado} other{{count} resultados}}'**
+  String vgResultados(int count);
+
+  /// No description provided for @vgItens.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =1{1 item} other{{count} itens}}'**
+  String vgItens(int count);
+
+  /// No description provided for @vgPrazo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prazo {data}'**
+  String vgPrazo(String data);
+
+  /// No description provided for @vgComunicacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'COMUNICAÇÃO'**
+  String get vgComunicacao;
+
+  /// No description provided for @vgChatSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Conversas, grupos e avisos internos do DEE.'**
+  String get vgChatSub;
+
+  /// No description provided for @vgSelecioneConversa.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione uma conversa.'**
+  String get vgSelecioneConversa;
+
+  /// No description provided for @vgDisponivel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Disponível'**
+  String get vgDisponivel;
+
+  /// No description provided for @vgEscreverMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escrever mensagem'**
+  String get vgEscreverMensagem;
+
+  /// No description provided for @vgGestaoAcademica.
+  ///
+  /// In pt, this message translates to:
+  /// **'GESTÃO ACADÊMICA'**
+  String get vgGestaoAcademica;
+
+  /// No description provided for @vgCargaSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Distribuição, limites, conflitos e validação das atividades.'**
+  String get vgCargaSub;
+
+  /// No description provided for @vgNovaDistribuicao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova distribuição'**
+  String get vgNovaDistribuicao;
+
+  /// No description provided for @vgNovaDistribuicaoMsg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cadastre disciplinas, atividades e carga do docente.'**
+  String get vgNovaDistribuicaoMsg;
+
+  /// No description provided for @vgBuscarProfessor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar professor'**
+  String get vgBuscarProfessor;
+
+  /// No description provided for @vgDocentes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Docentes'**
+  String get vgDocentes;
+
+  /// No description provided for @vgPeriodoValor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Período {periodo}'**
+  String vgPeriodoValor(String periodo);
+
+  /// No description provided for @vgCargaRegular.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carga regular'**
+  String get vgCargaRegular;
+
+  /// No description provided for @vgDoQuadro.
+  ///
+  /// In pt, this message translates to:
+  /// **'75% do quadro'**
+  String get vgDoQuadro;
+
+  /// No description provided for @vgRequerAtencao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Requer atenção'**
+  String get vgRequerAtencao;
+
+  /// No description provided for @vgAbaixoAcima.
+  ///
+  /// In pt, this message translates to:
+  /// **'Abaixo ou acima do limite'**
+  String get vgAbaixoAcima;
+
+  /// No description provided for @vgConflitos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Conflitos'**
+  String get vgConflitos;
+
+  /// No description provided for @vgHorariosSobrepostos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Horários sobrepostos'**
+  String get vgHorariosSobrepostos;
+
+  /// No description provided for @vgDistribuicaoPorDocente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Distribuição por docente'**
+  String get vgDistribuicaoPorDocente;
+
+  /// No description provided for @vgDistribuicaoSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ensino, pesquisa, extensão, gestão e orientações'**
+  String get vgDistribuicaoSub;
+
+  /// No description provided for @vgEnsinoOutras.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ensino: {ensino}h · Outras atividades: {outras}h'**
+  String vgEnsinoOutras(String ensino, String outras);
+
+  /// No description provided for @vgTotalDeMaximo.
+  ///
+  /// In pt, this message translates to:
+  /// **'{total} h de {maximo} h'**
+  String vgTotalDeMaximo(String total, String maximo);
+
+  /// No description provided for @vgGestaoPessoas.
+  ///
+  /// In pt, this message translates to:
+  /// **'GESTÃO DE PESSOAS'**
+  String get vgGestaoPessoas;
+
+  /// No description provided for @vgProfessoresSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Quadro docente, áreas, situação funcional e carga atual.'**
+  String get vgProfessoresSub;
+
+  /// No description provided for @vgCadastrar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cadastrar'**
+  String get vgCadastrar;
+
+  /// No description provided for @vgCadastrarProfessor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cadastrar professor'**
+  String get vgCadastrarProfessor;
+
+  /// No description provided for @vgCadastrarProfessorMsg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe dados funcionais, área e vínculo.'**
+  String get vgCadastrarProfessorMsg;
+
+  /// No description provided for @vgBuscarNomeArea.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar nome ou área'**
+  String get vgBuscarNomeArea;
+
+  /// No description provided for @vgProfessorDetalhe.
+  ///
+  /// In pt, this message translates to:
+  /// **'Área: {area}\nCarga atual: {carga}\nSituação: {situacao}'**
+  String vgProfessorDetalhe(String area, String carga, String situacao);
+
+  /// No description provided for @vgCargaAtual.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carga atual: {carga}'**
+  String vgCargaAtual(String carga);
+
+  /// No description provided for @vgPlanejamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'PLANEJAMENTO'**
+  String get vgPlanejamento;
+
+  /// No description provided for @vgDemandasSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Solicitações, responsáveis, prazos e acompanhamento.'**
+  String get vgDemandasSub;
+
+  /// No description provided for @vgNovaDemanda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova demanda'**
+  String get vgNovaDemanda;
+
+  /// No description provided for @vgNovaDemandaMsg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cadastre descrição, responsável, prazo e prioridade.'**
+  String get vgNovaDemandaMsg;
+
+  /// No description provided for @vgNoPeriodoAtual.
+  ///
+  /// In pt, this message translates to:
+  /// **'No período atual'**
+  String get vgNoPeriodoAtual;
+
+  /// No description provided for @vgDoTotal58.
+  ///
+  /// In pt, this message translates to:
+  /// **'58% do total'**
+  String get vgDoTotal58;
+
+  /// No description provided for @vgAtrasadas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atrasadas'**
+  String get vgAtrasadas;
+
+  /// No description provided for @vgAcaoNecessaria.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ação necessária'**
+  String get vgAcaoNecessaria;
+
+  /// No description provided for @vgBuscarDemanda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar demanda'**
+  String get vgBuscarDemanda;
+
+  /// No description provided for @vgListaDemandas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Lista de demandas'**
+  String get vgListaDemandas;
+
+  /// No description provided for @vgDemandaDetalhe.
+  ///
+  /// In pt, this message translates to:
+  /// **'{id}\nResponsável: {responsavel}\nPrazo: {prazo}\nPrioridade: {prioridade}'**
+  String vgDemandaDetalhe(
+    String id,
+    String responsavel,
+    String prazo,
+    String prioridade,
+  );
+
+  /// No description provided for @vgExecucao.
+  ///
+  /// In pt, this message translates to:
+  /// **'EXECUÇÃO'**
+  String get vgExecucao;
+
+  /// No description provided for @vgTarefasSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Quadro visual para acompanhar atividades e responsáveis.'**
+  String get vgTarefasSub;
+
+  /// No description provided for @vgNovaTarefa.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova tarefa'**
+  String get vgNovaTarefa;
+
+  /// No description provided for @vgNovaTarefaMsg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Defina título, responsável, prazo e prioridade.'**
+  String get vgNovaTarefaMsg;
+
+  /// No description provided for @vgAdicionarTarefaEm.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ação para adicionar tarefa em {coluna}.'**
+  String vgAdicionarTarefaEm(String coluna);
+
+  /// No description provided for @vgInfraestrutura.
+  ///
+  /// In pt, this message translates to:
+  /// **'INFRAESTRUTURA'**
+  String get vgInfraestrutura;
+
+  /// No description provided for @vgLabsSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Disponibilidade, reservas, conflitos e manutenção.'**
+  String get vgLabsSub;
+
+  /// No description provided for @vgNovaReserva.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova reserva'**
+  String get vgNovaReserva;
+
+  /// No description provided for @vgNovaReservaMsg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione laboratório, data, turno, disciplina e responsável.'**
+  String get vgNovaReservaMsg;
+
+  /// No description provided for @vgReservasHoje.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reservas hoje'**
+  String get vgReservasHoje;
+
+  /// No description provided for @vgCincoLabs.
+  ///
+  /// In pt, this message translates to:
+  /// **'5 laboratórios'**
+  String get vgCincoLabs;
+
+  /// No description provided for @vgEmUso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em uso'**
+  String get vgEmUso;
+
+  /// No description provided for @vgNesteHorario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Neste horário'**
+  String get vgNesteHorario;
+
+  /// No description provided for @vgEmManutencao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em manutenção'**
+  String get vgEmManutencao;
+
+  /// No description provided for @vgAcessoRestrito.
+  ///
+  /// In pt, this message translates to:
+  /// **'Acesso temporariamente restrito'**
+  String get vgAcessoRestrito;
+
+  /// No description provided for @vgNenhumaSobreposicao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma sobreposição'**
+  String get vgNenhumaSobreposicao;
+
+  /// No description provided for @vgAgendaSemanalSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Períodos de segunda a sexta'**
+  String get vgAgendaSemanalSub;
+
+  /// No description provided for @vgCalendarioReservas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Calendário de reservas'**
+  String get vgCalendarioReservas;
+
+  /// No description provided for @vgVisaoMes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Visão consolidada do mês'**
+  String get vgVisaoMes;
+
+  /// No description provided for @vgOcupacaoOtimizacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ocupação e otimização'**
+  String get vgOcupacaoOtimizacao;
+
+  /// No description provided for @vgUsoMedio.
+  ///
+  /// In pt, this message translates to:
+  /// **'Uso médio e horários disponíveis'**
+  String get vgUsoMedio;
+
+  /// No description provided for @vgReservado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reservado'**
+  String get vgReservado;
+
+  /// No description provided for @vgLivre.
+  ///
+  /// In pt, this message translates to:
+  /// **'Livre'**
+  String get vgLivre;
+
+  /// No description provided for @vgComReservas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Com reservas'**
+  String get vgComReservas;
+
+  /// No description provided for @vgAcompanhamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'ACOMPANHAMENTO'**
+  String get vgAcompanhamento;
+
+  /// No description provided for @vgAtividadesSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ações acadêmicas e administrativas com prazos e responsáveis.'**
+  String get vgAtividadesSub;
+
+  /// No description provided for @vgNovaAtividade.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova atividade'**
+  String get vgNovaAtividade;
+
+  /// No description provided for @vgNovaAtividadeMsg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cadastre título, categoria, prazo e responsável.'**
+  String get vgNovaAtividadeMsg;
+
+  /// No description provided for @vgBuscarAtividade.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar atividade'**
+  String get vgBuscarAtividade;
+
+  /// No description provided for @vgAtividadesPeriodo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atividades do período'**
+  String get vgAtividadesPeriodo;
+
+  /// No description provided for @vgAtividadeDetalhe.
+  ///
+  /// In pt, this message translates to:
+  /// **'Categoria: {categoria}\nPrazo: {prazo}\nStatus: {status}'**
+  String vgAtividadeDetalhe(String categoria, String prazo, String status);
+
+  /// No description provided for @vgAnalise.
+  ///
+  /// In pt, this message translates to:
+  /// **'ANÁLISE'**
+  String get vgAnalise;
+
+  /// No description provided for @vgRelatoriosSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Indicadores, documentos e exportações para apoio à gestão.'**
+  String get vgRelatoriosSub;
+
+  /// No description provided for @vgGerarRelatorio.
+  ///
+  /// In pt, this message translates to:
+  /// **'Gerar relatório'**
+  String get vgGerarRelatorio;
+
+  /// No description provided for @vgGerarRelatorioMsg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione fonte, período, formato e filtros.'**
+  String get vgGerarRelatorioMsg;
+
+  /// No description provided for @vgRelatoriosDisponiveis.
+  ///
+  /// In pt, this message translates to:
+  /// **'Relatórios disponíveis'**
+  String get vgRelatoriosDisponiveis;
+
+  /// No description provided for @vgQuatroCategorias.
+  ///
+  /// In pt, this message translates to:
+  /// **'4 categorias'**
+  String get vgQuatroCategorias;
+
+  /// No description provided for @vgExportadosMes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Exportados no mês'**
+  String get vgExportadosMes;
+
+  /// No description provided for @vgAgendados.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agendados'**
+  String get vgAgendados;
+
+  /// No description provided for @vgEnvioAutomatico.
+  ///
+  /// In pt, this message translates to:
+  /// **'Envio automático'**
+  String get vgEnvioAutomatico;
+
+  /// No description provided for @vgAbrindo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Abrindo {titulo}.'**
+  String vgAbrindo(String titulo);
+
+  /// No description provided for @vgExportacaoPreparada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Exportação preparada.'**
+  String get vgExportacaoPreparada;
+
+  /// No description provided for @vgExportar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Exportar'**
+  String get vgExportar;
+
+  /// No description provided for @vgAtualizadoHoje.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atualizado hoje'**
+  String get vgAtualizadoHoje;
+
+  /// No description provided for @vgAtualizadoOntem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atualizado ontem'**
+  String get vgAtualizadoOntem;
+
+  /// No description provided for @vgAtualizadoEm.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atualizado em {data}'**
+  String vgAtualizadoEm(String data);
+
+  /// No description provided for @vgPreferencias.
+  ///
+  /// In pt, this message translates to:
+  /// **'PREFERÊNCIAS'**
+  String get vgPreferencias;
+
+  /// No description provided for @vgConfigSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Conta, notificações, aparência, segurança e dados.'**
+  String get vgConfigSub;
+
+  /// No description provided for @vgConfigSalvas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Configurações salvas.'**
+  String get vgConfigSalvas;
+
+  /// No description provided for @vgPerfilConta.
+  ///
+  /// In pt, this message translates to:
+  /// **'Perfil e conta'**
+  String get vgPerfilConta;
+
+  /// No description provided for @vgDadosSessao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dados da sessão atual'**
+  String get vgDadosSessao;
+
+  /// No description provided for @vgNomeExibicao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome de exibição'**
+  String get vgNomeExibicao;
+
+  /// No description provided for @vgUsuarioInstitucional.
+  ///
+  /// In pt, this message translates to:
+  /// **'Usuário institucional'**
+  String get vgUsuarioInstitucional;
+
+  /// No description provided for @vgEmail.
+  ///
+  /// In pt, this message translates to:
+  /// **'E-mail'**
+  String get vgEmail;
+
+  /// No description provided for @vgContaInstitucional.
+  ///
+  /// In pt, this message translates to:
+  /// **'Conta institucional'**
+  String get vgContaInstitucional;
+
+  /// No description provided for @vgPerfilAcesso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Perfil de acesso'**
+  String get vgPerfilAcesso;
+
+  /// No description provided for @vgDefinidoAutenticacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Definido pela autenticação'**
+  String get vgDefinidoAutenticacao;
+
+  /// No description provided for @vgEditarPerfil.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar perfil'**
+  String get vgEditarPerfil;
+
+  /// No description provided for @vgEditarPerfilMsg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atualize dados pessoais e preferências.'**
+  String get vgEditarPerfilMsg;
+
+  /// No description provided for @vgCanaisAlertas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Canais e alertas'**
+  String get vgCanaisAlertas;
+
+  /// No description provided for @vgNotifApp.
+  ///
+  /// In pt, this message translates to:
+  /// **'Notificações no aplicativo'**
+  String get vgNotifApp;
+
+  /// No description provided for @vgNotifAppSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Alertas, convites e prazos'**
+  String get vgNotifAppSub;
+
+  /// No description provided for @vgNotifEmail.
+  ///
+  /// In pt, this message translates to:
+  /// **'Notificações por e-mail'**
+  String get vgNotifEmail;
+
+  /// No description provided for @vgNotifEmailSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Resumo e comunicações importantes'**
+  String get vgNotifEmailSub;
+
+  /// No description provided for @vgAparencia.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aparência'**
+  String get vgAparencia;
+
+  /// No description provided for @vgDensidade.
+  ///
+  /// In pt, this message translates to:
+  /// **'Densidade e visualização'**
+  String get vgDensidade;
+
+  /// No description provided for @vgModoCompacto.
+  ///
+  /// In pt, this message translates to:
+  /// **'Modo compacto'**
+  String get vgModoCompacto;
+
+  /// No description provided for @vgModoCompactoSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Exibe mais informações por tela'**
+  String get vgModoCompactoSub;
+
+  /// No description provided for @vgTema.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tema'**
+  String get vgTema;
+
+  /// No description provided for @vgTemaValor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Segue a configuração do aplicativo'**
+  String get vgTemaValor;
+
+  /// No description provided for @vgSegurancaDados.
+  ///
+  /// In pt, this message translates to:
+  /// **'Segurança e dados'**
+  String get vgSegurancaDados;
+
+  /// No description provided for @vgSessaoAcesso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sessão, acesso e armazenamento'**
+  String get vgSessaoAcesso;
+
+  /// No description provided for @vgBiometria.
+  ///
+  /// In pt, this message translates to:
+  /// **'Biometria'**
+  String get vgBiometria;
+
+  /// No description provided for @vgBiometriaSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Usar autenticação do dispositivo'**
+  String get vgBiometriaSub;
+
+  /// No description provided for @vgSincronizacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sincronização'**
+  String get vgSincronizacao;
+
+  /// No description provided for @vgSincronizacaoValor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Automática quando disponível'**
+  String get vgSincronizacaoValor;
+
+  /// No description provided for @vgLimparDados.
+  ///
+  /// In pt, this message translates to:
+  /// **'Limpar dados locais'**
+  String get vgLimparDados;
+
+  /// No description provided for @vgLimparDadosMsg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Esta ação remove apenas caches e preferências locais.'**
+  String get vgLimparDadosMsg;
+
+  /// No description provided for @vgOpTodos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos'**
+  String get vgOpTodos;
+
+  /// No description provided for @vgOpTodas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todas'**
+  String get vgOpTodas;
+
+  /// No description provided for @vgOpRegular.
+  ///
+  /// In pt, this message translates to:
+  /// **'Regular'**
+  String get vgOpRegular;
+
+  /// No description provided for @vgOpAtencao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atenção'**
+  String get vgOpAtencao;
+
+  /// No description provided for @vgOpExcedida.
+  ///
+  /// In pt, this message translates to:
+  /// **'Excedida'**
+  String get vgOpExcedida;
+
+  /// No description provided for @vgOpAtivo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ativo'**
+  String get vgOpAtivo;
+
+  /// No description provided for @vgOpAfastamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'Afastamento'**
+  String get vgOpAfastamento;
+
+  /// No description provided for @vgOpEmAnalise.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em análise'**
+  String get vgOpEmAnalise;
+
+  /// No description provided for @vgOpEmAndamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em andamento'**
+  String get vgOpEmAndamento;
+
+  /// No description provided for @vgOpAguardando.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aguardando'**
+  String get vgOpAguardando;
+
+  /// No description provided for @vgOpAtrasada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atrasada'**
+  String get vgOpAtrasada;
+
+  /// No description provided for @vgOpAFazer.
+  ///
+  /// In pt, this message translates to:
+  /// **'A fazer'**
+  String get vgOpAFazer;
+
+  /// No description provided for @vgOpConcluido.
+  ///
+  /// In pt, this message translates to:
+  /// **'Concluído'**
+  String get vgOpConcluido;
+
+  /// No description provided for @vgOpPendente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pendente'**
+  String get vgOpPendente;
+
+  /// No description provided for @vgOpEmProgresso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em progresso'**
+  String get vgOpEmProgresso;
+
+  /// No description provided for @vgOpConcluida.
+  ///
+  /// In pt, this message translates to:
+  /// **'Concluída'**
+  String get vgOpConcluida;
+
+  /// No description provided for @vgOpAgendaSemanal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agenda semanal'**
+  String get vgOpAgendaSemanal;
+
+  /// No description provided for @vgOpCalendarioMensal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Calendário mensal'**
+  String get vgOpCalendarioMensal;
+
+  /// No description provided for @vgOpOcupacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ocupação'**
+  String get vgOpOcupacao;
+
+  /// No description provided for @vgOpAcademico.
+  ///
+  /// In pt, this message translates to:
+  /// **'Acadêmico'**
+  String get vgOpAcademico;
+
+  /// No description provided for @vgOpGestao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Gestão'**
+  String get vgOpGestao;
+
+  /// No description provided for @vgOpProdutividade.
+  ///
+  /// In pt, this message translates to:
+  /// **'Produtividade'**
+  String get vgOpProdutividade;
 }
 
 class _AppLocalizationsDelegate
