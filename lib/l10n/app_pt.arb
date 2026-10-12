@@ -1112,5 +1112,62 @@
   "atvStatusConcluida": "Concluída",
   "atvStatusEmProgresso": "Em progresso",
   "atvStatusAgendada": "Agendada",
-  "atvStatusPendente": "Pendente"
+  "atvStatusPendente": "Pendente",
+  "relErroCarregar": "Não foi possível carregar os relatórios.",
+  "relBaixado": "Relatório baixado: {titulo}",
+  "@relBaixado": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "relLinkGerado": "Link de compartilhamento gerado para {titulo}",
+  "@relLinkGerado": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "relBuscarDica": "Buscar por título, descrição ou autor",
+  "relArrasteDica": "Arraste lateralmente para ver todos os status.",
+  "relDisponiveisConsulta": "relatórios disponíveis para consulta",
+  "relCarregando": "Carregando relatórios...",
+  "relNenhum": "Nenhum relatório encontrado",
+  "relNenhumDica": "Ajuste os filtros para visualizar resultados.",
+  "relSemPermissao": "Seu perfil não possui permissão para relatórios.",
+  "relAcessoNegado": "Acesso não permitido para este perfil.",
+  "relCentral": "Central de relatórios",
+  "relDisponiveis": "Disponíveis",
+  "relPublicados": "Publicados",
+  "relEmRevisao": "Em revisão",
+  "relVer": "Ver relatório {titulo}",
+  "@relVer": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "relMaisAcoes": "Mais ações do relatório",
+  "relVisualizar": "Visualizar",
+  "relBaixarPdf": "Baixar PDF",
+  "relCompartilhar": "Compartilhar",
+  "relFecharDetalhes": "Fechar detalhes do relatório",
+  "relTipo": "Tipo de relatório",
+  "relAutor": "Autor",
+  "relDownloads": "Downloads",
+  "relCompartilhamentos": "Compartilhamentos",
+  "relStatusTodos": "Todos",
+  "relStatusPublicado": "Publicado",
+  "relStatusAgendado": "Agendado",
+  "relStatusDisponivel": "Disponível",
+  "relTipoAnaliseGeral": "Análise Geral",
+  "relTipoRecursosHumanos": "Recursos Humanos",
+  "relTipoDesempenho": "Desempenho",
+  "relTipoInfraestrutura": "Infraestrutura",
+  "relTipoConformidade": "Conformidade",
+  "relPdfBaixadoAgora": "PDF baixado agora",
+  "relCompartilhadoAgora": "Compartilhado agora"
 }

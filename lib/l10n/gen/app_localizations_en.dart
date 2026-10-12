@@ -1973,4 +1973,119 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get atvStatusPendente => 'Pending';
+
+  @override
+  String get relErroCarregar => 'Could not load the reports.';
+
+  @override
+  String relBaixado(String titulo) {
+    return 'Report downloaded: $titulo';
+  }
+
+  @override
+  String relLinkGerado(String titulo) {
+    return 'Share link created for $titulo';
+  }
+
+  @override
+  String get relBuscarDica => 'Search by title, description or author';
+
+  @override
+  String get relArrasteDica => 'Swipe sideways to see all statuses.';
+
+  @override
+  String get relDisponiveisConsulta => 'reports available';
+
+  @override
+  String get relCarregando => 'Loading reports...';
+
+  @override
+  String get relNenhum => 'No reports found';
+
+  @override
+  String get relNenhumDica => 'Adjust the filters to see results.';
+
+  @override
+  String get relSemPermissao =>
+      'Your profile is not allowed to access reports.';
+
+  @override
+  String get relAcessoNegado => 'Access not allowed for this profile.';
+
+  @override
+  String get relCentral => 'Reports center';
+
+  @override
+  String get relDisponiveis => 'Available';
+
+  @override
+  String get relPublicados => 'Published';
+
+  @override
+  String get relEmRevisao => 'In review';
+
+  @override
+  String relVer(String titulo) {
+    return 'View report $titulo';
+  }
+
+  @override
+  String get relMaisAcoes => 'More report actions';
+
+  @override
+  String get relVisualizar => 'View';
+
+  @override
+  String get relBaixarPdf => 'Download PDF';
+
+  @override
+  String get relCompartilhar => 'Share';
+
+  @override
+  String get relFecharDetalhes => 'Close report details';
+
+  @override
+  String get relTipo => 'Report type';
+
+  @override
+  String get relAutor => 'Author';
+
+  @override
+  String get relDownloads => 'Downloads';
+
+  @override
+  String get relCompartilhamentos => 'Shares';
+
+  @override
+  String get relStatusTodos => 'All';
+
+  @override
+  String get relStatusPublicado => 'Published';
+
+  @override
+  String get relStatusAgendado => 'Scheduled';
+
+  @override
+  String get relStatusDisponivel => 'Available';
+
+  @override
+  String get relTipoAnaliseGeral => 'General Analysis';
+
+  @override
+  String get relTipoRecursosHumanos => 'Human Resources';
+
+  @override
+  String get relTipoDesempenho => 'Performance';
+
+  @override
+  String get relTipoInfraestrutura => 'Infrastructure';
+
+  @override
+  String get relTipoConformidade => 'Compliance';
+
+  @override
+  String get relPdfBaixadoAgora => 'PDF downloaded just now';
+
+  @override
+  String get relCompartilhadoAgora => 'Shared just now';
 }

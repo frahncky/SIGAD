@@ -3498,6 +3498,222 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Pendente'**
   String get atvStatusPendente;
+
+  /// No description provided for @relErroCarregar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível carregar os relatórios.'**
+  String get relErroCarregar;
+
+  /// No description provided for @relBaixado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Relatório baixado: {titulo}'**
+  String relBaixado(String titulo);
+
+  /// No description provided for @relLinkGerado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Link de compartilhamento gerado para {titulo}'**
+  String relLinkGerado(String titulo);
+
+  /// No description provided for @relBuscarDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar por título, descrição ou autor'**
+  String get relBuscarDica;
+
+  /// No description provided for @relArrasteDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Arraste lateralmente para ver todos os status.'**
+  String get relArrasteDica;
+
+  /// No description provided for @relDisponiveisConsulta.
+  ///
+  /// In pt, this message translates to:
+  /// **'relatórios disponíveis para consulta'**
+  String get relDisponiveisConsulta;
+
+  /// No description provided for @relCarregando.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carregando relatórios...'**
+  String get relCarregando;
+
+  /// No description provided for @relNenhum.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum relatório encontrado'**
+  String get relNenhum;
+
+  /// No description provided for @relNenhumDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ajuste os filtros para visualizar resultados.'**
+  String get relNenhumDica;
+
+  /// No description provided for @relSemPermissao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Seu perfil não possui permissão para relatórios.'**
+  String get relSemPermissao;
+
+  /// No description provided for @relAcessoNegado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Acesso não permitido para este perfil.'**
+  String get relAcessoNegado;
+
+  /// No description provided for @relCentral.
+  ///
+  /// In pt, this message translates to:
+  /// **'Central de relatórios'**
+  String get relCentral;
+
+  /// No description provided for @relDisponiveis.
+  ///
+  /// In pt, this message translates to:
+  /// **'Disponíveis'**
+  String get relDisponiveis;
+
+  /// No description provided for @relPublicados.
+  ///
+  /// In pt, this message translates to:
+  /// **'Publicados'**
+  String get relPublicados;
+
+  /// No description provided for @relEmRevisao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em revisão'**
+  String get relEmRevisao;
+
+  /// No description provided for @relVer.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ver relatório {titulo}'**
+  String relVer(String titulo);
+
+  /// No description provided for @relMaisAcoes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mais ações do relatório'**
+  String get relMaisAcoes;
+
+  /// No description provided for @relVisualizar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Visualizar'**
+  String get relVisualizar;
+
+  /// No description provided for @relBaixarPdf.
+  ///
+  /// In pt, this message translates to:
+  /// **'Baixar PDF'**
+  String get relBaixarPdf;
+
+  /// No description provided for @relCompartilhar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Compartilhar'**
+  String get relCompartilhar;
+
+  /// No description provided for @relFecharDetalhes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fechar detalhes do relatório'**
+  String get relFecharDetalhes;
+
+  /// No description provided for @relTipo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tipo de relatório'**
+  String get relTipo;
+
+  /// No description provided for @relAutor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Autor'**
+  String get relAutor;
+
+  /// No description provided for @relDownloads.
+  ///
+  /// In pt, this message translates to:
+  /// **'Downloads'**
+  String get relDownloads;
+
+  /// No description provided for @relCompartilhamentos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Compartilhamentos'**
+  String get relCompartilhamentos;
+
+  /// No description provided for @relStatusTodos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos'**
+  String get relStatusTodos;
+
+  /// No description provided for @relStatusPublicado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Publicado'**
+  String get relStatusPublicado;
+
+  /// No description provided for @relStatusAgendado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agendado'**
+  String get relStatusAgendado;
+
+  /// No description provided for @relStatusDisponivel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Disponível'**
+  String get relStatusDisponivel;
+
+  /// No description provided for @relTipoAnaliseGeral.
+  ///
+  /// In pt, this message translates to:
+  /// **'Análise Geral'**
+  String get relTipoAnaliseGeral;
+
+  /// No description provided for @relTipoRecursosHumanos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Recursos Humanos'**
+  String get relTipoRecursosHumanos;
+
+  /// No description provided for @relTipoDesempenho.
+  ///
+  /// In pt, this message translates to:
+  /// **'Desempenho'**
+  String get relTipoDesempenho;
+
+  /// No description provided for @relTipoInfraestrutura.
+  ///
+  /// In pt, this message translates to:
+  /// **'Infraestrutura'**
+  String get relTipoInfraestrutura;
+
+  /// No description provided for @relTipoConformidade.
+  ///
+  /// In pt, this message translates to:
+  /// **'Conformidade'**
+  String get relTipoConformidade;
+
+  /// No description provided for @relPdfBaixadoAgora.
+  ///
+  /// In pt, this message translates to:
+  /// **'PDF baixado agora'**
+  String get relPdfBaixadoAgora;
+
+  /// No description provided for @relCompartilhadoAgora.
+  ///
+  /// In pt, this message translates to:
+  /// **'Compartilhado agora'**
+  String get relCompartilhadoAgora;
 }
 
 class _AppLocalizationsDelegate

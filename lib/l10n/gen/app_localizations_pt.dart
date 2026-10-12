@@ -1986,4 +1986,119 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get atvStatusPendente => 'Pendente';
+
+  @override
+  String get relErroCarregar => 'Não foi possível carregar os relatórios.';
+
+  @override
+  String relBaixado(String titulo) {
+    return 'Relatório baixado: $titulo';
+  }
+
+  @override
+  String relLinkGerado(String titulo) {
+    return 'Link de compartilhamento gerado para $titulo';
+  }
+
+  @override
+  String get relBuscarDica => 'Buscar por título, descrição ou autor';
+
+  @override
+  String get relArrasteDica => 'Arraste lateralmente para ver todos os status.';
+
+  @override
+  String get relDisponiveisConsulta => 'relatórios disponíveis para consulta';
+
+  @override
+  String get relCarregando => 'Carregando relatórios...';
+
+  @override
+  String get relNenhum => 'Nenhum relatório encontrado';
+
+  @override
+  String get relNenhumDica => 'Ajuste os filtros para visualizar resultados.';
+
+  @override
+  String get relSemPermissao =>
+      'Seu perfil não possui permissão para relatórios.';
+
+  @override
+  String get relAcessoNegado => 'Acesso não permitido para este perfil.';
+
+  @override
+  String get relCentral => 'Central de relatórios';
+
+  @override
+  String get relDisponiveis => 'Disponíveis';
+
+  @override
+  String get relPublicados => 'Publicados';
+
+  @override
+  String get relEmRevisao => 'Em revisão';
+
+  @override
+  String relVer(String titulo) {
+    return 'Ver relatório $titulo';
+  }
+
+  @override
+  String get relMaisAcoes => 'Mais ações do relatório';
+
+  @override
+  String get relVisualizar => 'Visualizar';
+
+  @override
+  String get relBaixarPdf => 'Baixar PDF';
+
+  @override
+  String get relCompartilhar => 'Compartilhar';
+
+  @override
+  String get relFecharDetalhes => 'Fechar detalhes do relatório';
+
+  @override
+  String get relTipo => 'Tipo de relatório';
+
+  @override
+  String get relAutor => 'Autor';
+
+  @override
+  String get relDownloads => 'Downloads';
+
+  @override
+  String get relCompartilhamentos => 'Compartilhamentos';
+
+  @override
+  String get relStatusTodos => 'Todos';
+
+  @override
+  String get relStatusPublicado => 'Publicado';
+
+  @override
+  String get relStatusAgendado => 'Agendado';
+
+  @override
+  String get relStatusDisponivel => 'Disponível';
+
+  @override
+  String get relTipoAnaliseGeral => 'Análise Geral';
+
+  @override
+  String get relTipoRecursosHumanos => 'Recursos Humanos';
+
+  @override
+  String get relTipoDesempenho => 'Desempenho';
+
+  @override
+  String get relTipoInfraestrutura => 'Infraestrutura';
+
+  @override
+  String get relTipoConformidade => 'Conformidade';
+
+  @override
+  String get relPdfBaixadoAgora => 'PDF baixado agora';
+
+  @override
+  String get relCompartilhadoAgora => 'Compartilhado agora';
 }
