@@ -1034,4 +1034,320 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get labOutrosHorarios => 'Book other slots on this day';
+
+  @override
+  String get paginaNaoEncontrada => 'Page not found';
+
+  @override
+  String get paginaNaoEncontradaMensagem =>
+      'The address does not match any SIGAD module.';
+
+  @override
+  String get voltarVisaoGeral => 'Back to overview';
+
+  @override
+  String get maisCargaDocenteDesc => 'Plan and track teaching hours.';
+
+  @override
+  String get maisProfessoresDesc => 'Manage department faculty.';
+
+  @override
+  String get maisLaboratoriosDesc => 'Resources, bookings and occupancy.';
+
+  @override
+  String get maisReunioes => 'Meetings';
+
+  @override
+  String get maisReunioesDesc => 'Agendas, minutes and attendees.';
+
+  @override
+  String get maisDemandasDesc => 'Track and manage requests.';
+
+  @override
+  String get maisNoticias => 'News';
+
+  @override
+  String get maisNoticiasDesc => 'Announcements and bulletins.';
+
+  @override
+  String get maisRelatoriosDesc => 'Department indicators and data.';
+
+  @override
+  String get maisCursos => 'Courses';
+
+  @override
+  String get maisCursosDesc => 'Subjects and academic offerings.';
+
+  @override
+  String get maisAdministracao => 'Administration';
+
+  @override
+  String get maisAgendaIntegrada => 'Integrated calendar';
+
+  @override
+  String get maisAgendaIntegradaDesc =>
+      'View department events and appointments.';
+
+  @override
+  String get maisConfiguracoesDesc => 'Customize app preferences.';
+
+  @override
+  String get maisAjuda => 'Help';
+
+  @override
+  String get maisAjudaDesc => 'Help center, tutorials and support.';
+
+  @override
+  String get maisAvisosImportantes => 'Important notices';
+
+  @override
+  String get maisNenhumAviso => 'No notices right now.';
+
+  @override
+  String get maisCentralAjuda => 'Help center';
+
+  @override
+  String get maisCentralAjudaMensagem =>
+      'Tutorials and support will be available soon. For urgent questions, open a ticket with the campus IT team.';
+
+  @override
+  String get maisDepartamento => 'DEPARTMENT';
+
+  @override
+  String get maisVerTodosAvisos => 'See all notices';
+
+  @override
+  String get maisPrecisaSuporte => 'Need support?';
+
+  @override
+  String get maisFaleComTi => 'Contact the campus IT team.';
+
+  @override
+  String get maisAbrirChamado => 'Open a ticket';
+
+  @override
+  String get muralErroCarregar =>
+      'Could not read the saved board. Editing is locked so data is not overwritten.';
+
+  @override
+  String get muralFrases => 'Quotes';
+
+  @override
+  String get muralAcessoNegado =>
+      'Only the department head can manage the board.';
+
+  @override
+  String get muralNovoAviso => 'New notice';
+
+  @override
+  String get muralNenhumAviso =>
+      'No notices yet.\nWithout notices, the dashboard shows only the welcome message.';
+
+  @override
+  String get muralDesativado => 'Disabled';
+
+  @override
+  String get muralAgendado => 'Scheduled';
+
+  @override
+  String get muralEncerrado => 'Ended';
+
+  @override
+  String get muralNoAr => 'Live';
+
+  @override
+  String get muralTodosPerfis => 'All profiles';
+
+  @override
+  String get muralFixado => 'Pinned';
+
+  @override
+  String get muralModeloInformativo => 'Information';
+
+  @override
+  String get muralModeloImportante => 'Important';
+
+  @override
+  String get muralModeloEvento => 'Event';
+
+  @override
+  String get muralModeloLembrete => 'Reminder';
+
+  @override
+  String get muralExibirAPartirDe => 'Show from';
+
+  @override
+  String get muralExibirAte => 'Show until';
+
+  @override
+  String get muralDataFinalInvalida =>
+      'The end date must be on or after the start date.';
+
+  @override
+  String get muralAvisoPublicado => 'Notice published.';
+
+  @override
+  String get muralErroSalvarAviso => 'Could not save the notice.';
+
+  @override
+  String get muralExcluirAvisoTitulo => 'Delete notice?';
+
+  @override
+  String muralExcluirAvisoMensagem(String titulo) {
+    return '\"$titulo\" will no longer be shown.';
+  }
+
+  @override
+  String get muralAvisoExcluido => 'Notice deleted.';
+
+  @override
+  String get muralErroExcluirAviso => 'Could not delete the notice.';
+
+  @override
+  String get muralEditarAviso => 'Edit notice';
+
+  @override
+  String get muralModelo => 'Type';
+
+  @override
+  String get muralTitulo => 'Title';
+
+  @override
+  String get muralInformeTitulo => 'Enter the notice title.';
+
+  @override
+  String get muralConteudo => 'Content';
+
+  @override
+  String get muralConteudoDica => 'Write the full notice for the department.';
+
+  @override
+  String get muralInformeConteudo => 'Write the notice content.';
+
+  @override
+  String get muralQuemVe => 'Who sees it';
+
+  @override
+  String get muralTodos => 'Everyone';
+
+  @override
+  String get muralPeriodoExibicao => 'Display period';
+
+  @override
+  String get muralAPartirDe => 'From';
+
+  @override
+  String get muralImediatamente => 'Immediately';
+
+  @override
+  String get muralLimparDataInicial => 'Clear start date';
+
+  @override
+  String get muralAte => 'Until';
+
+  @override
+  String get muralSemDataSair => 'No end date';
+
+  @override
+  String get muralLimparDataFinal => 'Clear end date';
+
+  @override
+  String get muralFixarTopo => 'Pin to top';
+
+  @override
+  String get muralFixarTopoSub => 'Shown before other notices.';
+
+  @override
+  String get muralAtivo => 'Active';
+
+  @override
+  String get muralAtivoSub => 'Turn off to hide without deleting.';
+
+  @override
+  String get muralPreviaPainel => 'Dashboard preview';
+
+  @override
+  String get muralPreviaAvisoSub =>
+      'This is how the notice appears in the top card for those who can see it.';
+
+  @override
+  String get muralPreviaTitulo => 'Notice title';
+
+  @override
+  String get muralPreviaConteudo => 'The notice content appears here.';
+
+  @override
+  String get muralPublicarAviso => 'Publish notice';
+
+  @override
+  String get muralExcluirAviso => 'Delete notice';
+
+  @override
+  String get muralNovaFrase => 'New quote';
+
+  @override
+  String get muralEditarFrase => 'Edit quote';
+
+  @override
+  String get muralTrocarFrase => 'Change the quote';
+
+  @override
+  String get muralPeriodoDiaria => 'Every day';
+
+  @override
+  String get muralPeriodoSemanal => 'Every week';
+
+  @override
+  String get muralPeriodoQuinzenal => 'Every 15 days';
+
+  @override
+  String get muralPeriodoMensal => 'Every month';
+
+  @override
+  String get muralErroFrequencia => 'Could not save the frequency.';
+
+  @override
+  String get muralFraseEmExibicao => 'Quote on display';
+
+  @override
+  String get muralNenhumaFrase => 'No active quote.';
+
+  @override
+  String muralFrasesLista(int count) {
+    return 'Quotes ($count) — active ones rotate';
+  }
+
+  @override
+  String get muralFraseAtivaRodizio => 'Quote active in rotation';
+
+  @override
+  String get muralExcluirFrase => 'Delete quote';
+
+  @override
+  String get muralExcluirFraseTitulo => 'Delete quote?';
+
+  @override
+  String get muralErroSalvarFrase => 'Could not save the quote.';
+
+  @override
+  String get muralErroExcluirFrase => 'Could not delete the quote.';
+
+  @override
+  String get muralFrase => 'Quote';
+
+  @override
+  String get muralFraseDica => 'Write a short, motivating quote.';
+
+  @override
+  String get muralEscrevaFrase => 'Write the quote.';
+
+  @override
+  String get muralPreviaFraseSub =>
+      'This is how the quote appears in the welcome card.';
+
+  @override
+  String get muralPreviaFrase => 'The quote appears here.';
+
+  @override
+  String get muralSalvarFrase => 'Save quote';
 }

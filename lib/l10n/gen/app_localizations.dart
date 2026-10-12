@@ -1752,6 +1752,612 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Reservar outros horários deste dia'**
   String get labOutrosHorarios;
+
+  /// No description provided for @paginaNaoEncontrada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Página não encontrada'**
+  String get paginaNaoEncontrada;
+
+  /// No description provided for @paginaNaoEncontradaMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'O endereço informado não corresponde a um módulo do SIGAD.'**
+  String get paginaNaoEncontradaMensagem;
+
+  /// No description provided for @voltarVisaoGeral.
+  ///
+  /// In pt, this message translates to:
+  /// **'Voltar à visão geral'**
+  String get voltarVisaoGeral;
+
+  /// No description provided for @maisCargaDocenteDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Planeje e acompanhe a carga horária.'**
+  String get maisCargaDocenteDesc;
+
+  /// No description provided for @maisProfessoresDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Gerencie docentes do departamento.'**
+  String get maisProfessoresDesc;
+
+  /// No description provided for @maisLaboratoriosDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Recursos, reservas e ocupação.'**
+  String get maisLaboratoriosDesc;
+
+  /// No description provided for @maisReunioes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reuniões'**
+  String get maisReunioes;
+
+  /// No description provided for @maisReunioesDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pautas, atas e participantes.'**
+  String get maisReunioesDesc;
+
+  /// No description provided for @maisDemandasDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Acompanhe e gerencie solicitações.'**
+  String get maisDemandasDesc;
+
+  /// No description provided for @maisNoticias.
+  ///
+  /// In pt, this message translates to:
+  /// **'Notícias'**
+  String get maisNoticias;
+
+  /// No description provided for @maisNoticiasDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Comunicados e informativos.'**
+  String get maisNoticiasDesc;
+
+  /// No description provided for @maisRelatoriosDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Indicadores e dados do departamento.'**
+  String get maisRelatoriosDesc;
+
+  /// No description provided for @maisCursos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cursos'**
+  String get maisCursos;
+
+  /// No description provided for @maisCursosDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Disciplinas e ofertas acadêmicas.'**
+  String get maisCursosDesc;
+
+  /// No description provided for @maisAdministracao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Administração'**
+  String get maisAdministracao;
+
+  /// No description provided for @maisAgendaIntegrada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agenda integrada'**
+  String get maisAgendaIntegrada;
+
+  /// No description provided for @maisAgendaIntegradaDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Visualize eventos e compromissos do departamento.'**
+  String get maisAgendaIntegradaDesc;
+
+  /// No description provided for @maisConfiguracoesDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Personalize preferências do aplicativo.'**
+  String get maisConfiguracoesDesc;
+
+  /// No description provided for @maisAjuda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ajuda'**
+  String get maisAjuda;
+
+  /// No description provided for @maisAjudaDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Central de ajuda, tutoriais e suporte.'**
+  String get maisAjudaDesc;
+
+  /// No description provided for @maisAvisosImportantes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Avisos importantes'**
+  String get maisAvisosImportantes;
+
+  /// No description provided for @maisNenhumAviso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum aviso no momento.'**
+  String get maisNenhumAviso;
+
+  /// No description provided for @maisCentralAjuda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Central de ajuda'**
+  String get maisCentralAjuda;
+
+  /// No description provided for @maisCentralAjudaMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tutoriais e suporte estarão disponíveis em breve. Para dúvidas urgentes, abra um chamado com a equipe de TI do campus.'**
+  String get maisCentralAjudaMensagem;
+
+  /// No description provided for @maisDepartamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'DEPARTAMENTO'**
+  String get maisDepartamento;
+
+  /// No description provided for @maisVerTodosAvisos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ver todos os avisos'**
+  String get maisVerTodosAvisos;
+
+  /// No description provided for @maisPrecisaSuporte.
+  ///
+  /// In pt, this message translates to:
+  /// **'Precisando de suporte?'**
+  String get maisPrecisaSuporte;
+
+  /// No description provided for @maisFaleComTi.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fale com a equipe de TI do campus.'**
+  String get maisFaleComTi;
+
+  /// No description provided for @maisAbrirChamado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Abrir chamado'**
+  String get maisAbrirChamado;
+
+  /// No description provided for @muralErroCarregar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível ler o mural salvo. A edição está bloqueada para não sobrescrever os dados.'**
+  String get muralErroCarregar;
+
+  /// No description provided for @muralFrases.
+  ///
+  /// In pt, this message translates to:
+  /// **'Frases'**
+  String get muralFrases;
+
+  /// No description provided for @muralAcessoNegado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Somente a chefia do departamento pode gerenciar o mural.'**
+  String get muralAcessoNegado;
+
+  /// No description provided for @muralNovoAviso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Novo aviso'**
+  String get muralNovoAviso;
+
+  /// No description provided for @muralNenhumAviso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum aviso cadastrado.\nSem avisos, o painel mostra só as boas-vindas.'**
+  String get muralNenhumAviso;
+
+  /// No description provided for @muralDesativado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Desativado'**
+  String get muralDesativado;
+
+  /// No description provided for @muralAgendado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agendado'**
+  String get muralAgendado;
+
+  /// No description provided for @muralEncerrado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Encerrado'**
+  String get muralEncerrado;
+
+  /// No description provided for @muralNoAr.
+  ///
+  /// In pt, this message translates to:
+  /// **'No ar'**
+  String get muralNoAr;
+
+  /// No description provided for @muralTodosPerfis.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos os perfis'**
+  String get muralTodosPerfis;
+
+  /// No description provided for @muralFixado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fixado'**
+  String get muralFixado;
+
+  /// No description provided for @muralModeloInformativo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informativo'**
+  String get muralModeloInformativo;
+
+  /// No description provided for @muralModeloImportante.
+  ///
+  /// In pt, this message translates to:
+  /// **'Importante'**
+  String get muralModeloImportante;
+
+  /// No description provided for @muralModeloEvento.
+  ///
+  /// In pt, this message translates to:
+  /// **'Evento'**
+  String get muralModeloEvento;
+
+  /// No description provided for @muralModeloLembrete.
+  ///
+  /// In pt, this message translates to:
+  /// **'Lembrete'**
+  String get muralModeloLembrete;
+
+  /// No description provided for @muralExibirAPartirDe.
+  ///
+  /// In pt, this message translates to:
+  /// **'Exibir a partir de'**
+  String get muralExibirAPartirDe;
+
+  /// No description provided for @muralExibirAte.
+  ///
+  /// In pt, this message translates to:
+  /// **'Exibir até'**
+  String get muralExibirAte;
+
+  /// No description provided for @muralDataFinalInvalida.
+  ///
+  /// In pt, this message translates to:
+  /// **'A data final deve ser igual ou posterior à inicial.'**
+  String get muralDataFinalInvalida;
+
+  /// No description provided for @muralAvisoPublicado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aviso publicado.'**
+  String get muralAvisoPublicado;
+
+  /// No description provided for @muralErroSalvarAviso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível salvar o aviso.'**
+  String get muralErroSalvarAviso;
+
+  /// No description provided for @muralExcluirAvisoTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Excluir aviso?'**
+  String get muralExcluirAvisoTitulo;
+
+  /// No description provided for @muralExcluirAvisoMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'\"{titulo}\" deixará de aparecer.'**
+  String muralExcluirAvisoMensagem(String titulo);
+
+  /// No description provided for @muralAvisoExcluido.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aviso excluído.'**
+  String get muralAvisoExcluido;
+
+  /// No description provided for @muralErroExcluirAviso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível excluir o aviso.'**
+  String get muralErroExcluirAviso;
+
+  /// No description provided for @muralEditarAviso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar aviso'**
+  String get muralEditarAviso;
+
+  /// No description provided for @muralModelo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Modelo'**
+  String get muralModelo;
+
+  /// No description provided for @muralTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Título'**
+  String get muralTitulo;
+
+  /// No description provided for @muralInformeTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe o título do aviso.'**
+  String get muralInformeTitulo;
+
+  /// No description provided for @muralConteudo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Conteúdo'**
+  String get muralConteudo;
+
+  /// No description provided for @muralConteudoDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escreva o aviso completo para o departamento.'**
+  String get muralConteudoDica;
+
+  /// No description provided for @muralInformeConteudo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escreva o conteúdo do aviso.'**
+  String get muralInformeConteudo;
+
+  /// No description provided for @muralQuemVe.
+  ///
+  /// In pt, this message translates to:
+  /// **'Quem vê'**
+  String get muralQuemVe;
+
+  /// No description provided for @muralTodos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos'**
+  String get muralTodos;
+
+  /// No description provided for @muralPeriodoExibicao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Período de exibição'**
+  String get muralPeriodoExibicao;
+
+  /// No description provided for @muralAPartirDe.
+  ///
+  /// In pt, this message translates to:
+  /// **'A partir de'**
+  String get muralAPartirDe;
+
+  /// No description provided for @muralImediatamente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Imediatamente'**
+  String get muralImediatamente;
+
+  /// No description provided for @muralLimparDataInicial.
+  ///
+  /// In pt, this message translates to:
+  /// **'Limpar data inicial'**
+  String get muralLimparDataInicial;
+
+  /// No description provided for @muralAte.
+  ///
+  /// In pt, this message translates to:
+  /// **'Até'**
+  String get muralAte;
+
+  /// No description provided for @muralSemDataSair.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem data para sair'**
+  String get muralSemDataSair;
+
+  /// No description provided for @muralLimparDataFinal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Limpar data final'**
+  String get muralLimparDataFinal;
+
+  /// No description provided for @muralFixarTopo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fixar no topo'**
+  String get muralFixarTopo;
+
+  /// No description provided for @muralFixarTopoSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aparece antes dos outros avisos.'**
+  String get muralFixarTopoSub;
+
+  /// No description provided for @muralAtivo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ativo'**
+  String get muralAtivo;
+
+  /// No description provided for @muralAtivoSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Desative para esconder sem excluir.'**
+  String get muralAtivoSub;
+
+  /// No description provided for @muralPreviaPainel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pré-visualização no painel'**
+  String get muralPreviaPainel;
+
+  /// No description provided for @muralPreviaAvisoSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'É assim que o aviso aparece no card do topo para quem pode vê-lo.'**
+  String get muralPreviaAvisoSub;
+
+  /// No description provided for @muralPreviaTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Título do aviso'**
+  String get muralPreviaTitulo;
+
+  /// No description provided for @muralPreviaConteudo.
+  ///
+  /// In pt, this message translates to:
+  /// **'O conteúdo do aviso aparece aqui.'**
+  String get muralPreviaConteudo;
+
+  /// No description provided for @muralPublicarAviso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Publicar aviso'**
+  String get muralPublicarAviso;
+
+  /// No description provided for @muralExcluirAviso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Excluir aviso'**
+  String get muralExcluirAviso;
+
+  /// No description provided for @muralNovaFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova frase'**
+  String get muralNovaFrase;
+
+  /// No description provided for @muralEditarFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar frase'**
+  String get muralEditarFrase;
+
+  /// No description provided for @muralTrocarFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'Trocar a frase'**
+  String get muralTrocarFrase;
+
+  /// No description provided for @muralPeriodoDiaria.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todo dia'**
+  String get muralPeriodoDiaria;
+
+  /// No description provided for @muralPeriodoSemanal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Toda semana'**
+  String get muralPeriodoSemanal;
+
+  /// No description provided for @muralPeriodoQuinzenal.
+  ///
+  /// In pt, this message translates to:
+  /// **'A cada 15 dias'**
+  String get muralPeriodoQuinzenal;
+
+  /// No description provided for @muralPeriodoMensal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todo mês'**
+  String get muralPeriodoMensal;
+
+  /// No description provided for @muralErroFrequencia.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível salvar a frequência.'**
+  String get muralErroFrequencia;
+
+  /// No description provided for @muralFraseEmExibicao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Frase em exibição'**
+  String get muralFraseEmExibicao;
+
+  /// No description provided for @muralNenhumaFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma frase ativa.'**
+  String get muralNenhumaFrase;
+
+  /// No description provided for @muralFrasesLista.
+  ///
+  /// In pt, this message translates to:
+  /// **'Frases ({count}) — entram em rodízio as ativas'**
+  String muralFrasesLista(int count);
+
+  /// No description provided for @muralFraseAtivaRodizio.
+  ///
+  /// In pt, this message translates to:
+  /// **'Frase ativa no rodízio'**
+  String get muralFraseAtivaRodizio;
+
+  /// No description provided for @muralExcluirFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'Excluir frase'**
+  String get muralExcluirFrase;
+
+  /// No description provided for @muralExcluirFraseTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Excluir frase?'**
+  String get muralExcluirFraseTitulo;
+
+  /// No description provided for @muralErroSalvarFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível salvar a frase.'**
+  String get muralErroSalvarFrase;
+
+  /// No description provided for @muralErroExcluirFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível excluir a frase.'**
+  String get muralErroExcluirFrase;
+
+  /// No description provided for @muralFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'Frase'**
+  String get muralFrase;
+
+  /// No description provided for @muralFraseDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escreva uma frase curta e motivadora.'**
+  String get muralFraseDica;
+
+  /// No description provided for @muralEscrevaFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escreva a frase.'**
+  String get muralEscrevaFrase;
+
+  /// No description provided for @muralPreviaFraseSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'É assim que a frase aparece no card de boas-vindas.'**
+  String get muralPreviaFraseSub;
+
+  /// No description provided for @muralPreviaFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'A frase aparece aqui.'**
+  String get muralPreviaFrase;
+
+  /// No description provided for @muralSalvarFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'Salvar frase'**
+  String get muralSalvarFrase;
 }
 
 class _AppLocalizationsDelegate

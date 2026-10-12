@@ -1043,4 +1043,321 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get labOutrosHorarios => 'Reservar outros horários deste dia';
+
+  @override
+  String get paginaNaoEncontrada => 'Página não encontrada';
+
+  @override
+  String get paginaNaoEncontradaMensagem =>
+      'O endereço informado não corresponde a um módulo do SIGAD.';
+
+  @override
+  String get voltarVisaoGeral => 'Voltar à visão geral';
+
+  @override
+  String get maisCargaDocenteDesc => 'Planeje e acompanhe a carga horária.';
+
+  @override
+  String get maisProfessoresDesc => 'Gerencie docentes do departamento.';
+
+  @override
+  String get maisLaboratoriosDesc => 'Recursos, reservas e ocupação.';
+
+  @override
+  String get maisReunioes => 'Reuniões';
+
+  @override
+  String get maisReunioesDesc => 'Pautas, atas e participantes.';
+
+  @override
+  String get maisDemandasDesc => 'Acompanhe e gerencie solicitações.';
+
+  @override
+  String get maisNoticias => 'Notícias';
+
+  @override
+  String get maisNoticiasDesc => 'Comunicados e informativos.';
+
+  @override
+  String get maisRelatoriosDesc => 'Indicadores e dados do departamento.';
+
+  @override
+  String get maisCursos => 'Cursos';
+
+  @override
+  String get maisCursosDesc => 'Disciplinas e ofertas acadêmicas.';
+
+  @override
+  String get maisAdministracao => 'Administração';
+
+  @override
+  String get maisAgendaIntegrada => 'Agenda integrada';
+
+  @override
+  String get maisAgendaIntegradaDesc =>
+      'Visualize eventos e compromissos do departamento.';
+
+  @override
+  String get maisConfiguracoesDesc => 'Personalize preferências do aplicativo.';
+
+  @override
+  String get maisAjuda => 'Ajuda';
+
+  @override
+  String get maisAjudaDesc => 'Central de ajuda, tutoriais e suporte.';
+
+  @override
+  String get maisAvisosImportantes => 'Avisos importantes';
+
+  @override
+  String get maisNenhumAviso => 'Nenhum aviso no momento.';
+
+  @override
+  String get maisCentralAjuda => 'Central de ajuda';
+
+  @override
+  String get maisCentralAjudaMensagem =>
+      'Tutoriais e suporte estarão disponíveis em breve. Para dúvidas urgentes, abra um chamado com a equipe de TI do campus.';
+
+  @override
+  String get maisDepartamento => 'DEPARTAMENTO';
+
+  @override
+  String get maisVerTodosAvisos => 'Ver todos os avisos';
+
+  @override
+  String get maisPrecisaSuporte => 'Precisando de suporte?';
+
+  @override
+  String get maisFaleComTi => 'Fale com a equipe de TI do campus.';
+
+  @override
+  String get maisAbrirChamado => 'Abrir chamado';
+
+  @override
+  String get muralErroCarregar =>
+      'Não foi possível ler o mural salvo. A edição está bloqueada para não sobrescrever os dados.';
+
+  @override
+  String get muralFrases => 'Frases';
+
+  @override
+  String get muralAcessoNegado =>
+      'Somente a chefia do departamento pode gerenciar o mural.';
+
+  @override
+  String get muralNovoAviso => 'Novo aviso';
+
+  @override
+  String get muralNenhumAviso =>
+      'Nenhum aviso cadastrado.\nSem avisos, o painel mostra só as boas-vindas.';
+
+  @override
+  String get muralDesativado => 'Desativado';
+
+  @override
+  String get muralAgendado => 'Agendado';
+
+  @override
+  String get muralEncerrado => 'Encerrado';
+
+  @override
+  String get muralNoAr => 'No ar';
+
+  @override
+  String get muralTodosPerfis => 'Todos os perfis';
+
+  @override
+  String get muralFixado => 'Fixado';
+
+  @override
+  String get muralModeloInformativo => 'Informativo';
+
+  @override
+  String get muralModeloImportante => 'Importante';
+
+  @override
+  String get muralModeloEvento => 'Evento';
+
+  @override
+  String get muralModeloLembrete => 'Lembrete';
+
+  @override
+  String get muralExibirAPartirDe => 'Exibir a partir de';
+
+  @override
+  String get muralExibirAte => 'Exibir até';
+
+  @override
+  String get muralDataFinalInvalida =>
+      'A data final deve ser igual ou posterior à inicial.';
+
+  @override
+  String get muralAvisoPublicado => 'Aviso publicado.';
+
+  @override
+  String get muralErroSalvarAviso => 'Não foi possível salvar o aviso.';
+
+  @override
+  String get muralExcluirAvisoTitulo => 'Excluir aviso?';
+
+  @override
+  String muralExcluirAvisoMensagem(String titulo) {
+    return '\"$titulo\" deixará de aparecer.';
+  }
+
+  @override
+  String get muralAvisoExcluido => 'Aviso excluído.';
+
+  @override
+  String get muralErroExcluirAviso => 'Não foi possível excluir o aviso.';
+
+  @override
+  String get muralEditarAviso => 'Editar aviso';
+
+  @override
+  String get muralModelo => 'Modelo';
+
+  @override
+  String get muralTitulo => 'Título';
+
+  @override
+  String get muralInformeTitulo => 'Informe o título do aviso.';
+
+  @override
+  String get muralConteudo => 'Conteúdo';
+
+  @override
+  String get muralConteudoDica =>
+      'Escreva o aviso completo para o departamento.';
+
+  @override
+  String get muralInformeConteudo => 'Escreva o conteúdo do aviso.';
+
+  @override
+  String get muralQuemVe => 'Quem vê';
+
+  @override
+  String get muralTodos => 'Todos';
+
+  @override
+  String get muralPeriodoExibicao => 'Período de exibição';
+
+  @override
+  String get muralAPartirDe => 'A partir de';
+
+  @override
+  String get muralImediatamente => 'Imediatamente';
+
+  @override
+  String get muralLimparDataInicial => 'Limpar data inicial';
+
+  @override
+  String get muralAte => 'Até';
+
+  @override
+  String get muralSemDataSair => 'Sem data para sair';
+
+  @override
+  String get muralLimparDataFinal => 'Limpar data final';
+
+  @override
+  String get muralFixarTopo => 'Fixar no topo';
+
+  @override
+  String get muralFixarTopoSub => 'Aparece antes dos outros avisos.';
+
+  @override
+  String get muralAtivo => 'Ativo';
+
+  @override
+  String get muralAtivoSub => 'Desative para esconder sem excluir.';
+
+  @override
+  String get muralPreviaPainel => 'Pré-visualização no painel';
+
+  @override
+  String get muralPreviaAvisoSub =>
+      'É assim que o aviso aparece no card do topo para quem pode vê-lo.';
+
+  @override
+  String get muralPreviaTitulo => 'Título do aviso';
+
+  @override
+  String get muralPreviaConteudo => 'O conteúdo do aviso aparece aqui.';
+
+  @override
+  String get muralPublicarAviso => 'Publicar aviso';
+
+  @override
+  String get muralExcluirAviso => 'Excluir aviso';
+
+  @override
+  String get muralNovaFrase => 'Nova frase';
+
+  @override
+  String get muralEditarFrase => 'Editar frase';
+
+  @override
+  String get muralTrocarFrase => 'Trocar a frase';
+
+  @override
+  String get muralPeriodoDiaria => 'Todo dia';
+
+  @override
+  String get muralPeriodoSemanal => 'Toda semana';
+
+  @override
+  String get muralPeriodoQuinzenal => 'A cada 15 dias';
+
+  @override
+  String get muralPeriodoMensal => 'Todo mês';
+
+  @override
+  String get muralErroFrequencia => 'Não foi possível salvar a frequência.';
+
+  @override
+  String get muralFraseEmExibicao => 'Frase em exibição';
+
+  @override
+  String get muralNenhumaFrase => 'Nenhuma frase ativa.';
+
+  @override
+  String muralFrasesLista(int count) {
+    return 'Frases ($count) — entram em rodízio as ativas';
+  }
+
+  @override
+  String get muralFraseAtivaRodizio => 'Frase ativa no rodízio';
+
+  @override
+  String get muralExcluirFrase => 'Excluir frase';
+
+  @override
+  String get muralExcluirFraseTitulo => 'Excluir frase?';
+
+  @override
+  String get muralErroSalvarFrase => 'Não foi possível salvar a frase.';
+
+  @override
+  String get muralErroExcluirFrase => 'Não foi possível excluir a frase.';
+
+  @override
+  String get muralFrase => 'Frase';
+
+  @override
+  String get muralFraseDica => 'Escreva uma frase curta e motivadora.';
+
+  @override
+  String get muralEscrevaFrase => 'Escreva a frase.';
+
+  @override
+  String get muralPreviaFraseSub =>
+      'É assim que a frase aparece no card de boas-vindas.';
+
+  @override
+  String get muralPreviaFrase => 'A frase aparece aqui.';
+
+  @override
+  String get muralSalvarFrase => 'Salvar frase';
 }
