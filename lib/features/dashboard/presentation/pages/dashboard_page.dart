@@ -23,6 +23,7 @@ import '../../../mural/presentation/mural_visual.dart';
 import '../../../mural/presentation/state/mural_controller.dart';
 import '../../../../shared/widgets/icon_avatar.dart';
 import '../../../../shared/widgets/welcome_hero.dart';
+import '../../../../l10n/l10n.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -78,6 +79,7 @@ class _DashboardPageState extends State<DashboardPage> {
           final isWide = constraints.maxWidth >= 1024;
           final canManageDemandas = AuthorizationPolicy.canManageDemandas(role);
           final alerts = _buildDashboardAlerts(
+            l10n: context.l10n,
             snapshot.data,
             canManageDemandas: canManageDemandas,
             hasError: snapshot.hasError,
@@ -146,53 +148,46 @@ class _DashboardPageState extends State<DashboardPage> {
 
 List<DashboardAlertItem> _buildDashboardAlerts(
   _DashboardData? data, {
+  required AppLocalizations l10n,
   required bool canManageDemandas,
   required bool hasError,
 }) {
   final fallback = hasError
-      ? 'Dados indisponíveis. Puxe para atualizar.'
-      : 'Atualizando informações';
+      ? l10n.dadosIndisponiveis
+      : l10n.atualizandoInformacoes;
   final atividades = data == null
       ? fallback
-      : data.atividades.length == 1
-      ? '1 atividade registrada'
-      : '${data.atividades.length} atividades registradas';
-  final cards = data == null
-      ? fallback
-      : data.cards.length == 1
-      ? '1 item no fluxo de trabalho'
-      : '${data.cards.length} itens no fluxo de trabalho';
+      : l10n.atividadesRegistradas(data.atividades.length);
+  final cards = data == null ? fallback : l10n.itensFluxo(data.cards.length);
   final demandas = data == null
       ? fallback
-      : data.demandas.length == 1
-      ? '1 demanda registrada'
-      : '${data.demandas.length} demandas registradas';
+      : l10n.demandasRegistradas(data.demandas.length);
 
   return [
     DashboardAlertItem(
       icon: SigadIcons.eventoNota,
-      title: 'Atividades do departamento',
+      title: l10n.atividadesDepartamento,
       subtitle: atividades,
       tone: SigadColors.success,
     ),
     DashboardAlertItem(
       icon: SigadIcons.kanban,
-      title: 'Quadro de trabalho',
+      title: l10n.quadroTrabalho,
       subtitle: cards,
       tone: SigadColors.info,
     ),
     if (canManageDemandas)
       DashboardAlertItem(
         icon: SigadIcons.demanda,
-        title: 'Demandas do departamento',
+        title: l10n.demandasDepartamento,
         subtitle: demandas,
         tone: SigadColors.warning,
       )
     else
-      const DashboardAlertItem(
+      DashboardAlertItem(
         icon: SigadIcons.escudo,
-        title: 'Acesso ao departamento',
-        subtitle: 'Informações exibidas conforme seu perfil',
+        title: l10n.acessoDepartamento,
+        subtitle: l10n.acessoDepartamentoSub,
         tone: SigadColors.info,
       ),
   ];
@@ -240,17 +235,17 @@ class _AttentionPanel extends StatelessWidget {
           );
 
     return _DashboardPanel(
-      title: 'Atenção agora',
-      subtitle: 'Itens abertos ordenados por impacto',
-      actionLabel: 'Ver todas',
+      title: context.l10n.atencaoAgora,
+      subtitle: context.l10n.atencaoAgoraSub,
+      actionLabel: context.l10n.verTodas,
       icon: SigadIcons.prioridade,
       tone: SigadColors.risk,
       onAction: () =>
           Navigator.of(context).pushReplacementNamed(AppRoutes.demandas),
       child: abertas.isEmpty
-          ? const _CompactEmptyState(
+          ? _CompactEmptyState(
               icon: SigadIcons.concluido,
-              message: 'Nenhuma demanda aberta.',
+              message: context.l10n.nenhumaDemandaAberta,
             )
           : Column(
               children: abertas
@@ -298,7 +293,10 @@ class _DemandAttentionRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${demanda.proprietario} • prazo ${demanda.prazo}',
+                  context.l10n.responsavelPrazo(
+                    demanda.proprietario,
+                    demanda.prazo,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(
@@ -335,17 +333,17 @@ class _ActivitiesPanel extends StatelessWidget {
         .toList(growable: false);
 
     return _DashboardPanel(
-      title: 'Próximas atividades',
-      subtitle: 'Compromissos que ainda pedem atenção',
-      actionLabel: 'Ver todas',
+      title: context.l10n.proximasAtividades,
+      subtitle: context.l10n.proximasAtividadesSub,
+      actionLabel: context.l10n.verTodas,
       icon: SigadIcons.eventoNota,
       tone: SigadColors.info,
       onAction: () =>
           Navigator.of(context).pushReplacementNamed(AppRoutes.atividades),
       child: abertas.isEmpty
-          ? const _CompactEmptyState(
+          ? _CompactEmptyState(
               icon: SigadIcons.concluido,
-              message: 'Nenhuma atividade aberta.',
+              message: context.l10n.nenhumaAtividadeAberta,
             )
           : Column(
               children: abertas
@@ -510,7 +508,7 @@ class _DashboardLoading extends StatelessWidget {
   const _DashboardLoading();
 
   @override
-  Widget build(BuildContext context) => const Card(
+  Widget build(BuildContext context) => Card(
     margin: EdgeInsets.zero,
     elevation: 0,
     child: Padding(
@@ -524,7 +522,7 @@ class _DashboardLoading extends StatelessWidget {
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
           SizedBox(width: 12),
-          Flexible(child: Text('Atualizando visão operacional...')),
+          Flexible(child: Text(context.l10n.atualizandoVisao)),
         ],
       ),
     ),
@@ -549,13 +547,11 @@ class _DashboardInlineError extends StatelessWidget {
             color: SigadColors.risk,
           ),
           const SizedBox(width: 12),
-          const Expanded(
-            child: Text('Não foi possível atualizar os indicadores.'),
-          ),
+          Expanded(child: Text(context.l10n.erroIndicadores)),
           TextButton.icon(
             onPressed: onRetry,
             icon: const SigadIcon(SigadIcons.atualizar),
-            label: const Text('Tentar novamente'),
+            label: Text(context.l10n.tentarNovamente),
           ),
         ],
       ),
@@ -635,14 +631,14 @@ class _CustomizableIndicatorsState extends State<_CustomizableIndicators> {
                   ),
                 ),
                 Text(
-                  'Acesso rápido',
+                  context.l10n.acessoRapido,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Escolha quais atalhos do menu aparecem na visão geral.',
+                  context.l10n.escolhaAtalhos,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const SizedBox(height: 4),
@@ -650,7 +646,7 @@ class _CustomizableIndicatorsState extends State<_CustomizableIndicators> {
                   CheckboxListTile(
                     contentPadding: EdgeInsets.zero,
                     value: _visiveis.contains(item.route),
-                    title: Text(item.label),
+                    title: Text(item.rotuloEm(context.l10n)),
                     secondary: SigadIcon(item.icon, color: SigadColors.brand),
                     onChanged: (selecionado) {
                       setModalState(() {
@@ -692,7 +688,7 @@ class _CustomizableIndicatorsState extends State<_CustomizableIndicators> {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                'Acesso rápido',
+                context.l10n.acessoRapido,
                 style: Theme.of(
                   context,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
@@ -700,7 +696,7 @@ class _CustomizableIndicatorsState extends State<_CustomizableIndicators> {
             ),
             IconButton(
               onPressed: _abrirSeletorDeAtalhos,
-              tooltip: 'Personalizar atalhos',
+              tooltip: context.l10n.personalizarAtalhos,
               icon: const SigadIcon(SigadIcons.painelPersonalizar),
               visualDensity: VisualDensity.compact,
             ),
@@ -725,7 +721,7 @@ class _CustomizableIndicatorsState extends State<_CustomizableIndicators> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Nenhum atalho selecionado. Toque no ícone acima para escolher.',
+                  context.l10n.nenhumAtalho,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: colors.onSurfaceVariant,
@@ -789,7 +785,7 @@ class _AtalhoCard extends StatelessWidget {
                 SigadIcon(item.icon, color: SigadColors.brand, size: 24),
                 const SizedBox(height: 8),
                 Text(
-                  item.label,
+                  item.rotuloEm(context.l10n),
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

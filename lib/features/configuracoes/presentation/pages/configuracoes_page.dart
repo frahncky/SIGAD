@@ -5,9 +5,9 @@ import '../../../../app/theme/sigad_colors.dart';
 import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
 import '../../../../core/security/authorization_policy.dart';
-import '../../../../core/services/app_feedback_service.dart';
-import '../../../../core/models/user_role.dart';
 import '../../../../core/services/theme_provider.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../l10n/l10n.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../../../../shared/widgets/icon_avatar.dart';
 import '../../data/configuracoes_repository.dart';
@@ -106,67 +106,52 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
     );
   }
 
-  void _mostrarFeedback(String mensagem) {
-    AppFeedbackService.info(context, mensagem);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final role = context.watch<UserContextProvider>().userRole;
+    final userContext = context.watch<UserContextProvider>();
+    final role = userContext.userRole;
     if (!AuthorizationPolicy.canAccessConfiguracoes(role)) {
       return const _ConfiguracoesAccessDenied();
     }
+    final usuario = userContext.currentUser;
+    final tema = context.watch<ThemeProvider>();
 
     return Scaffold(
       body: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
         children: [
           _ConfigSection(
-            titulo: 'Conta',
+            titulo: context.l10n.minhaConta,
             icon: SigadIcons.pessoa,
             children: [
-              _ConfigItem(
+              _ConfigInfo(
                 icon: SigadIcons.pessoa,
-                titulo: 'Perfil',
-                subtitulo: 'Nome: $_nomePerfil',
-                onTap: () => _showAlerta(context, 'Perfil'),
+                titulo: context.l10n.nome,
+                valor: usuario?.name ?? '—',
               ),
-              _ConfigItem(
+              _ConfigInfo(
                 icon: SigadIcons.email,
-                titulo: 'Email',
-                subtitulo: _emailUsuario,
-                onTap: () => _showAlerta(context, 'Email'),
+                titulo: context.l10n.email,
+                valor: usuario?.email ?? '—',
                 tone: SigadColors.info,
               ),
-              _ConfigItem(
-                icon: SigadIcons.cadeado,
-                titulo: 'Senha',
-                subtitulo: 'Última alteração: $_ultimaAlteracaoSenha',
-                onTap: () => _showAlerta(context, 'Alterar Senha'),
-                tone: SigadColors.risk,
+              _ConfigInfo(
+                icon: SigadIcons.cracha,
+                titulo: context.l10n.perfilAcesso,
+                valor: role?.nomeEm(context.l10n) ?? '—',
+                tone: SigadColors.success,
               ),
             ],
           ),
           _ConfigSection(
-            titulo: 'Preferências',
-            icon: SigadIcons.ajustes,
-            tone: SigadColors.warning,
+            titulo: context.l10n.aparenciaLeitura,
+            icon: SigadIcons.paleta,
+            tone: SigadColors.info,
             children: [
               _ConfigToggle(
-                icon: SigadIcons.notificacao,
-                titulo: 'Notificações',
-                subtitulo: 'Receber alertas de demandas e atividades',
-                value: _notificacoesAtivas,
-                onChanged: (value) {
-                  setState(() => _notificacoesAtivas = value);
-                  _saveData();
-                },
-                tone: SigadColors.warning,
-              ),
-              _ConfigToggle(
                 icon: SigadIcons.lua,
-                titulo: 'Modo noturno',
-                subtitulo: 'Ativar tema escuro',
+                titulo: context.l10n.modoNoturno,
+                subtitulo: context.l10n.modoNoturnoSub,
                 value: _modoDark,
                 onChanged: (value) {
                   setState(() => _modoDark = value);
@@ -175,714 +160,81 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 },
                 tone: SigadColors.info,
               ),
-              _ConfigToggle(
-                icon: SigadIcons.biometria,
-                titulo: 'Autenticação biométrica',
-                subtitulo: 'Usar impressão digital ou rosto',
-                value: _biometriaAtiva,
-                onChanged: (value) {
-                  setState(() => _biometriaAtiva = value);
+              _ConfigDropdown(
+                icon: SigadIcons.texto,
+                titulo: context.l10n.tamanhoTexto,
+                valor: tema.tamanhoTexto,
+                opcoes: ThemeProvider.tamanhosTexto.keys.toList(
+                  growable: false,
+                ),
+                rotulo: (opcao) => switch (opcao) {
+                  'Normal' => context.l10n.tamanhoNormal,
+                  'Grande' => context.l10n.tamanhoGrande,
+                  'Muito grande' => context.l10n.tamanhoMuitoGrande,
+                  _ => context.l10n.tamanhoMedio,
+                },
+                onChanged: (valor) {
+                  setState(() => _tamanhoFonte = valor);
+                  context.read<ThemeProvider>().setTamanhoTexto(valor);
                   _saveData();
                 },
-                tone: SigadColors.success,
+                tone: SigadColors.warning,
+              ),
+              _ConfigDropdown(
+                icon: SigadIcons.idioma,
+                titulo: context.l10n.idioma,
+                valor: context.watch<LocaleProvider>().idioma,
+                opcoes: LocaleProvider.opcoes,
+                rotulo: (opcao) => opcao == LocaleProvider.automatico
+                    ? context.l10n.idiomaAutomatico
+                    : opcao,
+                onChanged: (valor) {
+                  setState(() => _idioma = valor);
+                  context.read<LocaleProvider>().setIdioma(valor);
+                  _saveData();
+                },
+                tone: SigadColors.info,
               ),
             ],
           ),
           if (AuthorizationPolicy.canManageMural(role))
             _ConfigSection(
-              titulo: 'Departamento',
+              titulo: context.l10n.departamento,
               icon: SigadIcons.predio,
               children: [
                 _ConfigItem(
                   icon: SigadIcons.aviso,
-                  titulo: 'Mural do departamento',
-                  subtitulo: 'Avisos do painel e frases motivacionais',
-                  onTap: () => Navigator.pushReplacementNamed(
-                    context,
-                    AppRoutes.mural,
-                  ),
+                  titulo: context.l10n.navMural,
+                  subtitulo: context.l10n.muralDepartamentoSub,
+                  onTap: () =>
+                      Navigator.pushReplacementNamed(context, AppRoutes.mural),
                 ),
               ],
             ),
-          if (_isDocenteComLembrete(role))
-            _ConfigSection(
-              titulo: 'Disciplinas e lembretes',
-              icon: SigadIcons.professor,
-              tone: SigadColors.warning,
-              children: [
-                _ConfigToggle(
-                  icon: SigadIcons.relogio,
-                  titulo: 'Lembrete da próxima disciplina',
-                  subtitulo: _notificarAntesDaDisciplina
-                      ? 'Notificar $_antecedenciaNotificacaoMinutos min antes do início'
-                      : 'Lembrete desativado',
-                  value: _notificarAntesDaDisciplina,
-                  onChanged: (value) {
-                    setState(() => _notificarAntesDaDisciplina = value);
-                    _saveData();
-                  },
-                  tone: SigadColors.warning,
-                ),
-                if (_notificarAntesDaDisciplina)
-                  _ConfigDropdown(
-                    icon: SigadIcons.cronometro,
-                    titulo: 'Antecedência do lembrete',
-                    valor: '$_antecedenciaNotificacaoMinutos min',
-                    opcoes: ConfiguracoesService.opcoesAntecedenciaMinutos
-                        .map((item) => '$item min')
-                        .toList(growable: false),
-                    onChanged: (valor) {
-                      final minutos = int.parse(valor.replaceAll(' min', ''));
-                      final erro =
-                          ConfiguracoesService.validarAntecedenciaDisciplina(
-                            minutos,
-                          );
-                      if (erro != null) {
-                        _mostrarFeedback(erro);
-                        return;
-                      }
-                      setState(() => _antecedenciaNotificacaoMinutos = minutos);
-                      _saveData();
-                    },
-                    tone: SigadColors.warning,
-                  ),
-              ],
-            ),
-          // Removed Agenda de compromissos section
           _ConfigSection(
-            titulo: 'Idioma e Aparência',
-            icon: SigadIcons.idioma,
-            tone: SigadColors.info,
-            children: [
-              _ConfigDropdown(
-                icon: SigadIcons.globo,
-                titulo: 'Idioma',
-                valor: _idioma,
-                opcoes: ['Português (Brasil)', 'English', 'Español'],
-                onChanged: (valor) {
-                  setState(() => _idioma = valor);
-                  _saveData();
-                },
-                tone: SigadColors.info,
-              ),
-              _ConfigDropdown(
-                icon: SigadIcons.texto,
-                titulo: 'Tamanho da fonte',
-                valor: _tamanhoFonte,
-                opcoes: ['Pequeno', 'Médio', 'Grande'],
-                onChanged: (valor) {
-                  setState(() => _tamanhoFonte = valor);
-                  _saveData();
-                },
-                tone: SigadColors.warning,
-              ),
-            ],
-          ),
-          _ConfigSection(
-            titulo: 'Dados e Privacidade',
-            icon: SigadIcons.escudo,
-            tone: SigadColors.risk,
-            children: [
-              _ConfigItem(
-                icon: SigadIcons.nuvemSincronizar,
-                titulo: 'Backup automático',
-                subtitulo: 'Próximo backup em: $_proximoBackup',
-                onTap: () => _showAlerta(context, 'Backup'),
-                tone: SigadColors.success,
-              ),
-              _ConfigItem(
-                icon: SigadIcons.escudo,
-                titulo: 'Política de privacidade',
-                subtitulo: 'Versão 2.1 (efetivo desde 01/01/2026)',
-                onTap: () => _showAlerta(context, 'Política de Privacidade'),
-                tone: SigadColors.risk,
-              ),
-              _ConfigItem(
-                icon: SigadIcons.documento,
-                titulo: 'Termos de serviço',
-                subtitulo: 'Versão 1.5',
-                onTap: () => _showAlerta(context, 'Termos de Serviço'),
-                tone: SigadColors.info,
-              ),
-            ],
-          ),
-          _ConfigSection(
-            titulo: 'Sobre',
+            titulo: context.l10n.sobre,
             icon: SigadIcons.info,
             children: [
               _ConfigItem(
                 icon: SigadIcons.info,
-                titulo: 'Sobre o SIGAD',
-                subtitulo: 'Versão 1.0.0 (Build 42)',
-                onTap: () => _showAlerta(context, 'Sobre'),
-              ),
-              _ConfigItem(
-                icon: SigadIcons.bug,
-                titulo: 'Reportar problema',
-                subtitulo: _problemasReportados == 0
-                    ? 'Enviar feedback ou relatar bugs'
-                    : '$_problemasReportados relato(s) enviados',
-                onTap: () => _showAlerta(context, 'Reportar Problema'),
-                tone: SigadColors.warning,
+                titulo: context.l10n.sobreSigad,
+                subtitulo: context.l10n.versaoBuild('1.0.0 (Build 42)'),
+                onTap: () => _showSobre(context),
               ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-            child: ElevatedButton.icon(
-              onPressed: () => _showConfirmacaoLogout(context),
-              icon: const SigadIcon(SigadIcons.sair),
-              label: const Text('Sair'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: SigadColors.risk,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-              ),
+          const SizedBox(height: 8),
+          ElevatedButton.icon(
+            onPressed: () => _showConfirmacaoLogout(context),
+            icon: const SigadIcon(SigadIcons.sair),
+            label: Text(context.l10n.sairDaConta),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: SigadColors.risk,
+              foregroundColor: Colors.white,
+              minimumSize: const Size.fromHeight(52),
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  bool _isDocenteComLembrete(UserRole? role) {
-    return role == UserRole.professor ||
-        role == UserRole.coordenador ||
-        role == UserRole.chefeDepartamento;
-  }
-
-  void _showAlerta(BuildContext context, String titulo) {
-    switch (titulo) {
-      case 'Perfil':
-        _showEditarPerfil(context);
-        break;
-      case 'Email':
-        _showAlterarEmail(context);
-        break;
-      case 'Alterar Senha':
-        _showAlterarSenha(context);
-        break;
-      case 'Backup':
-        _showBackup(context);
-        break;
-      case 'Política de Privacidade':
-        _showPoliticaPrivacidade(context);
-        break;
-      case 'Termos de Serviço':
-        _showTermosServico(context);
-        break;
-      case 'Sobre':
-        _showSobre(context);
-        break;
-      case 'Reportar Problema':
-        _showReportarProblema(context);
-        break;
-      default:
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(titulo),
-            content: Text('Funcionalidade de $titulo implementada aqui.'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
-    }
-  }
-
-  void _showEditarPerfil(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final nomeController = TextEditingController(text: _nomePerfil);
-    final cargoController = TextEditingController(text: _cargoPerfil);
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        height: MediaQuery.of(context).size.height * 0.7,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Editar Perfil',
-                  style: textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                IconButton(
-                  tooltip: 'Fechar edição de perfil',
-                  onPressed: () => Navigator.pop(context),
-                  icon: const SigadIcon(SigadIcons.fechar),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            TextField(
-              controller: nomeController,
-              decoration: const InputDecoration(
-                labelText: 'Nome Completo',
-                hintText: 'Digite seu nome completo',
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: cargoController,
-              decoration: const InputDecoration(
-                labelText: 'Cargo',
-                hintText: 'Digite seu cargo',
-              ),
-            ),
-            const Spacer(),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancelar'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      final erro = ConfiguracoesService.validarPerfil(
-                        nome: nomeController.text,
-                        cargo: cargoController.text,
-                      );
-                      if (erro != null) {
-                        _mostrarFeedback(erro);
-                        return;
-                      }
-
-                      setState(() {
-                        _nomePerfil = nomeController.text.trim();
-                        _cargoPerfil = cargoController.text.trim();
-                      });
-                      _saveData();
-
-                      Navigator.pop(context);
-                      _mostrarFeedback('Perfil atualizado com sucesso!');
-                    },
-                    child: const Text('Salvar'),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showAlterarEmail(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final emailController = TextEditingController(text: _emailUsuario);
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        height: MediaQuery.of(context).size.height * 0.6,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Alterar Email',
-                  style: textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                IconButton(
-                  tooltip: 'Fechar alteração de email',
-                  onPressed: () => Navigator.pop(context),
-                  icon: const SigadIcon(SigadIcons.fechar),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            TextField(
-              controller: emailController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                labelText: 'Novo Email',
-                hintText: 'Digite seu novo email',
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Será enviado um código de verificação para o novo email.',
-              style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-            ),
-            const Spacer(),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancelar'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      final email = emailController.text.trim();
-                      final erro = ConfiguracoesService.validarEmail(email);
-                      if (erro != null) {
-                        _mostrarFeedback(erro);
-                        return;
-                      }
-
-                      setState(() {
-                        _emailUsuario = email;
-                      });
-                      _saveData();
-
-                      Navigator.pop(context);
-                      _mostrarFeedback('Código de verificação enviado!');
-                    },
-                    child: const Text('Enviar Código'),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showAlterarSenha(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final senhaAtualController = TextEditingController();
-    final novaSenhaController = TextEditingController();
-    final confirmarSenhaController = TextEditingController();
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        height: MediaQuery.of(context).size.height * 0.8,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Alterar Senha',
-                  style: textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                IconButton(
-                  tooltip: 'Fechar alteração de senha',
-                  onPressed: () => Navigator.pop(context),
-                  icon: const SigadIcon(SigadIcons.fechar),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            TextField(
-              controller: senhaAtualController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Senha Atual',
-                hintText: 'Digite sua senha atual',
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: novaSenhaController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Nova Senha',
-                hintText: 'Digite sua nova senha',
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: confirmarSenhaController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Confirmar Nova Senha',
-                hintText: 'Confirme sua nova senha',
-              ),
-            ),
-            const Spacer(),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancelar'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      final senhaAtual = senhaAtualController.text.trim();
-                      final novaSenha = novaSenhaController.text.trim();
-                      final confirmarSenha = confirmarSenhaController.text
-                          .trim();
-
-                      final erro = ConfiguracoesService.validarAlteracaoSenha(
-                        senhaAtual: senhaAtual,
-                        novaSenha: novaSenha,
-                        confirmarSenha: confirmarSenha,
-                      );
-                      if (erro != null) {
-                        _mostrarFeedback(erro);
-                        return;
-                      }
-
-                      setState(() {
-                        _ultimaAlteracaoSenha =
-                            ConfiguracoesService.dataAtual();
-                      });
-                      _saveData();
-
-                      Navigator.pop(context);
-                      _mostrarFeedback('Senha alterada com sucesso!');
-                    },
-                    child: const Text('Alterar'),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showBackup(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) => Container(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Backup Automático',
-                    style: textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  IconButton(
-                    tooltip: 'Fechar backup automático',
-                    onPressed: () => Navigator.pop(context),
-                    icon: const SigadIcon(SigadIcons.fechar),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'Configurações de Backup',
-                style: textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 16),
-              _ConfigToggle(
-                icon: SigadIcons.nuvemSincronizar,
-                titulo: 'Backup automático',
-                subtitulo: 'Realizar backup diariamente',
-                value: _backupAutomaticoAtivo,
-                onChanged: (value) {
-                  setState(() {
-                    _backupAutomaticoAtivo = value;
-                    _proximoBackup = value
-                        ? ConfiguracoesService.dataFutura(1)
-                        : 'Desativado';
-                  });
-                  _saveData();
-                  setModalState(() {});
-                },
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Último backup: $_ultimoBackup',
-                style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        setState(() {
-                          _ultimoBackup = ConfiguracoesService.dataHoraAtual();
-                          _proximoBackup = _backupAutomaticoAtivo
-                              ? ConfiguracoesService.dataFutura(1)
-                              : 'Desativado';
-                        });
-                        _saveData();
-                        Navigator.pop(context);
-                        _mostrarFeedback('Backup realizado com sucesso!');
-                      },
-                      child: const Text('Fazer Backup Agora'),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showPoliticaPrivacidade(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        height: MediaQuery.of(context).size.height * 0.8,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Política de Privacidade',
-                  style: textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                IconButton(
-                  tooltip: 'Fechar política de privacidade',
-                  onPressed: () => Navigator.pop(context),
-                  icon: const SigadIcon(SigadIcons.fechar),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Text(
-                  'Política de Privacidade do SIGAD\n\n'
-                  'Última atualização: 01/01/2026\n\n'
-                  'Esta Política de Privacidade descreve como coletamos, usamos e protegemos suas informações pessoais...\n\n'
-                  '1. Informações que coletamos\n'
-                  '• Dados de conta (nome, email, cargo)\n'
-                  '• Dados de uso da aplicação\n'
-                  '• Preferências de configuração\n\n'
-                  '2. Como usamos suas informações\n'
-                  '• Para fornecer e melhorar nossos serviços\n'
-                  '• Para comunicação sobre atualizações\n'
-                  '• Para suporte técnico\n\n'
-                  '3. Compartilhamento de dados\n'
-                  '• Não vendemos seus dados pessoais\n'
-                  '• Dados podem ser compartilhados apenas com consentimento\n'
-                  '• Cumprimos todas as leis de proteção de dados\n\n'
-                  'Para mais informações, entre em contato conosco.',
-                  style: textTheme.bodyMedium,
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Entendi'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showTermosServico(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        height: MediaQuery.of(context).size.height * 0.8,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Termos de Serviço',
-                  style: textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                IconButton(
-                  tooltip: 'Fechar termos de serviço',
-                  onPressed: () => Navigator.pop(context),
-                  icon: const SigadIcon(SigadIcons.fechar),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Text(
-                  'Termos de Serviço do SIGAD\n\n'
-                  'Última atualização: 15/12/2025\n\n'
-                  'Ao usar o SIGAD, você concorda com estes termos...\n\n'
-                  '1. Aceitação dos Termos\n'
-                  '• Ao acessar e usar o SIGAD, você aceita estes termos\n'
-                  '• Se não concordar, não use a aplicação\n\n'
-                  '2. Uso da Aplicação\n'
-                  '• Uso destinado apenas para fins acadêmicos\n'
-                  '• Proibido uso comercial sem autorização\n'
-                  '• Responsabilidade pelo conteúdo inserido\n\n'
-                  '3. Privacidade e Segurança\n'
-                  '• Comprometemo-nos com a proteção dos dados\n'
-                  '• Uso de criptografia para dados sensíveis\n'
-                  '• Conformidade com LGPD\n\n'
-                  '4. Limitação de Responsabilidade\n'
-                  '• Serviço fornecido "como está"\n'
-                  '• Não garantimos disponibilidade 100%\n'
-                  '• Usuário responsável por backup de dados\n\n'
-                  'Para dúvidas, contate o suporte.',
-                  style: textTheme.bodyMedium,
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Aceito'),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -920,7 +272,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                         children: [
                           Expanded(
                             child: Text(
-                              'Sobre o SIGAD',
+                              context.l10n.sobreSigad,
                               style: textTheme.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.w700,
                               ),
@@ -928,7 +280,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                           ),
                           const SizedBox(width: 8),
                           IconButton(
-                            tooltip: 'Fechar sobre o SIGAD',
+                            tooltip: context.l10n.fecharSobre,
                             onPressed: () => Navigator.pop(sheetContext),
                             icon: const SigadIcon(SigadIcons.fechar),
                           ),
@@ -970,25 +322,25 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                                 ),
                               ),
                               const SizedBox(height: 24),
-                              const _DetailSection(
-                                label: 'Versão',
+                              _DetailSection(
+                                label: context.l10n.versao,
                                 value: '1.0.0 (Build 42)',
                               ),
-                              const _DetailSection(
-                                label: 'Desenvolvido por',
-                                value: 'Equipe de Desenvolvimento SIGAD',
+                              _DetailSection(
+                                label: context.l10n.desenvolvidoPor,
+                                value: context.l10n.equipeDesenvolvimento,
                               ),
-                              const _DetailSection(
-                                label: 'Data de lançamento',
+                              _DetailSection(
+                                label: context.l10n.dataLancamento,
                                 value: '15/03/2026',
                               ),
-                              const _DetailSection(
-                                label: 'Compatibilidade',
+                              _DetailSection(
+                                label: context.l10n.compatibilidade,
                                 value: 'Android 8.0+, iOS 12.0+',
                               ),
                               const SizedBox(height: 24),
                               Text(
-                                'O SIGAD é um sistema integrado de gestão acadêmica desenvolvido para otimizar processos administrativos e acadêmicos.',
+                                context.l10n.sobreDescricao,
                                 style: textTheme.bodyMedium,
                               ),
                               const SizedBox(height: 8),
@@ -1001,7 +353,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () => Navigator.pop(sheetContext),
-                          child: const Text('Fechar'),
+                          child: Text(context.l10n.fechar),
                         ),
                       ),
                     ],
@@ -1015,114 +367,17 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
     );
   }
 
-  void _showReportarProblema(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final tituloController = TextEditingController();
-    final descricaoController = TextEditingController();
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        height: MediaQuery.of(context).size.height * 0.8,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Reportar Problema',
-                  style: textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                IconButton(
-                  tooltip: 'Fechar relato de problema',
-                  onPressed: () => Navigator.pop(context),
-                  icon: const SigadIcon(SigadIcons.fechar),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            TextField(
-              controller: tituloController,
-              decoration: const InputDecoration(
-                labelText: 'Título do Problema',
-                hintText: 'Descreva brevemente o problema',
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: descricaoController,
-              maxLines: 5,
-              decoration: const InputDecoration(
-                labelText: 'Descrição Detalhada',
-                hintText:
-                    'Descreva o problema em detalhes, incluindo passos para reproduzir',
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Inclua capturas de tela se possível para ajudar no diagnóstico.',
-              style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-            ),
-            const Spacer(),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancelar'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      final erro = ConfiguracoesService.validarRelatoProblema(
-                        titulo: tituloController.text,
-                        descricao: descricaoController.text,
-                      );
-                      if (erro != null) {
-                        _mostrarFeedback(erro);
-                        return;
-                      }
-
-                      setState(() {
-                        _problemasReportados += 1;
-                      });
-                      _saveData();
-
-                      Navigator.pop(context);
-                      _mostrarFeedback('Relatório enviado com sucesso!');
-                    },
-                    child: const Text('Enviar'),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _showConfirmacaoLogout(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Sair'),
-        content: Text(
-          'Tem certeza que deseja sair da aplicação?',
-          style: textTheme.bodyMedium,
-        ),
+        title: Text(context.l10n.sair),
+        content: Text(context.l10n.sairPergunta, style: textTheme.bodyMedium),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(context.l10n.cancelar),
           ),
           TextButton(
             onPressed: () async {
@@ -1133,7 +388,10 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 context,
               ).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
             },
-            child: Text('Sair', style: TextStyle(color: SigadColors.risk)),
+            child: Text(
+              context.l10n.sair,
+              style: TextStyle(color: SigadColors.risk),
+            ),
           ),
         ],
       ),
@@ -1155,7 +413,7 @@ class _ConfiguracoesAccessDenied extends StatelessWidget {
             const SigadIcon(SigadIcons.cadeado, size: 56),
             const SizedBox(height: 12),
             Text(
-              'Faça login para acessar configurações.',
+              context.l10n.facaLogin,
               style: Theme.of(context).textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
@@ -1181,42 +439,56 @@ class _ConfigSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            children: [
-              SigadIconAvatar(icon: icon, tone: tone, size: 30, iconSize: 16),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  titulo,
-                  style: textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: SigadColors.muted,
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Semantics(
+            header: true,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
+              child: Row(
+                children: [
+                  SigadIcon(icon, color: tone, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      titulo,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-        ...children.asMap().entries.map(
-          (entry) => Column(
-            children: [
-              entry.value,
-              if (entry.key < children.length - 1)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Divider(color: SigadColors.divider),
-                ),
-            ],
+          Material(
+            color: theme.colorScheme.surface,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18),
+              side: BorderSide(color: theme.colorScheme.outlineVariant),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: [
+                for (var i = 0; i < children.length; i++) ...[
+                  children[i],
+                  if (i < children.length - 1)
+                    Divider(
+                      height: 1,
+                      indent: 16,
+                      endIndent: 16,
+                      color: theme.colorScheme.outlineVariant,
+                    ),
+                ],
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -1227,14 +499,13 @@ class _ConfigItem extends StatelessWidget {
     required this.titulo,
     required this.subtitulo,
     required this.onTap,
-    this.tone = SigadColors.brand,
   });
 
   final IconData icon;
   final String titulo;
   final String subtitulo;
   final VoidCallback onTap;
-  final Color tone;
+  static const tone = SigadColors.brand;
 
   @override
   Widget build(BuildContext context) {
@@ -1333,6 +604,7 @@ class _ConfigDropdown extends StatelessWidget {
     required this.opcoes,
     required this.onChanged,
     this.tone = SigadColors.brand,
+    this.rotulo,
   });
 
   final IconData icon;
@@ -1341,6 +613,9 @@ class _ConfigDropdown extends StatelessWidget {
   final List<String> opcoes;
   final ValueChanged<String> onChanged;
   final Color tone;
+
+  /// Texto exibido para cada opção (o valor salvo continua o mesmo).
+  final String Function(String opcao)? rotulo;
 
   @override
   Widget build(BuildContext context) {
@@ -1377,7 +652,10 @@ class _ConfigDropdown extends StatelessWidget {
                         .map(
                           (opcao) => DropdownMenuItem(
                             value: opcao,
-                            child: Text(opcao, style: textTheme.bodySmall),
+                            child: Text(
+                              rotulo?.call(opcao) ?? opcao,
+                              style: textTheme.bodySmall,
+                            ),
                           ),
                         )
                         .toList(),
@@ -1392,6 +670,54 @@ class _ConfigDropdown extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Linha só de leitura (dados da conta).
+class _ConfigInfo extends StatelessWidget {
+  const _ConfigInfo({
+    required this.icon,
+    required this.titulo,
+    required this.valor,
+    this.tone = SigadColors.brand,
+  });
+
+  final IconData icon;
+  final String titulo;
+  final String valor;
+  final Color tone;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Semantics(
+      container: true,
+      label: '$titulo: $valor',
+      excludeSemantics: true,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            SigadIconAvatar(icon: icon, tone: tone),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    titulo,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: SigadColors.muted,
+                    ),
+                  ),
+                  Text(valor, style: textTheme.bodyLarge),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
