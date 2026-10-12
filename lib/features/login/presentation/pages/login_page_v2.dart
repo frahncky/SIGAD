@@ -11,7 +11,6 @@ import '../../../../core/models/user_role.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
-import '../../../../shared/widgets/brand_title.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -55,35 +54,26 @@ class _LoginPageState extends State<LoginPage> {
                           constraints.maxWidth >= 760 && size.height >= 720;
 
                       return wide
-                          ? _LoginSurface(
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Expanded(
-                                    flex: 5,
-                                    child: _InstitutionPanel(),
-                                  ),
-                                  const SizedBox(width: 24),
-                                  Expanded(flex: 6, child: _buildForm()),
-                                ],
-                              ),
+                          ? Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Expanded(
+                                  flex: 5,
+                                  child: _LoginHero(wide: true),
+                                ),
+                                const SizedBox(width: 40),
+                                Expanded(
+                                  flex: 6,
+                                  child: _LoginSurface(child: _buildForm()),
+                                ),
+                              ],
                             )
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                const SizedBox(
-                                  height: 150,
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                    ),
-                                    child: Align(
-                                      alignment: Alignment.bottomLeft,
-                                      child: _CompactBrandHeader(light: true),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
+                                const SizedBox(height: 12),
+                                const _LoginHero(wide: false),
+                                const SizedBox(height: 24),
                                 _LoginSurface(child: _buildForm(compact: true)),
                               ],
                             );
@@ -332,52 +322,67 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-class _CompactBrandHeader extends StatelessWidget {
-  const _CompactBrandHeader({this.light = false});
+/// Apresentação do SIGAD na tela de entrada: logotipo, nome e subtítulo.
+///
+/// Em telas largas mostra também uma descrição curta e os destaques do app.
+class _LoginHero extends StatelessWidget {
+  const _LoginHero({required this.wide});
 
-  final bool light;
-
-  @override
-  Widget build(BuildContext context) {
-    return BrandTitle(compact: true, light: light);
-  }
-}
-
-class _InstitutionPanel extends StatelessWidget {
-  const _InstitutionPanel();
+  final bool wide;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            SigadColors.brandDeep.withValues(alpha: 0.94),
-            SigadColors.brand.withValues(alpha: 0.86),
-          ],
+    final alinhamento = wide
+        ? CrossAxisAlignment.start
+        : CrossAxisAlignment.center;
+    final alinhamentoTexto = wide ? TextAlign.start : TextAlign.center;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: alinhamento,
+      children: [
+        _Logomarca(tamanho: wide ? 84 : 64),
+        SizedBox(height: wide ? 22 : 14),
+        Text(
+          'SIGAD',
+          textAlign: alinhamentoTexto,
+          style: (wide ? textTheme.displayMedium : textTheme.displaySmall)
+              ?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 2,
+                height: 1,
+              ),
         ),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const BrandTitle(compact: true, light: true),
-          const SizedBox(height: 24),
-          Text(
-            'Gestão acadêmica e departamental.',
-            style: textTheme.headlineSmall?.copyWith(color: Colors.white),
+        const SizedBox(height: 10),
+        Text(
+          'Sistema Integrado de Gestão\nAcadêmica e Departamental',
+          textAlign: alinhamentoTexto,
+          style: (wide ? textTheme.titleLarge : textTheme.titleMedium)
+              ?.copyWith(
+                color: Colors.white.withValues(alpha: 0.92),
+                fontWeight: FontWeight.w600,
+                height: 1.3,
+              ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          width: 48,
+          height: 5,
+          decoration: BoxDecoration(
+            color: SigadColors.accent,
+            borderRadius: BorderRadius.circular(3),
           ),
-          const SizedBox(height: 10),
+        ),
+        if (wide) ...[
+          const SizedBox(height: 22),
           Text(
-            'Planeje as atividades do DEE: carga docente, laboratórios, reuniões e demandas.',
-            style: textTheme.bodyMedium?.copyWith(
+            'Planeje as atividades do departamento: carga docente, '
+            'laboratórios, reuniões e demandas.',
+            style: textTheme.bodyLarge?.copyWith(
               color: Colors.white.withValues(alpha: 0.82),
+              height: 1.4,
             ),
           ),
           const SizedBox(height: 22),
@@ -394,6 +399,66 @@ class _InstitutionPanel extends StatelessWidget {
             label: 'Indicadores e relatórios',
           ),
         ],
+      ],
+    );
+  }
+}
+
+/// Logomarca do SIGAD: as três barras do ícone do app, com a do meio em
+/// destaque.
+class _Logomarca extends StatelessWidget {
+  const _Logomarca({required this.tamanho});
+
+  final double tamanho;
+
+  @override
+  Widget build(BuildContext context) {
+    final barra = tamanho * 0.5;
+    final espessura = tamanho * 0.1;
+
+    Widget linha(Color cor) => Container(
+      width: barra,
+      height: espessura,
+      decoration: BoxDecoration(
+        color: cor,
+        borderRadius: BorderRadius.circular(espessura / 2),
+      ),
+    );
+
+    return Semantics(
+      label: 'Logotipo do SIGAD',
+      image: true,
+      child: Container(
+        width: tamanho,
+        height: tamanho,
+        padding: EdgeInsets.all(tamanho * 0.08),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(tamanho * 0.28),
+        ),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: SigadColors.brand,
+            borderRadius: BorderRadius.circular(tamanho * 0.22),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.18),
+                blurRadius: 14,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              linha(const Color(0xFFE8E9EA)),
+              SizedBox(height: espessura * 0.8),
+              linha(SigadColors.accent),
+              SizedBox(height: espessura * 0.8),
+              linha(const Color(0xFFE8E9EA)),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -468,49 +533,81 @@ class _LoginSurface extends StatelessWidget {
 class _LoginBackground extends StatelessWidget {
   const _LoginBackground();
 
+  // Ícones decorativos espalhados pelo fundo: (ícone, x, y, tamanho), com
+  // posições relativas à tela.
+  static const _icones = <(IconData, double, double, double)>[
+    (SigadIcons.laboratorio, 0.80, 0.08, 64),
+    (SigadIcons.calendario, 0.10, 0.06, 44),
+    (SigadIcons.conversa, 0.86, 0.46, 52),
+    (SigadIcons.kanban, 0.06, 0.52, 46),
+    (SigadIcons.relogio, 0.16, 0.86, 54),
+    (SigadIcons.analise, 0.78, 0.84, 46),
+  ];
+
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
-    final compact = width < 760;
-
-    return ColoredBox(
+    return DecoratedBox(
       key: const ValueKey('login-background'),
-      color: SigadColors.brandDeep,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                stops: const [0, 0.56, 1],
-                colors: [
-                  SigadColors.brandDeep.withValues(
-                    alpha: compact ? 0.48 : 0.64,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          stops: [0, 0.55, 1],
+          colors: [Color(0xFF0A8B77), SigadColors.brand, SigadColors.brandDeep],
+        ),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final w = constraints.maxWidth;
+          final h = constraints.maxHeight;
+          return ExcludeSemantics(
+            child: Stack(
+              children: [
+                Positioned(
+                  right: -w * 0.18,
+                  top: -w * 0.22,
+                  child: _Circulo(diametro: w * 0.7),
+                ),
+                Positioned(
+                  left: -w * 0.2,
+                  bottom: -w * 0.25,
+                  child: _Circulo(diametro: w * 0.6),
+                ),
+                for (final (icone, x, y, tamanho) in _icones)
+                  Positioned(
+                    left: x * w - tamanho / 2,
+                    top: y * h - tamanho / 2,
+                    child: Opacity(
+                      opacity: 0.16,
+                      child: SigadIcon(
+                        icone,
+                        color: Colors.white,
+                        size: tamanho,
+                      ),
+                    ),
                   ),
-                  SigadColors.brandDark.withValues(
-                    alpha: compact ? 0.28 : 0.36,
-                  ),
-                  Colors.black.withValues(alpha: 0.46),
-                ],
-              ),
+              ],
             ),
-          ),
-          DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.white.withValues(alpha: 0.04),
-                  Colors.transparent,
-                  SigadColors.brandDeep.withValues(alpha: 0.32),
-                ],
-              ),
-            ),
-          ),
-        ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _Circulo extends StatelessWidget {
+  const _Circulo({required this.diametro});
+
+  final double diametro;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: diametro,
+      height: diametro,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white.withValues(alpha: 0.05),
       ),
     );
   }
