@@ -197,10 +197,8 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                   icon: SigadIcons.aviso,
                   titulo: 'Mural do departamento',
                   subtitulo: 'Avisos do painel e frases motivacionais',
-                  onTap: () => Navigator.pushReplacementNamed(
-                    context,
-                    AppRoutes.mural,
-                  ),
+                  onTap: () =>
+                      Navigator.pushReplacementNamed(context, AppRoutes.mural),
                 ),
               ],
             ),

@@ -364,7 +364,11 @@ abstract final class ReservaService {
     if (dia.weekday >= DateTime.saturday) {
       return DateTime(dia.year, dia.month, dia.day + 8 - dia.weekday);
     }
-    return DateTime(dia.year, dia.month, dia.day - (dia.weekday - DateTime.monday));
+    return DateTime(
+      dia.year,
+      dia.month,
+      dia.day - (dia.weekday - DateTime.monday),
+    );
   }
 
   static String? validateDisciplina(String? disciplina) {
