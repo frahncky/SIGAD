@@ -3174,6 +3174,330 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Recém-criadas'**
   String get demOrdemRecentes;
+
+  /// No description provided for @tarErroCarregar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível carregar o quadro de tarefas.'**
+  String get tarErroCarregar;
+
+  /// No description provided for @tarNovoCard.
+  ///
+  /// In pt, this message translates to:
+  /// **'Novo card'**
+  String get tarNovoCard;
+
+  /// No description provided for @tarCarregando.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carregando quadro de tarefas...'**
+  String get tarCarregando;
+
+  /// No description provided for @tarNenhumCard.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum card criado'**
+  String get tarNenhumCard;
+
+  /// No description provided for @tarNenhumCardDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Toque no + para adicionar o primeiro card ao quadro.'**
+  String get tarNenhumCardDica;
+
+  /// No description provided for @tarCriarCard.
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar card'**
+  String get tarCriarCard;
+
+  /// No description provided for @tarArrasteDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Arraste lateralmente para navegar entre as colunas do quadro.'**
+  String get tarArrasteDica;
+
+  /// No description provided for @tarExcluirCardMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Deseja excluir o card \"{titulo}\"?'**
+  String tarExcluirCardMensagem(String titulo);
+
+  /// No description provided for @tarCardRemovido.
+  ///
+  /// In pt, this message translates to:
+  /// **'Card \"{titulo}\" removido'**
+  String tarCardRemovido(String titulo);
+
+  /// No description provided for @tarTituloDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Digite o título do card'**
+  String get tarTituloDica;
+
+  /// No description provided for @tarColuna.
+  ///
+  /// In pt, this message translates to:
+  /// **'Coluna'**
+  String get tarColuna;
+
+  /// No description provided for @tarCardCriado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Card criado com sucesso!'**
+  String get tarCardCriado;
+
+  /// No description provided for @tarSolteAqui.
+  ///
+  /// In pt, this message translates to:
+  /// **'Solte aqui'**
+  String get tarSolteAqui;
+
+  /// No description provided for @tarCardSemantica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Card: {titulo}. Prioridade {prioridade}.'**
+  String tarCardSemantica(String titulo, String prioridade);
+
+  /// No description provided for @tarMaisAcoes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mais ações do card'**
+  String get tarMaisAcoes;
+
+  /// No description provided for @tarId.
+  ///
+  /// In pt, this message translates to:
+  /// **'ID: {id}'**
+  String tarId(String id);
+
+  /// No description provided for @tarColunaValor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Coluna: {coluna}'**
+  String tarColunaValor(String coluna);
+
+  /// No description provided for @tarPrioridadeValor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prioridade: {prioridade}'**
+  String tarPrioridadeValor(String prioridade);
+
+  /// No description provided for @tarExcluirEsteCard.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tem certeza que deseja excluir este card?'**
+  String get tarExcluirEsteCard;
+
+  /// No description provided for @tarInformeTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe o título do card'**
+  String get tarInformeTitulo;
+
+  /// No description provided for @tarColunaBacklog.
+  ///
+  /// In pt, this message translates to:
+  /// **'Backlog'**
+  String get tarColunaBacklog;
+
+  /// No description provided for @tarColunaEmProgresso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em Progresso'**
+  String get tarColunaEmProgresso;
+
+  /// No description provided for @tarColunaEmRevisao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em Revisão'**
+  String get tarColunaEmRevisao;
+
+  /// No description provided for @tarColunaConcluido.
+  ///
+  /// In pt, this message translates to:
+  /// **'Concluído'**
+  String get tarColunaConcluido;
+
+  /// No description provided for @atvFiltrar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Filtrar atividades'**
+  String get atvFiltrar;
+
+  /// No description provided for @atvFecharFiltro.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fechar filtro'**
+  String get atvFecharFiltro;
+
+  /// No description provided for @atvErroCarregar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível carregar as atividades.'**
+  String get atvErroCarregar;
+
+  /// No description provided for @atvBuscarDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar por título, descrição ou responsável'**
+  String get atvBuscarDica;
+
+  /// No description provided for @atvCarregando.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carregando atividades...'**
+  String get atvCarregando;
+
+  /// No description provided for @atvNenhuma.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma atividade encontrada'**
+  String get atvNenhuma;
+
+  /// No description provided for @atvNenhumaDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ajuste os filtros ou crie uma nova atividade.'**
+  String get atvNenhumaDica;
+
+  /// No description provided for @atvCriarNova.
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar nova atividade'**
+  String get atvCriarNova;
+
+  /// No description provided for @atvNova.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova Atividade'**
+  String get atvNova;
+
+  /// No description provided for @atvEditar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar Atividade'**
+  String get atvEditar;
+
+  /// No description provided for @atvFecharFormulario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fechar formulário'**
+  String get atvFecharFormulario;
+
+  /// No description provided for @atvTituloDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Digite o título da atividade'**
+  String get atvTituloDica;
+
+  /// No description provided for @atvDescricaoDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Descreva a atividade em detalhes'**
+  String get atvDescricaoDica;
+
+  /// No description provided for @atvResponsavel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Responsável'**
+  String get atvResponsavel;
+
+  /// No description provided for @atvCriada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atividade criada com sucesso!'**
+  String get atvCriada;
+
+  /// No description provided for @atvAtualizada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atividade atualizada com sucesso!'**
+  String get atvAtualizada;
+
+  /// No description provided for @atvExcluida.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atividade excluída com sucesso!'**
+  String get atvExcluida;
+
+  /// No description provided for @atvAgendaOperacional.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agenda operacional'**
+  String get atvAgendaOperacional;
+
+  /// No description provided for @atvConcluidas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Concluídas'**
+  String get atvConcluidas;
+
+  /// No description provided for @atvPendentes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pendentes'**
+  String get atvPendentes;
+
+  /// No description provided for @atvAbrir.
+  ///
+  /// In pt, this message translates to:
+  /// **'Abrir atividade {titulo}'**
+  String atvAbrir(String titulo);
+
+  /// No description provided for @atvMaisAcoes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mais ações da atividade'**
+  String get atvMaisAcoes;
+
+  /// No description provided for @atvFecharDetalhes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fechar detalhes da atividade'**
+  String get atvFecharDetalhes;
+
+  /// No description provided for @atvData.
+  ///
+  /// In pt, this message translates to:
+  /// **'Data'**
+  String get atvData;
+
+  /// No description provided for @atvInformeTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe o título da atividade'**
+  String get atvInformeTitulo;
+
+  /// No description provided for @atvInformeDescricao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe a descrição da atividade'**
+  String get atvInformeDescricao;
+
+  /// No description provided for @atvStatusConcluida.
+  ///
+  /// In pt, this message translates to:
+  /// **'Concluída'**
+  String get atvStatusConcluida;
+
+  /// No description provided for @atvStatusEmProgresso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em progresso'**
+  String get atvStatusEmProgresso;
+
+  /// No description provided for @atvStatusAgendada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agendada'**
+  String get atvStatusAgendada;
+
+  /// No description provided for @atvStatusPendente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pendente'**
+  String get atvStatusPendente;
 }
 
 class _AppLocalizationsDelegate

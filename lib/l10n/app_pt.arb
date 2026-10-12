@@ -1006,5 +1006,111 @@
   "demPrioridadeMedia": "Média",
   "demPrioridadeBaixa": "Baixa",
   "demOrdemPrazo": "Prazo mais próximo",
-  "demOrdemRecentes": "Recém-criadas"
+  "demOrdemRecentes": "Recém-criadas",
+  "tarErroCarregar": "Não foi possível carregar o quadro de tarefas.",
+  "tarNovoCard": "Novo card",
+  "tarCarregando": "Carregando quadro de tarefas...",
+  "tarNenhumCard": "Nenhum card criado",
+  "tarNenhumCardDica": "Toque no + para adicionar o primeiro card ao quadro.",
+  "tarCriarCard": "Criar card",
+  "tarArrasteDica": "Arraste lateralmente para navegar entre as colunas do quadro.",
+  "tarExcluirCardMensagem": "Deseja excluir o card \"{titulo}\"?",
+  "@tarExcluirCardMensagem": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "tarCardRemovido": "Card \"{titulo}\" removido",
+  "@tarCardRemovido": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "tarTituloDica": "Digite o título do card",
+  "tarColuna": "Coluna",
+  "tarCardCriado": "Card criado com sucesso!",
+  "tarSolteAqui": "Solte aqui",
+  "tarCardSemantica": "Card: {titulo}. Prioridade {prioridade}.",
+  "@tarCardSemantica": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      },
+      "prioridade": {
+        "type": "String"
+      }
+    }
+  },
+  "tarMaisAcoes": "Mais ações do card",
+  "tarId": "ID: {id}",
+  "@tarId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tarColunaValor": "Coluna: {coluna}",
+  "@tarColunaValor": {
+    "placeholders": {
+      "coluna": {
+        "type": "String"
+      }
+    }
+  },
+  "tarPrioridadeValor": "Prioridade: {prioridade}",
+  "@tarPrioridadeValor": {
+    "placeholders": {
+      "prioridade": {
+        "type": "String"
+      }
+    }
+  },
+  "tarExcluirEsteCard": "Tem certeza que deseja excluir este card?",
+  "tarInformeTitulo": "Informe o título do card",
+  "tarColunaBacklog": "Backlog",
+  "tarColunaEmProgresso": "Em Progresso",
+  "tarColunaEmRevisao": "Em Revisão",
+  "tarColunaConcluido": "Concluído",
+  "atvFiltrar": "Filtrar atividades",
+  "atvFecharFiltro": "Fechar filtro",
+  "atvErroCarregar": "Não foi possível carregar as atividades.",
+  "atvBuscarDica": "Buscar por título, descrição ou responsável",
+  "atvCarregando": "Carregando atividades...",
+  "atvNenhuma": "Nenhuma atividade encontrada",
+  "atvNenhumaDica": "Ajuste os filtros ou crie uma nova atividade.",
+  "atvCriarNova": "Criar nova atividade",
+  "atvNova": "Nova Atividade",
+  "atvEditar": "Editar Atividade",
+  "atvFecharFormulario": "Fechar formulário",
+  "atvTituloDica": "Digite o título da atividade",
+  "atvDescricaoDica": "Descreva a atividade em detalhes",
+  "atvResponsavel": "Responsável",
+  "atvCriada": "Atividade criada com sucesso!",
+  "atvAtualizada": "Atividade atualizada com sucesso!",
+  "atvExcluida": "Atividade excluída com sucesso!",
+  "atvAgendaOperacional": "Agenda operacional",
+  "atvConcluidas": "Concluídas",
+  "atvPendentes": "Pendentes",
+  "atvAbrir": "Abrir atividade {titulo}",
+  "@atvAbrir": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "atvMaisAcoes": "Mais ações da atividade",
+  "atvFecharDetalhes": "Fechar detalhes da atividade",
+  "atvData": "Data",
+  "atvInformeTitulo": "Informe o título da atividade",
+  "atvInformeDescricao": "Informe a descrição da atividade",
+  "atvStatusConcluida": "Concluída",
+  "atvStatusEmProgresso": "Em progresso",
+  "atvStatusAgendada": "Agendada",
+  "atvStatusPendente": "Pendente"
 }

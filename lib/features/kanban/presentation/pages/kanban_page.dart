@@ -5,11 +5,13 @@ import '../../../../app/theme/sigad_icons.dart';
 import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
+import '../../../../l10n/l10n.dart';
 import '../../../../shared/widgets/horizontal_scroll_hint.dart';
 import '../../../../shared/widgets/page_status_view.dart';
 import '../../data/kanban_repository.dart';
 import '../../domain/kanban_models.dart';
 import '../../domain/kanban_service.dart';
+import '../kanban_l10n.dart';
 
 class KanbanPage extends StatefulWidget {
   const KanbanPage({super.key});
@@ -55,7 +57,7 @@ class _KanbanPageState extends State<KanbanPage> {
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _loadError = 'Nao foi possivel carregar o quadro Kanban.';
+        _loadError = context.l10n.tarErroCarregar;
       });
     }
   }
@@ -69,6 +71,7 @@ class _KanbanPageState extends State<KanbanPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final shouldShowScrollHint = MediaQuery.of(context).size.width < 960;
     final colunasEntries = _colunas.entries.toList();
     return Scaffold(
@@ -78,30 +81,33 @@ class _KanbanPageState extends State<KanbanPage> {
           IconButton(
             icon: const SigadIcon(SigadIcons.adicionar),
             onPressed: () => _showCriarCard(context),
+            tooltip: l10n.tarNovoCard,
           ),
         ],
       ),
       body: _isLoading
-          ? const PageStatusView.loading(title: 'Carregando quadro Kanban...')
+          ? PageStatusView.loading(title: l10n.tarCarregando)
           : _loadError != null
-          ? PageStatusView.error(subtitle: _loadError, onAction: _loadData)
+          ? PageStatusView.error(
+              title: l10n.demErroCarregarTitulo,
+              subtitle: _loadError,
+              actionLabel: l10n.tentarNovamente,
+              onAction: _loadData,
+            )
           : _cards.isEmpty
           ? PageStatusView.empty(
               icon: SigadIcons.kanban,
-              title: 'Nenhum card criado',
-              subtitle: 'Toque no + para adicionar o primeiro card ao quadro.',
-              actionLabel: 'Criar card',
+              title: l10n.tarNenhumCard,
+              subtitle: l10n.tarNenhumCardDica,
+              actionLabel: l10n.tarCriarCard,
               onAction: () => _showCriarCard(context),
             )
           : Column(
               children: [
                 if (shouldShowScrollHint)
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(16, 12, 16, 0),
-                    child: HorizontalScrollHint(
-                      message:
-                          'Arraste lateralmente para navegar entre as colunas do quadro.',
-                    ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                    child: HorizontalScrollHint(message: l10n.tarArrasteDica),
                   ),
                 Expanded(
                   child: SingleChildScrollView(
@@ -147,17 +153,17 @@ class _KanbanPageState extends State<KanbanPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Confirmar exclusão'),
-        content: Text('Deseja excluir o card "${card.titulo}"?'),
+        title: Text(context.l10n.demConfirmarExclusao),
+        content: Text(context.l10n.tarExcluirCardMensagem(card.titulo)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
+            child: Text(context.l10n.cancelar),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
-              'Excluir',
+              context.l10n.excluir,
               style: TextStyle(color: Theme.of(ctx).colorScheme.error),
             ),
           ),
@@ -168,7 +174,7 @@ class _KanbanPageState extends State<KanbanPage> {
     setState(() {
       _cards.removeWhere((c) => c.id == card.id);
     });
-    AppFeedbackService.info(context, 'Card "${card.titulo}" removido');
+    AppFeedbackService.info(context, context.l10n.tarCardRemovido(card.titulo));
     _saveData();
   }
 
@@ -181,23 +187,30 @@ class _KanbanPageState extends State<KanbanPage> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setModalState) => AlertDialog(
-          title: const Text('Novo Card'),
+          title: Text(context.l10n.tarNovoCard),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: tituloController,
-                decoration: const InputDecoration(
-                  labelText: 'Título',
-                  hintText: 'Digite o título do card',
+                decoration: InputDecoration(
+                  labelText: context.l10n.demTitulo,
+                  hintText: context.l10n.tarTituloDica,
                 ),
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 initialValue: prioridadeSelecionada,
-                decoration: const InputDecoration(labelText: 'Prioridade'),
+                decoration: InputDecoration(
+                  labelText: context.l10n.demPrioridade,
+                ),
                 items: KanbanService.prioridades
-                    .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+                    .map(
+                      (p) => DropdownMenuItem(
+                        value: p,
+                        child: Text(context.l10n.opcaoKanban(p)),
+                      ),
+                    )
                     .toList(),
                 onChanged: (value) =>
                     setModalState(() => prioridadeSelecionada = value!),
@@ -205,9 +218,14 @@ class _KanbanPageState extends State<KanbanPage> {
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 initialValue: colunaSelecionada,
-                decoration: const InputDecoration(labelText: 'Coluna'),
+                decoration: InputDecoration(labelText: context.l10n.tarColuna),
                 items: KanbanService.colunas
-                    .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                    .map(
+                      (c) => DropdownMenuItem(
+                        value: c,
+                        child: Text(context.l10n.opcaoKanban(c)),
+                      ),
+                    )
                     .toList(),
                 onChanged: (value) =>
                     setModalState(() => colunaSelecionada = value!),
@@ -217,7 +235,7 @@ class _KanbanPageState extends State<KanbanPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
+              child: Text(context.l10n.cancelar),
             ),
             ElevatedButton(
               onPressed: () {
@@ -239,14 +257,17 @@ class _KanbanPageState extends State<KanbanPage> {
                   Navigator.pop(context);
                   AppFeedbackService.success(
                     context,
-                    'Card criado com sucesso!',
+                    context.l10n.tarCardCriado,
                   );
                   _saveData();
                 } else {
-                  AppFeedbackService.warning(context, erro);
+                  AppFeedbackService.warning(
+                    context,
+                    context.l10n.erroKanban(erro),
+                  );
                 }
               },
-              child: const Text('Criar'),
+              child: Text(context.l10n.demCriar),
             ),
           ],
         ),
@@ -290,7 +311,7 @@ class _KanbanColuna extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    titulo,
+                    context.l10n.opcaoKanban(titulo),
                     style: textTheme.labelLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
@@ -334,7 +355,7 @@ class _KanbanColuna extends StatelessWidget {
                   child: cards.isEmpty
                       ? Center(
                           child: Text(
-                            'Solte aqui',
+                            context.l10n.tarSolteAqui,
                             style: textTheme.bodySmall?.copyWith(
                               color: SigadColors.muted.withValues(alpha: 0.5),
                             ),
@@ -401,7 +422,10 @@ class _KanbanCard extends StatelessWidget {
   Widget _buildCardContent(BuildContext context, TextTheme textTheme) {
     return Semantics(
       button: true,
-      label: 'Card: ${card.titulo}. Prioridade ${card.prioridade}.',
+      label: context.l10n.tarCardSemantica(
+        card.titulo,
+        context.l10n.opcaoKanban(card.prioridade),
+      ),
       child: GestureDetector(
         onTap: () => _showDetalhes(context),
         child: Container(
@@ -448,7 +472,7 @@ class _KanbanCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      card.prioridade,
+                      context.l10n.opcaoKanban(card.prioridade),
                       style: textTheme.labelSmall?.copyWith(
                         color: _getPrioridadeColor(card.prioridade),
                         fontWeight: FontWeight.w600,
@@ -456,20 +480,20 @@ class _KanbanCard extends StatelessWidget {
                     ),
                   ),
                   PopupMenuButton<String>(
-                    tooltip: 'Mais ações do card',
+                    tooltip: context.l10n.tarMaisAcoes,
                     onSelected: (value) {
                       if (value == 'excluir') {
                         _showConfirmarExclusao(context);
                       }
                     },
                     itemBuilder: (context) => [
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'excluir',
                         child: Row(
                           children: [
-                            SigadIcon(SigadIcons.excluir, size: 18),
-                            SizedBox(width: 8),
-                            Text('Excluir'),
+                            const SigadIcon(SigadIcons.excluir, size: 18),
+                            const SizedBox(width: 8),
+                            Text(context.l10n.excluir),
                           ],
                         ),
                       ),
@@ -504,19 +528,29 @@ class _KanbanCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'ID: ${card.id}',
+              context.l10n.tarId(card.id.toString()),
               style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
             ),
             const SizedBox(height: 8),
-            Text('Coluna: ${card.coluna}', style: textTheme.bodySmall),
+            Text(
+              context.l10n.tarColunaValor(
+                context.l10n.opcaoKanban(card.coluna),
+              ),
+              style: textTheme.bodySmall,
+            ),
             const SizedBox(height: 8),
-            Text('Prioridade: ${card.prioridade}', style: textTheme.bodySmall),
+            Text(
+              context.l10n.tarPrioridadeValor(
+                context.l10n.opcaoKanban(card.prioridade),
+              ),
+              style: textTheme.bodySmall,
+            ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Fechar'),
+            child: Text(context.l10n.fechar),
           ),
         ],
       ),
@@ -527,12 +561,12 @@ class _KanbanCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Confirmar exclusão'),
-        content: const Text('Tem certeza que deseja excluir este card?'),
+        title: Text(context.l10n.demConfirmarExclusao),
+        content: Text(context.l10n.tarExcluirEsteCard),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(context.l10n.cancelar),
           ),
           TextButton(
             onPressed: () {
@@ -540,7 +574,7 @@ class _KanbanCard extends StatelessWidget {
               onDeleted(card);
             },
             child: Text(
-              'Excluir',
+              context.l10n.excluir,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           ),

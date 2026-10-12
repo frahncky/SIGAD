@@ -4,11 +4,13 @@ import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
+import '../../../../l10n/l10n.dart';
 import '../../../../shared/widgets/page_status_view.dart';
 import '../../../../shared/widgets/icon_avatar.dart';
 import '../../data/atividade_repository.dart';
 import '../../domain/atividade_models.dart';
 import '../../domain/atividades_service.dart';
+import '../atividades_l10n.dart';
 
 class AtividadesPage extends StatefulWidget {
   const AtividadesPage({super.key});
@@ -30,11 +32,15 @@ class _AtividadesPageState extends State<AtividadesPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Filtrar atividades',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  context.l10n.atvFiltrar,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 IconButton(
+                  tooltip: context.l10n.atvFecharFiltro,
                   icon: const SigadIcon(SigadIcons.fechar),
                   onPressed: () => Navigator.pop(context),
                 ),
@@ -53,7 +59,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                 children: AtividadesService.statusAtividade
                     .map(
                       (status) => RadioListTile<String>(
-                        title: Text(status),
+                        title: Text(context.l10n.statusAtividade(status)),
                         value: status,
                       ),
                     )
@@ -69,14 +75,14 @@ class _AtividadesPageState extends State<AtividadesPage> {
                       setState(() => _filtro = 'Todas');
                       Navigator.pop(context);
                     },
-                    child: const Text('Limpar'),
+                    child: Text(context.l10n.demLimpar),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Aplicar'),
+                    child: Text(context.l10n.demAplicar),
                   ),
                 ),
               ],
@@ -128,7 +134,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _loadError = 'Não foi possível carregar as atividades.';
+        _loadError = context.l10n.atvErroCarregar;
       });
     }
   }
@@ -155,6 +161,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final atividadesFiltradas = _atividadesFiltradas;
     return Scaffold(
       body: Column(
@@ -177,25 +184,27 @@ class _AtividadesPageState extends State<AtividadesPage> {
                       flex: 2,
                       child: TextField(
                         onChanged: (value) => setState(() => _busca = value),
-                        decoration: const InputDecoration(
-                          hintText:
-                              'Buscar por título, descrição ou responsável',
-                          prefixIcon: SigadIcon(SigadIcons.buscar),
+                        decoration: InputDecoration(
+                          hintText: l10n.atvBuscarDica,
+                          prefixIcon: const SigadIcon(SigadIcons.buscar),
                         ),
                       ),
                     ),
                     const SizedBox(width: 8),
                     // Botão de filtro funcional
-                    SizedBox(
-                      width: 48,
-                      height: 48,
-                      child: OutlinedButton(
-                        onPressed: () => _showFiltroAtividades(context),
-                        style: OutlinedButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          minimumSize: const Size(48, 48),
+                    Tooltip(
+                      message: l10n.atvFiltrar,
+                      child: SizedBox(
+                        width: 48,
+                        height: 48,
+                        child: OutlinedButton(
+                          onPressed: () => _showFiltroAtividades(context),
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(48, 48),
+                          ),
+                          child: const SigadIcon(SigadIcons.filtro),
                         ),
-                        child: const SigadIcon(SigadIcons.filtro),
                       ),
                     ),
                   ],
@@ -207,19 +216,19 @@ class _AtividadesPageState extends State<AtividadesPage> {
           ),
           Expanded(
             child: _isLoading
-                ? const PageStatusView.loading(
-                    title: 'Carregando atividades...',
-                  )
+                ? PageStatusView.loading(title: l10n.atvCarregando)
                 : _loadError != null
                 ? PageStatusView.error(
+                    title: l10n.demErroCarregarTitulo,
                     subtitle: _loadError,
+                    actionLabel: l10n.tentarNovamente,
                     onAction: _loadData,
                   )
                 : atividadesFiltradas.isEmpty
-                ? const PageStatusView.empty(
+                ? PageStatusView.empty(
                     icon: SigadIcons.checklist,
-                    title: 'Nenhuma atividade encontrada',
-                    subtitle: 'Ajuste os filtros ou crie uma nova atividade.',
+                    title: l10n.atvNenhuma,
+                    subtitle: l10n.atvNenhumaDica,
                   )
                 : ListView.separated(
                     padding: const EdgeInsets.symmetric(
@@ -246,7 +255,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showCriarAtividade(context),
-        tooltip: 'Criar nova atividade',
+        tooltip: l10n.atvCriarNova,
         backgroundColor: SigadColors.brand,
         foregroundColor: Colors.white,
         child: const SigadIcon(SigadIcons.adicionar),
@@ -256,6 +265,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
 
   void _showCriarAtividade(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
     final tituloController = TextEditingController();
     final descricaoController = TextEditingController();
     String responsavelSelecionado = 'Coordenação';
@@ -281,13 +291,13 @@ class _AtividadesPageState extends State<AtividadesPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Nova Atividade',
+                      l10n.atvNova,
                       style: textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     IconButton(
-                      tooltip: 'Fechar formulário',
+                      tooltip: l10n.atvFecharFormulario,
                       onPressed: () => Navigator.pop(context),
                       icon: const SigadIcon(SigadIcons.fechar),
                     ),
@@ -296,24 +306,24 @@ class _AtividadesPageState extends State<AtividadesPage> {
                 const SizedBox(height: 24),
                 TextField(
                   controller: tituloController,
-                  decoration: const InputDecoration(
-                    labelText: 'Título',
-                    hintText: 'Digite o título da atividade',
+                  decoration: InputDecoration(
+                    labelText: l10n.demTitulo,
+                    hintText: l10n.atvTituloDica,
                   ),
                 ),
                 const SizedBox(height: 16),
                 TextField(
                   controller: descricaoController,
                   maxLines: 3,
-                  decoration: const InputDecoration(
-                    labelText: 'Descrição',
-                    hintText: 'Descreva a atividade em detalhes',
+                  decoration: InputDecoration(
+                    labelText: l10n.demDescricao,
+                    hintText: l10n.atvDescricaoDica,
                   ),
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   initialValue: responsavelSelecionado,
-                  decoration: const InputDecoration(labelText: 'Responsável'),
+                  decoration: InputDecoration(labelText: l10n.atvResponsavel),
                   items: AtividadesService.responsaveis
                       .map((r) => DropdownMenuItem(value: r, child: Text(r)))
                       .toList(),
@@ -323,27 +333,25 @@ class _AtividadesPageState extends State<AtividadesPage> {
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   initialValue: statusSelecionado,
-                  decoration: const InputDecoration(
-                    labelText: 'Status inicial',
-                  ),
+                  decoration: InputDecoration(labelText: l10n.demStatusInicial),
                   items: AtividadesService.statusAtividade
                       .map(
                         (status) => DropdownMenuItem(
                           value: status,
-                          child: Text(status),
+                          child: Text(l10n.statusAtividade(status)),
                         ),
                       )
                       .toList(),
                   onChanged: (value) =>
                       setModalState(() => statusSelecionado = value!),
                 ),
-                const Spacer(),
+                const SizedBox(height: 24),
                 Row(
                   children: [
                     Expanded(
                       child: OutlinedButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text('Cancelar'),
+                        child: Text(context.l10n.cancelar),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -355,7 +363,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                             descricao: descricaoController.text,
                           );
                           if (erro != null) {
-                            _mostrarFeedback(erro);
+                            _mostrarFeedback(l10n.erroAtividade(erro));
                             return;
                           }
                           setState(() {
@@ -376,9 +384,9 @@ class _AtividadesPageState extends State<AtividadesPage> {
                           });
                           _saveData();
                           Navigator.pop(context);
-                          _mostrarFeedback('Atividade criada com sucesso!');
+                          _mostrarFeedback(l10n.atvCriada);
                         },
-                        child: const Text('Criar'),
+                        child: Text(l10n.demCriar),
                       ),
                     ),
                   ],
@@ -393,6 +401,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
 
   void _showEditarAtividade(BuildContext context, Atividade atividade) {
     final textTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
     final tituloController = TextEditingController(text: atividade.titulo);
     final descricaoController = TextEditingController(
       text: atividade.descricao,
@@ -420,13 +429,13 @@ class _AtividadesPageState extends State<AtividadesPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Editar Atividade',
+                      l10n.atvEditar,
                       style: textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     IconButton(
-                      tooltip: 'Fechar formulário',
+                      tooltip: l10n.atvFecharFormulario,
                       onPressed: () => Navigator.pop(context),
                       icon: const SigadIcon(SigadIcons.fechar),
                     ),
@@ -435,24 +444,24 @@ class _AtividadesPageState extends State<AtividadesPage> {
                 const SizedBox(height: 24),
                 TextField(
                   controller: tituloController,
-                  decoration: const InputDecoration(
-                    labelText: 'Título',
-                    hintText: 'Digite o título da atividade',
+                  decoration: InputDecoration(
+                    labelText: l10n.demTitulo,
+                    hintText: l10n.atvTituloDica,
                   ),
                 ),
                 const SizedBox(height: 16),
                 TextField(
                   controller: descricaoController,
                   maxLines: 3,
-                  decoration: const InputDecoration(
-                    labelText: 'Descrição',
-                    hintText: 'Descreva a atividade em detalhes',
+                  decoration: InputDecoration(
+                    labelText: l10n.demDescricao,
+                    hintText: l10n.atvDescricaoDica,
                   ),
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   initialValue: responsavelSelecionado,
-                  decoration: const InputDecoration(labelText: 'Responsável'),
+                  decoration: InputDecoration(labelText: l10n.atvResponsavel),
                   items: AtividadesService.responsaveis
                       .map((r) => DropdownMenuItem(value: r, child: Text(r)))
                       .toList(),
@@ -462,25 +471,25 @@ class _AtividadesPageState extends State<AtividadesPage> {
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   initialValue: statusSelecionado,
-                  decoration: const InputDecoration(labelText: 'Status'),
+                  decoration: InputDecoration(labelText: l10n.demStatus),
                   items: AtividadesService.statusAtividade
                       .map(
                         (status) => DropdownMenuItem(
                           value: status,
-                          child: Text(status),
+                          child: Text(l10n.statusAtividade(status)),
                         ),
                       )
                       .toList(),
                   onChanged: (value) =>
                       setModalState(() => statusSelecionado = value!),
                 ),
-                const Spacer(),
+                const SizedBox(height: 24),
                 Row(
                   children: [
                     Expanded(
                       child: OutlinedButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text('Cancelar'),
+                        child: Text(context.l10n.cancelar),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -492,7 +501,7 @@ class _AtividadesPageState extends State<AtividadesPage> {
                             descricao: descricaoController.text,
                           );
                           if (erro != null) {
-                            _mostrarFeedback(erro);
+                            _mostrarFeedback(l10n.erroAtividade(erro));
                             return;
                           }
                           setState(() {
@@ -510,9 +519,9 @@ class _AtividadesPageState extends State<AtividadesPage> {
                           });
                           _saveData();
                           Navigator.pop(context);
-                          _mostrarFeedback('Atividade atualizada com sucesso!');
+                          _mostrarFeedback(l10n.atvAtualizada);
                         },
-                        child: const Text('Salvar'),
+                        child: Text(l10n.salvar),
                       ),
                     ),
                   ],
@@ -529,12 +538,12 @@ class _AtividadesPageState extends State<AtividadesPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Confirmar exclusão'),
-        content: Text('Tem certeza que deseja excluir ${atividade.titulo}?'),
+        title: Text(context.l10n.demConfirmarExclusao),
+        content: Text(context.l10n.demExcluirMensagem(atividade.titulo)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(context.l10n.cancelar),
           ),
           TextButton(
             onPressed: () {
@@ -543,10 +552,10 @@ class _AtividadesPageState extends State<AtividadesPage> {
               });
               _saveData();
               Navigator.pop(context);
-              _mostrarFeedback('Atividade excluída com sucesso!');
+              _mostrarFeedback(context.l10n.atvExcluida);
             },
             child: Text(
-              'Excluir',
+              context.l10n.excluir,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           ),
@@ -589,7 +598,7 @@ class _AtividadesSummaryBanner extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Agenda operacional',
+                  context.l10n.atvAgendaOperacional,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
@@ -601,19 +610,19 @@ class _AtividadesSummaryBanner extends StatelessWidget {
           Row(
             children: [
               _AtividadesKpi(
-                label: 'No total',
+                label: context.l10n.demNoTotal,
                 value: '$totalAtividades',
                 tone: SigadColors.brand,
               ),
               const SizedBox(width: 8),
               _AtividadesKpi(
-                label: 'Concluídas',
+                label: context.l10n.atvConcluidas,
                 value: '$atividadesConcluidas',
                 tone: SigadColors.success,
               ),
               const SizedBox(width: 8),
               _AtividadesKpi(
-                label: 'Pendentes',
+                label: context.l10n.atvPendentes,
                 value: '$atividadesPendentes',
                 tone: SigadColors.warning,
               ),
@@ -685,7 +694,7 @@ class _AtividadeCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     return Semantics(
       button: true,
-      label: 'Abrir atividade ${atividade.titulo}',
+      label: context.l10n.atvAbrir(atividade.titulo),
       child: GestureDetector(
         onTap: () => _showDetalhes(context),
         child: Container(
@@ -752,7 +761,7 @@ class _AtividadeCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      atividade.status,
+                      context.l10n.statusAtividade(atividade.status),
                       style: textTheme.labelSmall?.copyWith(
                         color: AtividadesService.statusColor(atividade.status),
                         fontWeight: FontWeight.w600,
@@ -760,16 +769,16 @@ class _AtividadeCard extends StatelessWidget {
                     ),
                   ),
                   PopupMenuButton<String>(
-                    tooltip: 'Mais ações da atividade',
+                    tooltip: context.l10n.atvMaisAcoes,
                     onSelected: (value) => _onMenuItemSelected(context, value),
                     itemBuilder: (context) => [
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'editar',
                         child: Row(
                           children: [
-                            SigadIcon(SigadIcons.editar, size: 18),
-                            SizedBox(width: 8),
-                            Text('Editar'),
+                            const SigadIcon(SigadIcons.editar, size: 18),
+                            const SizedBox(width: 8),
+                            Text(context.l10n.demEditarAcao),
                           ],
                         ),
                       ),
@@ -784,7 +793,7 @@ class _AtividadeCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Excluir',
+                              context.l10n.excluir,
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.error,
                               ),
@@ -879,27 +888,36 @@ class _AtividadeCard extends StatelessWidget {
                     ],
                   ),
                   IconButton(
-                    tooltip: 'Fechar detalhes da atividade',
+                    tooltip: context.l10n.atvFecharDetalhes,
                     onPressed: () => Navigator.pop(context),
                     icon: const SigadIcon(SigadIcons.fechar),
                   ),
                 ],
               ),
               const SizedBox(height: 24),
-              _DetailSection(label: 'Descrição', value: atividade.descricao),
               _DetailSection(
-                label: 'Responsável',
+                label: context.l10n.demDescricao,
+                value: atividade.descricao,
+              ),
+              _DetailSection(
+                label: context.l10n.atvResponsavel,
                 value: atividade.responsavel,
               ),
-              _DetailSection(label: 'Data', value: atividade.data),
-              _DetailSection(label: 'Status', value: atividade.status),
+              _DetailSection(
+                label: context.l10n.atvData,
+                value: atividade.data,
+              ),
+              _DetailSection(
+                label: context.l10n.demStatus,
+                value: context.l10n.statusAtividade(atividade.status),
+              ),
               const SizedBox(height: 24),
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Fechar'),
+                      child: Text(context.l10n.fechar),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -909,7 +927,7 @@ class _AtividadeCard extends StatelessWidget {
                         Navigator.pop(context);
                         onEditar();
                       },
-                      child: const Text('Editar'),
+                      child: Text(context.l10n.demEditarAcao),
                     ),
                   ),
                 ],

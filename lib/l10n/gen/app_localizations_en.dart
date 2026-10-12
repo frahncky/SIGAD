@@ -1796,4 +1796,181 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get demOrdemRecentes => 'Recently created';
+
+  @override
+  String get tarErroCarregar => 'Could not load the task board.';
+
+  @override
+  String get tarNovoCard => 'New card';
+
+  @override
+  String get tarCarregando => 'Loading task board...';
+
+  @override
+  String get tarNenhumCard => 'No cards yet';
+
+  @override
+  String get tarNenhumCardDica => 'Tap + to add the first card to the board.';
+
+  @override
+  String get tarCriarCard => 'Create card';
+
+  @override
+  String get tarArrasteDica =>
+      'Swipe sideways to move between the board columns.';
+
+  @override
+  String tarExcluirCardMensagem(String titulo) {
+    return 'Delete the card \"$titulo\"?';
+  }
+
+  @override
+  String tarCardRemovido(String titulo) {
+    return 'Card \"$titulo\" removed';
+  }
+
+  @override
+  String get tarTituloDica => 'Enter the card title';
+
+  @override
+  String get tarColuna => 'Column';
+
+  @override
+  String get tarCardCriado => 'Card created successfully!';
+
+  @override
+  String get tarSolteAqui => 'Drop here';
+
+  @override
+  String tarCardSemantica(String titulo, String prioridade) {
+    return 'Card: $titulo. Priority $prioridade.';
+  }
+
+  @override
+  String get tarMaisAcoes => 'More card actions';
+
+  @override
+  String tarId(String id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String tarColunaValor(String coluna) {
+    return 'Column: $coluna';
+  }
+
+  @override
+  String tarPrioridadeValor(String prioridade) {
+    return 'Priority: $prioridade';
+  }
+
+  @override
+  String get tarExcluirEsteCard => 'Are you sure you want to delete this card?';
+
+  @override
+  String get tarInformeTitulo => 'Enter the card title';
+
+  @override
+  String get tarColunaBacklog => 'Backlog';
+
+  @override
+  String get tarColunaEmProgresso => 'In Progress';
+
+  @override
+  String get tarColunaEmRevisao => 'In Review';
+
+  @override
+  String get tarColunaConcluido => 'Done';
+
+  @override
+  String get atvFiltrar => 'Filter activities';
+
+  @override
+  String get atvFecharFiltro => 'Close filter';
+
+  @override
+  String get atvErroCarregar => 'Could not load the activities.';
+
+  @override
+  String get atvBuscarDica => 'Search by title, description or owner';
+
+  @override
+  String get atvCarregando => 'Loading activities...';
+
+  @override
+  String get atvNenhuma => 'No activities found';
+
+  @override
+  String get atvNenhumaDica => 'Adjust the filters or create a new activity.';
+
+  @override
+  String get atvCriarNova => 'Create new activity';
+
+  @override
+  String get atvNova => 'New Activity';
+
+  @override
+  String get atvEditar => 'Edit Activity';
+
+  @override
+  String get atvFecharFormulario => 'Close form';
+
+  @override
+  String get atvTituloDica => 'Enter the activity title';
+
+  @override
+  String get atvDescricaoDica => 'Describe the activity in detail';
+
+  @override
+  String get atvResponsavel => 'Owner';
+
+  @override
+  String get atvCriada => 'Activity created successfully!';
+
+  @override
+  String get atvAtualizada => 'Activity updated successfully!';
+
+  @override
+  String get atvExcluida => 'Activity deleted successfully!';
+
+  @override
+  String get atvAgendaOperacional => 'Operational agenda';
+
+  @override
+  String get atvConcluidas => 'Completed';
+
+  @override
+  String get atvPendentes => 'Pending';
+
+  @override
+  String atvAbrir(String titulo) {
+    return 'Open activity $titulo';
+  }
+
+  @override
+  String get atvMaisAcoes => 'More activity actions';
+
+  @override
+  String get atvFecharDetalhes => 'Close activity details';
+
+  @override
+  String get atvData => 'Date';
+
+  @override
+  String get atvInformeTitulo => 'Enter the activity title';
+
+  @override
+  String get atvInformeDescricao => 'Enter the activity description';
+
+  @override
+  String get atvStatusConcluida => 'Completed';
+
+  @override
+  String get atvStatusEmProgresso => 'In progress';
+
+  @override
+  String get atvStatusAgendada => 'Scheduled';
+
+  @override
+  String get atvStatusPendente => 'Pending';
 }
