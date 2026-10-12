@@ -1169,5 +1169,287 @@
   "relTipoInfraestrutura": "Infraestrutura",
   "relTipoConformidade": "Conformidade",
   "relPdfBaixadoAgora": "PDF baixado agora",
-  "relCompartilhadoAgora": "Compartilhado agora"
+  "relCompartilhadoAgora": "Compartilhado agora",
+  "cdBuscarDocente": "Buscar docente por nome, e-mail ou departamento",
+  "cdOrdemCrescente": "Ordem crescente",
+  "cdOrdemDecrescente": "Ordem decrescente",
+  "cdNenhumDocente": "Nenhum docente encontrado",
+  "cdAdicionarDocente": "Adicionar docente",
+  "cdNovoDocente": "Novo Docente",
+  "cdEditarDocente": "Editar Docente",
+  "cdAdicionar": "Adicionar",
+  "cdDocenteAdicionado": "Docente adicionado com sucesso!",
+  "cdDocenteAtualizado": "Docente atualizado com sucesso!",
+  "cdDocenteExcluido": "Docente excluído com sucesso!",
+  "cdFecharFormulario": "Fechar formulário do docente",
+  "cdNomeCompleto": "Nome Completo",
+  "cdNomeDica": "Digite o nome do docente",
+  "cdEmailAcesso": "Email de acesso",
+  "cdDepartamento": "Departamento",
+  "cdDepartamentoDica": "Digite o departamento",
+  "cdCargaMaxima": "Carga Horária Máxima Semanal (horas)",
+  "cdRegimeEbtt": "Regime EBTT",
+  "cdRegimeOpcao": "{label} ({code})",
+  "@cdRegimeOpcao": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "cdDistribuicaoAulasSemana": "Distribuição em aulas: {horas}h/sem",
+  "@cdDistribuicaoAulasSemana": {
+    "placeholders": {
+      "horas": {
+        "type": "int"
+      }
+    }
+  },
+  "cdRegimeLimite": "Regime {code}: limite legal semanal de {limite}h na carreira EBTT. Pesquisa, extensão e gestão continuam dependentes da normativa interna da instituição.",
+  "@cdRegimeLimite": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      },
+      "limite": {
+        "type": "int"
+      }
+    }
+  },
+  "cdDisciplinas": "Disciplinas",
+  "cdHorariosAula": "Horários de Aula",
+  "cdNenhumHorario": "Nenhum horário cadastrado",
+  "cdHorasSemana": "{horas}h/sem",
+  "@cdHorasSemana": {
+    "placeholders": {
+      "horas": {
+        "type": "int"
+      }
+    }
+  },
+  "cdCargaDistribuida": "Carga distribuída em aulas: {horas}h/sem",
+  "@cdCargaDistribuida": {
+    "placeholders": {
+      "horas": {
+        "type": "int"
+      }
+    }
+  },
+  "cdAdicionarDisciplina": "Adicionar Disciplina",
+  "cdNomeDisciplina": "Nome da Disciplina",
+  "cdExemploDisciplina": "Ex: Programação I",
+  "cdAdicionarHorario": "Adicionar Horário",
+  "cdDiaSemana": "Dia da Semana",
+  "cdInicio": "Início",
+  "cdFim": "Fim",
+  "cdDisciplina": "Disciplina",
+  "cdCargaHoraria": "Carga Horária",
+  "cdExemploCarga": "Ex: 2h/sem · 80h",
+  "cdTurma": "Turma",
+  "cdModalidade": "Modalidade",
+  "cdExcluirMensagem": "Tem certeza que deseja excluir {nome}?",
+  "@cdExcluirMensagem": {
+    "placeholders": {
+      "nome": {
+        "type": "String"
+      }
+    }
+  },
+  "cdSugestaoEquilibrada": "A distribuição atual está equilibrada. Priorize acompanhamento quinzenal e ajuste fino por disciplina.",
+  "cdSugestaoPressao": "Docentes com maior pressão: {nomes}. Considere redistribuir turmas práticas e orientações para reduzir risco de sobrecarga.",
+  "@cdSugestaoPressao": {
+    "placeholders": {
+      "nomes": {
+        "type": "String"
+      }
+    }
+  },
+  "cdSugestaoOciosa": "Há capacidade ociosa com {nomes}. Priorize alocação de componentes compartilhados e reforço em horários de laboratório.",
+  "@cdSugestaoOciosa": {
+    "placeholders": {
+      "nomes": {
+        "type": "String"
+      }
+    }
+  },
+  "cdSugestaoRevisao": "Programe revisão semanal conjunta entre coordenação e laboratórios para reduzir conflitos de agenda e janelas vazias.",
+  "cdRedistribuicoesAplicadas": "{count, plural, =1{1 redistribuição aplicada com sucesso.} other{{count} redistribuições aplicadas com sucesso.}}",
+  "@cdRedistribuicoesAplicadas": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cdMaisAcoes": "Mais ações do docente",
+  "cdRegimeDocente": "Regime EBTT: {label} ({code})",
+  "@cdRegimeDocente": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "cdDistribuicaoAulas": "Distribuição em aulas: {horas}h/{maximo}h",
+  "@cdDistribuicaoAulas": {
+    "placeholders": {
+      "horas": {
+        "type": "int"
+      },
+      "maximo": {
+        "type": "int"
+      }
+    }
+  },
+  "cdOtimizacao": "Otimização da distribuição",
+  "cdSimular": "Simular",
+  "cdAproveitamentoMedio": "de aproveitamento médio da carga horária",
+  "cdOcupacaoMedia": "Ocupação média",
+  "cdAltaCarga": "Alta carga (>=90%)",
+  "cdBaixaCarga": "Baixa carga (<=50%)",
+  "cdSimulacao": "Simulação de redistribuição",
+  "cdOcupacaoPrevista": "Ocupação média prevista: {antes}% -> {depois}%",
+  "@cdOcupacaoPrevista": {
+    "placeholders": {
+      "antes": {
+        "type": "String"
+      },
+      "depois": {
+        "type": "String"
+      }
+    }
+  },
+  "cdNenhumaRedistribuicao": "Nenhuma redistribuição segura foi encontrada para o cenário atual.",
+  "cdAplicarSugestao": "Aplicar sugestão",
+  "cdAcessoRestrito": "Acesso restrito",
+  "cdAcessoRestritoMensagem": "Somente docentes, coordenação, chefia e servidor administrativo podem acessar esta área.",
+  "cdAgendaDocente": "Agenda do docente",
+  "cdDistribuicaoSemanal": "Distribuição semanal",
+  "cdConviteReuniao": "Convite para reunião",
+  "cdConviteEnviadoAgenda": "Convite enviado via agenda do SIGAD.",
+  "cdEnviarConviteReuniao": "Enviar convite de reunião",
+  "cdTituloConvite": "Título do convite",
+  "cdTituloConviteDica": "Ex: Reunião de alinhamento",
+  "cdDescricaoConviteDica": "Detalhes do convite",
+  "cdLocal": "Local",
+  "cdLocalDica": "Sala 12 ou Online",
+  "cdHorarioInvalido": "Não foi possível interpretar o horário da célula.",
+  "cdInformeTituloConvite": "Informe o título do convite.",
+  "cdInformeLocalConvite": "Informe o local do convite.",
+  "cdConviteEnviado": "Convite enviado com sucesso para a agenda do docente.",
+  "cdEnviarConvite": "Enviar convite",
+  "cdAgendaSemanal": "Agenda semanal",
+  "cdSemanaDe": "{semana} de {mes}",
+  "@cdSemanaDe": {
+    "placeholders": {
+      "semana": {
+        "type": "String"
+      },
+      "mes": {
+        "type": "String"
+      }
+    }
+  },
+  "cdIntervalo": "{inicio} a {fim}",
+  "@cdIntervalo": {
+    "placeholders": {
+      "inicio": {
+        "type": "String"
+      },
+      "fim": {
+        "type": "String"
+      }
+    }
+  },
+  "cdDiaSelecionado": "Dia selecionado: {dia} ({abreviado} - {completo})",
+  "@cdDiaSelecionado": {
+    "placeholders": {
+      "dia": {
+        "type": "int"
+      },
+      "abreviado": {
+        "type": "String"
+      },
+      "completo": {
+        "type": "String"
+      }
+    }
+  },
+  "cdMes": "{mes, select, 1{Janeiro} 2{Fevereiro} 3{Março} 4{Abril} 5{Maio} 6{Junho} 7{Julho} 8{Agosto} 9{Setembro} 10{Outubro} 11{Novembro} other{Dezembro}}",
+  "@cdMes": {
+    "placeholders": {
+      "mes": {
+        "type": "String"
+      }
+    }
+  },
+  "cdDiaSab": "Sab",
+  "cdDiaDom": "Dom",
+  "cdDiaSabado": "sábado",
+  "cdDiaDomingo": "domingo",
+  "cdTurnoCurtoM": "M",
+  "cdTurnoCurtoT": "T",
+  "cdTurnoCurtoN": "N",
+  "cdLivre": "Livre",
+  "cdAula": "Aula",
+  "cdOcupado": "Ocupado",
+  "cdHorarioIndefinido": "Horário indefinido",
+  "cdSegunda": "Segunda",
+  "cdTerca": "Terça",
+  "cdQuarta": "Quarta",
+  "cdQuinta": "Quinta",
+  "cdSexta": "Sexta",
+  "cdModalidadeIntegral": "Integral",
+  "cdModalidadeConcomitante": "Concomitante",
+  "cdModalidadeSubsequente": "Subsequente",
+  "cdModalidadeEja": "EJA",
+  "cdModalidadeSuperior": "Superior",
+  "cdRegime20h": "20 horas",
+  "cdRegime40h": "40 horas",
+  "cdRegimeDe": "Dedicação exclusiva",
+  "cdInformeNome": "Informe o nome do docente",
+  "cdInformeDepartamento": "Informe o departamento",
+  "cdInformeCargaMaxima": "Informe uma carga horária máxima válida",
+  "cdRegimePermite": "O regime {code} permite até {limite}h semanais.",
+  "@cdRegimePermite": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      },
+      "limite": {
+        "type": "String"
+      }
+    }
+  },
+  "cdAdicioneDisciplina": "Adicione pelo menos uma disciplina",
+  "cdDistribuicaoExcede": "A distribuição semanal cadastrada ({distribuida}h) excede a carga máxima do docente ({maxima}h).",
+  "@cdDistribuicaoExcede": {
+    "placeholders": {
+      "distribuida": {
+        "type": "String"
+      },
+      "maxima": {
+        "type": "String"
+      }
+    }
+  },
+  "cdInformeNomeDisciplina": "Informe o nome da disciplina.",
+  "cdDisciplinaJaAdicionada": "Disciplina já adicionada.",
+  "cdInformeInicioFim": "Informe horário de início e fim.",
+  "cdFormatoHorario": "Use o formato HH:MM para os horários.",
+  "cdFimPosterior": "O horário de fim deve ser posterior ao de início.",
+  "cdConflitoHorario": "Já existe horário cadastrado em conflito para {dia}.",
+  "@cdConflitoHorario": {
+    "placeholders": {
+      "dia": {
+        "type": "String"
+      }
+    }
+  }
 }

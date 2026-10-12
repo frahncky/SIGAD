@@ -2101,4 +2101,419 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get relCompartilhadoAgora => 'Compartilhado agora';
+
+  @override
+  String get cdBuscarDocente =>
+      'Buscar docente por nome, e-mail ou departamento';
+
+  @override
+  String get cdOrdemCrescente => 'Ordem crescente';
+
+  @override
+  String get cdOrdemDecrescente => 'Ordem decrescente';
+
+  @override
+  String get cdNenhumDocente => 'Nenhum docente encontrado';
+
+  @override
+  String get cdAdicionarDocente => 'Adicionar docente';
+
+  @override
+  String get cdNovoDocente => 'Novo Docente';
+
+  @override
+  String get cdEditarDocente => 'Editar Docente';
+
+  @override
+  String get cdAdicionar => 'Adicionar';
+
+  @override
+  String get cdDocenteAdicionado => 'Docente adicionado com sucesso!';
+
+  @override
+  String get cdDocenteAtualizado => 'Docente atualizado com sucesso!';
+
+  @override
+  String get cdDocenteExcluido => 'Docente excluído com sucesso!';
+
+  @override
+  String get cdFecharFormulario => 'Fechar formulário do docente';
+
+  @override
+  String get cdNomeCompleto => 'Nome Completo';
+
+  @override
+  String get cdNomeDica => 'Digite o nome do docente';
+
+  @override
+  String get cdEmailAcesso => 'Email de acesso';
+
+  @override
+  String get cdDepartamento => 'Departamento';
+
+  @override
+  String get cdDepartamentoDica => 'Digite o departamento';
+
+  @override
+  String get cdCargaMaxima => 'Carga Horária Máxima Semanal (horas)';
+
+  @override
+  String get cdRegimeEbtt => 'Regime EBTT';
+
+  @override
+  String cdRegimeOpcao(String label, String code) {
+    return '$label ($code)';
+  }
+
+  @override
+  String cdDistribuicaoAulasSemana(int horas) {
+    return 'Distribuição em aulas: ${horas}h/sem';
+  }
+
+  @override
+  String cdRegimeLimite(String code, int limite) {
+    return 'Regime $code: limite legal semanal de ${limite}h na carreira EBTT. Pesquisa, extensão e gestão continuam dependentes da normativa interna da instituição.';
+  }
+
+  @override
+  String get cdDisciplinas => 'Disciplinas';
+
+  @override
+  String get cdHorariosAula => 'Horários de Aula';
+
+  @override
+  String get cdNenhumHorario => 'Nenhum horário cadastrado';
+
+  @override
+  String cdHorasSemana(int horas) {
+    return '${horas}h/sem';
+  }
+
+  @override
+  String cdCargaDistribuida(int horas) {
+    return 'Carga distribuída em aulas: ${horas}h/sem';
+  }
+
+  @override
+  String get cdAdicionarDisciplina => 'Adicionar Disciplina';
+
+  @override
+  String get cdNomeDisciplina => 'Nome da Disciplina';
+
+  @override
+  String get cdExemploDisciplina => 'Ex: Programação I';
+
+  @override
+  String get cdAdicionarHorario => 'Adicionar Horário';
+
+  @override
+  String get cdDiaSemana => 'Dia da Semana';
+
+  @override
+  String get cdInicio => 'Início';
+
+  @override
+  String get cdFim => 'Fim';
+
+  @override
+  String get cdDisciplina => 'Disciplina';
+
+  @override
+  String get cdCargaHoraria => 'Carga Horária';
+
+  @override
+  String get cdExemploCarga => 'Ex: 2h/sem · 80h';
+
+  @override
+  String get cdTurma => 'Turma';
+
+  @override
+  String get cdModalidade => 'Modalidade';
+
+  @override
+  String cdExcluirMensagem(String nome) {
+    return 'Tem certeza que deseja excluir $nome?';
+  }
+
+  @override
+  String get cdSugestaoEquilibrada =>
+      'A distribuição atual está equilibrada. Priorize acompanhamento quinzenal e ajuste fino por disciplina.';
+
+  @override
+  String cdSugestaoPressao(String nomes) {
+    return 'Docentes com maior pressão: $nomes. Considere redistribuir turmas práticas e orientações para reduzir risco de sobrecarga.';
+  }
+
+  @override
+  String cdSugestaoOciosa(String nomes) {
+    return 'Há capacidade ociosa com $nomes. Priorize alocação de componentes compartilhados e reforço em horários de laboratório.';
+  }
+
+  @override
+  String get cdSugestaoRevisao =>
+      'Programe revisão semanal conjunta entre coordenação e laboratórios para reduzir conflitos de agenda e janelas vazias.';
+
+  @override
+  String cdRedistribuicoesAplicadas(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count redistribuições aplicadas com sucesso.',
+      one: '1 redistribuição aplicada com sucesso.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cdMaisAcoes => 'Mais ações do docente';
+
+  @override
+  String cdRegimeDocente(String label, String code) {
+    return 'Regime EBTT: $label ($code)';
+  }
+
+  @override
+  String cdDistribuicaoAulas(int horas, int maximo) {
+    return 'Distribuição em aulas: ${horas}h/${maximo}h';
+  }
+
+  @override
+  String get cdOtimizacao => 'Otimização da distribuição';
+
+  @override
+  String get cdSimular => 'Simular';
+
+  @override
+  String get cdAproveitamentoMedio =>
+      'de aproveitamento médio da carga horária';
+
+  @override
+  String get cdOcupacaoMedia => 'Ocupação média';
+
+  @override
+  String get cdAltaCarga => 'Alta carga (>=90%)';
+
+  @override
+  String get cdBaixaCarga => 'Baixa carga (<=50%)';
+
+  @override
+  String get cdSimulacao => 'Simulação de redistribuição';
+
+  @override
+  String cdOcupacaoPrevista(String antes, String depois) {
+    return 'Ocupação média prevista: $antes% -> $depois%';
+  }
+
+  @override
+  String get cdNenhumaRedistribuicao =>
+      'Nenhuma redistribuição segura foi encontrada para o cenário atual.';
+
+  @override
+  String get cdAplicarSugestao => 'Aplicar sugestão';
+
+  @override
+  String get cdAcessoRestrito => 'Acesso restrito';
+
+  @override
+  String get cdAcessoRestritoMensagem =>
+      'Somente docentes, coordenação, chefia e servidor administrativo podem acessar esta área.';
+
+  @override
+  String get cdAgendaDocente => 'Agenda do docente';
+
+  @override
+  String get cdDistribuicaoSemanal => 'Distribuição semanal';
+
+  @override
+  String get cdConviteReuniao => 'Convite para reunião';
+
+  @override
+  String get cdConviteEnviadoAgenda => 'Convite enviado via agenda do SIGAD.';
+
+  @override
+  String get cdEnviarConviteReuniao => 'Enviar convite de reunião';
+
+  @override
+  String get cdTituloConvite => 'Título do convite';
+
+  @override
+  String get cdTituloConviteDica => 'Ex: Reunião de alinhamento';
+
+  @override
+  String get cdDescricaoConviteDica => 'Detalhes do convite';
+
+  @override
+  String get cdLocal => 'Local';
+
+  @override
+  String get cdLocalDica => 'Sala 12 ou Online';
+
+  @override
+  String get cdHorarioInvalido =>
+      'Não foi possível interpretar o horário da célula.';
+
+  @override
+  String get cdInformeTituloConvite => 'Informe o título do convite.';
+
+  @override
+  String get cdInformeLocalConvite => 'Informe o local do convite.';
+
+  @override
+  String get cdConviteEnviado =>
+      'Convite enviado com sucesso para a agenda do docente.';
+
+  @override
+  String get cdEnviarConvite => 'Enviar convite';
+
+  @override
+  String get cdAgendaSemanal => 'Agenda semanal';
+
+  @override
+  String cdSemanaDe(String semana, String mes) {
+    return '$semana de $mes';
+  }
+
+  @override
+  String cdIntervalo(String inicio, String fim) {
+    return '$inicio a $fim';
+  }
+
+  @override
+  String cdDiaSelecionado(int dia, String abreviado, String completo) {
+    return 'Dia selecionado: $dia ($abreviado - $completo)';
+  }
+
+  @override
+  String cdMes(String mes) {
+    String _temp0 = intl.Intl.selectLogic(mes, {
+      '1': 'Janeiro',
+      '2': 'Fevereiro',
+      '3': 'Março',
+      '4': 'Abril',
+      '5': 'Maio',
+      '6': 'Junho',
+      '7': 'Julho',
+      '8': 'Agosto',
+      '9': 'Setembro',
+      '10': 'Outubro',
+      '11': 'Novembro',
+      'other': 'Dezembro',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get cdDiaSab => 'Sab';
+
+  @override
+  String get cdDiaDom => 'Dom';
+
+  @override
+  String get cdDiaSabado => 'sábado';
+
+  @override
+  String get cdDiaDomingo => 'domingo';
+
+  @override
+  String get cdTurnoCurtoM => 'M';
+
+  @override
+  String get cdTurnoCurtoT => 'T';
+
+  @override
+  String get cdTurnoCurtoN => 'N';
+
+  @override
+  String get cdLivre => 'Livre';
+
+  @override
+  String get cdAula => 'Aula';
+
+  @override
+  String get cdOcupado => 'Ocupado';
+
+  @override
+  String get cdHorarioIndefinido => 'Horário indefinido';
+
+  @override
+  String get cdSegunda => 'Segunda';
+
+  @override
+  String get cdTerca => 'Terça';
+
+  @override
+  String get cdQuarta => 'Quarta';
+
+  @override
+  String get cdQuinta => 'Quinta';
+
+  @override
+  String get cdSexta => 'Sexta';
+
+  @override
+  String get cdModalidadeIntegral => 'Integral';
+
+  @override
+  String get cdModalidadeConcomitante => 'Concomitante';
+
+  @override
+  String get cdModalidadeSubsequente => 'Subsequente';
+
+  @override
+  String get cdModalidadeEja => 'EJA';
+
+  @override
+  String get cdModalidadeSuperior => 'Superior';
+
+  @override
+  String get cdRegime20h => '20 horas';
+
+  @override
+  String get cdRegime40h => '40 horas';
+
+  @override
+  String get cdRegimeDe => 'Dedicação exclusiva';
+
+  @override
+  String get cdInformeNome => 'Informe o nome do docente';
+
+  @override
+  String get cdInformeDepartamento => 'Informe o departamento';
+
+  @override
+  String get cdInformeCargaMaxima => 'Informe uma carga horária máxima válida';
+
+  @override
+  String cdRegimePermite(String code, String limite) {
+    return 'O regime $code permite até ${limite}h semanais.';
+  }
+
+  @override
+  String get cdAdicioneDisciplina => 'Adicione pelo menos uma disciplina';
+
+  @override
+  String cdDistribuicaoExcede(String distribuida, String maxima) {
+    return 'A distribuição semanal cadastrada (${distribuida}h) excede a carga máxima do docente (${maxima}h).';
+  }
+
+  @override
+  String get cdInformeNomeDisciplina => 'Informe o nome da disciplina.';
+
+  @override
+  String get cdDisciplinaJaAdicionada => 'Disciplina já adicionada.';
+
+  @override
+  String get cdInformeInicioFim => 'Informe horário de início e fim.';
+
+  @override
+  String get cdFormatoHorario => 'Use o formato HH:MM para os horários.';
+
+  @override
+  String get cdFimPosterior =>
+      'O horário de fim deve ser posterior ao de início.';
+
+  @override
+  String cdConflitoHorario(String dia) {
+    return 'Já existe horário cadastrado em conflito para $dia.';
+  }
 }

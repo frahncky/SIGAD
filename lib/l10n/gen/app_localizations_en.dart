@@ -2088,4 +2088,415 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get relCompartilhadoAgora => 'Shared just now';
+
+  @override
+  String get cdBuscarDocente => 'Search teacher by name, email or department';
+
+  @override
+  String get cdOrdemCrescente => 'Ascending order';
+
+  @override
+  String get cdOrdemDecrescente => 'Descending order';
+
+  @override
+  String get cdNenhumDocente => 'No teachers found';
+
+  @override
+  String get cdAdicionarDocente => 'Add teacher';
+
+  @override
+  String get cdNovoDocente => 'New Teacher';
+
+  @override
+  String get cdEditarDocente => 'Edit Teacher';
+
+  @override
+  String get cdAdicionar => 'Add';
+
+  @override
+  String get cdDocenteAdicionado => 'Teacher added successfully!';
+
+  @override
+  String get cdDocenteAtualizado => 'Teacher updated successfully!';
+
+  @override
+  String get cdDocenteExcluido => 'Teacher deleted successfully!';
+
+  @override
+  String get cdFecharFormulario => 'Close teacher form';
+
+  @override
+  String get cdNomeCompleto => 'Full Name';
+
+  @override
+  String get cdNomeDica => 'Enter the teacher name';
+
+  @override
+  String get cdEmailAcesso => 'Sign-in email';
+
+  @override
+  String get cdDepartamento => 'Department';
+
+  @override
+  String get cdDepartamentoDica => 'Enter the department';
+
+  @override
+  String get cdCargaMaxima => 'Maximum Weekly Hours';
+
+  @override
+  String get cdRegimeEbtt => 'EBTT Regime';
+
+  @override
+  String cdRegimeOpcao(String label, String code) {
+    return '$label ($code)';
+  }
+
+  @override
+  String cdDistribuicaoAulasSemana(int horas) {
+    return 'Class distribution: ${horas}h/week';
+  }
+
+  @override
+  String cdRegimeLimite(String code, int limite) {
+    return 'Regime $code: legal weekly limit of ${limite}h in the EBTT career. Research, outreach and management still depend on the institution\'s internal rules.';
+  }
+
+  @override
+  String get cdDisciplinas => 'Subjects';
+
+  @override
+  String get cdHorariosAula => 'Class Times';
+
+  @override
+  String get cdNenhumHorario => 'No class times yet';
+
+  @override
+  String cdHorasSemana(int horas) {
+    return '${horas}h/wk';
+  }
+
+  @override
+  String cdCargaDistribuida(int horas) {
+    return 'Hours assigned to classes: ${horas}h/week';
+  }
+
+  @override
+  String get cdAdicionarDisciplina => 'Add Subject';
+
+  @override
+  String get cdNomeDisciplina => 'Subject Name';
+
+  @override
+  String get cdExemploDisciplina => 'E.g.: Programming I';
+
+  @override
+  String get cdAdicionarHorario => 'Add Class Time';
+
+  @override
+  String get cdDiaSemana => 'Day of the Week';
+
+  @override
+  String get cdInicio => 'Start';
+
+  @override
+  String get cdFim => 'End';
+
+  @override
+  String get cdDisciplina => 'Subject';
+
+  @override
+  String get cdCargaHoraria => 'Hours';
+
+  @override
+  String get cdExemploCarga => 'E.g.: 2h/week · 80h';
+
+  @override
+  String get cdTurma => 'Class';
+
+  @override
+  String get cdModalidade => 'Modality';
+
+  @override
+  String cdExcluirMensagem(String nome) {
+    return 'Are you sure you want to delete $nome?';
+  }
+
+  @override
+  String get cdSugestaoEquilibrada =>
+      'The current distribution is balanced. Prioritize biweekly follow-up and fine-tuning by subject.';
+
+  @override
+  String cdSugestaoPressao(String nomes) {
+    return 'Teachers under the most pressure: $nomes. Consider redistributing practical classes and advising to reduce the risk of overload.';
+  }
+
+  @override
+  String cdSugestaoOciosa(String nomes) {
+    return 'There is spare capacity with $nomes. Prioritize shared components and extra lab sessions.';
+  }
+
+  @override
+  String get cdSugestaoRevisao =>
+      'Schedule a weekly joint review between coordination and labs to reduce scheduling conflicts and empty gaps.';
+
+  @override
+  String cdRedistribuicoesAplicadas(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count redistributions applied successfully.',
+      one: '1 redistribution applied successfully.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cdMaisAcoes => 'More teacher actions';
+
+  @override
+  String cdRegimeDocente(String label, String code) {
+    return 'EBTT Regime: $label ($code)';
+  }
+
+  @override
+  String cdDistribuicaoAulas(int horas, int maximo) {
+    return 'Class distribution: ${horas}h/${maximo}h';
+  }
+
+  @override
+  String get cdOtimizacao => 'Distribution optimization';
+
+  @override
+  String get cdSimular => 'Simulate';
+
+  @override
+  String get cdAproveitamentoMedio => 'average use of teaching hours';
+
+  @override
+  String get cdOcupacaoMedia => 'Average occupancy';
+
+  @override
+  String get cdAltaCarga => 'High load (>=90%)';
+
+  @override
+  String get cdBaixaCarga => 'Low load (<=50%)';
+
+  @override
+  String get cdSimulacao => 'Redistribution simulation';
+
+  @override
+  String cdOcupacaoPrevista(String antes, String depois) {
+    return 'Expected average occupancy: $antes% -> $depois%';
+  }
+
+  @override
+  String get cdNenhumaRedistribuicao =>
+      'No safe redistribution was found for the current scenario.';
+
+  @override
+  String get cdAplicarSugestao => 'Apply suggestion';
+
+  @override
+  String get cdAcessoRestrito => 'Restricted access';
+
+  @override
+  String get cdAcessoRestritoMensagem =>
+      'Only teachers, coordination, department heads and administrative staff can access this area.';
+
+  @override
+  String get cdAgendaDocente => 'Teacher\'s schedule';
+
+  @override
+  String get cdDistribuicaoSemanal => 'Weekly distribution';
+
+  @override
+  String get cdConviteReuniao => 'Meeting invitation';
+
+  @override
+  String get cdConviteEnviadoAgenda =>
+      'Invitation sent via the SIGAD calendar.';
+
+  @override
+  String get cdEnviarConviteReuniao => 'Send meeting invitation';
+
+  @override
+  String get cdTituloConvite => 'Invitation title';
+
+  @override
+  String get cdTituloConviteDica => 'E.g.: Alignment meeting';
+
+  @override
+  String get cdDescricaoConviteDica => 'Invitation details';
+
+  @override
+  String get cdLocal => 'Location';
+
+  @override
+  String get cdLocalDica => 'Room 12 or Online';
+
+  @override
+  String get cdHorarioInvalido => 'Could not read the time of this cell.';
+
+  @override
+  String get cdInformeTituloConvite => 'Enter the invitation title.';
+
+  @override
+  String get cdInformeLocalConvite => 'Enter the invitation location.';
+
+  @override
+  String get cdConviteEnviado => 'Invitation sent to the teacher\'s calendar.';
+
+  @override
+  String get cdEnviarConvite => 'Send invitation';
+
+  @override
+  String get cdAgendaSemanal => 'Weekly schedule';
+
+  @override
+  String cdSemanaDe(String semana, String mes) {
+    return '$mes $semana';
+  }
+
+  @override
+  String cdIntervalo(String inicio, String fim) {
+    return '$inicio – $fim';
+  }
+
+  @override
+  String cdDiaSelecionado(int dia, String abreviado, String completo) {
+    return 'Selected day: $dia ($abreviado - $completo)';
+  }
+
+  @override
+  String cdMes(String mes) {
+    String _temp0 = intl.Intl.selectLogic(mes, {
+      '1': 'January',
+      '2': 'February',
+      '3': 'March',
+      '4': 'April',
+      '5': 'May',
+      '6': 'June',
+      '7': 'July',
+      '8': 'August',
+      '9': 'September',
+      '10': 'October',
+      '11': 'November',
+      'other': 'December',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get cdDiaSab => 'Sat';
+
+  @override
+  String get cdDiaDom => 'Sun';
+
+  @override
+  String get cdDiaSabado => 'Saturday';
+
+  @override
+  String get cdDiaDomingo => 'Sunday';
+
+  @override
+  String get cdTurnoCurtoM => 'M';
+
+  @override
+  String get cdTurnoCurtoT => 'A';
+
+  @override
+  String get cdTurnoCurtoN => 'E';
+
+  @override
+  String get cdLivre => 'Free';
+
+  @override
+  String get cdAula => 'Class';
+
+  @override
+  String get cdOcupado => 'Busy';
+
+  @override
+  String get cdHorarioIndefinido => 'Undefined time';
+
+  @override
+  String get cdSegunda => 'Monday';
+
+  @override
+  String get cdTerca => 'Tuesday';
+
+  @override
+  String get cdQuarta => 'Wednesday';
+
+  @override
+  String get cdQuinta => 'Thursday';
+
+  @override
+  String get cdSexta => 'Friday';
+
+  @override
+  String get cdModalidadeIntegral => 'Integrated';
+
+  @override
+  String get cdModalidadeConcomitante => 'Concurrent';
+
+  @override
+  String get cdModalidadeSubsequente => 'Subsequent';
+
+  @override
+  String get cdModalidadeEja => 'Adult education';
+
+  @override
+  String get cdModalidadeSuperior => 'Higher education';
+
+  @override
+  String get cdRegime20h => '20 hours';
+
+  @override
+  String get cdRegime40h => '40 hours';
+
+  @override
+  String get cdRegimeDe => 'Exclusive dedication';
+
+  @override
+  String get cdInformeNome => 'Enter the teacher name';
+
+  @override
+  String get cdInformeDepartamento => 'Enter the department';
+
+  @override
+  String get cdInformeCargaMaxima => 'Enter a valid maximum workload';
+
+  @override
+  String cdRegimePermite(String code, String limite) {
+    return 'The $code regime allows up to ${limite}h per week.';
+  }
+
+  @override
+  String get cdAdicioneDisciplina => 'Add at least one subject';
+
+  @override
+  String cdDistribuicaoExcede(String distribuida, String maxima) {
+    return 'The weekly distribution (${distribuida}h) exceeds the teacher\'s maximum load (${maxima}h).';
+  }
+
+  @override
+  String get cdInformeNomeDisciplina => 'Enter the subject name.';
+
+  @override
+  String get cdDisciplinaJaAdicionada => 'Subject already added.';
+
+  @override
+  String get cdInformeInicioFim => 'Enter start and end times.';
+
+  @override
+  String get cdFormatoHorario => 'Use the HH:MM format for times.';
+
+  @override
+  String get cdFimPosterior => 'The end time must be after the start time.';
+
+  @override
+  String cdConflitoHorario(String dia) {
+    return 'There is already a conflicting time on $dia.';
+  }
 }

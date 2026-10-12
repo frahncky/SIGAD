@@ -7,6 +7,7 @@ import '../../../../app/theme/sigad_colors.dart';
 import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../../l10n/l10n.dart';
 import '../../../../shared/widgets/icon_avatar.dart';
 import 'package:provider/provider.dart';
 
@@ -66,7 +67,7 @@ class _ProfessoresPageState extends State<ProfessoresPage> {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Professores')),
+      appBar: AppBar(title: Text(context.l10n.navProfessores)),
       body: Column(
         children: [
           Padding(
@@ -77,9 +78,8 @@ class _ProfessoresPageState extends State<ProfessoresPage> {
                   child: TextField(
                     controller: _buscaController,
                     onChanged: (value) => setState(() => _busca = value),
-                    decoration: const InputDecoration(
-                      hintText:
-                          'Buscar docente por nome, e-mail ou departamento',
+                    decoration: InputDecoration(
+                      hintText: context.l10n.cdBuscarDocente,
                       prefixIcon: SigadIcon(
                         SigadIcons.buscar,
                         color: SigadColors.brand,
@@ -90,8 +90,8 @@ class _ProfessoresPageState extends State<ProfessoresPage> {
                 const SizedBox(width: 8),
                 IconButton(
                   tooltip: _ordemCrescente
-                      ? 'Ordem crescente'
-                      : 'Ordem decrescente',
+                      ? context.l10n.cdOrdemCrescente
+                      : context.l10n.cdOrdemDecrescente,
                   icon: SigadIcon(
                     _ordemCrescente
                         ? SigadIcons.setaBaixo
@@ -111,7 +111,7 @@ class _ProfessoresPageState extends State<ProfessoresPage> {
             child: docentesFiltrados.isEmpty
                 ? Center(
                     child: Text(
-                      'Nenhum docente encontrado',
+                      context.l10n.cdNenhumDocente,
                       style: textTheme.bodyLarge,
                     ),
                   )
@@ -139,13 +139,13 @@ class _ProfessoresPageState extends State<ProfessoresPage> {
                                     // Adicionar ações de editar/excluir se necessário
                                   },
                                   itemBuilder: (context) => [
-                                    const PopupMenuItem(
+                                    PopupMenuItem(
                                       value: 'editar',
-                                      child: Text('Editar'),
+                                      child: Text(context.l10n.demEditarAcao),
                                     ),
-                                    const PopupMenuItem(
+                                    PopupMenuItem(
                                       value: 'excluir',
-                                      child: Text('Excluir'),
+                                      child: Text(context.l10n.excluir),
                                     ),
                                   ],
                                 )
@@ -163,7 +163,7 @@ class _ProfessoresPageState extends State<ProfessoresPage> {
               onPressed: () {
                 // Adicionar novo docente
               },
-              tooltip: 'Adicionar docente',
+              tooltip: context.l10n.cdAdicionarDocente,
               child: const SigadIcon(SigadIcons.adicionar),
             )
           : null,

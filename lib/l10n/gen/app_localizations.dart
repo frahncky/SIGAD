@@ -3714,6 +3714,702 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Compartilhado agora'**
   String get relCompartilhadoAgora;
+
+  /// No description provided for @cdBuscarDocente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar docente por nome, e-mail ou departamento'**
+  String get cdBuscarDocente;
+
+  /// No description provided for @cdOrdemCrescente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ordem crescente'**
+  String get cdOrdemCrescente;
+
+  /// No description provided for @cdOrdemDecrescente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ordem decrescente'**
+  String get cdOrdemDecrescente;
+
+  /// No description provided for @cdNenhumDocente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum docente encontrado'**
+  String get cdNenhumDocente;
+
+  /// No description provided for @cdAdicionarDocente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar docente'**
+  String get cdAdicionarDocente;
+
+  /// No description provided for @cdNovoDocente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Novo Docente'**
+  String get cdNovoDocente;
+
+  /// No description provided for @cdEditarDocente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar Docente'**
+  String get cdEditarDocente;
+
+  /// No description provided for @cdAdicionar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar'**
+  String get cdAdicionar;
+
+  /// No description provided for @cdDocenteAdicionado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Docente adicionado com sucesso!'**
+  String get cdDocenteAdicionado;
+
+  /// No description provided for @cdDocenteAtualizado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Docente atualizado com sucesso!'**
+  String get cdDocenteAtualizado;
+
+  /// No description provided for @cdDocenteExcluido.
+  ///
+  /// In pt, this message translates to:
+  /// **'Docente excluído com sucesso!'**
+  String get cdDocenteExcluido;
+
+  /// No description provided for @cdFecharFormulario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fechar formulário do docente'**
+  String get cdFecharFormulario;
+
+  /// No description provided for @cdNomeCompleto.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome Completo'**
+  String get cdNomeCompleto;
+
+  /// No description provided for @cdNomeDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Digite o nome do docente'**
+  String get cdNomeDica;
+
+  /// No description provided for @cdEmailAcesso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Email de acesso'**
+  String get cdEmailAcesso;
+
+  /// No description provided for @cdDepartamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'Departamento'**
+  String get cdDepartamento;
+
+  /// No description provided for @cdDepartamentoDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Digite o departamento'**
+  String get cdDepartamentoDica;
+
+  /// No description provided for @cdCargaMaxima.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carga Horária Máxima Semanal (horas)'**
+  String get cdCargaMaxima;
+
+  /// No description provided for @cdRegimeEbtt.
+  ///
+  /// In pt, this message translates to:
+  /// **'Regime EBTT'**
+  String get cdRegimeEbtt;
+
+  /// No description provided for @cdRegimeOpcao.
+  ///
+  /// In pt, this message translates to:
+  /// **'{label} ({code})'**
+  String cdRegimeOpcao(String label, String code);
+
+  /// No description provided for @cdDistribuicaoAulasSemana.
+  ///
+  /// In pt, this message translates to:
+  /// **'Distribuição em aulas: {horas}h/sem'**
+  String cdDistribuicaoAulasSemana(int horas);
+
+  /// No description provided for @cdRegimeLimite.
+  ///
+  /// In pt, this message translates to:
+  /// **'Regime {code}: limite legal semanal de {limite}h na carreira EBTT. Pesquisa, extensão e gestão continuam dependentes da normativa interna da instituição.'**
+  String cdRegimeLimite(String code, int limite);
+
+  /// No description provided for @cdDisciplinas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Disciplinas'**
+  String get cdDisciplinas;
+
+  /// No description provided for @cdHorariosAula.
+  ///
+  /// In pt, this message translates to:
+  /// **'Horários de Aula'**
+  String get cdHorariosAula;
+
+  /// No description provided for @cdNenhumHorario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum horário cadastrado'**
+  String get cdNenhumHorario;
+
+  /// No description provided for @cdHorasSemana.
+  ///
+  /// In pt, this message translates to:
+  /// **'{horas}h/sem'**
+  String cdHorasSemana(int horas);
+
+  /// No description provided for @cdCargaDistribuida.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carga distribuída em aulas: {horas}h/sem'**
+  String cdCargaDistribuida(int horas);
+
+  /// No description provided for @cdAdicionarDisciplina.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar Disciplina'**
+  String get cdAdicionarDisciplina;
+
+  /// No description provided for @cdNomeDisciplina.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome da Disciplina'**
+  String get cdNomeDisciplina;
+
+  /// No description provided for @cdExemploDisciplina.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ex: Programação I'**
+  String get cdExemploDisciplina;
+
+  /// No description provided for @cdAdicionarHorario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar Horário'**
+  String get cdAdicionarHorario;
+
+  /// No description provided for @cdDiaSemana.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dia da Semana'**
+  String get cdDiaSemana;
+
+  /// No description provided for @cdInicio.
+  ///
+  /// In pt, this message translates to:
+  /// **'Início'**
+  String get cdInicio;
+
+  /// No description provided for @cdFim.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fim'**
+  String get cdFim;
+
+  /// No description provided for @cdDisciplina.
+  ///
+  /// In pt, this message translates to:
+  /// **'Disciplina'**
+  String get cdDisciplina;
+
+  /// No description provided for @cdCargaHoraria.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carga Horária'**
+  String get cdCargaHoraria;
+
+  /// No description provided for @cdExemploCarga.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ex: 2h/sem · 80h'**
+  String get cdExemploCarga;
+
+  /// No description provided for @cdTurma.
+  ///
+  /// In pt, this message translates to:
+  /// **'Turma'**
+  String get cdTurma;
+
+  /// No description provided for @cdModalidade.
+  ///
+  /// In pt, this message translates to:
+  /// **'Modalidade'**
+  String get cdModalidade;
+
+  /// No description provided for @cdExcluirMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tem certeza que deseja excluir {nome}?'**
+  String cdExcluirMensagem(String nome);
+
+  /// No description provided for @cdSugestaoEquilibrada.
+  ///
+  /// In pt, this message translates to:
+  /// **'A distribuição atual está equilibrada. Priorize acompanhamento quinzenal e ajuste fino por disciplina.'**
+  String get cdSugestaoEquilibrada;
+
+  /// No description provided for @cdSugestaoPressao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Docentes com maior pressão: {nomes}. Considere redistribuir turmas práticas e orientações para reduzir risco de sobrecarga.'**
+  String cdSugestaoPressao(String nomes);
+
+  /// No description provided for @cdSugestaoOciosa.
+  ///
+  /// In pt, this message translates to:
+  /// **'Há capacidade ociosa com {nomes}. Priorize alocação de componentes compartilhados e reforço em horários de laboratório.'**
+  String cdSugestaoOciosa(String nomes);
+
+  /// No description provided for @cdSugestaoRevisao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Programe revisão semanal conjunta entre coordenação e laboratórios para reduzir conflitos de agenda e janelas vazias.'**
+  String get cdSugestaoRevisao;
+
+  /// No description provided for @cdRedistribuicoesAplicadas.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =1{1 redistribuição aplicada com sucesso.} other{{count} redistribuições aplicadas com sucesso.}}'**
+  String cdRedistribuicoesAplicadas(int count);
+
+  /// No description provided for @cdMaisAcoes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mais ações do docente'**
+  String get cdMaisAcoes;
+
+  /// No description provided for @cdRegimeDocente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Regime EBTT: {label} ({code})'**
+  String cdRegimeDocente(String label, String code);
+
+  /// No description provided for @cdDistribuicaoAulas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Distribuição em aulas: {horas}h/{maximo}h'**
+  String cdDistribuicaoAulas(int horas, int maximo);
+
+  /// No description provided for @cdOtimizacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Otimização da distribuição'**
+  String get cdOtimizacao;
+
+  /// No description provided for @cdSimular.
+  ///
+  /// In pt, this message translates to:
+  /// **'Simular'**
+  String get cdSimular;
+
+  /// No description provided for @cdAproveitamentoMedio.
+  ///
+  /// In pt, this message translates to:
+  /// **'de aproveitamento médio da carga horária'**
+  String get cdAproveitamentoMedio;
+
+  /// No description provided for @cdOcupacaoMedia.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ocupação média'**
+  String get cdOcupacaoMedia;
+
+  /// No description provided for @cdAltaCarga.
+  ///
+  /// In pt, this message translates to:
+  /// **'Alta carga (>=90%)'**
+  String get cdAltaCarga;
+
+  /// No description provided for @cdBaixaCarga.
+  ///
+  /// In pt, this message translates to:
+  /// **'Baixa carga (<=50%)'**
+  String get cdBaixaCarga;
+
+  /// No description provided for @cdSimulacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Simulação de redistribuição'**
+  String get cdSimulacao;
+
+  /// No description provided for @cdOcupacaoPrevista.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ocupação média prevista: {antes}% -> {depois}%'**
+  String cdOcupacaoPrevista(String antes, String depois);
+
+  /// No description provided for @cdNenhumaRedistribuicao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma redistribuição segura foi encontrada para o cenário atual.'**
+  String get cdNenhumaRedistribuicao;
+
+  /// No description provided for @cdAplicarSugestao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aplicar sugestão'**
+  String get cdAplicarSugestao;
+
+  /// No description provided for @cdAcessoRestrito.
+  ///
+  /// In pt, this message translates to:
+  /// **'Acesso restrito'**
+  String get cdAcessoRestrito;
+
+  /// No description provided for @cdAcessoRestritoMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Somente docentes, coordenação, chefia e servidor administrativo podem acessar esta área.'**
+  String get cdAcessoRestritoMensagem;
+
+  /// No description provided for @cdAgendaDocente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agenda do docente'**
+  String get cdAgendaDocente;
+
+  /// No description provided for @cdDistribuicaoSemanal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Distribuição semanal'**
+  String get cdDistribuicaoSemanal;
+
+  /// No description provided for @cdConviteReuniao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Convite para reunião'**
+  String get cdConviteReuniao;
+
+  /// No description provided for @cdConviteEnviadoAgenda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Convite enviado via agenda do SIGAD.'**
+  String get cdConviteEnviadoAgenda;
+
+  /// No description provided for @cdEnviarConviteReuniao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Enviar convite de reunião'**
+  String get cdEnviarConviteReuniao;
+
+  /// No description provided for @cdTituloConvite.
+  ///
+  /// In pt, this message translates to:
+  /// **'Título do convite'**
+  String get cdTituloConvite;
+
+  /// No description provided for @cdTituloConviteDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ex: Reunião de alinhamento'**
+  String get cdTituloConviteDica;
+
+  /// No description provided for @cdDescricaoConviteDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Detalhes do convite'**
+  String get cdDescricaoConviteDica;
+
+  /// No description provided for @cdLocal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Local'**
+  String get cdLocal;
+
+  /// No description provided for @cdLocalDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sala 12 ou Online'**
+  String get cdLocalDica;
+
+  /// No description provided for @cdHorarioInvalido.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível interpretar o horário da célula.'**
+  String get cdHorarioInvalido;
+
+  /// No description provided for @cdInformeTituloConvite.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe o título do convite.'**
+  String get cdInformeTituloConvite;
+
+  /// No description provided for @cdInformeLocalConvite.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe o local do convite.'**
+  String get cdInformeLocalConvite;
+
+  /// No description provided for @cdConviteEnviado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Convite enviado com sucesso para a agenda do docente.'**
+  String get cdConviteEnviado;
+
+  /// No description provided for @cdEnviarConvite.
+  ///
+  /// In pt, this message translates to:
+  /// **'Enviar convite'**
+  String get cdEnviarConvite;
+
+  /// No description provided for @cdAgendaSemanal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agenda semanal'**
+  String get cdAgendaSemanal;
+
+  /// No description provided for @cdSemanaDe.
+  ///
+  /// In pt, this message translates to:
+  /// **'{semana} de {mes}'**
+  String cdSemanaDe(String semana, String mes);
+
+  /// No description provided for @cdIntervalo.
+  ///
+  /// In pt, this message translates to:
+  /// **'{inicio} a {fim}'**
+  String cdIntervalo(String inicio, String fim);
+
+  /// No description provided for @cdDiaSelecionado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dia selecionado: {dia} ({abreviado} - {completo})'**
+  String cdDiaSelecionado(int dia, String abreviado, String completo);
+
+  /// No description provided for @cdMes.
+  ///
+  /// In pt, this message translates to:
+  /// **'{mes, select, 1{Janeiro} 2{Fevereiro} 3{Março} 4{Abril} 5{Maio} 6{Junho} 7{Julho} 8{Agosto} 9{Setembro} 10{Outubro} 11{Novembro} other{Dezembro}}'**
+  String cdMes(String mes);
+
+  /// No description provided for @cdDiaSab.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sab'**
+  String get cdDiaSab;
+
+  /// No description provided for @cdDiaDom.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dom'**
+  String get cdDiaDom;
+
+  /// No description provided for @cdDiaSabado.
+  ///
+  /// In pt, this message translates to:
+  /// **'sábado'**
+  String get cdDiaSabado;
+
+  /// No description provided for @cdDiaDomingo.
+  ///
+  /// In pt, this message translates to:
+  /// **'domingo'**
+  String get cdDiaDomingo;
+
+  /// No description provided for @cdTurnoCurtoM.
+  ///
+  /// In pt, this message translates to:
+  /// **'M'**
+  String get cdTurnoCurtoM;
+
+  /// No description provided for @cdTurnoCurtoT.
+  ///
+  /// In pt, this message translates to:
+  /// **'T'**
+  String get cdTurnoCurtoT;
+
+  /// No description provided for @cdTurnoCurtoN.
+  ///
+  /// In pt, this message translates to:
+  /// **'N'**
+  String get cdTurnoCurtoN;
+
+  /// No description provided for @cdLivre.
+  ///
+  /// In pt, this message translates to:
+  /// **'Livre'**
+  String get cdLivre;
+
+  /// No description provided for @cdAula.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aula'**
+  String get cdAula;
+
+  /// No description provided for @cdOcupado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ocupado'**
+  String get cdOcupado;
+
+  /// No description provided for @cdHorarioIndefinido.
+  ///
+  /// In pt, this message translates to:
+  /// **'Horário indefinido'**
+  String get cdHorarioIndefinido;
+
+  /// No description provided for @cdSegunda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Segunda'**
+  String get cdSegunda;
+
+  /// No description provided for @cdTerca.
+  ///
+  /// In pt, this message translates to:
+  /// **'Terça'**
+  String get cdTerca;
+
+  /// No description provided for @cdQuarta.
+  ///
+  /// In pt, this message translates to:
+  /// **'Quarta'**
+  String get cdQuarta;
+
+  /// No description provided for @cdQuinta.
+  ///
+  /// In pt, this message translates to:
+  /// **'Quinta'**
+  String get cdQuinta;
+
+  /// No description provided for @cdSexta.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sexta'**
+  String get cdSexta;
+
+  /// No description provided for @cdModalidadeIntegral.
+  ///
+  /// In pt, this message translates to:
+  /// **'Integral'**
+  String get cdModalidadeIntegral;
+
+  /// No description provided for @cdModalidadeConcomitante.
+  ///
+  /// In pt, this message translates to:
+  /// **'Concomitante'**
+  String get cdModalidadeConcomitante;
+
+  /// No description provided for @cdModalidadeSubsequente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Subsequente'**
+  String get cdModalidadeSubsequente;
+
+  /// No description provided for @cdModalidadeEja.
+  ///
+  /// In pt, this message translates to:
+  /// **'EJA'**
+  String get cdModalidadeEja;
+
+  /// No description provided for @cdModalidadeSuperior.
+  ///
+  /// In pt, this message translates to:
+  /// **'Superior'**
+  String get cdModalidadeSuperior;
+
+  /// No description provided for @cdRegime20h.
+  ///
+  /// In pt, this message translates to:
+  /// **'20 horas'**
+  String get cdRegime20h;
+
+  /// No description provided for @cdRegime40h.
+  ///
+  /// In pt, this message translates to:
+  /// **'40 horas'**
+  String get cdRegime40h;
+
+  /// No description provided for @cdRegimeDe.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dedicação exclusiva'**
+  String get cdRegimeDe;
+
+  /// No description provided for @cdInformeNome.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe o nome do docente'**
+  String get cdInformeNome;
+
+  /// No description provided for @cdInformeDepartamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe o departamento'**
+  String get cdInformeDepartamento;
+
+  /// No description provided for @cdInformeCargaMaxima.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe uma carga horária máxima válida'**
+  String get cdInformeCargaMaxima;
+
+  /// No description provided for @cdRegimePermite.
+  ///
+  /// In pt, this message translates to:
+  /// **'O regime {code} permite até {limite}h semanais.'**
+  String cdRegimePermite(String code, String limite);
+
+  /// No description provided for @cdAdicioneDisciplina.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicione pelo menos uma disciplina'**
+  String get cdAdicioneDisciplina;
+
+  /// No description provided for @cdDistribuicaoExcede.
+  ///
+  /// In pt, this message translates to:
+  /// **'A distribuição semanal cadastrada ({distribuida}h) excede a carga máxima do docente ({maxima}h).'**
+  String cdDistribuicaoExcede(String distribuida, String maxima);
+
+  /// No description provided for @cdInformeNomeDisciplina.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe o nome da disciplina.'**
+  String get cdInformeNomeDisciplina;
+
+  /// No description provided for @cdDisciplinaJaAdicionada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Disciplina já adicionada.'**
+  String get cdDisciplinaJaAdicionada;
+
+  /// No description provided for @cdInformeInicioFim.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe horário de início e fim.'**
+  String get cdInformeInicioFim;
+
+  /// No description provided for @cdFormatoHorario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Use o formato HH:MM para os horários.'**
+  String get cdFormatoHorario;
+
+  /// No description provided for @cdFimPosterior.
+  ///
+  /// In pt, this message translates to:
+  /// **'O horário de fim deve ser posterior ao de início.'**
+  String get cdFimPosterior;
+
+  /// No description provided for @cdConflitoHorario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Já existe horário cadastrado em conflito para {dia}.'**
+  String cdConflitoHorario(String dia);
 }
 
 class _AppLocalizationsDelegate
