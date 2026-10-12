@@ -442,8 +442,7 @@ class _SigadChatPageState extends State<SigadChatPage> {
       header: _PageHeader(
         eyebrow: 'COMUNICAÇÃO',
         title: 'Bate-papo',
-        subtitle:
-            'Conversas, grupos e avisos internos do DEE — Campus Monte Castelo.',
+        subtitle: 'Conversas, grupos e avisos internos do DEE.',
         actions: [
           _HeaderAction(
             icon: SigadIcons.comentarioAdicionar,

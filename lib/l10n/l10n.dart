@@ -26,8 +26,7 @@ extension UserRoleL10n on UserRole {
 
 /// Nome e descrição de um módulo do menu no idioma atual.
 extension NavigationItemL10n on NavigationItem {
-  String rotuloEm(AppLocalizations l10n) =>
-      rotuloDaRota(route, l10n) ?? label;
+  String rotuloEm(AppLocalizations l10n) => rotuloDaRota(route, l10n) ?? label;
 
   String? subtituloEm(AppLocalizations l10n) => switch (route) {
     AppRoutes.dashboard => l10n.navVisaoGeralSub,

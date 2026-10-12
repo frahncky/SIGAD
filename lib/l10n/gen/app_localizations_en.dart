@@ -180,11 +180,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginTitulo =>
-      'Academic and department management at IFMA — São Luís–Monte Castelo Campus.';
+      'Integrated Academic and\nDepartment Management System';
+
+  @override
+  String get logotipoSigad => 'SIGAD logo';
 
   @override
   String get loginSubtitulo =>
-      'Plan the DEE activities: teaching load, laboratories, meetings and requests.';
+      'Plan the department activities: teaching load, laboratories, meetings and requests.';
 
   @override
   String get loginDestaquePlanejamento => 'Integrated planning';
@@ -242,8 +245,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Every small delivery today builds the department of tomorrow.';
 
   @override
-  String get departamentoCampus =>
-      'Department of Electrical and Electronics · IFMA Monte Castelo Campus';
+  String get departamentoCampus => 'Department of Electrical and Electronics';
 
   @override
   String mostrarSlide(String rotulo) {

@@ -41,7 +41,7 @@ Future<UserContextProvider> _coordinatorContext() async {
     User(
       id: 'coordenador-demandas',
       name: 'Coordenação Teste',
-      email: 'coordenacao@ifma.edu.br',
+      email: 'coordenacao@exemplo.edu.br',
       role: UserRole.coordenador,
       createdAt: DateTime(2026),
     ),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../app/theme/sigad_colors.dart';
 import '../../app/theme/sigad_icon.dart';
 import '../../app/theme/sigad_icons.dart';
-import '../../core/config/institutional_context.dart';
 
 class BrandTitle extends StatelessWidget {
   const BrandTitle({super.key, this.compact = false, this.light = false});
@@ -60,8 +59,8 @@ class BrandTitle extends StatelessWidget {
               ),
               Text(
                 compact
-                    ? '${InstitutionalContext.acronym} • Monte Castelo'
-                    : '${InstitutionalContext.acronym} — ${InstitutionalContext.campus}',
+                    ? 'Gestão acadêmica'
+                    : 'Gestão acadêmica e departamental',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: textTheme.bodySmall?.copyWith(

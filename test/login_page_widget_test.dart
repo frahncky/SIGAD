@@ -24,10 +24,8 @@ void main() {
     await tester.pumpWidget(_buildApp());
     await tester.pumpAndSettle();
 
-    expect(
-      find.byKey(const ValueKey('login-campus-background')),
-      findsOneWidget,
-    );
+    expect(find.byKey(const ValueKey('login-background')), findsOneWidget);
+    expect(find.byType(Image), findsNothing);
     expect(find.text('Email institucional'), findsOneWidget);
     expect(find.text('Senha'), findsOneWidget);
     expect(find.text('Entrar'), findsNWidgets(2));
@@ -83,7 +81,10 @@ void main() {
   testWidgets('credenciais válidas não criam sessão simulada', (tester) async {
     await tester.pumpWidget(_buildApp());
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField).first, 'usuario@ifma.edu.br');
+    await tester.enterText(
+      find.byType(TextField).first,
+      'usuario@exemplo.edu.br',
+    );
     await tester.enterText(find.byType(TextField).at(1), 'senha_teste');
     final enterButton = find.widgetWithText(FilledButton, 'Entrar');
     await tester.ensureVisible(enterButton);

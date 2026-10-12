@@ -40,22 +40,22 @@ class ChatProvider extends ChangeNotifier {
   final List<ChatContact> _baseContacts = const [
     ChatContact(
       name: 'Professor Demo',
-      email: 'professor.demo@ifma.edu.br',
+      email: 'professor.demo@exemplo.edu.br',
       role: UserRole.professor,
     ),
     ChatContact(
       name: 'Coordenação Demo',
-      email: 'coordenacao.demo@ifma.edu.br',
+      email: 'coordenacao.demo@exemplo.edu.br',
       role: UserRole.coordenador,
     ),
     ChatContact(
       name: 'Servidor Demo',
-      email: 'servidor.demo@ifma.edu.br',
+      email: 'servidor.demo@exemplo.edu.br',
       role: UserRole.servidorAdministrativo,
     ),
     ChatContact(
       name: 'Chefia Demo',
-      email: 'chefia.demo@ifma.edu.br',
+      email: 'chefia.demo@exemplo.edu.br',
       role: UserRole.chefeDepartamento,
     ),
   ];
@@ -263,26 +263,26 @@ class ChatProvider extends ChangeNotifier {
 
   void _seedMessages() {
     _addSeedMessage(
-      senderEmail: 'coordenacao.demo@ifma.edu.br',
-      recipientEmail: 'professor.demo@ifma.edu.br',
+      senderEmail: 'coordenacao.demo@exemplo.edu.br',
+      recipientEmail: 'professor.demo@exemplo.edu.br',
       content: 'João, conseguiu fechar o relatório da turma de laboratório?',
       sentAt: DateTime.now().subtract(const Duration(hours: 3, minutes: 15)),
     );
     _addSeedMessage(
-      senderEmail: 'professor.demo@ifma.edu.br',
-      recipientEmail: 'coordenacao.demo@ifma.edu.br',
+      senderEmail: 'professor.demo@exemplo.edu.br',
+      recipientEmail: 'coordenacao.demo@exemplo.edu.br',
       content: 'Sim, envio em 20 minutos com os ajustes finais.',
       sentAt: DateTime.now().subtract(const Duration(hours: 2, minutes: 58)),
     );
     _addSeedMessage(
-      senderEmail: 'chefia.demo@ifma.edu.br',
-      recipientEmail: 'servidor.demo@ifma.edu.br',
+      senderEmail: 'chefia.demo@exemplo.edu.br',
+      recipientEmail: 'servidor.demo@exemplo.edu.br',
       content: 'Carlos, precisamos validar os protocolos até 16h.',
       sentAt: DateTime.now().subtract(const Duration(hours: 1, minutes: 42)),
     );
     _addSeedMessage(
-      senderEmail: 'servidor.demo@ifma.edu.br',
-      recipientEmail: 'chefia.demo@ifma.edu.br',
+      senderEmail: 'servidor.demo@exemplo.edu.br',
+      recipientEmail: 'chefia.demo@exemplo.edu.br',
       content: 'Perfeito. Já estou finalizando a conferência.',
       sentAt: DateTime.now().subtract(const Duration(hours: 1, minutes: 30)),
     );

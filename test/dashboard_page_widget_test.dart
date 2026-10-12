@@ -31,7 +31,7 @@ void main() {
       User(
         id: 'coord_1',
         name: 'Maria Santos',
-        email: 'maria.santos@ifma.edu.br',
+        email: 'maria.santos@exemplo.edu.br',
         role: role,
         createdAt: DateTime.now(),
       ),

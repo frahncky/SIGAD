@@ -556,7 +556,7 @@ class _SuporteCard extends StatelessWidget {
   }
 
   Future<void> _abrirChamado(BuildContext context) async {
-    final uri = Uri.parse('mailto:suporte.ti@ifma.edu.br');
+    final uri = Uri.parse('mailto:suporte.ti@exemplo.edu.br');
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     }

@@ -437,13 +437,19 @@ abstract class AppLocalizations {
   /// No description provided for @loginTitulo.
   ///
   /// In pt, this message translates to:
-  /// **'Gestão acadêmica e departamental do IFMA — Campus São Luís–Monte Castelo.'**
+  /// **'Sistema Integrado de Gestão\nAcadêmica e Departamental'**
   String get loginTitulo;
+
+  /// No description provided for @logotipoSigad.
+  ///
+  /// In pt, this message translates to:
+  /// **'Logotipo do SIGAD'**
+  String get logotipoSigad;
 
   /// No description provided for @loginSubtitulo.
   ///
   /// In pt, this message translates to:
-  /// **'Planeje as atividades do DEE: carga docente, laboratórios, reuniões e demandas.'**
+  /// **'Planeje as atividades do departamento: carga docente, laboratórios, reuniões e demandas.'**
   String get loginSubtitulo;
 
   /// No description provided for @loginDestaquePlanejamento.
@@ -533,7 +539,7 @@ abstract class AppLocalizations {
   /// No description provided for @departamentoCampus.
   ///
   /// In pt, this message translates to:
-  /// **'Departamento de Eletroeletrônica · IFMA Campus Monte Castelo'**
+  /// **'Departamento de Eletroeletrônica'**
   String get departamentoCampus;
 
   /// No description provided for @mostrarSlide.

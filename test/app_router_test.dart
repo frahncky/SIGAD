@@ -47,7 +47,7 @@ void main() {
       User(
         id: 'coordenador-1',
         name: 'Maria',
-        email: 'maria@ifma.edu.br',
+        email: 'maria@exemplo.edu.br',
         role: UserRole.coordenador,
         createdAt: DateTime(2026),
       ),
