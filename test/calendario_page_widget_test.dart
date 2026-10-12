@@ -11,6 +11,7 @@ import 'package:sigad/features/aulas_praticas/data/reserva_repository.dart';
 import 'package:sigad/features/aulas_praticas/domain/reserva_models.dart';
 import 'package:sigad/features/calendario/presentation/pages/calendario_page.dart';
 import 'package:sigad/features/calendario/presentation/widgets/calendario_mes_widget.dart';
+import 'package:sigad/l10n/l10n.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -301,4 +302,39 @@ void main() {
       },
     );
   }
+
+  testWidgets('calendário do mês em inglês', (tester) async {
+    configurarTela(tester, const Size(390, 844));
+    final dia = DateTime(2026, 7, 28);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light(),
+        locale: const Locale('en'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: Scaffold(
+          body: CalendarioMesWidget(
+            mesAtual: DateTime(2026, 7),
+            feriados: {dia: 'Adesão do Maranhão à Independência'},
+            marcadores: {
+              dia: const [Colors.blue],
+            },
+            onDiaSelecionado: (_) {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('July 2026'), findsOneWidget);
+    expect(find.text('SUN'), findsOneWidget);
+    expect(find.byTooltip('Next month'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel(
+        'Tuesday, July 28, 2026, '
+        'holiday: Adesão do Maranhão à Independência, 1 event',
+      ),
+      findsOneWidget,
+    );
+  });
 }

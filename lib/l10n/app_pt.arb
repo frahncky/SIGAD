@@ -764,5 +764,139 @@
   "muralEscrevaFrase": "Escreva a frase.",
   "muralPreviaFraseSub": "É assim que a frase aparece no card de boas-vindas.",
   "muralPreviaFrase": "A frase aparece aqui.",
-  "muralSalvarFrase": "Salvar frase"
+  "muralSalvarFrase": "Salvar frase",
+  "calAgendaCompleta": "Agenda completa",
+  "calResumoSemana": "Resumo da semana",
+  "calPeriodoSemana": "{inicio} a {fim}",
+  "@calPeriodoSemana": {
+    "placeholders": {
+      "inicio": {
+        "type": "String"
+      },
+      "fim": {
+        "type": "String"
+      }
+    }
+  },
+  "calVerAgenda": "Ver agenda",
+  "calEventosAgendados": "Eventos agendados",
+  "calReservasLaboratorio": "Reservas de laboratório",
+  "calReuniaoMarcada": "Reunião marcada",
+  "calDepartamento": "Departamento",
+  "calTipoItem": "Tipo de item",
+  "calTodos": "Todos",
+  "calReuniao": "Reunião",
+  "calLaboratorio": "Laboratório",
+  "calComunicacao": "Comunicação",
+  "calToqueParaAlterar": "Toque para alterar",
+  "calAulaPratica": "Aula prática – {disciplina}",
+  "@calAulaPratica": {
+    "placeholders": {
+      "disciplina": {
+        "type": "String"
+      }
+    }
+  },
+  "calReservaLaboratorio": "Reserva de laboratório",
+  "calReservaDe": "Reserva: {laboratorio}",
+  "@calReservaDe": {
+    "placeholders": {
+      "laboratorio": {
+        "type": "String"
+      }
+    }
+  },
+  "calResponsavel": "Responsável: {professor}",
+  "@calResponsavel": {
+    "placeholders": {
+      "professor": {
+        "type": "String"
+      }
+    }
+  },
+  "calProximosCompromissos": "Próximos compromissos",
+  "calVerTodos": "Ver todos",
+  "calNenhumaReservaFutura": "Nenhuma reserva futura encontrada.",
+  "calAgendaDoDia": "Agenda do dia",
+  "calVerAgendaCompleta": "Ver agenda completa",
+  "calNenhumCompromisso": "Nenhum compromisso neste dia.",
+  "calOcupacaoHoje": "Ocupação dos laboratórios (hoje)",
+  "calNenhumaReserva": "Nenhuma reserva cadastrada.",
+  "calHorariosReservados": "{horas} de {total} horários reservados na semana",
+  "@calHorariosReservados": {
+    "placeholders": {
+      "horas": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "calMesAnterior": "Mês anterior",
+  "calProximoMes": "Próximo mês",
+  "calHoje": "hoje",
+  "calFeriado": "feriado: {nome}",
+  "@calFeriado": {
+    "placeholders": {
+      "nome": {
+        "type": "String"
+      }
+    }
+  },
+  "calEventos": "{count, plural, =1{1 evento} other{{count} eventos}}",
+  "@calEventos": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notaGeral": "Geral",
+  "notaReunioes": "Reuniões",
+  "notaPlanejamento": "Planejamento",
+  "notaCargaHoraria": "Carga horária",
+  "notaEventos": "Eventos",
+  "notaTodas": "Todas",
+  "notaNova": "Nova anotação",
+  "notaEditar": "Editar anotação",
+  "notaExcluir": "Excluir anotação",
+  "notaExcluirMensagem": "Tem certeza que deseja excluir esta anotação?",
+  "notaDica": "Registre uma ideia, encaminhamento ou lembrete...",
+  "notaCategoria": "Categoria",
+  "notaGerenciarFixadas": "Gerenciar fixadas",
+  "notaNenhumaCriada": "Nenhuma anotação criada ainda.",
+  "notaBuscar": "Buscar anotações, reuniões, temas...",
+  "notaFixadas": "Fixadas",
+  "notaTodasAnotacoes": "Todas as anotações",
+  "notaMaisRecentes": "Mais recentes",
+  "notaMaisAntigas": "Mais antigas",
+  "notaOrdenarPor": "Ordenar por: {ordem}",
+  "@notaOrdenarPor": {
+    "placeholders": {
+      "ordem": {
+        "type": "String"
+      }
+    }
+  },
+  "notaNenhumaEncontrada": "Nenhuma anotação encontrada.",
+  "notaVazio": "Nenhuma anotação. Toque em \"+\" para criar.",
+  "notaVazioDica": "Use este espaço para registrar encaminhamentos, ideias e lembretes rápidos.",
+  "notaCriarPrimeira": "Criar primeira anotação",
+  "notaDesafixar": "Desafixar",
+  "notaFixar": "Fixar anotação",
+  "notaDataHora": "{dia}/{mes} às {hora}",
+  "@notaDataHora": {
+    "placeholders": {
+      "dia": {
+        "type": "String"
+      },
+      "mes": {
+        "type": "String"
+      },
+      "hora": {
+        "type": "String"
+      }
+    }
+  }
 }

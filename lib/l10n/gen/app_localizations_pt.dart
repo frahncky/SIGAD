@@ -1360,4 +1360,207 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get muralSalvarFrase => 'Salvar frase';
+
+  @override
+  String get calAgendaCompleta => 'Agenda completa';
+
+  @override
+  String get calResumoSemana => 'Resumo da semana';
+
+  @override
+  String calPeriodoSemana(String inicio, String fim) {
+    return '$inicio a $fim';
+  }
+
+  @override
+  String get calVerAgenda => 'Ver agenda';
+
+  @override
+  String get calEventosAgendados => 'Eventos agendados';
+
+  @override
+  String get calReservasLaboratorio => 'Reservas de laboratório';
+
+  @override
+  String get calReuniaoMarcada => 'Reunião marcada';
+
+  @override
+  String get calDepartamento => 'Departamento';
+
+  @override
+  String get calTipoItem => 'Tipo de item';
+
+  @override
+  String get calTodos => 'Todos';
+
+  @override
+  String get calReuniao => 'Reunião';
+
+  @override
+  String get calLaboratorio => 'Laboratório';
+
+  @override
+  String get calComunicacao => 'Comunicação';
+
+  @override
+  String get calToqueParaAlterar => 'Toque para alterar';
+
+  @override
+  String calAulaPratica(String disciplina) {
+    return 'Aula prática – $disciplina';
+  }
+
+  @override
+  String get calReservaLaboratorio => 'Reserva de laboratório';
+
+  @override
+  String calReservaDe(String laboratorio) {
+    return 'Reserva: $laboratorio';
+  }
+
+  @override
+  String calResponsavel(String professor) {
+    return 'Responsável: $professor';
+  }
+
+  @override
+  String get calProximosCompromissos => 'Próximos compromissos';
+
+  @override
+  String get calVerTodos => 'Ver todos';
+
+  @override
+  String get calNenhumaReservaFutura => 'Nenhuma reserva futura encontrada.';
+
+  @override
+  String get calAgendaDoDia => 'Agenda do dia';
+
+  @override
+  String get calVerAgendaCompleta => 'Ver agenda completa';
+
+  @override
+  String get calNenhumCompromisso => 'Nenhum compromisso neste dia.';
+
+  @override
+  String get calOcupacaoHoje => 'Ocupação dos laboratórios (hoje)';
+
+  @override
+  String get calNenhumaReserva => 'Nenhuma reserva cadastrada.';
+
+  @override
+  String calHorariosReservados(int horas, int total) {
+    return '$horas de $total horários reservados na semana';
+  }
+
+  @override
+  String get calMesAnterior => 'Mês anterior';
+
+  @override
+  String get calProximoMes => 'Próximo mês';
+
+  @override
+  String get calHoje => 'hoje';
+
+  @override
+  String calFeriado(String nome) {
+    return 'feriado: $nome';
+  }
+
+  @override
+  String calEventos(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count eventos',
+      one: '1 evento',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notaGeral => 'Geral';
+
+  @override
+  String get notaReunioes => 'Reuniões';
+
+  @override
+  String get notaPlanejamento => 'Planejamento';
+
+  @override
+  String get notaCargaHoraria => 'Carga horária';
+
+  @override
+  String get notaEventos => 'Eventos';
+
+  @override
+  String get notaTodas => 'Todas';
+
+  @override
+  String get notaNova => 'Nova anotação';
+
+  @override
+  String get notaEditar => 'Editar anotação';
+
+  @override
+  String get notaExcluir => 'Excluir anotação';
+
+  @override
+  String get notaExcluirMensagem =>
+      'Tem certeza que deseja excluir esta anotação?';
+
+  @override
+  String get notaDica => 'Registre uma ideia, encaminhamento ou lembrete...';
+
+  @override
+  String get notaCategoria => 'Categoria';
+
+  @override
+  String get notaGerenciarFixadas => 'Gerenciar fixadas';
+
+  @override
+  String get notaNenhumaCriada => 'Nenhuma anotação criada ainda.';
+
+  @override
+  String get notaBuscar => 'Buscar anotações, reuniões, temas...';
+
+  @override
+  String get notaFixadas => 'Fixadas';
+
+  @override
+  String get notaTodasAnotacoes => 'Todas as anotações';
+
+  @override
+  String get notaMaisRecentes => 'Mais recentes';
+
+  @override
+  String get notaMaisAntigas => 'Mais antigas';
+
+  @override
+  String notaOrdenarPor(String ordem) {
+    return 'Ordenar por: $ordem';
+  }
+
+  @override
+  String get notaNenhumaEncontrada => 'Nenhuma anotação encontrada.';
+
+  @override
+  String get notaVazio => 'Nenhuma anotação. Toque em \"+\" para criar.';
+
+  @override
+  String get notaVazioDica =>
+      'Use este espaço para registrar encaminhamentos, ideias e lembretes rápidos.';
+
+  @override
+  String get notaCriarPrimeira => 'Criar primeira anotação';
+
+  @override
+  String get notaDesafixar => 'Desafixar';
+
+  @override
+  String get notaFixar => 'Fixar anotação';
+
+  @override
+  String notaDataHora(String dia, String mes, String hora) {
+    return '$dia/$mes às $hora';
+  }
 }

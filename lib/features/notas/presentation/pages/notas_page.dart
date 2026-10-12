@@ -5,6 +5,8 @@ import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
 import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../../../core/services/local_storage_service.dart';
+import '../../../../l10n/l10n.dart';
+import '../notas_l10n.dart';
 
 class NotasPage extends StatefulWidget {
   const NotasPage({super.key});
@@ -185,7 +187,9 @@ class _NotasPageState extends State<NotasPage> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: Text(nota == null ? 'Nova anotação' : 'Editar anotação'),
+          title: Text(
+            nota == null ? context.l10n.notaNova : context.l10n.notaEditar,
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -196,18 +200,20 @@ class _NotasPageState extends State<NotasPage> {
                 minLines: 5,
                 maxLines: 10,
                 autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: 'Registre uma ideia, encaminhamento ou lembrete...',
-                ),
+                decoration: InputDecoration(hintText: context.l10n.notaDica),
               ),
               const SizedBox(height: 14),
               DropdownButtonFormField<String>(
                 initialValue: categoriaEditada,
-                decoration: const InputDecoration(labelText: 'Categoria'),
+                decoration: InputDecoration(
+                  labelText: context.l10n.notaCategoria,
+                ),
                 items: kCategoriasAnotacao
                     .map(
-                      (item) =>
-                          DropdownMenuItem(value: item, child: Text(item)),
+                      (item) => DropdownMenuItem(
+                        value: item,
+                        child: Text(context.l10n.categoriaNota(item)),
+                      ),
                     )
                     .toList(),
                 onChanged: (value) {
@@ -221,7 +227,7 @@ class _NotasPageState extends State<NotasPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
+              child: Text(context.l10n.cancelar),
             ),
             ElevatedButton(
               onPressed: () {
@@ -233,7 +239,7 @@ class _NotasPageState extends State<NotasPage> {
                   );
                 }
               },
-              child: const Text('Salvar'),
+              child: Text(context.l10n.salvar),
             ),
           ],
         ),
@@ -272,16 +278,16 @@ class _NotasPageState extends State<NotasPage> {
     final confirmar = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Excluir anotação'),
-        content: const Text('Tem certeza que deseja excluir esta anotação?'),
+        title: Text(context.l10n.notaExcluir),
+        content: Text(context.l10n.notaExcluirMensagem),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+            child: Text(context.l10n.cancelar),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Excluir'),
+            child: Text(context.l10n.excluir),
           ),
         ],
       ),
@@ -313,16 +319,16 @@ class _NotasPageState extends State<NotasPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Gerenciar fixadas',
+                context.l10n.notaGerenciarFixadas,
                 style: Theme.of(
                   context,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 8),
               if (_notas.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  child: Text('Nenhuma anotação criada ainda.'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: Text(context.l10n.notaNenhumaCriada),
                 )
               else
                 ConstrainedBox(
@@ -338,7 +344,9 @@ class _NotasPageState extends State<NotasPage> {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            subtitle: Text(nota.categoria),
+                            subtitle: Text(
+                              context.l10n.categoriaNota(nota.categoria),
+                            ),
                             value: nota.fixada,
                             onChanged: (_) async {
                               await _alternarFixada(nota);
@@ -362,14 +370,15 @@ class _NotasPageState extends State<NotasPage> {
     final textTheme = Theme.of(context).textTheme;
     final notas = _notasFiltradas;
     final fixadas = _notasFixadas;
+    final l10n = context.l10n;
     final chips = ['Todas', 'Reuniões', 'Laboratórios', 'Planejamento', 'Mais'];
 
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
-        tooltip: 'Nova anotação',
+        tooltip: l10n.notaNova,
         onPressed: () => _criarOuEditarNota(),
         icon: const SigadIcon(SigadIcons.adicionar),
-        label: const Text('Nova anotação'),
+        label: Text(l10n.notaNova),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
@@ -378,7 +387,7 @@ class _NotasPageState extends State<NotasPage> {
             TextField(
               onChanged: (value) => setState(() => _busca = value),
               decoration: InputDecoration(
-                hintText: 'Buscar anotações, reuniões, temas...',
+                hintText: l10n.notaBuscar,
                 prefixIcon: const SigadIcon(SigadIcons.buscar),
                 suffixIcon: const SigadIcon(SigadIcons.ajustes),
                 filled: true,
@@ -400,7 +409,7 @@ class _NotasPageState extends State<NotasPage> {
                     : _categoriaFiltro == chip;
                 final tone = sigadToneForIndex(index);
                 return ChoiceChip(
-                  label: Text(chip),
+                  label: Text(l10n.categoriaNota(chip)),
                   selected: selected,
                   selectedColor: tone,
                   labelStyle: TextStyle(
@@ -425,7 +434,7 @@ class _NotasPageState extends State<NotasPage> {
                 const SigadIcon(SigadIcons.fixar, color: SigadColors.brand),
                 const SizedBox(width: 8),
                 Text(
-                  'Fixadas',
+                  l10n.notaFixadas,
                   style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
@@ -433,7 +442,7 @@ class _NotasPageState extends State<NotasPage> {
                 const Spacer(),
                 TextButton(
                   onPressed: _gerenciarFixadas,
-                  child: const Text('Gerenciar fixadas'),
+                  child: Text(context.l10n.notaGerenciarFixadas),
                 ),
               ],
             ),
@@ -458,7 +467,7 @@ class _NotasPageState extends State<NotasPage> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Todas as anotações',
+                  l10n.notaTodasAnotacoes,
                   style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
@@ -468,15 +477,25 @@ class _NotasPageState extends State<NotasPage> {
                 initialValue: _maisRecentesPrimeiro,
                 onSelected: (value) =>
                     setState(() => _maisRecentesPrimeiro = value),
-                itemBuilder: (context) => const [
-                  PopupMenuItem(value: true, child: Text('Mais recentes')),
-                  PopupMenuItem(value: false, child: Text('Mais antigas')),
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: true,
+                    child: Text(l10n.notaMaisRecentes),
+                  ),
+                  PopupMenuItem(
+                    value: false,
+                    child: Text(l10n.notaMaisAntigas),
+                  ),
                 ],
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Ordenar por: ${_maisRecentesPrimeiro ? 'Mais recentes' : 'Mais antigas'}',
+                      l10n.notaOrdenarPor(
+                        _maisRecentesPrimeiro
+                            ? l10n.notaMaisRecentes
+                            : l10n.notaMaisAntigas,
+                      ),
                       style: textTheme.bodySmall?.copyWith(
                         color: colors.onSurfaceVariant,
                       ),
@@ -506,7 +525,7 @@ class _NotasPageState extends State<NotasPage> {
                     color: colors.outline,
                   ),
                   const SizedBox(height: 12),
-                  const Text('Nenhuma anotação encontrada.'),
+                  Text(l10n.notaNenhumaEncontrada),
                 ],
               ),
             )
@@ -547,7 +566,7 @@ class _NotasPageState extends State<NotasPage> {
                     _iconeCategoria(categoria),
                     color: _corCategoria(categoria),
                   ),
-                  title: Text(categoria),
+                  title: Text(context.l10n.categoriaNota(categoria)),
                   onTap: () {
                     Navigator.pop(context);
                     setState(() => _categoriaFiltro = categoria);
@@ -593,13 +612,13 @@ class _EmptyNotes extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Nenhuma anotação. Toque em "+" para criar.',
+            context.l10n.notaVazio,
             style: Theme.of(context).textTheme.titleMedium,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           Text(
-            'Use este espaço para registrar encaminhamentos, ideias e lembretes rápidos.',
+            context.l10n.notaVazioDica,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
@@ -609,7 +628,7 @@ class _EmptyNotes extends StatelessWidget {
           OutlinedButton.icon(
             onPressed: onCreate,
             icon: const SigadIcon(SigadIcons.adicionar),
-            label: const Text('Criar primeira anotação'),
+            label: Text(context.l10n.notaCriarPrimeira),
           ),
         ],
       ),
@@ -669,7 +688,9 @@ class _NoteCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        nota.categoria.toUpperCase(),
+                        context.l10n
+                            .categoriaNota(nota.categoria)
+                            .toUpperCase(),
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: cor,
                           fontWeight: FontWeight.w800,
@@ -687,7 +708,9 @@ class _NoteCard extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  tooltip: nota.fixada ? 'Desafixar' : 'Fixar anotação',
+                  tooltip: nota.fixada
+                      ? context.l10n.notaDesafixar
+                      : context.l10n.notaFixar,
                   onPressed: onTogglePin,
                   icon: SigadIcon(
                     nota.fixada
@@ -710,19 +733,19 @@ class _NoteCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  _formatDate(nota.data),
+                  _formatDate(context.l10n, nota.data),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: colors.onSurfaceVariant,
                   ),
                 ),
                 const Spacer(),
                 IconButton(
-                  tooltip: 'Editar anotação',
+                  tooltip: context.l10n.notaEditar,
                   onPressed: onEdit,
                   icon: const SigadIcon(SigadIcons.editar),
                 ),
                 IconButton(
-                  tooltip: 'Excluir anotação',
+                  tooltip: context.l10n.notaExcluir,
                   onPressed: onDelete,
                   icon: SigadIcon(SigadIcons.excluir, color: colors.error),
                 ),
@@ -734,11 +757,11 @@ class _NoteCard extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(AppLocalizations l10n, DateTime date) {
     final d = date.day.toString().padLeft(2, '0');
     final m = date.month.toString().padLeft(2, '0');
     final h = date.hour.toString().padLeft(2, '0');
     final min = date.minute.toString().padLeft(2, '0');
-    return '$d/$m às $h:$min';
+    return l10n.notaDataHora(d, m, '$h:$min');
   }
 }

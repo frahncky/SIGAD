@@ -2358,6 +2358,360 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Salvar frase'**
   String get muralSalvarFrase;
+
+  /// No description provided for @calAgendaCompleta.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agenda completa'**
+  String get calAgendaCompleta;
+
+  /// No description provided for @calResumoSemana.
+  ///
+  /// In pt, this message translates to:
+  /// **'Resumo da semana'**
+  String get calResumoSemana;
+
+  /// No description provided for @calPeriodoSemana.
+  ///
+  /// In pt, this message translates to:
+  /// **'{inicio} a {fim}'**
+  String calPeriodoSemana(String inicio, String fim);
+
+  /// No description provided for @calVerAgenda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ver agenda'**
+  String get calVerAgenda;
+
+  /// No description provided for @calEventosAgendados.
+  ///
+  /// In pt, this message translates to:
+  /// **'Eventos agendados'**
+  String get calEventosAgendados;
+
+  /// No description provided for @calReservasLaboratorio.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reservas de laboratório'**
+  String get calReservasLaboratorio;
+
+  /// No description provided for @calReuniaoMarcada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reunião marcada'**
+  String get calReuniaoMarcada;
+
+  /// No description provided for @calDepartamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'Departamento'**
+  String get calDepartamento;
+
+  /// No description provided for @calTipoItem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tipo de item'**
+  String get calTipoItem;
+
+  /// No description provided for @calTodos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos'**
+  String get calTodos;
+
+  /// No description provided for @calReuniao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reunião'**
+  String get calReuniao;
+
+  /// No description provided for @calLaboratorio.
+  ///
+  /// In pt, this message translates to:
+  /// **'Laboratório'**
+  String get calLaboratorio;
+
+  /// No description provided for @calComunicacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Comunicação'**
+  String get calComunicacao;
+
+  /// No description provided for @calToqueParaAlterar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Toque para alterar'**
+  String get calToqueParaAlterar;
+
+  /// No description provided for @calAulaPratica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aula prática – {disciplina}'**
+  String calAulaPratica(String disciplina);
+
+  /// No description provided for @calReservaLaboratorio.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reserva de laboratório'**
+  String get calReservaLaboratorio;
+
+  /// No description provided for @calReservaDe.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reserva: {laboratorio}'**
+  String calReservaDe(String laboratorio);
+
+  /// No description provided for @calResponsavel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Responsável: {professor}'**
+  String calResponsavel(String professor);
+
+  /// No description provided for @calProximosCompromissos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Próximos compromissos'**
+  String get calProximosCompromissos;
+
+  /// No description provided for @calVerTodos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ver todos'**
+  String get calVerTodos;
+
+  /// No description provided for @calNenhumaReservaFutura.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma reserva futura encontrada.'**
+  String get calNenhumaReservaFutura;
+
+  /// No description provided for @calAgendaDoDia.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agenda do dia'**
+  String get calAgendaDoDia;
+
+  /// No description provided for @calVerAgendaCompleta.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ver agenda completa'**
+  String get calVerAgendaCompleta;
+
+  /// No description provided for @calNenhumCompromisso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum compromisso neste dia.'**
+  String get calNenhumCompromisso;
+
+  /// No description provided for @calOcupacaoHoje.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ocupação dos laboratórios (hoje)'**
+  String get calOcupacaoHoje;
+
+  /// No description provided for @calNenhumaReserva.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma reserva cadastrada.'**
+  String get calNenhumaReserva;
+
+  /// No description provided for @calHorariosReservados.
+  ///
+  /// In pt, this message translates to:
+  /// **'{horas} de {total} horários reservados na semana'**
+  String calHorariosReservados(int horas, int total);
+
+  /// No description provided for @calMesAnterior.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mês anterior'**
+  String get calMesAnterior;
+
+  /// No description provided for @calProximoMes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Próximo mês'**
+  String get calProximoMes;
+
+  /// No description provided for @calHoje.
+  ///
+  /// In pt, this message translates to:
+  /// **'hoje'**
+  String get calHoje;
+
+  /// No description provided for @calFeriado.
+  ///
+  /// In pt, this message translates to:
+  /// **'feriado: {nome}'**
+  String calFeriado(String nome);
+
+  /// No description provided for @calEventos.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =1{1 evento} other{{count} eventos}}'**
+  String calEventos(int count);
+
+  /// No description provided for @notaGeral.
+  ///
+  /// In pt, this message translates to:
+  /// **'Geral'**
+  String get notaGeral;
+
+  /// No description provided for @notaReunioes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reuniões'**
+  String get notaReunioes;
+
+  /// No description provided for @notaPlanejamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'Planejamento'**
+  String get notaPlanejamento;
+
+  /// No description provided for @notaCargaHoraria.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carga horária'**
+  String get notaCargaHoraria;
+
+  /// No description provided for @notaEventos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Eventos'**
+  String get notaEventos;
+
+  /// No description provided for @notaTodas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todas'**
+  String get notaTodas;
+
+  /// No description provided for @notaNova.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova anotação'**
+  String get notaNova;
+
+  /// No description provided for @notaEditar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar anotação'**
+  String get notaEditar;
+
+  /// No description provided for @notaExcluir.
+  ///
+  /// In pt, this message translates to:
+  /// **'Excluir anotação'**
+  String get notaExcluir;
+
+  /// No description provided for @notaExcluirMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tem certeza que deseja excluir esta anotação?'**
+  String get notaExcluirMensagem;
+
+  /// No description provided for @notaDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Registre uma ideia, encaminhamento ou lembrete...'**
+  String get notaDica;
+
+  /// No description provided for @notaCategoria.
+  ///
+  /// In pt, this message translates to:
+  /// **'Categoria'**
+  String get notaCategoria;
+
+  /// No description provided for @notaGerenciarFixadas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Gerenciar fixadas'**
+  String get notaGerenciarFixadas;
+
+  /// No description provided for @notaNenhumaCriada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma anotação criada ainda.'**
+  String get notaNenhumaCriada;
+
+  /// No description provided for @notaBuscar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar anotações, reuniões, temas...'**
+  String get notaBuscar;
+
+  /// No description provided for @notaFixadas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fixadas'**
+  String get notaFixadas;
+
+  /// No description provided for @notaTodasAnotacoes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todas as anotações'**
+  String get notaTodasAnotacoes;
+
+  /// No description provided for @notaMaisRecentes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mais recentes'**
+  String get notaMaisRecentes;
+
+  /// No description provided for @notaMaisAntigas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mais antigas'**
+  String get notaMaisAntigas;
+
+  /// No description provided for @notaOrdenarPor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ordenar por: {ordem}'**
+  String notaOrdenarPor(String ordem);
+
+  /// No description provided for @notaNenhumaEncontrada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma anotação encontrada.'**
+  String get notaNenhumaEncontrada;
+
+  /// No description provided for @notaVazio.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma anotação. Toque em \"+\" para criar.'**
+  String get notaVazio;
+
+  /// No description provided for @notaVazioDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Use este espaço para registrar encaminhamentos, ideias e lembretes rápidos.'**
+  String get notaVazioDica;
+
+  /// No description provided for @notaCriarPrimeira.
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar primeira anotação'**
+  String get notaCriarPrimeira;
+
+  /// No description provided for @notaDesafixar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Desafixar'**
+  String get notaDesafixar;
+
+  /// No description provided for @notaFixar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fixar anotação'**
+  String get notaFixar;
+
+  /// No description provided for @notaDataHora.
+  ///
+  /// In pt, this message translates to:
+  /// **'{dia}/{mes} às {hora}'**
+  String notaDataHora(String dia, String mes, String hora);
 }
 
 class _AppLocalizationsDelegate
