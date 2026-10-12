@@ -34,7 +34,7 @@ O app tem identidade visual própria: as cores do logotipo e um conjunto de **í
 <table>
   <tr>
     <td align="center" width="25%"><img src="docs/readme/icones/painel.svg" width="40" alt=""><br><b>Visão geral</b><br><sub>Painel por perfil, avisos e atalhos</sub></td>
-    <td align="center" width="25%"><img src="docs/readme/icones/conversa.svg" width="40" alt=""><br><b>Bate-papo</b><br><sub>Conversas individuais e em grupo</sub></td>
+    <td align="center" width="25%"><img src="docs/readme/icones/conversa.svg" width="40" alt=""><br><b>Bate-papo</b><br><sub>Conversas individuais entre usuários</sub></td>
     <td align="center" width="25%"><img src="docs/readme/icones/demanda.svg" width="40" alt=""><br><b>Demandas</b><br><sub>Criar, editar, excluir e filtrar</sub></td>
     <td align="center" width="25%"><img src="docs/readme/icones/kanban.svg" width="40" alt=""><br><b>Tarefas</b><br><sub>Quadro com arrastar e soltar</sub></td>
   </tr>
@@ -143,7 +143,7 @@ flutter test test/goldens/ --dart-define=RUN_GOLDEN_TESTS=true
 | `lib/features` | Módulos funcionais por domínio |
 | `lib/shared` | Componentes e widgets reutilizáveis |
 
-Cada feature segue as camadas **`domain`** (entidades, regras e serviços puros), **`data`** (repositórios e persistência) e **`presentation`** (páginas e widgets). A interface não acessa a persistência diretamente; a serialização fica em `data`.
+O padrão adotado para as features é separar as camadas **`domain`** (entidades, regras e serviços puros), **`data`** (repositórios e persistência) e **`presentation`** (páginas e widgets), com a serialização centralizada em `data`. As features principais já seguem esse padrão; algumas telas (como calendário, anotações e o painel) ainda têm só `presentation` ou acessam o armazenamento local diretamente e devem migrar aos poucos.
 
 **Tecnologias:** Flutter (Material 3) · Dart · Provider · SharedPreferences · http
 
