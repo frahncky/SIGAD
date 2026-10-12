@@ -782,7 +782,7 @@ void main() {
           {
             'id': 'r-qui-08',
             'professor': 'Outra Pessoa',
-            'laboratorio': 'Lab. de Eletrônica Analógica',
+            'laboratorio': 'Lab. de Medidas Elétricas',
             'ano': 2026,
             'mes': 10,
             'semanaDoMes': 2,
@@ -902,5 +902,37 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('5 a 9 de out.'), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('agenda avisa quando o laboratório está em manutenção', (
+    tester,
+  ) async {
+    final userContext = UserContextProvider();
+    await userContext.login(
+      User(
+        id: 'professor-manutencao',
+        name: 'Professor Teste',
+        email: 'professor.manutencao@ifma.edu.br',
+        role: UserRole.professor,
+        createdAt: DateTime(2026),
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light(),
+        home: ChangeNotifierProvider<UserContextProvider>.value(
+          value: userContext,
+          child: AulasPraticasPage(dataInicial: DateTime(2026, 10, 5)),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.textContaining('em manutenção'), findsNothing);
+
+    await tester.tap(find.byType(DropdownButtonFormField<String>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Lab. de Eletrônica').last);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('em manutenção'), findsOneWidget);
   });
 }

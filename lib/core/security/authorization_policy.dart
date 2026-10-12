@@ -19,6 +19,10 @@ abstract final class AuthorizationPolicy {
     return role == UserRole.coordenador || role == UserRole.chefeDepartamento;
   }
 
+  static bool canResolverOcorrenciasLaboratorio(UserRole? role) {
+    return role == UserRole.coordenador || role == UserRole.chefeDepartamento;
+  }
+
   static bool canManageMural(UserRole? role) {
     return role == UserRole.chefeDepartamento;
   }

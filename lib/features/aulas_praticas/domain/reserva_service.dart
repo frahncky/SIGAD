@@ -247,6 +247,115 @@ abstract final class ReservaService {
     return sugestoes.take(limite).toList(growable: false);
   }
 
+  /// Ocupação de cada laboratório nos dias informados (datas reais).
+  static List<IndicadorOcupacaoLaboratorio> calcularOcupacaoNosDias({
+    required List<ReservaLaboratorio> reservas,
+    required List<String> laboratorios,
+    required List<DateTime> dias,
+  }) {
+    final linhas = gerarLinhasGrade();
+    final diasUteisValidos = dias.where((dia) => diaSemanaDe(dia) != null);
+    final totalSlots = diasUteisValidos.length * linhas.length;
+    return [
+      for (final laboratorio in laboratorios)
+        IndicadorOcupacaoLaboratorio(
+          laboratorio: laboratorio,
+          totalSlots: totalSlots,
+          slotsReservados: [
+            for (final dia in diasUteisValidos)
+              for (final linha in linhas)
+                if (reservaNaData(
+                      reservas: reservas,
+                      laboratorio: laboratorio,
+                      data: dia,
+                      turno: linha.turno,
+                      periodo: linha.periodo,
+                    ) !=
+                    null)
+                  1,
+          ].length,
+        ),
+    ];
+  }
+
+  /// Horários livres sugeridos nos dias informados (datas reais), dando
+  /// preferência a laboratórios menos ocupados e ao turno da manhã.
+  static List<SugestaoReservaLaboratorio> sugerirSlotsLivresNosDias({
+    required List<ReservaLaboratorio> reservas,
+    required List<String> laboratorios,
+    required List<DateTime> dias,
+    int limite = 3,
+
+    /// Dias que não devem ser sugeridos (feriados, datas passadas…).
+    bool Function(DateTime dia)? diaIndisponivel,
+
+    /// Laboratórios fora de operação (manutenção, interditado…).
+    Set<String> laboratoriosIndisponiveis = const {},
+  }) {
+    if (limite <= 0) return const [];
+    final ocupacao = {
+      for (final indicador in calcularOcupacaoNosDias(
+        reservas: reservas,
+        laboratorios: laboratorios,
+        dias: dias,
+      ))
+        indicador.laboratorio: indicador.taxaOcupacao,
+    };
+    final linhas = gerarLinhasGrade();
+    final candidatas = <(SugestaoReservaLaboratorio, int, int)>[];
+    for (var l = 0; l < laboratorios.length; l++) {
+      final laboratorio = laboratorios[l];
+      if (laboratoriosIndisponiveis.contains(laboratorio)) continue;
+      for (var d = 0; d < dias.length; d++) {
+        final dia = dias[d];
+        final diaSemana = diaSemanaDe(dia);
+        if (diaSemana == null) continue;
+        if (diaIndisponivel?.call(dia) ?? false) continue;
+        for (final linha in linhas) {
+          final ocupado =
+              reservaNaData(
+                reservas: reservas,
+                laboratorio: laboratorio,
+                data: dia,
+                turno: linha.turno,
+                periodo: linha.periodo,
+              ) !=
+              null;
+          if (ocupado) continue;
+          final bonusTurno = switch (linha.turno) {
+            Turno.matutino => 0.12,
+            Turno.vespertino => 0.08,
+            Turno.noturno => 0.04,
+          };
+          candidatas.add((
+            SugestaoReservaLaboratorio(
+              laboratorio: laboratorio,
+              diaSemana: diaSemana,
+              turno: linha.turno,
+              periodo: linha.periodo,
+              horario: linha.horario,
+              score: (1 - (ocupacao[laboratorio] ?? 0)) + bonusTurno,
+            ),
+            d,
+            l,
+          ));
+        }
+      }
+    }
+    // Desempate previsível: dia, turno, período e ordem do laboratório.
+    candidatas.sort((a, b) {
+      final porScore = b.$1.score.compareTo(a.$1.score);
+      if (porScore != 0) return porScore;
+      if (a.$2 != b.$2) return a.$2.compareTo(b.$2);
+      final porTurno = a.$1.turno.index.compareTo(b.$1.turno.index);
+      if (porTurno != 0) return porTurno;
+      final porPeriodo = a.$1.periodo.compareTo(b.$1.periodo);
+      if (porPeriodo != 0) return porPeriodo;
+      return a.$3.compareTo(b.$3);
+    });
+    return [for (final candidata in candidatas.take(limite)) candidata.$1];
+  }
+
   static List<HorarioGridRow> gerarLinhasGrade() {
     return [
       for (final turno in Turno.values)
@@ -364,7 +473,11 @@ abstract final class ReservaService {
     if (dia.weekday >= DateTime.saturday) {
       return DateTime(dia.year, dia.month, dia.day + 8 - dia.weekday);
     }
-    return DateTime(dia.year, dia.month, dia.day - (dia.weekday - DateTime.monday));
+    return DateTime(
+      dia.year,
+      dia.month,
+      dia.day - (dia.weekday - DateTime.monday),
+    );
   }
 
   static String? validateDisciplina(String? disciplina) {
