@@ -7,11 +7,13 @@ import '../../../../core/security/authorization_policy.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../../l10n/l10n.dart';
 import '../../../../shared/widgets/icon_avatar.dart';
 import '../../../../shared/widgets/page_status_view.dart';
 import '../../data/demanda_repository.dart';
 import '../../domain/demanda_models.dart';
 import '../../domain/demandas_service.dart';
+import '../demandas_l10n.dart';
 
 class DemandasPage extends StatefulWidget {
   const DemandasPage({super.key, this.repository});
@@ -63,7 +65,7 @@ class _DemandasPageState extends State<DemandasPage> {
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _loadError = 'Não foi possível carregar as demandas.';
+        _loadError = context.l10n.demErroCarregar;
       });
     }
   }
@@ -82,9 +84,7 @@ class _DemandasPageState extends State<DemandasPage> {
       return true;
     } catch (_) {
       if (mounted) {
-        _mostrarErro(
-          'Não foi possível salvar a demanda. Seus dados foram mantidos. Tente novamente.',
-        );
+        _mostrarErro(context.l10n.demErroSalvar);
       }
       return false;
     } finally {
@@ -120,6 +120,7 @@ class _DemandasPageState extends State<DemandasPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final demandasVisiveis = _demandasVisiveis;
     final totalDemandas = _demandas.length;
     final demandasAbertas = _demandas
@@ -150,19 +151,19 @@ class _DemandasPageState extends State<DemandasPage> {
                   Expanded(
                     child: Semantics(
                       key: const ValueKey('demandas_search_semantics'),
-                      label: 'Buscar demandas',
-                      hint: 'Pesquise por título, descrição ou responsável',
+                      label: l10n.demBuscar,
+                      hint: l10n.demBuscarDica,
                       textField: true,
                       child: TextField(
                         key: const ValueKey('demandas_search_field'),
                         textInputAction: TextInputAction.search,
                         onChanged: (value) => setState(() => _busca = value),
                         onSubmitted: (_) => FocusScope.of(context).unfocus(),
-                        decoration: const InputDecoration(
-                          labelText: 'Buscar demandas',
+                        decoration: InputDecoration(
+                          labelText: l10n.demBuscar,
                           floatingLabelBehavior: FloatingLabelBehavior.always,
-                          hintText: 'Título, descrição ou responsável',
-                          prefixIcon: SigadIcon(SigadIcons.buscar),
+                          hintText: l10n.demBuscarExemplo,
+                          prefixIcon: const SigadIcon(SigadIcons.buscar),
                         ),
                       ),
                     ),
@@ -170,8 +171,8 @@ class _DemandasPageState extends State<DemandasPage> {
                   const SizedBox(width: 8),
                   Tooltip(
                     message: _filtrosAtivos > 0
-                        ? 'Filtros ativos: $_filtrosAtivos'
-                        : 'Filtrar demandas',
+                        ? l10n.demFiltrosAtivos(_filtrosAtivos)
+                        : l10n.demFiltrar,
                     child: SizedBox(
                       width: 48,
                       height: 48,
@@ -190,13 +191,15 @@ class _DemandasPageState extends State<DemandasPage> {
             ),
           ),
           if (_isLoading)
-            const SliverToBoxAdapter(
-              child: PageStatusView.loading(title: 'Carregando demandas...'),
+            SliverToBoxAdapter(
+              child: PageStatusView.loading(title: l10n.demCarregando),
             )
           else if (_loadError != null)
             SliverToBoxAdapter(
               child: PageStatusView.error(
+                title: l10n.demErroCarregarTitulo,
                 subtitle: _loadError,
+                actionLabel: l10n.tentarNovamente,
                 onAction: _loadData,
               ),
             )
@@ -204,11 +207,11 @@ class _DemandasPageState extends State<DemandasPage> {
             SliverToBoxAdapter(
               child: PageStatusView.empty(
                 icon: SigadIcons.caixaEntrada,
-                title: 'Nenhuma demanda encontrada',
+                title: l10n.demNenhuma,
                 subtitle: _filtrosAtivos > 0
-                    ? 'Tente limpar os filtros ativos.'
-                    : 'Crie uma nova demanda para começar.',
-                actionLabel: _filtrosAtivos > 0 ? 'Limpar filtros' : null,
+                    ? l10n.demLimparFiltrosDica
+                    : l10n.demCrieNova,
+                actionLabel: _filtrosAtivos > 0 ? l10n.demLimparFiltros : null,
                 onAction: _filtrosAtivos > 0 ? _limparFiltros : null,
               ),
             )
@@ -240,7 +243,7 @@ class _DemandasPageState extends State<DemandasPage> {
         onPressed: _isLoading || _loadError != null || _isSaving
             ? null
             : () => _showCriarDemanda(context),
-        tooltip: 'Criar nova demanda',
+        tooltip: l10n.demCriarNova,
         backgroundColor: SigadColors.brand,
         foregroundColor: Colors.white,
         child: const SigadIcon(SigadIcons.adicionar),
@@ -250,6 +253,7 @@ class _DemandasPageState extends State<DemandasPage> {
 
   void _showFiltros(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
     showModalBottomSheet(
       context: context,
       builder: (context) => StatefulBuilder(
@@ -263,13 +267,13 @@ class _DemandasPageState extends State<DemandasPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Filtros',
+                    l10n.demFiltros,
                     style: textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   IconButton(
-                    tooltip: 'Fechar filtros',
+                    tooltip: l10n.demFecharFiltros,
                     onPressed: () => Navigator.pop(context),
                     icon: const SigadIcon(SigadIcons.fechar),
                   ),
@@ -277,7 +281,7 @@ class _DemandasPageState extends State<DemandasPage> {
               ),
               const SizedBox(height: 24),
               Text(
-                'Status',
+                l10n.demStatus,
                 style: textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -288,7 +292,7 @@ class _DemandasPageState extends State<DemandasPage> {
                 children: ['Todas', ...DemandasService.statusDisponiveis]
                     .map(
                       (status) => FilterChip(
-                        label: Text(status),
+                        label: Text(l10n.opcaoDemanda(status)),
                         selected: _filtroStatus == status,
                         onSelected: (selected) {
                           setModalState(
@@ -301,7 +305,7 @@ class _DemandasPageState extends State<DemandasPage> {
               ),
               const SizedBox(height: 24),
               Text(
-                'Prioridade',
+                l10n.demPrioridade,
                 style: textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -312,7 +316,7 @@ class _DemandasPageState extends State<DemandasPage> {
                 children: ['Todas', ...DemandasService.prioridades]
                     .map(
                       (prioridade) => FilterChip(
-                        label: Text(prioridade),
+                        label: Text(l10n.opcaoDemanda(prioridade)),
                         selected: _filtroPrioridade == prioridade,
                         onSelected: (selected) {
                           setModalState(
@@ -327,7 +331,7 @@ class _DemandasPageState extends State<DemandasPage> {
               ),
               const SizedBox(height: 24),
               Text(
-                'Ordenação',
+                l10n.demOrdenacao,
                 style: textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -338,7 +342,7 @@ class _DemandasPageState extends State<DemandasPage> {
                 children: DemandasService.opcoesOrdenacao
                     .map(
                       (ordem) => ChoiceChip(
-                        label: Text(ordem),
+                        label: Text(l10n.opcaoDemanda(ordem)),
                         selected: _ordemSelecionada == ordem,
                         onSelected: (selected) {
                           if (selected) {
@@ -358,14 +362,14 @@ class _DemandasPageState extends State<DemandasPage> {
                         _limparFiltros();
                         Navigator.pop(context);
                       },
-                      child: const Text('Limpar'),
+                      child: Text(l10n.demLimpar),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Aplicar'),
+                      child: Text(l10n.demAplicar),
                     ),
                   ),
                 ],
@@ -388,11 +392,15 @@ class _DemandasPageState extends State<DemandasPage> {
 
   void _showCriarDemanda(BuildContext context) {
     if (_isSaving ||
-        !_canManageDemandas(context, actionLabel: 'criar demandas')) {
+        !_canManageDemandas(
+          context,
+          mensagem: context.l10n.demSemPermissaoCriar,
+        )) {
       return;
     }
 
     final textTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
     final tituloController = TextEditingController();
     final descricaoController = TextEditingController();
     String prioridadeSelecionada = 'Média';
@@ -424,7 +432,7 @@ class _DemandasPageState extends State<DemandasPage> {
                     children: [
                       Expanded(
                         child: Text(
-                          'Nova Demanda',
+                          l10n.demNova,
                           style: textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.w700,
                           ),
@@ -432,7 +440,7 @@ class _DemandasPageState extends State<DemandasPage> {
                       ),
                       const SizedBox(width: 8),
                       IconButton(
-                        tooltip: 'Fechar formulário da demanda',
+                        tooltip: l10n.demFecharFormulario,
                         onPressed: _isSaving
                             ? null
                             : () => Navigator.pop(context),
@@ -443,18 +451,18 @@ class _DemandasPageState extends State<DemandasPage> {
                   const SizedBox(height: 24),
                   TextField(
                     controller: tituloController,
-                    decoration: const InputDecoration(
-                      labelText: 'Título',
-                      hintText: 'Digite o título da demanda',
+                    decoration: InputDecoration(
+                      labelText: l10n.demTitulo,
+                      hintText: l10n.demTituloDica,
                     ),
                   ),
                   const SizedBox(height: 16),
                   TextField(
                     controller: descricaoController,
                     maxLines: 3,
-                    decoration: const InputDecoration(
-                      labelText: 'Descrição',
-                      hintText: 'Descreva a demanda em detalhes',
+                    decoration: InputDecoration(
+                      labelText: l10n.demDescricao,
+                      hintText: l10n.demDescricaoDica,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -462,9 +470,14 @@ class _DemandasPageState extends State<DemandasPage> {
                     initialValue: prioridadeSelecionada,
                     isExpanded: true,
                     itemHeight: null,
-                    decoration: const InputDecoration(labelText: 'Prioridade'),
+                    decoration: InputDecoration(labelText: l10n.demPrioridade),
                     items: DemandasService.prioridades
-                        .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+                        .map(
+                          (p) => DropdownMenuItem(
+                            value: p,
+                            child: Text(l10n.opcaoDemanda(p)),
+                          ),
+                        )
                         .toList(),
                     onChanged: (value) =>
                         setModalState(() => prioridadeSelecionada = value!),
@@ -474,8 +487,8 @@ class _DemandasPageState extends State<DemandasPage> {
                     initialValue: proprietarioSelecionado,
                     isExpanded: true,
                     itemHeight: null,
-                    decoration: const InputDecoration(
-                      labelText: 'Proprietário',
+                    decoration: InputDecoration(
+                      labelText: l10n.demProprietario,
                     ),
                     items: DemandasService.proprietarios
                         .map((p) => DropdownMenuItem(value: p, child: Text(p)))
@@ -488,14 +501,14 @@ class _DemandasPageState extends State<DemandasPage> {
                     initialValue: statusSelecionado,
                     isExpanded: true,
                     itemHeight: null,
-                    decoration: const InputDecoration(
-                      labelText: 'Status inicial',
+                    decoration: InputDecoration(
+                      labelText: l10n.demStatusInicial,
                     ),
                     items: DemandasService.statusDisponiveis
                         .map(
                           (status) => DropdownMenuItem(
                             value: status,
-                            child: Text(status),
+                            child: Text(l10n.opcaoDemanda(status)),
                           ),
                         )
                         .toList(),
@@ -504,7 +517,7 @@ class _DemandasPageState extends State<DemandasPage> {
                   ),
                   const SizedBox(height: 24),
                   _DemandasFormActions(
-                    submitLabel: 'Criar',
+                    submitLabel: l10n.demCriar,
                     isSaving: _isSaving,
                     onCancel: () => Navigator.pop(context),
                     onSubmit: () async {
@@ -514,7 +527,7 @@ class _DemandasPageState extends State<DemandasPage> {
                         descricao: descricaoController.text,
                       );
                       if (erro != null) {
-                        _mostrarErro(erro);
+                        _mostrarErro(l10n.erroDemanda(erro));
                         return;
                       }
                       final proposed = List<Demanda>.of(_demandas);
@@ -537,7 +550,7 @@ class _DemandasPageState extends State<DemandasPage> {
                       setModalState(() {});
                       if (!saved) return;
                       Navigator.pop(context);
-                      _mostrarSucesso('Demanda criada com sucesso!');
+                      _mostrarSucesso(l10n.demCriada);
                     },
                   ),
                 ],
@@ -551,11 +564,15 @@ class _DemandasPageState extends State<DemandasPage> {
 
   void _showEditarDemanda(BuildContext context, Demanda demanda) {
     if (_isSaving ||
-        !_canManageDemandas(context, actionLabel: 'editar demandas')) {
+        !_canManageDemandas(
+          context,
+          mensagem: context.l10n.demSemPermissaoEditar,
+        )) {
       return;
     }
 
     final textTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
     final tituloController = TextEditingController(text: demanda.titulo);
     final descricaoController = TextEditingController(text: demanda.descricao);
     String prioridadeSelecionada = demanda.prioridade;
@@ -587,7 +604,7 @@ class _DemandasPageState extends State<DemandasPage> {
                     children: [
                       Expanded(
                         child: Text(
-                          'Editar Demanda',
+                          l10n.demEditar,
                           style: textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.w700,
                           ),
@@ -595,7 +612,7 @@ class _DemandasPageState extends State<DemandasPage> {
                       ),
                       const SizedBox(width: 8),
                       IconButton(
-                        tooltip: 'Fechar formulário da demanda',
+                        tooltip: l10n.demFecharFormulario,
                         onPressed: _isSaving
                             ? null
                             : () => Navigator.pop(context),
@@ -606,18 +623,18 @@ class _DemandasPageState extends State<DemandasPage> {
                   const SizedBox(height: 24),
                   TextField(
                     controller: tituloController,
-                    decoration: const InputDecoration(
-                      labelText: 'Título',
-                      hintText: 'Digite o título da demanda',
+                    decoration: InputDecoration(
+                      labelText: l10n.demTitulo,
+                      hintText: l10n.demTituloDica,
                     ),
                   ),
                   const SizedBox(height: 16),
                   TextField(
                     controller: descricaoController,
                     maxLines: 3,
-                    decoration: const InputDecoration(
-                      labelText: 'Descrição',
-                      hintText: 'Descreva a demanda em detalhes',
+                    decoration: InputDecoration(
+                      labelText: l10n.demDescricao,
+                      hintText: l10n.demDescricaoDica,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -625,9 +642,14 @@ class _DemandasPageState extends State<DemandasPage> {
                     initialValue: prioridadeSelecionada,
                     isExpanded: true,
                     itemHeight: null,
-                    decoration: const InputDecoration(labelText: 'Prioridade'),
+                    decoration: InputDecoration(labelText: l10n.demPrioridade),
                     items: DemandasService.prioridades
-                        .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+                        .map(
+                          (p) => DropdownMenuItem(
+                            value: p,
+                            child: Text(l10n.opcaoDemanda(p)),
+                          ),
+                        )
                         .toList(),
                     onChanged: (value) =>
                         setModalState(() => prioridadeSelecionada = value!),
@@ -637,8 +659,8 @@ class _DemandasPageState extends State<DemandasPage> {
                     initialValue: proprietarioSelecionado,
                     isExpanded: true,
                     itemHeight: null,
-                    decoration: const InputDecoration(
-                      labelText: 'Proprietário',
+                    decoration: InputDecoration(
+                      labelText: l10n.demProprietario,
                     ),
                     items: DemandasService.proprietarios
                         .map((p) => DropdownMenuItem(value: p, child: Text(p)))
@@ -651,12 +673,12 @@ class _DemandasPageState extends State<DemandasPage> {
                     initialValue: statusSelecionado,
                     isExpanded: true,
                     itemHeight: null,
-                    decoration: const InputDecoration(labelText: 'Status'),
+                    decoration: InputDecoration(labelText: l10n.demStatus),
                     items: DemandasService.statusDisponiveis
                         .map(
                           (status) => DropdownMenuItem(
                             value: status,
-                            child: Text(status),
+                            child: Text(l10n.opcaoDemanda(status)),
                           ),
                         )
                         .toList(),
@@ -665,7 +687,7 @@ class _DemandasPageState extends State<DemandasPage> {
                   ),
                   const SizedBox(height: 24),
                   _DemandasFormActions(
-                    submitLabel: 'Salvar',
+                    submitLabel: l10n.salvar,
                     isSaving: _isSaving,
                     onCancel: () => Navigator.pop(context),
                     onSubmit: () async {
@@ -675,7 +697,7 @@ class _DemandasPageState extends State<DemandasPage> {
                         descricao: descricaoController.text,
                       );
                       if (erro != null) {
-                        _mostrarErro(erro);
+                        _mostrarErro(l10n.erroDemanda(erro));
                         return;
                       }
                       final proposed = List<Demanda>.of(_demandas);
@@ -697,7 +719,7 @@ class _DemandasPageState extends State<DemandasPage> {
                       setModalState(() {});
                       if (!saved) return;
                       Navigator.pop(context);
-                      _mostrarSucesso('Demanda atualizada com sucesso!');
+                      _mostrarSucesso(l10n.demAtualizada);
                     },
                   ),
                 ],
@@ -711,7 +733,10 @@ class _DemandasPageState extends State<DemandasPage> {
 
   void _showConfirmarExclusao(BuildContext context, Demanda demanda) {
     if (_isSaving ||
-        !_canManageDemandas(context, actionLabel: 'excluir demandas')) {
+        !_canManageDemandas(
+          context,
+          mensagem: context.l10n.demSemPermissaoExcluir,
+        )) {
       return;
     }
 
@@ -722,12 +747,12 @@ class _DemandasPageState extends State<DemandasPage> {
         builder: (context, setModalState) => PopScope(
           canPop: !_isSaving,
           child: AlertDialog(
-            title: const Text('Confirmar exclusão'),
-            content: Text('Tem certeza que deseja excluir ${demanda.titulo}?'),
+            title: Text(context.l10n.demConfirmarExclusao),
+            content: Text(context.l10n.demExcluirMensagem(demanda.titulo)),
             actions: [
               TextButton(
                 onPressed: _isSaving ? null : () => Navigator.pop(context),
-                child: const Text('Cancelar'),
+                child: Text(context.l10n.cancelar),
               ),
               TextButton(
                 onPressed: _isSaving
@@ -742,10 +767,10 @@ class _DemandasPageState extends State<DemandasPage> {
                         setModalState(() {});
                         if (!saved) return;
                         Navigator.pop(context);
-                        _mostrarSucesso('Demanda excluída com sucesso!');
+                        _mostrarSucesso(context.l10n.demExcluida);
                       },
                 child: Text(
-                  'Excluir',
+                  context.l10n.excluir,
                   style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ),
@@ -756,15 +781,12 @@ class _DemandasPageState extends State<DemandasPage> {
     );
   }
 
-  bool _canManageDemandas(BuildContext context, {required String actionLabel}) {
+  bool _canManageDemandas(BuildContext context, {required String mensagem}) {
     final role = context.read<UserContextProvider>().userRole;
     if (AuthorizationPolicy.canManageDemandas(role)) {
       return true;
     }
-    AppFeedbackService.warning(
-      context,
-      'Seu perfil não possui permissão para $actionLabel.',
-    );
+    AppFeedbackService.warning(context, mensagem);
     return false;
   }
 }
@@ -790,11 +812,11 @@ class _DemandasFormActions extends StatelessWidget {
         final shouldStack = constraints.maxWidth < 320 || textScale > 1.3;
         final cancelButton = OutlinedButton(
           onPressed: isSaving ? null : onCancel,
-          child: const Text('Cancelar'),
+          child: Text(context.l10n.cancelar),
         );
         final submitButton = ElevatedButton(
           onPressed: isSaving ? null : onSubmit,
-          child: Text(isSaving ? 'Salvando...' : submitLabel),
+          child: Text(isSaving ? context.l10n.demSalvando : submitLabel),
         );
 
         if (shouldStack) {
@@ -849,7 +871,7 @@ class _DemandasSummaryBanner extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Resumo das demandas',
+                  context.l10n.demResumo,
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: colors.onSurface,
                     fontWeight: FontWeight.w700,
@@ -862,19 +884,19 @@ class _DemandasSummaryBanner extends StatelessWidget {
           Row(
             children: [
               _DemandasKpi(
-                label: 'No total',
+                label: context.l10n.demNoTotal,
                 value: '$total',
                 color: colors.primary,
               ),
               const SizedBox(width: 8),
               _DemandasKpi(
-                label: 'Abertas',
+                label: context.l10n.demAbertas,
                 value: '$abertas',
                 color: colors.tertiary,
               ),
               const SizedBox(width: 8),
               _DemandasKpi(
-                label: 'Urgentes',
+                label: context.l10n.demUrgentes,
                 value: '$urgentes',
                 color: colors.error,
               ),
@@ -950,7 +972,7 @@ class _DemandasCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     return Semantics(
       button: true,
-      label: 'Abrir demanda ${demanda.titulo}',
+      label: context.l10n.demAbrir(demanda.titulo),
       child: GestureDetector(
         onTap: () => _showDetalhesDemanda(context),
         child: Container(
@@ -1008,7 +1030,7 @@ class _DemandasCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          demanda.prioridade,
+                          context.l10n.opcaoDemanda(demanda.prioridade),
                           style: textTheme.labelSmall?.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.w700,
@@ -1023,13 +1045,13 @@ class _DemandasCard extends StatelessWidget {
                         onSelected: (value) =>
                             _onMenuItemSelected(context, value, demanda),
                         itemBuilder: (context) => [
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'editar',
-                            child: Text('Editar'),
+                            child: Text(context.l10n.demEditarAcao),
                           ),
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'excluir',
-                            child: Text('Excluir'),
+                            child: Text(context.l10n.excluir),
                           ),
                         ],
                         icon: SigadIcon(
@@ -1074,7 +1096,7 @@ class _DemandasCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      demanda.statusLabel,
+                      context.l10n.opcaoDemanda(demanda.statusLabel),
                       style: textTheme.labelSmall?.copyWith(
                         color: DemandasService.toneStatus(demanda.statusLabel),
                         fontWeight: FontWeight.w600,
@@ -1165,7 +1187,7 @@ class _DemandasCard extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    tooltip: 'Fechar detalhes da demanda',
+                    tooltip: context.l10n.demFecharDetalhes,
                     onPressed: () => Navigator.pop(context),
                     icon: const SigadIcon(SigadIcons.fechar),
                   ),
@@ -1184,17 +1206,29 @@ class _DemandasCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              _DetailRow(label: 'Descrição', value: demanda.descricao),
-              _DetailRow(label: 'Proprietário', value: demanda.proprietario),
-              _DetailRow(label: 'Prioridade', value: demanda.prioridade),
-              _DetailRow(label: 'Status', value: demanda.statusLabel),
-              _DetailRow(label: 'Prazo', value: demanda.prazo),
+              _DetailRow(
+                label: context.l10n.demDescricao,
+                value: demanda.descricao,
+              ),
+              _DetailRow(
+                label: context.l10n.demProprietario,
+                value: demanda.proprietario,
+              ),
+              _DetailRow(
+                label: context.l10n.demPrioridade,
+                value: context.l10n.opcaoDemanda(demanda.prioridade),
+              ),
+              _DetailRow(
+                label: context.l10n.demStatus,
+                value: context.l10n.opcaoDemanda(demanda.statusLabel),
+              ),
+              _DetailRow(label: context.l10n.demPrazo, value: demanda.prazo),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Fechar'),
+                  child: Text(context.l10n.fechar),
                 ),
               ),
             ],

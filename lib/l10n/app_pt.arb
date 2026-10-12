@@ -898,5 +898,113 @@
         "type": "String"
       }
     }
-  }
+  },
+  "chatFacaLogin": "Faça login para acessar o bate-papo.",
+  "chatNenhumUsuario": "Nenhum usuário disponível para conversa.",
+  "chatConversas": "Conversas",
+  "chatNovaConversa": "Nova conversa",
+  "chatBuscarConversa": "Buscar conversa",
+  "chatLimparBusca": "Limpar busca",
+  "chatNenhumaEncontrada": "Nenhuma conversa encontrada.",
+  "chatNenhumaAinda": "Nenhuma conversa ainda.\nToque em ✏️ para iniciar.",
+  "chatNenhumaMensagem": "Nenhuma mensagem ainda.",
+  "chatDigiteMensagem": "Digite sua mensagem",
+  "chatEnviar": "Enviar",
+  "chatVoltar": "Voltar às conversas",
+  "chatSelecione": "Selecione uma conversa\nou inicie uma nova",
+  "chatBuscarContato": "Buscar por nome, e-mail ou cargo",
+  "chatNenhumContato": "Nenhum contato encontrado.",
+  "chatDiaMes": "{dia}/{mes}",
+  "@chatDiaMes": {
+    "placeholders": {
+      "dia": {
+        "type": "String"
+      },
+      "mes": {
+        "type": "String"
+      }
+    }
+  },
+  "demErroCarregar": "Não foi possível carregar as demandas.",
+  "demErroCarregarTitulo": "Não foi possível carregar os dados",
+  "demErroSalvar": "Não foi possível salvar a demanda. Seus dados foram mantidos. Tente novamente.",
+  "demBuscar": "Buscar demandas",
+  "demBuscarDica": "Pesquise por título, descrição ou responsável",
+  "demBuscarExemplo": "Título, descrição ou responsável",
+  "demFiltrosAtivos": "Filtros ativos: {count}",
+  "@demFiltrosAtivos": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "demFiltrar": "Filtrar demandas",
+  "demCarregando": "Carregando demandas...",
+  "demNenhuma": "Nenhuma demanda encontrada",
+  "demLimparFiltrosDica": "Tente limpar os filtros ativos.",
+  "demCrieNova": "Crie uma nova demanda para começar.",
+  "demLimparFiltros": "Limpar filtros",
+  "demCriarNova": "Criar nova demanda",
+  "demFiltros": "Filtros",
+  "demFecharFiltros": "Fechar filtros",
+  "demStatus": "Status",
+  "demPrioridade": "Prioridade",
+  "demOrdenacao": "Ordenação",
+  "demLimpar": "Limpar",
+  "demAplicar": "Aplicar",
+  "demNova": "Nova Demanda",
+  "demEditar": "Editar Demanda",
+  "demFecharFormulario": "Fechar formulário da demanda",
+  "demTitulo": "Título",
+  "demTituloDica": "Digite o título da demanda",
+  "demDescricao": "Descrição",
+  "demDescricaoDica": "Descreva a demanda em detalhes",
+  "demProprietario": "Proprietário",
+  "demStatusInicial": "Status inicial",
+  "demCriar": "Criar",
+  "demSalvando": "Salvando...",
+  "demCriada": "Demanda criada com sucesso!",
+  "demAtualizada": "Demanda atualizada com sucesso!",
+  "demExcluida": "Demanda excluída com sucesso!",
+  "demConfirmarExclusao": "Confirmar exclusão",
+  "demExcluirMensagem": "Tem certeza que deseja excluir {titulo}?",
+  "@demExcluirMensagem": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "demSemPermissaoCriar": "Seu perfil não possui permissão para criar demandas.",
+  "demSemPermissaoEditar": "Seu perfil não possui permissão para editar demandas.",
+  "demSemPermissaoExcluir": "Seu perfil não possui permissão para excluir demandas.",
+  "demInformeTitulo": "Informe o título da demanda",
+  "demInformeDescricao": "Informe a descrição da demanda",
+  "demResumo": "Resumo das demandas",
+  "demNoTotal": "No total",
+  "demAbertas": "Abertas",
+  "demUrgentes": "Urgentes",
+  "demEditarAcao": "Editar",
+  "demAbrir": "Abrir demanda {titulo}",
+  "@demAbrir": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "demFecharDetalhes": "Fechar detalhes da demanda",
+  "demPrazo": "Prazo",
+  "demTodas": "Todas",
+  "demStatusNovo": "Novo",
+  "demStatusEmAndamento": "Em andamento",
+  "demStatusAguardando": "Aguardando",
+  "demStatusRevisao": "Revisão",
+  "demStatusConcluido": "Concluído",
+  "demPrioridadeAlta": "Alta",
+  "demPrioridadeMedia": "Média",
+  "demPrioridadeBaixa": "Baixa",
+  "demOrdemPrazo": "Prazo mais próximo",
+  "demOrdemRecentes": "Recém-criadas"
 }

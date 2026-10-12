@@ -1563,4 +1563,248 @@ class AppLocalizationsPt extends AppLocalizations {
   String notaDataHora(String dia, String mes, String hora) {
     return '$dia/$mes às $hora';
   }
+
+  @override
+  String get chatFacaLogin => 'Faça login para acessar o bate-papo.';
+
+  @override
+  String get chatNenhumUsuario => 'Nenhum usuário disponível para conversa.';
+
+  @override
+  String get chatConversas => 'Conversas';
+
+  @override
+  String get chatNovaConversa => 'Nova conversa';
+
+  @override
+  String get chatBuscarConversa => 'Buscar conversa';
+
+  @override
+  String get chatLimparBusca => 'Limpar busca';
+
+  @override
+  String get chatNenhumaEncontrada => 'Nenhuma conversa encontrada.';
+
+  @override
+  String get chatNenhumaAinda =>
+      'Nenhuma conversa ainda.\nToque em ✏️ para iniciar.';
+
+  @override
+  String get chatNenhumaMensagem => 'Nenhuma mensagem ainda.';
+
+  @override
+  String get chatDigiteMensagem => 'Digite sua mensagem';
+
+  @override
+  String get chatEnviar => 'Enviar';
+
+  @override
+  String get chatVoltar => 'Voltar às conversas';
+
+  @override
+  String get chatSelecione => 'Selecione uma conversa\nou inicie uma nova';
+
+  @override
+  String get chatBuscarContato => 'Buscar por nome, e-mail ou cargo';
+
+  @override
+  String get chatNenhumContato => 'Nenhum contato encontrado.';
+
+  @override
+  String chatDiaMes(String dia, String mes) {
+    return '$dia/$mes';
+  }
+
+  @override
+  String get demErroCarregar => 'Não foi possível carregar as demandas.';
+
+  @override
+  String get demErroCarregarTitulo => 'Não foi possível carregar os dados';
+
+  @override
+  String get demErroSalvar =>
+      'Não foi possível salvar a demanda. Seus dados foram mantidos. Tente novamente.';
+
+  @override
+  String get demBuscar => 'Buscar demandas';
+
+  @override
+  String get demBuscarDica => 'Pesquise por título, descrição ou responsável';
+
+  @override
+  String get demBuscarExemplo => 'Título, descrição ou responsável';
+
+  @override
+  String demFiltrosAtivos(int count) {
+    return 'Filtros ativos: $count';
+  }
+
+  @override
+  String get demFiltrar => 'Filtrar demandas';
+
+  @override
+  String get demCarregando => 'Carregando demandas...';
+
+  @override
+  String get demNenhuma => 'Nenhuma demanda encontrada';
+
+  @override
+  String get demLimparFiltrosDica => 'Tente limpar os filtros ativos.';
+
+  @override
+  String get demCrieNova => 'Crie uma nova demanda para começar.';
+
+  @override
+  String get demLimparFiltros => 'Limpar filtros';
+
+  @override
+  String get demCriarNova => 'Criar nova demanda';
+
+  @override
+  String get demFiltros => 'Filtros';
+
+  @override
+  String get demFecharFiltros => 'Fechar filtros';
+
+  @override
+  String get demStatus => 'Status';
+
+  @override
+  String get demPrioridade => 'Prioridade';
+
+  @override
+  String get demOrdenacao => 'Ordenação';
+
+  @override
+  String get demLimpar => 'Limpar';
+
+  @override
+  String get demAplicar => 'Aplicar';
+
+  @override
+  String get demNova => 'Nova Demanda';
+
+  @override
+  String get demEditar => 'Editar Demanda';
+
+  @override
+  String get demFecharFormulario => 'Fechar formulário da demanda';
+
+  @override
+  String get demTitulo => 'Título';
+
+  @override
+  String get demTituloDica => 'Digite o título da demanda';
+
+  @override
+  String get demDescricao => 'Descrição';
+
+  @override
+  String get demDescricaoDica => 'Descreva a demanda em detalhes';
+
+  @override
+  String get demProprietario => 'Proprietário';
+
+  @override
+  String get demStatusInicial => 'Status inicial';
+
+  @override
+  String get demCriar => 'Criar';
+
+  @override
+  String get demSalvando => 'Salvando...';
+
+  @override
+  String get demCriada => 'Demanda criada com sucesso!';
+
+  @override
+  String get demAtualizada => 'Demanda atualizada com sucesso!';
+
+  @override
+  String get demExcluida => 'Demanda excluída com sucesso!';
+
+  @override
+  String get demConfirmarExclusao => 'Confirmar exclusão';
+
+  @override
+  String demExcluirMensagem(String titulo) {
+    return 'Tem certeza que deseja excluir $titulo?';
+  }
+
+  @override
+  String get demSemPermissaoCriar =>
+      'Seu perfil não possui permissão para criar demandas.';
+
+  @override
+  String get demSemPermissaoEditar =>
+      'Seu perfil não possui permissão para editar demandas.';
+
+  @override
+  String get demSemPermissaoExcluir =>
+      'Seu perfil não possui permissão para excluir demandas.';
+
+  @override
+  String get demInformeTitulo => 'Informe o título da demanda';
+
+  @override
+  String get demInformeDescricao => 'Informe a descrição da demanda';
+
+  @override
+  String get demResumo => 'Resumo das demandas';
+
+  @override
+  String get demNoTotal => 'No total';
+
+  @override
+  String get demAbertas => 'Abertas';
+
+  @override
+  String get demUrgentes => 'Urgentes';
+
+  @override
+  String get demEditarAcao => 'Editar';
+
+  @override
+  String demAbrir(String titulo) {
+    return 'Abrir demanda $titulo';
+  }
+
+  @override
+  String get demFecharDetalhes => 'Fechar detalhes da demanda';
+
+  @override
+  String get demPrazo => 'Prazo';
+
+  @override
+  String get demTodas => 'Todas';
+
+  @override
+  String get demStatusNovo => 'Novo';
+
+  @override
+  String get demStatusEmAndamento => 'Em andamento';
+
+  @override
+  String get demStatusAguardando => 'Aguardando';
+
+  @override
+  String get demStatusRevisao => 'Revisão';
+
+  @override
+  String get demStatusConcluido => 'Concluído';
+
+  @override
+  String get demPrioridadeAlta => 'Alta';
+
+  @override
+  String get demPrioridadeMedia => 'Média';
+
+  @override
+  String get demPrioridadeBaixa => 'Baixa';
+
+  @override
+  String get demOrdemPrazo => 'Prazo mais próximo';
+
+  @override
+  String get demOrdemRecentes => 'Recém-criadas';
 }

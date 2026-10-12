@@ -2712,6 +2712,468 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'{dia}/{mes} às {hora}'**
   String notaDataHora(String dia, String mes, String hora);
+
+  /// No description provided for @chatFacaLogin.
+  ///
+  /// In pt, this message translates to:
+  /// **'Faça login para acessar o bate-papo.'**
+  String get chatFacaLogin;
+
+  /// No description provided for @chatNenhumUsuario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum usuário disponível para conversa.'**
+  String get chatNenhumUsuario;
+
+  /// No description provided for @chatConversas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Conversas'**
+  String get chatConversas;
+
+  /// No description provided for @chatNovaConversa.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova conversa'**
+  String get chatNovaConversa;
+
+  /// No description provided for @chatBuscarConversa.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar conversa'**
+  String get chatBuscarConversa;
+
+  /// No description provided for @chatLimparBusca.
+  ///
+  /// In pt, this message translates to:
+  /// **'Limpar busca'**
+  String get chatLimparBusca;
+
+  /// No description provided for @chatNenhumaEncontrada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma conversa encontrada.'**
+  String get chatNenhumaEncontrada;
+
+  /// No description provided for @chatNenhumaAinda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma conversa ainda.\nToque em ✏️ para iniciar.'**
+  String get chatNenhumaAinda;
+
+  /// No description provided for @chatNenhumaMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma mensagem ainda.'**
+  String get chatNenhumaMensagem;
+
+  /// No description provided for @chatDigiteMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Digite sua mensagem'**
+  String get chatDigiteMensagem;
+
+  /// No description provided for @chatEnviar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Enviar'**
+  String get chatEnviar;
+
+  /// No description provided for @chatVoltar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Voltar às conversas'**
+  String get chatVoltar;
+
+  /// No description provided for @chatSelecione.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione uma conversa\nou inicie uma nova'**
+  String get chatSelecione;
+
+  /// No description provided for @chatBuscarContato.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar por nome, e-mail ou cargo'**
+  String get chatBuscarContato;
+
+  /// No description provided for @chatNenhumContato.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum contato encontrado.'**
+  String get chatNenhumContato;
+
+  /// No description provided for @chatDiaMes.
+  ///
+  /// In pt, this message translates to:
+  /// **'{dia}/{mes}'**
+  String chatDiaMes(String dia, String mes);
+
+  /// No description provided for @demErroCarregar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível carregar as demandas.'**
+  String get demErroCarregar;
+
+  /// No description provided for @demErroCarregarTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível carregar os dados'**
+  String get demErroCarregarTitulo;
+
+  /// No description provided for @demErroSalvar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível salvar a demanda. Seus dados foram mantidos. Tente novamente.'**
+  String get demErroSalvar;
+
+  /// No description provided for @demBuscar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar demandas'**
+  String get demBuscar;
+
+  /// No description provided for @demBuscarDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pesquise por título, descrição ou responsável'**
+  String get demBuscarDica;
+
+  /// No description provided for @demBuscarExemplo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Título, descrição ou responsável'**
+  String get demBuscarExemplo;
+
+  /// No description provided for @demFiltrosAtivos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Filtros ativos: {count}'**
+  String demFiltrosAtivos(int count);
+
+  /// No description provided for @demFiltrar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Filtrar demandas'**
+  String get demFiltrar;
+
+  /// No description provided for @demCarregando.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carregando demandas...'**
+  String get demCarregando;
+
+  /// No description provided for @demNenhuma.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma demanda encontrada'**
+  String get demNenhuma;
+
+  /// No description provided for @demLimparFiltrosDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tente limpar os filtros ativos.'**
+  String get demLimparFiltrosDica;
+
+  /// No description provided for @demCrieNova.
+  ///
+  /// In pt, this message translates to:
+  /// **'Crie uma nova demanda para começar.'**
+  String get demCrieNova;
+
+  /// No description provided for @demLimparFiltros.
+  ///
+  /// In pt, this message translates to:
+  /// **'Limpar filtros'**
+  String get demLimparFiltros;
+
+  /// No description provided for @demCriarNova.
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar nova demanda'**
+  String get demCriarNova;
+
+  /// No description provided for @demFiltros.
+  ///
+  /// In pt, this message translates to:
+  /// **'Filtros'**
+  String get demFiltros;
+
+  /// No description provided for @demFecharFiltros.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fechar filtros'**
+  String get demFecharFiltros;
+
+  /// No description provided for @demStatus.
+  ///
+  /// In pt, this message translates to:
+  /// **'Status'**
+  String get demStatus;
+
+  /// No description provided for @demPrioridade.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prioridade'**
+  String get demPrioridade;
+
+  /// No description provided for @demOrdenacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ordenação'**
+  String get demOrdenacao;
+
+  /// No description provided for @demLimpar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Limpar'**
+  String get demLimpar;
+
+  /// No description provided for @demAplicar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aplicar'**
+  String get demAplicar;
+
+  /// No description provided for @demNova.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova Demanda'**
+  String get demNova;
+
+  /// No description provided for @demEditar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar Demanda'**
+  String get demEditar;
+
+  /// No description provided for @demFecharFormulario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fechar formulário da demanda'**
+  String get demFecharFormulario;
+
+  /// No description provided for @demTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Título'**
+  String get demTitulo;
+
+  /// No description provided for @demTituloDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Digite o título da demanda'**
+  String get demTituloDica;
+
+  /// No description provided for @demDescricao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Descrição'**
+  String get demDescricao;
+
+  /// No description provided for @demDescricaoDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Descreva a demanda em detalhes'**
+  String get demDescricaoDica;
+
+  /// No description provided for @demProprietario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Proprietário'**
+  String get demProprietario;
+
+  /// No description provided for @demStatusInicial.
+  ///
+  /// In pt, this message translates to:
+  /// **'Status inicial'**
+  String get demStatusInicial;
+
+  /// No description provided for @demCriar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar'**
+  String get demCriar;
+
+  /// No description provided for @demSalvando.
+  ///
+  /// In pt, this message translates to:
+  /// **'Salvando...'**
+  String get demSalvando;
+
+  /// No description provided for @demCriada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Demanda criada com sucesso!'**
+  String get demCriada;
+
+  /// No description provided for @demAtualizada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Demanda atualizada com sucesso!'**
+  String get demAtualizada;
+
+  /// No description provided for @demExcluida.
+  ///
+  /// In pt, this message translates to:
+  /// **'Demanda excluída com sucesso!'**
+  String get demExcluida;
+
+  /// No description provided for @demConfirmarExclusao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Confirmar exclusão'**
+  String get demConfirmarExclusao;
+
+  /// No description provided for @demExcluirMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tem certeza que deseja excluir {titulo}?'**
+  String demExcluirMensagem(String titulo);
+
+  /// No description provided for @demSemPermissaoCriar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Seu perfil não possui permissão para criar demandas.'**
+  String get demSemPermissaoCriar;
+
+  /// No description provided for @demSemPermissaoEditar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Seu perfil não possui permissão para editar demandas.'**
+  String get demSemPermissaoEditar;
+
+  /// No description provided for @demSemPermissaoExcluir.
+  ///
+  /// In pt, this message translates to:
+  /// **'Seu perfil não possui permissão para excluir demandas.'**
+  String get demSemPermissaoExcluir;
+
+  /// No description provided for @demInformeTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe o título da demanda'**
+  String get demInformeTitulo;
+
+  /// No description provided for @demInformeDescricao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe a descrição da demanda'**
+  String get demInformeDescricao;
+
+  /// No description provided for @demResumo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Resumo das demandas'**
+  String get demResumo;
+
+  /// No description provided for @demNoTotal.
+  ///
+  /// In pt, this message translates to:
+  /// **'No total'**
+  String get demNoTotal;
+
+  /// No description provided for @demAbertas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Abertas'**
+  String get demAbertas;
+
+  /// No description provided for @demUrgentes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Urgentes'**
+  String get demUrgentes;
+
+  /// No description provided for @demEditarAcao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar'**
+  String get demEditarAcao;
+
+  /// No description provided for @demAbrir.
+  ///
+  /// In pt, this message translates to:
+  /// **'Abrir demanda {titulo}'**
+  String demAbrir(String titulo);
+
+  /// No description provided for @demFecharDetalhes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fechar detalhes da demanda'**
+  String get demFecharDetalhes;
+
+  /// No description provided for @demPrazo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prazo'**
+  String get demPrazo;
+
+  /// No description provided for @demTodas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todas'**
+  String get demTodas;
+
+  /// No description provided for @demStatusNovo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Novo'**
+  String get demStatusNovo;
+
+  /// No description provided for @demStatusEmAndamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em andamento'**
+  String get demStatusEmAndamento;
+
+  /// No description provided for @demStatusAguardando.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aguardando'**
+  String get demStatusAguardando;
+
+  /// No description provided for @demStatusRevisao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Revisão'**
+  String get demStatusRevisao;
+
+  /// No description provided for @demStatusConcluido.
+  ///
+  /// In pt, this message translates to:
+  /// **'Concluído'**
+  String get demStatusConcluido;
+
+  /// No description provided for @demPrioridadeAlta.
+  ///
+  /// In pt, this message translates to:
+  /// **'Alta'**
+  String get demPrioridadeAlta;
+
+  /// No description provided for @demPrioridadeMedia.
+  ///
+  /// In pt, this message translates to:
+  /// **'Média'**
+  String get demPrioridadeMedia;
+
+  /// No description provided for @demPrioridadeBaixa.
+  ///
+  /// In pt, this message translates to:
+  /// **'Baixa'**
+  String get demPrioridadeBaixa;
+
+  /// No description provided for @demOrdemPrazo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prazo mais próximo'**
+  String get demOrdemPrazo;
+
+  /// No description provided for @demOrdemRecentes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Recém-criadas'**
+  String get demOrdemRecentes;
 }
 
 class _AppLocalizationsDelegate

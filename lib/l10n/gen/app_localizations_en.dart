@@ -1553,4 +1553,247 @@ class AppLocalizationsEn extends AppLocalizations {
   String notaDataHora(String dia, String mes, String hora) {
     return '$mes/$dia at $hora';
   }
+
+  @override
+  String get chatFacaLogin => 'Sign in to use the chat.';
+
+  @override
+  String get chatNenhumUsuario => 'No users available to chat with.';
+
+  @override
+  String get chatConversas => 'Conversations';
+
+  @override
+  String get chatNovaConversa => 'New conversation';
+
+  @override
+  String get chatBuscarConversa => 'Search conversations';
+
+  @override
+  String get chatLimparBusca => 'Clear search';
+
+  @override
+  String get chatNenhumaEncontrada => 'No conversations found.';
+
+  @override
+  String get chatNenhumaAinda => 'No conversations yet.\nTap ✏️ to start one.';
+
+  @override
+  String get chatNenhumaMensagem => 'No messages yet.';
+
+  @override
+  String get chatDigiteMensagem => 'Type your message';
+
+  @override
+  String get chatEnviar => 'Send';
+
+  @override
+  String get chatVoltar => 'Back to conversations';
+
+  @override
+  String get chatSelecione => 'Select a conversation\nor start a new one';
+
+  @override
+  String get chatBuscarContato => 'Search by name, email or role';
+
+  @override
+  String get chatNenhumContato => 'No contacts found.';
+
+  @override
+  String chatDiaMes(String dia, String mes) {
+    return '$mes/$dia';
+  }
+
+  @override
+  String get demErroCarregar => 'Could not load the requests.';
+
+  @override
+  String get demErroCarregarTitulo => 'Could not load the data';
+
+  @override
+  String get demErroSalvar =>
+      'Could not save the request. Your data was kept. Please try again.';
+
+  @override
+  String get demBuscar => 'Search requests';
+
+  @override
+  String get demBuscarDica => 'Search by title, description or owner';
+
+  @override
+  String get demBuscarExemplo => 'Title, description or owner';
+
+  @override
+  String demFiltrosAtivos(int count) {
+    return 'Active filters: $count';
+  }
+
+  @override
+  String get demFiltrar => 'Filter requests';
+
+  @override
+  String get demCarregando => 'Loading requests...';
+
+  @override
+  String get demNenhuma => 'No requests found';
+
+  @override
+  String get demLimparFiltrosDica => 'Try clearing the active filters.';
+
+  @override
+  String get demCrieNova => 'Create a new request to get started.';
+
+  @override
+  String get demLimparFiltros => 'Clear filters';
+
+  @override
+  String get demCriarNova => 'Create new request';
+
+  @override
+  String get demFiltros => 'Filters';
+
+  @override
+  String get demFecharFiltros => 'Close filters';
+
+  @override
+  String get demStatus => 'Status';
+
+  @override
+  String get demPrioridade => 'Priority';
+
+  @override
+  String get demOrdenacao => 'Sort order';
+
+  @override
+  String get demLimpar => 'Clear';
+
+  @override
+  String get demAplicar => 'Apply';
+
+  @override
+  String get demNova => 'New Request';
+
+  @override
+  String get demEditar => 'Edit Request';
+
+  @override
+  String get demFecharFormulario => 'Close request form';
+
+  @override
+  String get demTitulo => 'Title';
+
+  @override
+  String get demTituloDica => 'Enter the request title';
+
+  @override
+  String get demDescricao => 'Description';
+
+  @override
+  String get demDescricaoDica => 'Describe the request in detail';
+
+  @override
+  String get demProprietario => 'Owner';
+
+  @override
+  String get demStatusInicial => 'Initial status';
+
+  @override
+  String get demCriar => 'Create';
+
+  @override
+  String get demSalvando => 'Saving...';
+
+  @override
+  String get demCriada => 'Request created successfully!';
+
+  @override
+  String get demAtualizada => 'Request updated successfully!';
+
+  @override
+  String get demExcluida => 'Request deleted successfully!';
+
+  @override
+  String get demConfirmarExclusao => 'Confirm deletion';
+
+  @override
+  String demExcluirMensagem(String titulo) {
+    return 'Are you sure you want to delete $titulo?';
+  }
+
+  @override
+  String get demSemPermissaoCriar =>
+      'Your profile is not allowed to create requests.';
+
+  @override
+  String get demSemPermissaoEditar =>
+      'Your profile is not allowed to edit requests.';
+
+  @override
+  String get demSemPermissaoExcluir =>
+      'Your profile is not allowed to delete requests.';
+
+  @override
+  String get demInformeTitulo => 'Enter the request title';
+
+  @override
+  String get demInformeDescricao => 'Enter the request description';
+
+  @override
+  String get demResumo => 'Requests summary';
+
+  @override
+  String get demNoTotal => 'Total';
+
+  @override
+  String get demAbertas => 'Open';
+
+  @override
+  String get demUrgentes => 'Urgent';
+
+  @override
+  String get demEditarAcao => 'Edit';
+
+  @override
+  String demAbrir(String titulo) {
+    return 'Open request $titulo';
+  }
+
+  @override
+  String get demFecharDetalhes => 'Close request details';
+
+  @override
+  String get demPrazo => 'Due date';
+
+  @override
+  String get demTodas => 'All';
+
+  @override
+  String get demStatusNovo => 'New';
+
+  @override
+  String get demStatusEmAndamento => 'In progress';
+
+  @override
+  String get demStatusAguardando => 'Waiting';
+
+  @override
+  String get demStatusRevisao => 'Review';
+
+  @override
+  String get demStatusConcluido => 'Done';
+
+  @override
+  String get demPrioridadeAlta => 'High';
+
+  @override
+  String get demPrioridadeMedia => 'Medium';
+
+  @override
+  String get demPrioridadeBaixa => 'Low';
+
+  @override
+  String get demOrdemPrazo => 'Nearest due date';
+
+  @override
+  String get demOrdemRecentes => 'Recently created';
 }

@@ -8,6 +8,7 @@ import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../../../core/models/user.dart';
 import '../../../../core/services/chat_provider.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../../l10n/l10n.dart';
 import '../../data/bate_papo_repository.dart';
 import '../../domain/bate_papo_service.dart';
 import '../../domain/conversation_summary.dart';
@@ -38,7 +39,7 @@ class _BatePapoPageState extends State<BatePapoPage> {
     final currentUser = userContext.currentUser;
 
     if (currentUser == null) {
-      return const Center(child: Text('Faça login para acessar o bate-papo.'));
+      return Center(child: Text(context.l10n.chatFacaLogin));
     }
 
     final chatProvider = context.watch<ChatProvider>();
@@ -71,9 +72,7 @@ class _BatePapoPageState extends State<BatePapoPage> {
     final selectedContact = _resolveSelectedContact(allContacts);
 
     if (allContacts.isEmpty) {
-      return const Center(
-        child: Text('Nenhum usuário disponível para conversa.'),
-      );
+      return Center(child: Text(context.l10n.chatNenhumUsuario));
     }
 
     final messages = selectedContact == null
@@ -268,7 +267,7 @@ class _ConversationListPanel extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        'Conversas',
+                        context.l10n.chatConversas,
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(fontWeight: FontWeight.w700),
                       ),
@@ -276,7 +275,7 @@ class _ConversationListPanel extends StatelessWidget {
                     IconButton(
                       onPressed: onNewConversation,
                       icon: const SigadIcon(SigadIcons.editar),
-                      tooltip: 'Nova conversa',
+                      tooltip: context.l10n.chatNovaConversa,
                       visualDensity: VisualDensity.compact,
                     ),
                   ],
@@ -285,10 +284,10 @@ class _ConversationListPanel extends StatelessWidget {
                 TextField(
                   onChanged: onSearchChanged,
                   decoration: InputDecoration(
-                    hintText: 'Buscar conversa',
+                    hintText: context.l10n.chatBuscarConversa,
                     suffixIcon: searchValue.trim().isNotEmpty
                         ? IconButton(
-                            tooltip: 'Limpar busca',
+                            tooltip: context.l10n.chatLimparBusca,
                             onPressed: () => onSearchChanged(''),
                             icon: const SigadIcon(SigadIcons.fechar),
                           )
@@ -315,8 +314,8 @@ class _ConversationListPanel extends StatelessWidget {
                           const SizedBox(height: 12),
                           Text(
                             searchValue.trim().isNotEmpty
-                                ? 'Nenhuma conversa encontrada.'
-                                : 'Nenhuma conversa ainda.\nToque em ✏️ para iniciar.',
+                                ? context.l10n.chatNenhumaEncontrada
+                                : context.l10n.chatNenhumaAinda,
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodyMedium
                                 ?.copyWith(color: SigadColors.muted),
@@ -421,7 +420,10 @@ class _ConversationTile extends StatelessWidget {
                         ),
                         if (hasMessages)
                           Text(
-                            _conversationTimeLabel(lastMessage.sentAt),
+                            _conversationTimeLabel(
+                              context.l10n,
+                              lastMessage.sentAt,
+                            ),
                             style: textTheme.labelSmall?.copyWith(
                               color: SigadColors.muted,
                             ),
@@ -430,7 +432,7 @@ class _ConversationTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      conversation.contact.role.displayName,
+                      conversation.contact.role.nomeEm(context.l10n),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: textTheme.labelSmall?.copyWith(
@@ -502,6 +504,7 @@ class _ChatPanel extends StatelessWidget {
                 if (onBack != null)
                   IconButton(
                     onPressed: onBack,
+                    tooltip: context.l10n.chatVoltar,
                     icon: const SigadIcon(SigadIcons.chevronEsquerda, size: 18),
                     visualDensity: VisualDensity.compact,
                   ),
@@ -526,7 +529,7 @@ class _ChatPanel extends StatelessWidget {
                             ?.copyWith(fontWeight: FontWeight.w700),
                       ),
                       Text(
-                        selectedContact.role.displayName,
+                        selectedContact.role.nomeEm(context.l10n),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: SigadColors.muted,
                         ),
@@ -541,7 +544,7 @@ class _ChatPanel extends StatelessWidget {
             child: messages.isEmpty
                 ? Center(
                     child: Text(
-                      'Nenhuma mensagem ainda.',
+                      context.l10n.chatNenhumaMensagem,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: SigadColors.muted,
                       ),
@@ -601,9 +604,9 @@ class _ChatPanel extends StatelessWidget {
                     controller: controller,
                     minLines: 1,
                     maxLines: 4,
-                    decoration: const InputDecoration(
-                      hintText: 'Digite sua mensagem',
-                      prefixIcon: SigadIcon(SigadIcons.mensagem),
+                    decoration: InputDecoration(
+                      hintText: context.l10n.chatDigiteMensagem,
+                      prefixIcon: const SigadIcon(SigadIcons.mensagem),
                     ),
                     onSubmitted: (_) => onSend(),
                   ),
@@ -612,7 +615,7 @@ class _ChatPanel extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: onSend,
                   icon: const SigadIcon(SigadIcons.enviar),
-                  label: const Text('Enviar'),
+                  label: Text(context.l10n.chatEnviar),
                 ),
               ],
             ),
@@ -676,7 +679,7 @@ class _EmptyChatPlaceholder extends StatelessWidget {
             SigadIcon(SigadIcons.conversa, size: 56, color: SigadColors.muted),
             const SizedBox(height: 16),
             Text(
-              'Selecione uma conversa\nou inicie uma nova',
+              context.l10n.chatSelecione,
               textAlign: TextAlign.center,
               style: Theme.of(
                 context,
@@ -686,7 +689,7 @@ class _EmptyChatPlaceholder extends StatelessWidget {
             FilledButton.icon(
               onPressed: onNewConversation,
               icon: const SigadIcon(SigadIcons.editar),
-              label: const Text('Nova conversa'),
+              label: Text(context.l10n.chatNovaConversa),
             ),
           ],
         ),
@@ -723,7 +726,8 @@ class _NewConversationSheetState extends State<_NewConversationSheet> {
           if (q.isEmpty) return true;
           return c.name.toLowerCase().contains(q) ||
               c.email.toLowerCase().contains(q) ||
-              c.role.displayName.toLowerCase().contains(q);
+              c.role.displayName.toLowerCase().contains(q) ||
+              c.role.nomeEm(context.l10n).toLowerCase().contains(q);
         }).toList()..sort(
           (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
         );
@@ -753,7 +757,7 @@ class _NewConversationSheetState extends State<_NewConversationSheet> {
                     ),
                   ),
                   Text(
-                    'Nova conversa',
+                    context.l10n.chatNovaConversa,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
@@ -764,11 +768,11 @@ class _NewConversationSheetState extends State<_NewConversationSheet> {
                     autofocus: true,
                     onChanged: (v) => setState(() => _query = v),
                     decoration: InputDecoration(
-                      hintText: 'Buscar por nome, e-mail ou cargo',
+                      hintText: context.l10n.chatBuscarContato,
                       prefixIcon: const SigadIcon(SigadIcons.buscar),
                       suffixIcon: _query.isNotEmpty
                           ? IconButton(
-                              tooltip: 'Limpar busca',
+                              tooltip: context.l10n.chatLimparBusca,
                               onPressed: () {
                                 _searchController.clear();
                                 setState(() => _query = '');
@@ -789,7 +793,7 @@ class _NewConversationSheetState extends State<_NewConversationSheet> {
                       child: Padding(
                         padding: const EdgeInsets.all(24),
                         child: Text(
-                          'Nenhum contato encontrado.',
+                          context.l10n.chatNenhumContato,
                           style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(color: SigadColors.muted),
                         ),
@@ -824,7 +828,7 @@ class _NewConversationSheetState extends State<_NewConversationSheet> {
                             style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
                           subtitle: Text(
-                            contact.role.displayName,
+                            contact.role.nomeEm(context.l10n),
                             style: TextStyle(
                               color: SigadColors.brand.withValues(alpha: 0.8),
                               fontSize: 12,
@@ -869,7 +873,7 @@ String _timeLabel(DateTime dateTime) {
   return '$hour:$minute';
 }
 
-String _conversationTimeLabel(DateTime dateTime) {
+String _conversationTimeLabel(AppLocalizations l10n, DateTime dateTime) {
   final now = DateTime.now();
   final isSameDay =
       now.year == dateTime.year &&
@@ -881,7 +885,7 @@ String _conversationTimeLabel(DateTime dateTime) {
 
   final day = dateTime.day.toString().padLeft(2, '0');
   final month = dateTime.month.toString().padLeft(2, '0');
-  return '$day/$month';
+  return l10n.chatDiaMes(day, month);
 }
 
 String _normalizeEmail(String email) => email.trim().toLowerCase();
