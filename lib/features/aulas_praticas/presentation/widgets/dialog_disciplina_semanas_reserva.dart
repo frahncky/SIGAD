@@ -1,18 +1,36 @@
 import 'package:flutter/material.dart';
 
+import '../../../../app/theme/sigad_colors.dart';
+import '../../../../app/theme/sigad_icon.dart';
+import '../../../../app/theme/sigad_icons.dart';
 import '../../domain/reserva_models.dart';
 
+/// Formulário "Reservar horário": mostra o que está sendo reservado e pede a
+/// disciplina, a repetição semanal e, opcionalmente, outros horários do dia.
 class DialogDisciplinaSemanasReserva extends StatefulWidget {
   const DialogDisciplinaSemanasReserva({
     super.key,
     required this.diaSemanaCompleto,
+    required this.laboratorio,
+    required this.horarioInicial,
+    required this.ultimoDiaDoMes,
+    required this.maxSemanas,
     required this.horarios,
     required this.turnoInicial,
     required this.periodoInicial,
     required this.isOcupado,
   });
 
+  /// Data por extenso, ex.: "segunda-feira, 12/10/2026".
   final String diaSemanaCompleto;
+  final String laboratorio;
+  final String horarioInicial;
+
+  /// Último dia do mês (dd/mm): a repetição não passa dele.
+  final String ultimoDiaDoMes;
+
+  /// Quantas semanas cabem até o fim do mês, contando a atual.
+  final int maxSemanas;
   final List<HorarioGridRow> horarios;
   final Turno turnoInicial;
   final int periodoInicial;
@@ -58,68 +76,84 @@ class DialogDisciplinaSemanasReservaState
     });
   }
 
+  String _rotuloSemanas(int total) =>
+      total == 1 ? 'Só esta semana' : 'Esta e mais ${total - 1} semana(s)';
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return AlertDialog(
-      title: const Text('Nova Reserva'),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+    final maxSemanas = widget.maxSemanas.clamp(1, 6);
+    final extras = _periodosSelecionados.length - 1;
+
+    Widget info(IconData icone, String texto) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SigadIcon(icone, size: 18, color: SigadColors.brand),
+          const SizedBox(width: 8),
+          Expanded(child: Text(texto, style: textTheme.bodyMedium)),
+        ],
+      ),
+    );
+
+    return TelaFormularioReserva(
+      titulo: 'Reservar horário',
+      acaoLabel: 'Reservar',
+      acaoIcone: SigadIcons.eventoConfirmado,
+      onAcao: _confirmar,
+      children: [
+        info(SigadIcons.laboratorio, widget.laboratorio),
+        info(SigadIcons.calendario, widget.diaSemanaCompleto),
+        info(
+          SigadIcons.relogio,
+          extras == 0
+              ? widget.horarioInicial
+              : '${widget.horarioInicial} e mais $extras horário(s)',
+        ),
+        const SizedBox(height: 16),
+        TextField(
+          controller: _disciplinaController,
+          textCapitalization: TextCapitalization.sentences,
+          decoration: const InputDecoration(labelText: 'Disciplina (opcional)'),
+        ),
+        const SizedBox(height: 16),
+        Text('Repetir', style: textTheme.labelLarge),
+        DropdownButton<int>(
+          isExpanded: true,
+          value: _totalSemanas.clamp(1, maxSemanas),
+          items: [
+            for (var total = 1; total <= maxSemanas; total++)
+              DropdownMenuItem(
+                value: total,
+                child: Text(_rotuloSemanas(total)),
+              ),
+          ],
+          onChanged: (v) {
+            if (v != null) setState(() => _totalSemanas = v);
+          },
+        ),
+        Text(
+          'A repetição vai no máximo até ${widget.ultimoDiaDoMes}, '
+          'fim do mês.',
+          style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+        ),
+        const SizedBox(height: 8),
+        Theme(
+          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+          child: ExpansionTile(
+            tilePadding: EdgeInsets.zero,
+            childrenPadding: EdgeInsets.zero,
+            expandedCrossAxisAlignment: CrossAxisAlignment.start,
+            title: Text(
+              'Reservar outros horários deste dia',
+              style: textTheme.labelLarge,
+            ),
             children: [
-              Text(
-                widget.diaSemanaCompleto,
-                style: textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _disciplinaController,
-                decoration: const InputDecoration(
-                  labelText: 'Disciplina (opcional)',
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  const Text('Total de semanas:'),
-                  const SizedBox(width: 8),
-                  DropdownButton<int>(
-                    value: _totalSemanas,
-                    items: List.generate(
-                      6,
-                      (i) => DropdownMenuItem(
-                        value: i + 1,
-                        child: Text('${i + 1}'),
-                      ),
-                    ),
-                    onChanged: (v) {
-                      if (v != null) setState(() => _totalSemanas = v);
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Horários',
-                style: textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                'Marque outros horários para reservar de uma vez.',
-                style: textTheme.bodySmall,
-              ),
-              const SizedBox(height: 8),
               for (final turno in Turno.values) ...[
                 Text(
                   turno.label,
-                  style: textTheme.labelSmall?.copyWith(
+                  style: textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: turno.chipTextColor,
                   ),
@@ -133,7 +167,7 @@ class DialogDisciplinaSemanasReservaState
                       (item) => item.turno == turno,
                     ))
                       _PeriodoChip(
-                        label: '${turno.shortLabel}${linha.periodo}',
+                        label: linha.horario.split('-').first,
                         selecionado: _periodosSelecionados.contains(
                           _chave(turno, linha.periodo),
                         ),
@@ -147,34 +181,23 @@ class DialogDisciplinaSemanasReservaState
             ],
           ),
         ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancelar'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.of(context).pop({
-              'disciplina': _disciplinaController.text.trim().isEmpty
-                  ? null
-                  : _disciplinaController.text.trim(),
-              'totalSemanas': _totalSemanas,
-              'periodos': _periodosSelecionados
-                  .map((chave) {
-                    final partes = chave.split('|');
-                    return {
-                      'turno': partes[0],
-                      'periodo': int.parse(partes[1]),
-                    };
-                  })
-                  .toList(growable: false),
-            });
-          },
-          child: const Text('Confirmar'),
-        ),
       ],
     );
+  }
+
+  void _confirmar() {
+    Navigator.of(context).pop({
+      'disciplina': _disciplinaController.text.trim().isEmpty
+          ? null
+          : _disciplinaController.text.trim(),
+      'totalSemanas': _totalSemanas.clamp(1, widget.maxSemanas.clamp(1, 6)),
+      'periodos': _periodosSelecionados
+          .map((chave) {
+            final partes = chave.split('|');
+            return {'turno': partes[0], 'periodo': int.parse(partes[1])};
+          })
+          .toList(growable: false),
+    });
   }
 }
 
@@ -203,6 +226,62 @@ class _PeriodoChip extends StatelessWidget {
       selected: selecionado,
       onSelected: ocupado ? null : (_) => onTap(),
       tooltip: ocupado ? 'Horário já ocupado' : null,
+    );
+  }
+}
+
+/// Tela inteira usada pelos formulários e detalhes de reserva: título com
+/// botão de fechar, conteúdo com rolagem e a ação principal fixa embaixo.
+class TelaFormularioReserva extends StatelessWidget {
+  const TelaFormularioReserva({
+    super.key,
+    required this.titulo,
+    required this.children,
+    this.acaoLabel,
+    this.acaoIcone,
+    this.onAcao,
+    this.acaoSecundaria,
+  });
+
+  final String titulo;
+  final List<Widget> children;
+  final String? acaoLabel;
+  final IconData? acaoIcone;
+  final VoidCallback? onAcao;
+  final Widget? acaoSecundaria;
+
+  @override
+  Widget build(BuildContext context) {
+    final acaoLabel = this.acaoLabel;
+    return Scaffold(
+      appBar: AppBar(title: Text(titulo)),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+        children: children,
+      ),
+      bottomNavigationBar: acaoLabel == null && acaoSecundaria == null
+          ? null
+          : SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (acaoLabel != null)
+                      FilledButton.icon(
+                        onPressed: onAcao,
+                        icon: SigadIcon(acaoIcone ?? SigadIcons.confirmar),
+                        label: Text(acaoLabel),
+                      ),
+                    if (acaoSecundaria != null) ...[
+                      const SizedBox(height: 8),
+                      acaoSecundaria!,
+                    ],
+                  ],
+                ),
+              ),
+            ),
     );
   }
 }

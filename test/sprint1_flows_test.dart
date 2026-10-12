@@ -10,10 +10,19 @@ import 'package:sigad/core/models/user.dart';
 import 'package:sigad/core/models/user_role.dart';
 import 'package:sigad/core/services/user_context_provider.dart';
 import 'package:sigad/features/aulas_praticas/presentation/pages/aulas_praticas_page.dart';
+import 'package:sigad/features/aulas_praticas/presentation/widgets/dialog_disciplina_semanas_reserva.dart';
 import 'package:sigad/features/carga_docente/presentation/pages/carga_docente_page.dart';
 import 'package:sigad/features/login/presentation/pages/login_page.dart';
 
 void main() {
+  int contarLivres(WidgetTester tester) => tester
+      .widgetList<Semantics>(find.bySemanticsLabel(RegExp(r'^Célula ')))
+      .where((celula) => celula.properties.value == 'Livre')
+      .length;
+
+  Finder celulaLivreSegM1() =>
+      find.bySemanticsLabel(RegExp(r'Célula Seg,.*Matutino, período 1,'));
+
   setUp(() {
     SharedPreferences.setMockInitialValues({});
   });
@@ -106,12 +115,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final livresAntes = find.text('Livre').evaluate().length;
+    final livresAntes = contarLivres(tester);
 
-    final primeiraCelulaLivre = find.text('Livre').first;
-    final celulaInterativa = find
-        .ancestor(of: primeiraCelulaLivre, matching: find.byType(InkWell))
-        .first;
+    final celulaInterativa = celulaLivreSegM1();
     await Scrollable.ensureVisible(
       tester.element(celulaInterativa),
       alignment: 0.5,
@@ -121,19 +127,19 @@ void main() {
     await tester.tap(celulaInterativa);
     await tester.pumpAndSettle();
 
-    expect(find.text('Nova Reserva'), findsOneWidget);
+    expect(find.text('Reservar horário'), findsOneWidget);
 
     final campoDisciplina = find.descendant(
-      of: find.byType(AlertDialog),
+      of: find.byType(TelaFormularioReserva),
       matching: find.byType(TextField),
     );
     await tester.enterText(campoDisciplina, 'Disciplina Teste');
     await tester.pump();
-    await tester.tap(find.text('Confirmar'));
+    await tester.tap(find.text('Reservar'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Nova Reserva'), findsNothing);
-    final livresDepois = find.text('Livre').evaluate().length;
+    expect(find.text('Reservar horário'), findsNothing);
+    final livresDepois = contarLivres(tester);
     expect(livresDepois, lessThan(livresAntes));
   });
 
@@ -162,10 +168,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final primeiraCelulaLivre = find.text('Livre').first;
-      final celulaInterativa = find
-          .ancestor(of: primeiraCelulaLivre, matching: find.byType(InkWell))
-          .first;
+      final celulaInterativa = celulaLivreSegM1();
       await Scrollable.ensureVisible(
         tester.element(celulaInterativa),
         alignment: 0.5,
@@ -175,12 +178,12 @@ void main() {
       await tester.pumpAndSettle();
 
       final campoDisciplina = find.descendant(
-        of: find.byType(AlertDialog),
+        of: find.byType(TelaFormularioReserva),
         matching: find.byType(TextField),
       );
       await tester.enterText(campoDisciplina, 'Circuitos I');
       await tester.pump();
-      await tester.tap(find.text('Confirmar'));
+      await tester.tap(find.text('Reservar'));
       await tester.pumpAndSettle();
 
       // A célula reservada não tem mais o texto "Livre", então localizamos o
@@ -191,13 +194,13 @@ void main() {
       );
 
       // A mesma célula agora está ocupada; tocar nela deve abrir o menu de
-      // ações (editar/excluir) em vez de reabrir "Nova Reserva".
+      // ações (editar/excluir) em vez de reabrir "Reservar horário".
       await tester.tap(celulaReservada);
       await tester.pumpAndSettle();
 
       expect(
         find.descendant(
-          of: find.byType(SimpleDialog),
+          of: find.byType(TelaFormularioReserva),
           matching: find.text('Circuitos I'),
         ),
         findsOneWidget,
@@ -209,7 +212,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final campoEdicao = find.descendant(
-        of: find.byType(AlertDialog),
+        of: find.byType(TelaFormularioReserva),
         matching: find.byType(TextField),
       );
       expect(
@@ -227,7 +230,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(
         find.descendant(
-          of: find.byType(SimpleDialog),
+          of: find.byType(TelaFormularioReserva),
           matching: find.text('Circuitos II'),
         ),
         findsOneWidget,
@@ -256,25 +259,13 @@ void main() {
         theme: AppTheme.light(),
         home: ChangeNotifierProvider<UserContextProvider>.value(
           value: userContext,
-          child: const AulasPraticasPage(),
+          child: AulasPraticasPage(dataInicial: DateTime(2026, 10, 5)),
         ),
       ),
     );
     await tester.pumpAndSettle();
 
-    final primeiroDiaDoMes = find.bySemanticsLabel(RegExp(r'^Dia 1(?:,|$)'));
-    await Scrollable.ensureVisible(
-      tester.element(primeiroDiaDoMes),
-      alignment: 0.2,
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(primeiroDiaDoMes);
-    await tester.pumpAndSettle();
-
-    final primeiraCelulaLivre = find.text('Livre').first;
-    final celulaInterativa = find
-        .ancestor(of: primeiraCelulaLivre, matching: find.byType(InkWell))
-        .first;
+    final celulaInterativa = celulaLivreSegM1();
     await Scrollable.ensureVisible(
       tester.element(celulaInterativa),
       alignment: 0.5,
@@ -284,15 +275,17 @@ void main() {
     await tester.pumpAndSettle();
 
     final dropdownSemanas = find.descendant(
-      of: find.byType(AlertDialog),
+      of: find.byType(TelaFormularioReserva),
       matching: find.byType(DropdownButton<int>),
     );
     await tester.tap(dropdownSemanas);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('$totalSemanas').last);
+    await tester.tap(
+      find.text('Esta e mais ${totalSemanas - 1} semana(s)').last,
+    );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Confirmar'));
+    await tester.tap(find.text('Reservar'));
     await tester.pumpAndSettle();
   }
 
@@ -300,8 +293,12 @@ void main() {
   // recorrência não dependam da data em que a suíte é executada.
   int semanaAtual() => 1;
 
+  // Os cenários de recorrência começam na segunda 05/10/2026.
+  String dataDaSemana(int semana) =>
+      '${(5 + 7 * (semana - 1)).toString().padLeft(2, '0')}/10';
+
   Finder checkboxDaSemana(int semana) => find.ancestor(
-    of: find.text('${semana}a semana'),
+    of: find.textContaining(dataDaSemana(semana)),
     matching: find.byType(CheckboxListTile),
   );
 
@@ -340,7 +337,10 @@ void main() {
       expect(tester.widget<FilledButton>(revisar).onPressed, isNotNull);
       await tester.tap(revisar);
       await tester.pumpAndSettle();
-      expect(find.textContaining('${semanaEscolhida}a semana'), findsOneWidget);
+      expect(
+        find.textContaining(dataDaSemana(semanaEscolhida)),
+        findsOneWidget,
+      );
       await tester.tap(find.text('Excluir'));
       await tester.pumpAndSettle();
 
@@ -419,7 +419,7 @@ void main() {
       expect(find.text('Editar reserva'), findsOneWidget);
       await tester.tap(
         find.descendant(
-          of: find.byType(AlertDialog),
+          of: find.byType(TelaFormularioReserva),
           matching: find.widgetWithText(ChoiceChip, 'Ter'),
         ),
       );
@@ -469,10 +469,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final primeiraCelulaLivre = find.text('Livre').first;
-      final celulaInterativa = find
-          .ancestor(of: primeiraCelulaLivre, matching: find.byType(InkWell))
-          .first;
+      final celulaInterativa = celulaLivreSegM1();
       await Scrollable.ensureVisible(
         tester.element(celulaInterativa),
         alignment: 0.5,
@@ -481,7 +478,7 @@ void main() {
       await tester.tap(celulaInterativa);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Confirmar'));
+      await tester.tap(find.text('Reservar'));
       await tester.pumpAndSettle();
 
       // A célula reservada é Seg/Matutino/período 1 (M1).
@@ -496,7 +493,7 @@ void main() {
       // Troca o dia para Terça e o horário para T2 (Tarde, período 2).
       await tester.tap(
         find.descendant(
-          of: find.byType(AlertDialog),
+          of: find.byType(TelaFormularioReserva),
           matching: find.widgetWithText(ChoiceChip, 'Ter'),
         ),
       );
@@ -541,25 +538,13 @@ void main() {
           theme: AppTheme.light(),
           home: ChangeNotifierProvider<UserContextProvider>.value(
             value: userContext,
-            child: const AulasPraticasPage(),
+            child: AulasPraticasPage(dataInicial: DateTime(2026, 10, 5)),
           ),
         ),
       );
       await tester.pumpAndSettle();
 
-      final primeiroDiaDoMes = find.bySemanticsLabel(RegExp(r'^Dia 1(?:,|$)'));
-      await Scrollable.ensureVisible(
-        tester.element(primeiroDiaDoMes),
-        alignment: 0.2,
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(primeiroDiaDoMes);
-      await tester.pumpAndSettle();
-
-      final primeiraCelulaLivre = find.text('Livre').first;
-      final celulaInterativa = find
-          .ancestor(of: primeiraCelulaLivre, matching: find.byType(InkWell))
-          .first;
+      final celulaInterativa = celulaLivreSegM1();
       await Scrollable.ensureVisible(
         tester.element(celulaInterativa),
         alignment: 0.5,
@@ -568,25 +553,22 @@ void main() {
       await tester.tap(celulaInterativa);
       await tester.pumpAndSettle();
 
-      expect(find.text('Nova Reserva'), findsOneWidget);
+      expect(find.text('Reservar horário'), findsOneWidget);
 
       final dropdownSemanas = find.descendant(
-        of: find.byType(AlertDialog),
+        of: find.byType(TelaFormularioReserva),
         matching: find.byType(DropdownButton<int>),
       );
       await tester.tap(dropdownSemanas);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('3').last);
+      await tester.tap(find.text('Esta e mais 2 semana(s)').last);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Confirmar'));
+      await tester.tap(find.text('Reservar'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Nova Reserva'), findsNothing);
-      expect(
-        find.textContaining('3 horários reservados com sucesso'),
-        findsOneWidget,
-      );
+      expect(find.text('Reservar horário'), findsNothing);
+      expect(find.textContaining('3 horários reservados'), findsOneWidget);
     },
   );
 
@@ -615,12 +597,9 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final livresAntes = find.text('Livre').evaluate().length;
+      final livresAntes = contarLivres(tester);
 
-      final primeiraCelulaLivre = find.text('Livre').first;
-      final celulaInterativa = find
-          .ancestor(of: primeiraCelulaLivre, matching: find.byType(InkWell))
-          .first;
+      final celulaInterativa = celulaLivreSegM1();
       await Scrollable.ensureVisible(
         tester.element(celulaInterativa),
         alignment: 0.5,
@@ -629,27 +608,25 @@ void main() {
       await tester.tap(celulaInterativa);
       await tester.pumpAndSettle();
 
-      expect(find.text('Nova Reserva'), findsOneWidget);
-      expect(find.text('Horários'), findsOneWidget);
+      expect(find.text('Reservar horário'), findsOneWidget);
+      await tester.tap(find.text('Reservar outros horários deste dia'));
+      await tester.pumpAndSettle();
 
       // A primeira célula livre é Seg/Matutino/período 1 (M1); marca também
       // M2 no mesmo diálogo, sem precisar fechar e reabrir.
       final chipM2 = find.descendant(
-        of: find.byType(AlertDialog),
-        matching: find.widgetWithText(FilterChip, 'M2'),
+        of: find.byType(TelaFormularioReserva),
+        matching: find.widgetWithText(FilterChip, '08:05'),
       );
       await tester.tap(chipM2);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Confirmar'));
+      await tester.tap(find.text('Reservar'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Nova Reserva'), findsNothing);
-      expect(
-        find.textContaining('2 horários reservados com sucesso'),
-        findsOneWidget,
-      );
-      final livresDepois = find.text('Livre').evaluate().length;
+      expect(find.text('Reservar horário'), findsNothing);
+      expect(find.textContaining('2 horários reservados'), findsOneWidget);
+      final livresDepois = contarLivres(tester);
       expect(livresDepois, livresAntes - 2);
     },
   );
@@ -690,6 +667,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    final sugestoes = find.text('Sugestões de horários');
+    await tester.ensureVisible(sugestoes);
+    await tester.tap(sugestoes);
+    await tester.pumpAndSettle();
     final action = find.text('Reservar sugestão');
     await tester.ensureVisible(action);
     await tester.pumpAndSettle();
@@ -723,26 +704,101 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Otimização de laboratórios'), findsNothing);
+      expect(find.text('Sugestões de horários'), findsNothing);
       expect(find.text('Reservar sugestão'), findsNothing);
-      expect(find.text('Agenda semanal'), findsOneWidget);
+      expect(find.text('Agenda'), findsOneWidget);
     },
   );
 
-  testWidgets(
-    'calendário navega entre anos por swipe e expõe seletor e feriado',
-    (tester) async {
-      tester.view.physicalSize = const Size(320, 568);
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
+  testWidgets('agenda navega por semana, mostra datas reais e marca feriado', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 568);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
 
+    final userContext = UserContextProvider();
+    await userContext.login(
+      User(
+        id: 'professor-calendario',
+        name: 'Professor Teste',
+        email: 'professor.calendario@ifma.edu.br',
+        role: UserRole.professor,
+        createdAt: DateTime(2026),
+      ),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light(),
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: ChangeNotifierProvider<UserContextProvider>.value(
+          value: userContext,
+          // Terça, 28/07/2026: feriado estadual no Maranhão.
+          child: AulasPraticasPage(dataInicial: DateTime(2026, 7, 28)),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('27 a 31 de jul.'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel(
+        RegExp(r'terça-feira, 28/07, feriado: Adesão do Maranhão'),
+      ),
+      findsOneWidget,
+    );
+
+    await tester.ensureVisible(find.byTooltip('Próxima semana'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Próxima semana'));
+    await tester.pumpAndSettle();
+    expect(find.text('3 a 7 de ago.'), findsOneWidget);
+
+    for (var i = 0; i < 2; i++) {
+      await tester.ensureVisible(find.byTooltip('Semana anterior'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Semana anterior'));
+      await tester.pumpAndSettle();
+    }
+    await tester.pumpAndSettle();
+    expect(find.text('20 a 24 de jul.'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'reserva aparece na data real mesmo quando o mês não começa na segunda',
+    (tester) async {
+      // Outubro de 2026 começa numa quinta. A quinta 08/10 pertence ao
+      // segundo bloco de 7 dias, mas aparece na semana de 05 a 09.
+      SharedPreferences.setMockInitialValues({
+        'sigad_reservas': jsonEncode([
+          {
+            'id': 'r-qui-08',
+            'professor': 'Outra Pessoa',
+            'laboratorio': 'Lab. de Eletrônica Analógica',
+            'ano': 2026,
+            'mes': 10,
+            'semanaDoMes': 2,
+            'diaSemana': 'Qui',
+            'turno': 'matutino',
+            'periodo': 1,
+            'disciplina': 'Circuitos',
+          },
+        ]),
+      });
       final userContext = UserContextProvider();
       await userContext.login(
         User(
-          id: 'professor-calendario',
+          id: 'professor-data-real',
           name: 'Professor Teste',
-          email: 'professor.calendario@ifma.edu.br',
+          email: 'professor.data@ifma.edu.br',
           role: UserRole.professor,
           createdAt: DateTime(2026),
         ),
@@ -753,81 +809,98 @@ void main() {
           theme: AppTheme.light(),
           home: ChangeNotifierProvider<UserContextProvider>.value(
             value: userContext,
-            child: const AulasPraticasPage(),
+            child: AulasPraticasPage(dataInicial: DateTime(2026, 10, 5)),
           ),
         ),
       );
       await tester.pumpAndSettle();
 
-      const meses = [
-        'Janeiro',
-        'Fevereiro',
-        'Março',
-        'Abril',
-        'Maio',
-        'Junho',
-        'Julho',
-        'Agosto',
-        'Setembro',
-        'Outubro',
-        'Novembro',
-        'Dezembro',
-      ];
-      final agora = DateTime.now();
-      final tituloAtual = '${meses[agora.month - 1]} de ${agora.year}';
-      final tituloFinder = find.text(tituloAtual);
-      await tester.ensureVisible(tituloFinder);
-      await tester.tap(tituloFinder);
-      await tester.pumpAndSettle();
-
-      expect(find.text('Escolher mês e ano'), findsOneWidget);
-      expect(find.text('Mês'), findsOneWidget);
-      expect(find.text('Ano'), findsOneWidget);
-
-      final seletorMes = find.byType(DropdownButton<int>).first;
-      await tester.ensureVisible(seletorMes);
-      await tester.pumpAndSettle();
-      await tester.tap(seletorMes);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Dezembro').last);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Aplicar'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Dezembro de ${agora.year}'), findsOneWidget);
-      final grade = find.byType(GridView).first;
-      await tester.fling(grade, const Offset(-400, 0), 1200);
-      await tester.pumpAndSettle();
-      expect(find.text('Janeiro de ${agora.year + 1}'), findsOneWidget);
-
-      await tester.fling(grade, const Offset(400, 0), 1200);
-      await tester.pumpAndSettle();
-      expect(find.text('Dezembro de ${agora.year}'), findsOneWidget);
-
-      await tester.tap(find.text('Dezembro de ${agora.year}'));
-      await tester.pumpAndSettle();
-      final seletorMesFeriado = find.byType(DropdownButton<int>).first;
-      await tester.ensureVisible(seletorMesFeriado);
-      await tester.pumpAndSettle();
-      await tester.tap(seletorMesFeriado);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Julho').last);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Aplicar'));
-      await tester.pumpAndSettle();
-
-      final feriado = find.bySemanticsLabel(
-        RegExp(r'Dia 28, feriado: Adesão do Maranhão à Independência'),
+      final quinta08 = find.bySemanticsLabel(
+        RegExp(r'Célula Qui, dia 8, Matutino, período 1,'),
       );
-      expect(feriado, findsOneWidget);
-      await tester.tap(feriado);
-      await tester.pumpAndSettle();
       expect(
-        find.text('Adesão do Maranhão à Independência — Estadual — Maranhão'),
-        findsOneWidget,
+        tester.widget<Semantics>(quinta08).properties.value,
+        'Reservado por Outra Pessoa',
       );
-      expect(find.textContaining('pontos facultativos'), findsOneWidget);
-      expect(tester.takeException(), isNull);
+
+      // Tocar na reserva de outra pessoa mostra os detalhes, sem ações.
+      await tester.ensureVisible(quinta08);
+      await tester.tap(quinta08);
+      await tester.pumpAndSettle();
+      expect(find.text('Reservado por'), findsOneWidget);
+      expect(find.text('Outra Pessoa'), findsOneWidget);
+      expect(find.text('Editar reserva'), findsNothing);
     },
   );
+
+  testWidgets('voltar do celular em Laboratórios retorna à agenda', (
+    tester,
+  ) async {
+    final userContext = UserContextProvider();
+    await userContext.login(
+      User(
+        id: 'professor-voltar',
+        name: 'Professor Teste',
+        email: 'professor.voltar@ifma.edu.br',
+        role: UserRole.professor,
+        createdAt: DateTime(2026),
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light(),
+        home: ChangeNotifierProvider<UserContextProvider>.value(
+          value: userContext,
+          child: AulasPraticasPage(dataInicial: DateTime(2026, 10, 5)),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Laboratórios'));
+    await tester.pumpAndSettle();
+    expect(find.text('Voltar para a agenda'), findsNothing);
+
+    // Botão voltar do sistema.
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.text('5 a 9 de out.'), findsOneWidget);
+  });
+
+  testWidgets('Ver agenda no cartão do laboratório abre a agenda dele', (
+    tester,
+  ) async {
+    final userContext = UserContextProvider();
+    await userContext.login(
+      User(
+        id: 'professor-ver-agenda',
+        name: 'Professor Teste',
+        email: 'professor.agenda@ifma.edu.br',
+        role: UserRole.professor,
+        createdAt: DateTime(2026),
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light(),
+        home: ChangeNotifierProvider<UserContextProvider>.value(
+          value: userContext,
+          child: AulasPraticasPage(dataInicial: DateTime(2026, 10, 5)),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Laboratórios'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Todos ('), findsOneWidget);
+
+    final verAgenda = find.text('Ver agenda').first;
+    await tester.ensureVisible(verAgenda);
+    await tester.pumpAndSettle();
+    await tester.tap(verAgenda);
+    await tester.pumpAndSettle();
+    expect(find.text('5 a 9 de out.'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }

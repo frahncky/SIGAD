@@ -23,14 +23,13 @@ void main() {
           ).copyWith(textScaler: const TextScaler.linear(2)),
           child: child!,
         ),
-        home: Scaffold(body: LaboratoriosCatalogoPage(onAbrirReservas: () {})),
+        home: Scaffold(body: LaboratoriosCatalogoPage(onAbrirReservas: (_) {})),
       ),
     );
     await tester.pumpAndSettle();
     await tester.pump(const Duration(seconds: 1));
 
     expect(tester.takeException(), isNull);
-    expect(find.text('Laboratórios'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     await tester.scrollUntilVisible(
       find.text('Lab. de Medidas Elétricas'),
@@ -41,6 +40,11 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Lab. de Medidas Elétricas'));
     await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Responsável técnico'),
+      300,
+      scrollable: find.byType(Scrollable).last,
+    );
     expect(find.text('Responsável técnico'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });

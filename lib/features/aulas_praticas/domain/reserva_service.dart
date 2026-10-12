@@ -301,6 +301,72 @@ abstract final class ReservaService {
 
   static String descricaoSemana(int semana) => '${semana}a semana';
 
+  static const diasUteis = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'];
+
+  /// Bloco de 7 dias do mês em que a data cai (dias 1–7 = 1, 8–14 = 2…).
+  ///
+  /// É a "semana do mês" gravada na reserva. Como cada bloco tem exatamente
+  /// um dia de cada dia da semana, bloco + dia da semana identificam a data.
+  static int semanaDoMesDe(DateTime data) => ((data.day - 1) ~/ 7) + 1;
+
+  /// Abreviação do dia útil ('Seg'…'Sex'), ou nulo no fim de semana.
+  static String? diaSemanaDe(DateTime data) =>
+      data.weekday <= DateTime.friday ? diasUteis[data.weekday - 1] : null;
+
+  /// Data real de uma reserva, ou nulo se os campos não formam uma data.
+  static DateTime? dataDaReserva(ReservaLaboratorio reserva) {
+    final inicio = 7 * (reserva.semanaDoMes - 1) + 1;
+    for (var dia = inicio; dia < inicio + 7; dia++) {
+      final data = DateTime(reserva.ano, reserva.mes, dia);
+      if (data.month != reserva.mes) return null;
+      if (diaSemanaDe(data) == reserva.diaSemana) return data;
+    }
+    return null;
+  }
+
+  /// Reserva do laboratório na data e horário informados.
+  static ReservaLaboratorio? reservaNaData({
+    required List<ReservaLaboratorio> reservas,
+    required String laboratorio,
+    required DateTime data,
+    required Turno turno,
+    required int periodo,
+  }) {
+    final diaSemana = diaSemanaDe(data);
+    if (diaSemana == null) return null;
+    final semana = semanaDoMesDe(data);
+    for (final reserva in reservas) {
+      if (reserva.laboratorio == laboratorio &&
+          reserva.ano == data.year &&
+          reserva.mes == data.month &&
+          reserva.semanaDoMes == semana &&
+          reserva.diaSemana == diaSemana &&
+          reserva.turno == turno &&
+          reserva.periodo == periodo) {
+        return reserva;
+      }
+    }
+    return null;
+  }
+
+  /// Data do dia útil [diaSemana] na mesma semana (segunda a sexta) de [data].
+  static DateTime? diaDaMesmaSemana(DateTime data, String diaSemana) {
+    final indice = diasUteis.indexOf(diaSemana);
+    if (indice < 0) return null;
+    final segunda = segundaDaSemana(data);
+    return DateTime(segunda.year, segunda.month, segunda.day + indice);
+  }
+
+  /// Segunda-feira da semana a mostrar para [data]. No fim de semana,
+  /// avança para a semana seguinte.
+  static DateTime segundaDaSemana(DateTime data) {
+    final dia = DateTime(data.year, data.month, data.day);
+    if (dia.weekday >= DateTime.saturday) {
+      return DateTime(dia.year, dia.month, dia.day + 8 - dia.weekday);
+    }
+    return DateTime(dia.year, dia.month, dia.day - (dia.weekday - DateTime.monday));
+  }
+
   static String? validateDisciplina(String? disciplina) {
     final normalized = disciplina?.trim();
     if (normalized == null || normalized.isEmpty) {
