@@ -1,6 +1,5 @@
 {
   "@@locale": "pt",
-
   "cancelar": "Cancelar",
   "fechar": "Fechar",
   "sair": "Sair",
@@ -8,7 +7,6 @@
   "verTudo": "Ver tudo",
   "tentarNovamente": "Tentar novamente",
   "acessoRapido": "Acesso rápido",
-
   "navVisaoGeral": "Visão geral",
   "navVisaoGeralSub": "Indicadores, prioridades e atalhos",
   "navBatePapo": "Bate-papo",
@@ -33,7 +31,6 @@
   "navAnotacoes": "Anotações",
   "navMais": "Mais",
   "navMural": "Mural do departamento",
-
   "notificacoes": "Notificações",
   "perfil": "Perfil",
   "nenhumaNotificacao": "Nenhuma notificação no momento.",
@@ -41,12 +38,10 @@
   "nenhumModulo": "Nenhum módulo encontrado.",
   "confirmarSaida": "Confirmar saída",
   "confirmarSaidaMensagem": "Tem certeza de que deseja sair da aplicação?",
-
   "perfilProfessor": "Professor",
   "perfilCoordenador": "Coordenador de Curso",
   "perfilServidor": "Servidor Administrativo",
   "perfilChefe": "Chefe do Departamento",
-
   "entrar": "Entrar",
   "perfilDemonstracao": "Perfil de demonstração",
   "emailInstitucional": "Email institucional",
@@ -67,33 +62,76 @@
   "loginDestaquePlanejamento": "Planejamento integrado",
   "loginDestaqueLaboratorios": "Gestão de laboratórios",
   "loginDestaqueIndicadores": "Indicadores e relatórios",
-
   "boasVindas": "Boas-vindas",
   "avisos": "Avisos",
   "quantidadeAvisos": "{count, plural, =0{0 avisos} =1{1 aviso} other{{count} avisos}}",
-  "@quantidadeAvisos": {"placeholders": {"count": {"type": "int"}}},
+  "@quantidadeAvisos": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "verTodosAvisos": "Ver todos os avisos",
   "resumoDepartamento": "Resumo do departamento",
   "bomDia": "Bom dia",
   "boaTarde": "Boa tarde",
   "boaNoite": "Boa noite",
   "saudacaoComNome": "{saudacao}, {nome}!",
-  "@saudacaoComNome": {"placeholders": {"saudacao": {"type": "String"}, "nome": {"type": "String"}}},
+  "@saudacaoComNome": {
+    "placeholders": {
+      "saudacao": {
+        "type": "String"
+      },
+      "nome": {
+        "type": "String"
+      }
+    }
+  },
   "saudacaoSemNome": "{saudacao}!",
-  "@saudacaoSemNome": {"placeholders": {"saudacao": {"type": "String"}}},
+  "@saudacaoSemNome": {
+    "placeholders": {
+      "saudacao": {
+        "type": "String"
+      }
+    }
+  },
   "fraseSemCadastro": "Cada pequena entrega de hoje constrói o departamento de amanhã.",
   "departamentoCampus": "Departamento de Eletroeletrônica",
   "mostrarSlide": "Mostrar {rotulo}",
-  "@mostrarSlide": {"placeholders": {"rotulo": {"type": "String"}}},
-
+  "@mostrarSlide": {
+    "placeholders": {
+      "rotulo": {
+        "type": "String"
+      }
+    }
+  },
   "dadosIndisponiveis": "Dados indisponíveis. Puxe para atualizar.",
   "atualizandoInformacoes": "Atualizando informações",
   "atividadesRegistradas": "{count, plural, =0{0 atividades registradas} =1{1 atividade registrada} other{{count} atividades registradas}}",
-  "@atividadesRegistradas": {"placeholders": {"count": {"type": "int"}}},
+  "@atividadesRegistradas": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "itensFluxo": "{count, plural, =0{0 itens no fluxo de trabalho} =1{1 item no fluxo de trabalho} other{{count} itens no fluxo de trabalho}}",
-  "@itensFluxo": {"placeholders": {"count": {"type": "int"}}},
+  "@itensFluxo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "demandasRegistradas": "{count, plural, =0{0 demandas registradas} =1{1 demanda registrada} other{{count} demandas registradas}}",
-  "@demandasRegistradas": {"placeholders": {"count": {"type": "int"}}},
+  "@demandasRegistradas": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "atividadesDepartamento": "Atividades do departamento",
   "quadroTrabalho": "Quadro de trabalho",
   "demandasDepartamento": "Demandas do departamento",
@@ -103,7 +141,16 @@
   "atencaoAgoraSub": "Itens abertos ordenados por impacto",
   "nenhumaDemandaAberta": "Nenhuma demanda aberta.",
   "responsavelPrazo": "{responsavel} • prazo {prazo}",
-  "@responsavelPrazo": {"placeholders": {"responsavel": {"type": "String"}, "prazo": {"type": "String"}}},
+  "@responsavelPrazo": {
+    "placeholders": {
+      "responsavel": {
+        "type": "String"
+      },
+      "prazo": {
+        "type": "String"
+      }
+    }
+  },
   "proximasAtividades": "Próximas atividades",
   "proximasAtividadesSub": "Compromissos que ainda pedem atenção",
   "nenhumaAtividadeAberta": "Nenhuma atividade aberta.",
@@ -112,7 +159,6 @@
   "escolhaAtalhos": "Escolha quais atalhos do menu aparecem na visão geral.",
   "personalizarAtalhos": "Personalizar atalhos",
   "nenhumAtalho": "Nenhum atalho selecionado. Toque no ícone acima para escolher.",
-
   "minhaConta": "Minha conta",
   "nome": "Nome",
   "email": "E-mail",
@@ -132,7 +178,13 @@
   "sobre": "Sobre",
   "sobreSigad": "Sobre o SIGAD",
   "versaoBuild": "Versão {versao}",
-  "@versaoBuild": {"placeholders": {"versao": {"type": "String"}}},
+  "@versaoBuild": {
+    "placeholders": {
+      "versao": {
+        "type": "String"
+      }
+    }
+  },
   "sairDaConta": "Sair da conta",
   "fecharSobre": "Fechar sobre o SIGAD",
   "versao": "Versão",
@@ -142,5 +194,460 @@
   "compatibilidade": "Compatibilidade",
   "sobreDescricao": "O SIGAD é um sistema integrado de gestão acadêmica desenvolvido para otimizar processos administrativos e acadêmicos.",
   "sairPergunta": "Tem certeza que deseja sair da aplicação?",
-  "facaLogin": "Faça login para acessar configurações."
+  "facaLogin": "Faça login para acessar configurações.",
+  "salvar": "Salvar",
+  "excluir": "Excluir",
+  "continuar": "Continuar",
+  "reservar": "Reservar",
+  "hoje": "Hoje",
+  "feriado": "Feriado",
+  "detalhes": "Detalhes",
+  "erroSalvar": "Não foi possível salvar. Tente novamente.",
+  "diaSeg": "Seg",
+  "diaTer": "Ter",
+  "diaQua": "Qua",
+  "diaQui": "Qui",
+  "diaSex": "Sex",
+  "diaSegunda": "segunda-feira",
+  "diaTerca": "terça-feira",
+  "diaQuarta": "quarta-feira",
+  "diaQuinta": "quinta-feira",
+  "diaSexta": "sexta-feira",
+  "turnoTodos": "Todos",
+  "turnoManha": "Manhã",
+  "turnoTarde": "Tarde",
+  "turnoNoite": "Noite",
+  "turnoMatutino": "Matutino",
+  "turnoVespertino": "Tarde",
+  "turnoNoturno": "Noite",
+  "mesAbrev": "{mes, select, 1{jan.} 2{fev.} 3{mar.} 4{abr.} 5{maio} 6{jun.} 7{jul.} 8{ago.} 9{set.} 10{out.} 11{nov.} other{dez.}}",
+  "@mesAbrev": {
+    "placeholders": {
+      "mes": {
+        "type": "String"
+      }
+    }
+  },
+  "labAgenda": "Agenda",
+  "labErroCarregar": "Não foi possível carregar as reservas.",
+  "labIrParaSemana": "Ir para a semana de",
+  "labSugestoes": "Sugestões de horários",
+  "labSugestoesSub": "Ocupação da semana e horários livres",
+  "labSomenteDocentes": "Somente perfis docentes podem reservar horários.",
+  "labHorarioOcupado": "Esse horário já está ocupado. Escolha outro horário livre.",
+  "labReservaFeita": "Reserva feita: {lab}, {dia} {data}, {horario}.",
+  "@labReservaFeita": {
+    "placeholders": {
+      "lab": {
+        "type": "String"
+      },
+      "dia": {
+        "type": "String"
+      },
+      "data": {
+        "type": "String"
+      },
+      "horario": {
+        "type": "String"
+      }
+    }
+  },
+  "labHorariosReservados": "{count, plural, =1{1 horário reservado.} other{{count} horários reservados.}}",
+  "@labHorariosReservados": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "labJaOcupados": "{count, plural, =1{1 já estava ocupado.} other{{count} já estavam ocupados.}}",
+  "@labJaOcupados": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "labErroOperacao": "Não foi possível concluir a operação. Tente novamente.",
+  "labEditarOcorrencias": "Editar ocorrências",
+  "labRepeteEditar": "Essa reserva se repete em {count} ocorrências. Selecione quais você quer editar.",
+  "@labRepeteEditar": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "labRepeteExcluir": "Essa reserva se repete em {count} ocorrências. Selecione quais você quer excluir.",
+  "@labRepeteExcluir": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "labNovoHorarioOcupado": "Não foi possível salvar: o novo horário já está ocupado em todas as ocorrências selecionadas.",
+  "labReservaAtualizada": "Reserva atualizada.",
+  "labOcorrenciasAtualizadas": "{count} ocorrências atualizadas.",
+  "@labOcorrenciasAtualizadas": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "labNaoMovidas": "{count} não puderam ser movidas (horário ocupado).",
+  "@labNaoMovidas": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "labExcluirOcorrencias": "Excluir ocorrências",
+  "labRevisarExclusao": "Revisar exclusão",
+  "labExcluirReserva": "Excluir reserva",
+  "labRemoverUma": "Deseja remover a reserva de {ocorrencia} no {lab}?",
+  "@labRemoverUma": {
+    "placeholders": {
+      "ocorrencia": {
+        "type": "String"
+      },
+      "lab": {
+        "type": "String"
+      }
+    }
+  },
+  "labRemoverVarias": "Deseja remover as {count} ocorrências selecionadas no {lab}?",
+  "@labRemoverVarias": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "lab": {
+        "type": "String"
+      }
+    }
+  },
+  "labReservaRemovida": "Reserva removida.",
+  "labOcorrenciasRemovidas": "{count} ocorrências removidas.",
+  "@labOcorrenciasRemovidas": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "labFacaLogin": "Faça login para reservar horários.",
+  "labSemSugestoes": "Não há horários livres sugeridos para esta semana.",
+  "labReservarSugeridoTitulo": "Reservar horário sugerido?",
+  "labReservaNoSeuNome": "A reserva fica no seu nome.",
+  "labSugestaoIndisponivel": "A sugestão ficou indisponível. Tente novamente.",
+  "labEditarReserva": "Editar reserva",
+  "labDisciplinaOpcional": "Disciplina (opcional)",
+  "labDiaSemana": "Dia da semana",
+  "labHorario": "Horário",
+  "labHorarioJaOcupado": "Horário já ocupado",
+  "labLaboratorio": "Laboratório",
+  "labSemanaMesmoMes": "{inicio} a {fim} de {mes}",
+  "@labSemanaMesmoMes": {
+    "placeholders": {
+      "inicio": {
+        "type": "int"
+      },
+      "fim": {
+        "type": "int"
+      },
+      "mes": {
+        "type": "String"
+      }
+    }
+  },
+  "labSemanaDoisMeses": "{inicio} de {mesInicio} a {fim} de {mesFim}",
+  "@labSemanaDoisMeses": {
+    "placeholders": {
+      "inicio": {
+        "type": "int"
+      },
+      "mesInicio": {
+        "type": "String"
+      },
+      "fim": {
+        "type": "int"
+      },
+      "mesFim": {
+        "type": "String"
+      }
+    }
+  },
+  "labSemanaAnterior": "Semana anterior",
+  "labProximaSemana": "Próxima semana",
+  "labSemanaSemantica": "Semana de {rotulo} de {ano}. Escolher outra data",
+  "@labSemanaSemantica": {
+    "placeholders": {
+      "rotulo": {
+        "type": "String"
+      },
+      "ano": {
+        "type": "String"
+      }
+    }
+  },
+  "labEstaSemana": "Esta semana",
+  "labHorarioLivre": "Horário livre",
+  "labMinhaReserva": "Minha reserva",
+  "labReservadoPorOutro": "Reservado por outro",
+  "labArrasteAgenda": "Arraste a agenda para o lado para ver todos os dias.",
+  "labCabecalhoDia": "{dia}, {data}",
+  "@labCabecalhoDia": {
+    "placeholders": {
+      "dia": {
+        "type": "String"
+      },
+      "data": {
+        "type": "String"
+      }
+    }
+  },
+  "labHojeSufixo": ", hoje",
+  "labFeriadoSufixo": ", feriado: {nome}",
+  "@labFeriadoSufixo": {
+    "placeholders": {
+      "nome": {
+        "type": "String"
+      }
+    }
+  },
+  "labCelula": "Célula {dia}, dia {numero}, {turno}, período {periodo}, horário {horario}.",
+  "@labCelula": {
+    "placeholders": {
+      "dia": {
+        "type": "String"
+      },
+      "numero": {
+        "type": "int"
+      },
+      "turno": {
+        "type": "String"
+      },
+      "periodo": {
+        "type": "int"
+      },
+      "horario": {
+        "type": "String"
+      }
+    }
+  },
+  "labLivre": "Livre",
+  "labReservadoPor": "Reservado por {nome}",
+  "@labReservadoPor": {
+    "placeholders": {
+      "nome": {
+        "type": "String"
+      }
+    }
+  },
+  "labToqueDetalhes": "Toque para ver os detalhes da reserva.",
+  "labToqueReservar": "Toque para reservar.",
+  "labDetalhesReserva": "Detalhes da reserva",
+  "labReservaDeLaboratorio": "Reserva de laboratório",
+  "labSuaReserva": "Sua reserva",
+  "labData": "Data",
+  "labReservadoPorRotulo": "Reservado por",
+  "labSoQuemFez": "Só quem fez a reserva ou a chefia pode alterá-la.",
+  "labAcessoRestrito": "Acesso restrito",
+  "labAcessoRestritoMsg": "Este módulo está disponível para professor, coordenador e chefe do departamento.",
+  "labOtimizacao": "Otimização de laboratórios",
+  "labReservarSugestao": "Reservar sugestão",
+  "labOcupadoNaSemana": "ocupado na semana em {lab}",
+  "@labOcupadoNaSemana": {
+    "placeholders": {
+      "lab": {
+        "type": "String"
+      }
+    }
+  },
+  "labIndicadorOcupacao": "{lab}: {taxa}% · {livres} livres",
+  "@labIndicadorOcupacao": {
+    "placeholders": {
+      "lab": {
+        "type": "String"
+      },
+      "taxa": {
+        "type": "String"
+      },
+      "livres": {
+        "type": "int"
+      }
+    }
+  },
+  "labSugestoesSlots": "Sugestões de horários livres",
+  "labRecomendacoesCruzadas": "Recomendações cruzadas com carga docente",
+  "labRecomendacao": "{nome}: priorizar {lab} em {dia} {horario} para aliviar carga em turmas práticas.",
+  "@labRecomendacao": {
+    "placeholders": {
+      "nome": {
+        "type": "String"
+      },
+      "lab": {
+        "type": "String"
+      },
+      "dia": {
+        "type": "String"
+      },
+      "horario": {
+        "type": "String"
+      }
+    }
+  },
+  "labAvisoInterditado": "Este laboratório está interditado. Confirme com a chefia antes de reservar.",
+  "labAvisoManutencao": "Este laboratório está em manutenção. Confirme se ele estará disponível antes de reservar.",
+  "labTodosCount": "Todos ({count})",
+  "@labTodosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "labStatusCount": "{status} ({count})",
+  "@labStatusCount": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "labOcorrenciaRegistrada": "Ocorrência registrada.",
+  "labMarcarResolvida": "Marcar como resolvida?",
+  "labDeixaraDeContar": "\"{titulo}\" deixará de contar como ativa.",
+  "@labDeixaraDeContar": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "labResolvida": "Resolvida",
+  "labOcorrenciaResolvidaMsg": "Ocorrência marcada como resolvida.",
+  "labReportarProblema": "Reportar problema",
+  "labProximasReservas": "Próximas reservas",
+  "labVerAgenda": "Ver agenda",
+  "labNenhumaReservaFutura": "Nenhuma reserva futura para este laboratório.",
+  "labEquipamentos": "Equipamentos",
+  "labNenhumEquipamento": "Nenhum equipamento cadastrado.",
+  "labUnidades": "{count, plural, =1{1 unidade} other{{count} unidades}}",
+  "@labUnidades": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "labManutencao": "Manutenção",
+  "labConcluida": "Concluída",
+  "labEmAndamento": "Em andamento",
+  "labOcorrencias": "Ocorrências",
+  "labResolverOcorrencia": "Resolver ocorrência: {titulo}",
+  "@labResolverOcorrencia": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "labResolver": "Resolver",
+  "labOperando": "Operando",
+  "labEmManutencao": "Em manutenção",
+  "labInterditado": "Interditado",
+  "labReservasNoMes": "Reservas no mês",
+  "labOcorrenciasAtivas": "Ocorrências ativas",
+  "labCapacidadePessoas": "Capacidade: {count} pessoas",
+  "@labCapacidadePessoas": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "labPessoas": "{count} pessoas",
+  "@labPessoas": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "labEquipamentosDisponiveisCount": "{count, plural, =0{0 equipamentos disponíveis} =1{1 equipamento disponível} other{{count} equipamentos disponíveis}}",
+  "@labEquipamentosDisponiveisCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "labReservasNesteMes": "{count, plural, =0{0 reservas neste mês} =1{1 reserva neste mês} other{{count} reservas neste mês}}",
+  "@labReservasNesteMes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "labOcorrenciasAtivasCount": "{count, plural, =1{1 ocorrência ativa} other{{count} ocorrências ativas}}",
+  "@labOcorrenciasAtivasCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "labCapacidade": "Capacidade",
+  "labResponsavelTecnico": "Responsável técnico",
+  "labEquipamentosDisponiveis": "Equipamentos disponíveis",
+  "labNenhumLabStatus": "Nenhum laboratório encontrado com este status.",
+  "labDisponivel": "Disponível",
+  "labEmUso": "Em uso",
+  "labIndisponivel": "Indisponível",
+  "labRegistrarOcorrencia": "Registrar ocorrência",
+  "labOQueAconteceu": "O que aconteceu?",
+  "labExemploProblema": "Ex.: Osciloscópio da bancada 3 não liga",
+  "labDescrevaProblema": "Descreva o problema em poucas palavras.",
+  "labDetalhesOpcional": "Detalhes (opcional)",
+  "labDetalhesHint": "Onde, desde quando e o que já foi tentado.",
+  "labSemDadosPessoais": "Não inclua nomes, matrículas ou dados pessoais.",
+  "labSoEstaSemana": "Só esta semana",
+  "labEstaEMais": "{count, plural, =1{Esta e mais 1 semana} other{Esta e mais {count} semanas}}",
+  "@labEstaEMais": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "labReservarHorario": "Reservar horário",
+  "labHorarioEMais": "{count, plural, =1{{horario} e mais 1 horário} other{{horario} e mais {count} horários}}",
+  "@labHorarioEMais": {
+    "placeholders": {
+      "horario": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "labRepetir": "Repetir",
+  "labRepeticaoAte": "A repetição vai no máximo até {data}, fim do mês.",
+  "@labRepeticaoAte": {
+    "placeholders": {
+      "data": {
+        "type": "String"
+      }
+    }
+  },
+  "labOutrosHorarios": "Reservar outros horários deste dia"
 }

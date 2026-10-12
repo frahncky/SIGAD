@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../l10n/l10n.dart';
+import '../laboratorio_l10n.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
@@ -76,8 +78,9 @@ class DialogDisciplinaSemanasReservaState
     });
   }
 
-  String _rotuloSemanas(int total) =>
-      total == 1 ? 'Só esta semana' : 'Esta e mais ${total - 1} semana(s)';
+  String _rotuloSemanas(int total) => total == 1
+      ? context.l10n.labSoEstaSemana
+      : context.l10n.labEstaEMais(total - 1);
 
   @override
   Widget build(BuildContext context) {
@@ -98,8 +101,8 @@ class DialogDisciplinaSemanasReservaState
     );
 
     return TelaFormularioReserva(
-      titulo: 'Reservar horário',
-      acaoLabel: 'Reservar',
+      titulo: context.l10n.labReservarHorario,
+      acaoLabel: context.l10n.reservar,
       acaoIcone: SigadIcons.eventoConfirmado,
       onAcao: _confirmar,
       children: [
@@ -109,16 +112,18 @@ class DialogDisciplinaSemanasReservaState
           SigadIcons.relogio,
           extras == 0
               ? widget.horarioInicial
-              : '${widget.horarioInicial} e mais $extras horário(s)',
+              : context.l10n.labHorarioEMais(widget.horarioInicial, extras),
         ),
         const SizedBox(height: 16),
         TextField(
           controller: _disciplinaController,
           textCapitalization: TextCapitalization.sentences,
-          decoration: const InputDecoration(labelText: 'Disciplina (opcional)'),
+          decoration: InputDecoration(
+            labelText: context.l10n.labDisciplinaOpcional,
+          ),
         ),
         const SizedBox(height: 16),
-        Text('Repetir', style: textTheme.labelLarge),
+        Text(context.l10n.labRepetir, style: textTheme.labelLarge),
         DropdownButton<int>(
           isExpanded: true,
           value: _totalSemanas.clamp(1, maxSemanas),
@@ -134,8 +139,7 @@ class DialogDisciplinaSemanasReservaState
           },
         ),
         Text(
-          'A repetição vai no máximo até ${widget.ultimoDiaDoMes}, '
-          'fim do mês.',
+          context.l10n.labRepeticaoAte(widget.ultimoDiaDoMes),
           style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
         ),
         const SizedBox(height: 8),
@@ -146,13 +150,13 @@ class DialogDisciplinaSemanasReservaState
             childrenPadding: EdgeInsets.zero,
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             title: Text(
-              'Reservar outros horários deste dia',
+              context.l10n.labOutrosHorarios,
               style: textTheme.labelLarge,
             ),
             children: [
               for (final turno in Turno.values) ...[
                 Text(
-                  turno.label,
+                  context.l10n.turno(turno),
                   style: textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: turno.chipTextColor,
@@ -225,7 +229,7 @@ class _PeriodoChip extends StatelessWidget {
       ),
       selected: selecionado,
       onSelected: ocupado ? null : (_) => onTap(),
-      tooltip: ocupado ? 'Horário já ocupado' : null,
+      tooltip: ocupado ? context.l10n.labHorarioJaOcupado : null,
     );
   }
 }

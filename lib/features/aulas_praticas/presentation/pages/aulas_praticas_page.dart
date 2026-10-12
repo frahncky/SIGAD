@@ -20,6 +20,8 @@ import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../../../../shared/widgets/horizontal_scroll_hint.dart';
 import '../../../../shared/widgets/icon_avatar.dart';
+import '../../../../l10n/l10n.dart';
+import '../laboratorio_l10n.dart';
 import '../widgets/dialog_disciplina_semanas_reserva.dart';
 import 'laboratorios_catalogo_page.dart';
 
@@ -31,28 +33,6 @@ class _ResultadoReserva {
 }
 
 enum _AcaoReserva { editar, excluir }
-
-const _mesesAbrev = [
-  'jan.',
-  'fev.',
-  'mar.',
-  'abr.',
-  'maio',
-  'jun.',
-  'jul.',
-  'ago.',
-  'set.',
-  'out.',
-  'nov.',
-  'dez.',
-];
-
-String _dataCurta(DateTime data) =>
-    '${data.day.toString().padLeft(2, '0')}/${data.month.toString().padLeft(2, '0')}';
-
-String _dataPorExtenso(DateTime data) =>
-    '${ReservaService.diaCompleto(ReservaService.diaSemanaDe(data) ?? '')}, '
-    '${_dataCurta(data)}/${data.year}';
 
 String _horarioLegivel(String horario) => horario.replaceAll('-', '–');
 
@@ -85,6 +65,15 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   bool _carregando = true;
   String? _laboratorioSelecionado;
   late DateTime _segunda;
+
+  /// Textos no idioma atual (atualizado se o idioma mudar).
+  late AppLocalizations _l10n;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _l10n = context.l10n;
+  }
 
   @override
   void initState() {
@@ -119,7 +108,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         error,
         stackTrace: stackTrace,
       );
-      _showError('Não foi possível carregar as reservas.');
+      _showError(_l10n.labErroCarregar);
     } finally {
       if (mounted) setState(() => _carregando = false);
     }
@@ -130,7 +119,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       await _reservaRepository.saveReservas(_reservas);
       return true;
     } catch (e) {
-      _showError('Não foi possível salvar. Tente novamente.');
+      _showError(_l10n.erroSalvar);
       return false;
     }
   }
@@ -229,7 +218,12 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       final docente = altaCarga[index];
       final sugestao = sugestoes[index];
       recomendacoes.add(
-        '${docente.nome.split(' ').first}: priorizar ${sugestao.laboratorio} em ${sugestao.diaSemana} ${sugestao.horario} para aliviar carga em turmas práticas.',
+        _l10n.labRecomendacao(
+          docente.nome.split(' ').first,
+          sugestao.laboratorio,
+          _l10n.diaAbrev(sugestao.diaSemana),
+          sugestao.horario,
+        ),
       );
     }
 
@@ -253,7 +247,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       initialDate: _segunda,
       firstDate: DateTime(2020),
       lastDate: DateTime(2100, 12, 31),
-      helpText: 'Ir para a semana de',
+      helpText: _l10n.labIrParaSemana,
     );
     if (escolhida != null) {
       setState(() => _segunda = ReservaService.segundaDaSemana(escolhida));
@@ -329,16 +323,16 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         width: double.infinity,
         child: SegmentedButton<bool>(
           showSelectedIcon: false,
-          segments: const [
+          segments: [
             ButtonSegment(
               value: false,
-              icon: SigadIcon(SigadIcons.calendarioSemana),
-              label: Text('Agenda'),
+              icon: const SigadIcon(SigadIcons.calendarioSemana),
+              label: Text(_l10n.labAgenda),
             ),
             ButtonSegment(
               value: true,
-              icon: SigadIcon(SigadIcons.laboratorio),
-              label: Text('Laboratórios'),
+              icon: const SigadIcon(SigadIcons.laboratorio),
+              label: Text(_l10n.navLaboratorios),
             ),
           ],
           selected: {_mostrarCatalogo},
@@ -444,10 +438,8 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                           clipBehavior: Clip.antiAlias,
                           child: ExpansionTile(
                             leading: const SigadIcon(SigadIcons.analise),
-                            title: const Text('Sugestões de horários'),
-                            subtitle: const Text(
-                              'Ocupação da semana e horários livres',
-                            ),
+                            title: Text(_l10n.labSugestoes),
+                            subtitle: Text(_l10n.labSugestoesSub),
                             childrenPadding: const EdgeInsets.fromLTRB(
                               12,
                               0,
@@ -498,7 +490,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
       if (user == null ||
           !ReservaService.canChangeReservation(user: user, role: role)) {
-        _showInfo('Somente perfis docentes podem reservar horários.');
+        _showInfo(_l10n.labSomenteDocentes);
         return;
       }
       final currentUser = user;
@@ -513,10 +505,10 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         MaterialPageRoute(
           fullscreenDialog: true,
           builder: (_) => DialogDisciplinaSemanasReserva(
-            diaSemanaCompleto: _dataPorExtenso(data),
+            diaSemanaCompleto: _l10n.dataPorExtenso(data),
             laboratorio: _laboratorioSelecionadoValido,
             horarioInicial: _horarioLegivel(turno.horarioDo(periodo)),
-            ultimoDiaDoMes: _dataCurta(ultimoDiaDoMes),
+            ultimoDiaDoMes: _l10n.dataCurta(ultimoDiaDoMes),
             maxSemanas: ((ultimoDiaDoMes.day - data.day) ~/ 7) + 1,
             horarios: ReservaService.gerarLinhasGrade(),
             turnoInicial: turno,
@@ -571,7 +563,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       });
 
       if (totalCriadas == 0) {
-        _showInfo('Esse horário já está ocupado. Escolha outro horário livre.');
+        _showInfo(_l10n.labHorarioOcupado);
         return;
       }
 
@@ -591,16 +583,19 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
       _showSuccess(
         totalCriadas == 1
-            ? 'Reserva feita: $_laboratorioSelecionadoValido, '
-                  '${ReservaService.diaSemanaDe(data)} ${_dataCurta(data)}, '
-                  '${_horarioLegivel(turno.horarioDo(periodo))}.'
-            : '$totalCriadas horários reservados.'
-                  '${totalJaOcupadas > 0 ? ' $totalJaOcupadas já estavam ocupados.' : ''}',
+            ? _l10n.labReservaFeita(
+                _laboratorioSelecionadoValido,
+                _l10n.diaAbrev(ReservaService.diaSemanaDe(data) ?? ''),
+                _l10n.dataCurta(data),
+                _horarioLegivel(turno.horarioDo(periodo)),
+              )
+            : '${_l10n.labHorariosReservados(totalCriadas)}'
+                  '${totalJaOcupadas > 0 ? ' ${_l10n.labJaOcupados(totalJaOcupadas)}' : ''}',
       );
     } catch (error, stackTrace) {
       AppEventLogger.error('reserva_error', error, stackTrace: stackTrace);
 
-      _showError('Não foi possível concluir a operação. Tente novamente.');
+      _showError(_l10n.labErroOperacao);
     }
   }
 
@@ -669,8 +664,8 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   String _rotuloOcorrencia(ReservaLaboratorio ocorrencia) {
     final data = ReservaService.dataDaReserva(ocorrencia);
     final dia = data == null
-        ? ReservaService.diaCompleto(ocorrencia.diaSemana)
-        : _dataPorExtenso(data);
+        ? _l10n.diaCompleto(ocorrencia.diaSemana)
+        : _l10n.dataPorExtenso(data);
     return '$dia · ${_horarioLegivel(ocorrencia.turno.horarioDo(ocorrencia.periodo))}';
   }
 
@@ -704,12 +699,11 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     var idsSelecionados = {reservaAtual.id};
     if (grupo.length > 1) {
       final selecionados = await _selecionarOcorrencias(
-        titulo: 'Editar ocorrências',
-        mensagem:
-            'Essa reserva se repete em ${grupo.length} ocorrências. Selecione quais você quer editar.',
+        titulo: _l10n.labEditarOcorrencias,
+        mensagem: _l10n.labRepeteEditar(grupo.length),
         grupo: grupo,
         selecionadosIniciais: {reservaAtual.id},
-        labelConfirmar: 'Continuar',
+        labelConfirmar: _l10n.continuar,
       );
       if (selecionados == null || selecionados.isEmpty) return;
       idsSelecionados = selecionados;
@@ -779,9 +773,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     });
 
     if (totalAtualizadas == 0) {
-      _showInfo(
-        'Não foi possível salvar: o novo horário já está ocupado em todas as ocorrências selecionadas.',
-      );
+      _showInfo(_l10n.labNovoHorarioOcupado);
       return;
     }
 
@@ -801,9 +793,9 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
     _showSuccess(
       totalAtualizadas == 1
-          ? 'Reserva atualizada.'
-          : '$totalAtualizadas ocorrências atualizadas.'
-                '${totalConflitos > 0 ? ' $totalConflitos não puderam ser movidas (horário ocupado).' : ''}',
+          ? _l10n.labReservaAtualizada
+          : '${_l10n.labOcorrenciasAtualizadas(totalAtualizadas)}'
+                '${totalConflitos > 0 ? ' ${_l10n.labNaoMovidas(totalConflitos)}' : ''}',
     );
   }
 
@@ -814,12 +806,11 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     var idsSelecionados = {reservaAtual.id};
     if (grupo.length > 1) {
       final selecionados = await _selecionarOcorrencias(
-        titulo: 'Excluir ocorrências',
-        mensagem:
-            'Essa reserva se repete em ${grupo.length} ocorrências. Selecione quais você quer excluir.',
+        titulo: _l10n.labExcluirOcorrencias,
+        mensagem: _l10n.labRepeteExcluir(grupo.length),
         grupo: grupo,
         selecionadosIniciais: const {},
-        labelConfirmar: 'Revisar exclusão',
+        labelConfirmar: _l10n.labRevisarExclusao,
       );
       if (selecionados == null || selecionados.isEmpty) return;
       idsSelecionados = selecionados;
@@ -830,11 +821,14 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     );
     final unica = ocorrenciasSelecionadas.singleOrNull;
     final confirmarExclusao = await _confirmarAcao(
-      titulo: 'Excluir reserva',
+      titulo: _l10n.labExcluirReserva,
       mensagem: unica != null
-          ? 'Deseja remover a reserva de ${_rotuloOcorrencia(unica)} no ${unica.laboratorio}?'
-          : 'Deseja remover as ${idsSelecionados.length} ocorrências selecionadas no ${reservaAtual.laboratorio}?',
-      confirmarLabel: 'Excluir',
+          ? _l10n.labRemoverUma(_rotuloOcorrencia(unica), unica.laboratorio)
+          : _l10n.labRemoverVarias(
+              idsSelecionados.length,
+              reservaAtual.laboratorio,
+            ),
+      confirmarLabel: _l10n.excluir,
       isDelete: true,
     );
 
@@ -857,8 +851,8 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
     _showSuccess(
       idsSelecionados.length == 1
-          ? 'Reserva removida.'
-          : '${idsSelecionados.length} ocorrências removidas.',
+          ? _l10n.labReservaRemovida
+          : _l10n.labOcorrenciasRemovidas(idsSelecionados.length),
     );
   }
 
@@ -895,18 +889,18 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     final role = userContext.userRole;
 
     if (!ReservaService.canChangeReservation(user: user, role: role)) {
-      _showInfo('Somente perfis docentes podem reservar horários.');
+      _showInfo(_l10n.labSomenteDocentes);
       return;
     }
 
     if (user == null) {
-      _showInfo('Faça login para reservar horários.');
+      _showInfo(_l10n.labFacaLogin);
       return;
     }
 
     final sugestoes = _sugestoesReserva;
     if (sugestoes.isEmpty) {
-      _showInfo('Não há horários livres sugeridos para esta semana.');
+      _showInfo(_l10n.labSemSugestoes);
       return;
     }
 
@@ -921,11 +915,11 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     final horario = _horarioLegivel(sugestao.horario);
 
     final confirmar = await _confirmarAcao(
-      titulo: 'Reservar horário sugerido?',
+      titulo: _l10n.labReservarSugeridoTitulo,
       mensagem:
-          '${sugestao.laboratorio}\n${_dataPorExtenso(data)}, $horario.\n\n'
-          'A reserva fica no seu nome.',
-      confirmarLabel: 'Reservar',
+          '${sugestao.laboratorio}\n${_l10n.dataPorExtenso(data)}, $horario.\n\n'
+          '${_l10n.labReservaNoSeuNome}',
+      confirmarLabel: _l10n.reservar,
     );
     if (!confirmar) return;
 
@@ -939,7 +933,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         ) !=
         null;
     if (jaOcupado) {
-      _showInfo('A sugestão ficou indisponível. Tente novamente.');
+      _showInfo(_l10n.labSugestaoIndisponivel);
       return;
     }
 
@@ -974,8 +968,12 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     );
 
     _showSuccess(
-      'Reserva feita: ${sugestao.laboratorio}, ${sugestao.diaSemana} '
-      '${_dataCurta(data)}, $horario.',
+      _l10n.labReservaFeita(
+        sugestao.laboratorio,
+        _l10n.diaAbrev(sugestao.diaSemana),
+        _l10n.dataCurta(data),
+        horario,
+      ),
     );
   }
 
@@ -994,7 +992,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Cancelar'),
+              child: Text(_l10n.cancelar),
             ),
             FilledButton(
               style: isDelete
@@ -1066,8 +1064,8 @@ class _DialogEditarReservaState extends State<_DialogEditarReserva> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return TelaFormularioReserva(
-      titulo: 'Editar reserva',
-      acaoLabel: 'Salvar',
+      titulo: context.l10n.labEditarReserva,
+      acaoLabel: context.l10n.salvar,
       acaoIcone: SigadIcons.salvar,
       onAcao: () => Navigator.of(context).pop({
         'diaSemana': _diaSelecionado,
@@ -1078,11 +1076,13 @@ class _DialogEditarReservaState extends State<_DialogEditarReserva> {
       children: [
         TextField(
           controller: _disciplinaController,
-          decoration: const InputDecoration(labelText: 'Disciplina (opcional)'),
+          decoration: InputDecoration(
+            labelText: context.l10n.labDisciplinaOpcional,
+          ),
         ),
         const SizedBox(height: 16),
         Text(
-          'Dia da semana',
+          context.l10n.labDiaSemana,
           style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 6),
@@ -1100,13 +1100,13 @@ class _DialogEditarReservaState extends State<_DialogEditarReserva> {
         ),
         const SizedBox(height: 16),
         Text(
-          'Horário',
+          context.l10n.labHorario,
           style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 6),
         for (final turno in Turno.values) ...[
           Text(
-            turno.label,
+            context.l10n.turno(turno),
             style: textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.w700,
               color: turno.chipTextColor,
@@ -1143,7 +1143,9 @@ class _DialogEditarReservaState extends State<_DialogEditarReserva> {
                             : null,
                       ),
                       selected: selecionado,
-                      tooltip: ocupado ? 'Horário já ocupado' : null,
+                      tooltip: ocupado
+                          ? context.l10n.labHorarioJaOcupado
+                          : null,
                       onSelected: ocupado
                           ? null
                           : (_) => setState(() {
@@ -1225,7 +1227,7 @@ class _DialogSelecionarOcorrenciasState
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancelar'),
+          child: Text(context.l10n.cancelar),
         ),
         FilledButton(
           onPressed: _selecionados.isEmpty
@@ -1255,7 +1257,7 @@ class _FiltroLabRow extends StatelessWidget {
     return DropdownButtonFormField<String>(
       isExpanded: true,
       initialValue: laboratorioSelecionado,
-      decoration: const InputDecoration(labelText: 'Laboratório'),
+      decoration: InputDecoration(labelText: context.l10n.labLaboratorio),
       items: laboratorios
           .map(
             (lab) => DropdownMenuItem(
@@ -1287,14 +1289,21 @@ class _SemanaNavegador extends StatelessWidget {
   final VoidCallback onHoje;
   final VoidCallback onEscolherData;
 
-  String get _rotulo {
+  String _rotulo(AppLocalizations l10n) {
     final sexta = DateTime(segunda.year, segunda.month, segunda.day + 4);
-    final mesFim = _mesesAbrev[sexta.month - 1];
     if (segunda.month == sexta.month) {
-      return '${segunda.day} a ${sexta.day} de $mesFim';
+      return l10n.labSemanaMesmoMes(
+        segunda.day,
+        sexta.day,
+        l10n.mes(sexta.month),
+      );
     }
-    return '${segunda.day} de ${_mesesAbrev[segunda.month - 1]} '
-        'a ${sexta.day} de $mesFim';
+    return l10n.labSemanaDoisMeses(
+      segunda.day,
+      l10n.mes(segunda.month),
+      sexta.day,
+      l10n.mes(sexta.month),
+    );
   }
 
   @override
@@ -1312,15 +1321,17 @@ class _SemanaNavegador extends StatelessWidget {
       child: Row(
         children: [
           IconButton(
-            tooltip: 'Semana anterior',
+            tooltip: context.l10n.labSemanaAnterior,
             onPressed: onAnterior,
             icon: const SigadIcon(SigadIcons.chevronEsquerda),
           ),
           Expanded(
             child: Semantics(
               button: true,
-              label:
-                  'Semana de $_rotulo de ${segunda.year}. Escolher outra data',
+              label: context.l10n.labSemanaSemantica(
+                _rotulo(context.l10n),
+                '${segunda.year}',
+              ),
               excludeSemantics: true,
               child: InkWell(
                 borderRadius: BorderRadius.circular(12),
@@ -1331,14 +1342,16 @@ class _SemanaNavegador extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        _rotulo,
+                        _rotulo(context.l10n),
                         textAlign: TextAlign.center,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w800,
                         ),
                       ),
                       Text(
-                        ehSemanaAtual ? 'Esta semana' : _anoDaSemana(segunda),
+                        ehSemanaAtual
+                            ? context.l10n.labEstaSemana
+                            : _anoDaSemana(segunda),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: SigadColors.muted,
                         ),
@@ -1350,9 +1363,9 @@ class _SemanaNavegador extends StatelessWidget {
             ),
           ),
           if (!ehSemanaAtual)
-            TextButton(onPressed: onHoje, child: const Text('Hoje')),
+            TextButton(onPressed: onHoje, child: Text(context.l10n.hoje)),
           IconButton(
-            tooltip: 'Próxima semana',
+            tooltip: context.l10n.labProximaSemana,
             onPressed: onProxima,
             icon: const SigadIcon(SigadIcons.chevronDireita),
           ),
@@ -1404,19 +1417,27 @@ class _Legenda extends StatelessWidget {
       spacing: 16,
       runSpacing: 8,
       children: [
-        item(SigadColors.surface, SigadColors.success, 'Horário livre'),
+        item(
+          SigadColors.surface,
+          SigadColors.success,
+          context.l10n.labHorarioLivre,
+        ),
         item(
           SigadColors.brandLight,
           SigadColors.brand,
-          'Minha reserva',
+          context.l10n.labMinhaReserva,
           barra: true,
         ),
         item(
           SigadColors.surfaceAlt,
           SigadColors.divider,
-          'Reservado por outro',
+          context.l10n.labReservadoPorOutro,
         ),
-        item(SigadColors.warningSoft, SigadColors.warning, 'Feriado'),
+        item(
+          SigadColors.warningSoft,
+          SigadColors.warning,
+          context.l10n.feriado,
+        ),
       ],
     );
   }
@@ -1604,9 +1625,7 @@ class _GradeSemanal extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const HorizontalScrollHint(
-              message: 'Arraste a agenda para o lado para ver todos os dias.',
-            ),
+            HorizontalScrollHint(message: context.l10n.labArrasteAgenda),
             const SizedBox(height: 8),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -1638,9 +1657,9 @@ class _CabecalhoDia extends StatelessWidget {
     return Semantics(
       header: true,
       label:
-          '${ReservaService.diaCompleto(dia)}, ${_dataCurta(data)}'
-          '${hoje ? ', hoje' : ''}'
-          '${feriado != null ? ', feriado: ${feriado!.nome}' : ''}',
+          '${context.l10n.labCabecalhoDia(context.l10n.diaCompleto(dia), context.l10n.dataCurta(data))}'
+          '${hoje ? context.l10n.labHojeSufixo : ''}'
+          '${feriado != null ? context.l10n.labFeriadoSufixo(feriado!.nome) : ''}',
       excludeSemantics: true,
       child: Tooltip(
         message: feriado?.nome ?? '',
@@ -1661,14 +1680,14 @@ class _CabecalhoDia extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                dia,
+                context.l10n.diaAbrev(dia),
                 style: theme.textTheme.labelLarge?.copyWith(
                   color: cor,
                   fontWeight: FontWeight.w800,
                 ),
               ),
               Text(
-                _dataCurta(data),
+                context.l10n.dataCurta(data),
                 style: theme.textTheme.bodySmall?.copyWith(color: cor),
               ),
               if (feriado != null)
@@ -1778,7 +1797,7 @@ class _GradeReservaCell extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            reserva!.disciplina ?? 'Minha reserva',
+            reserva!.disciplina ?? context.l10n.labMinhaReserva,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: textTheme.labelMedium?.copyWith(
@@ -1818,17 +1837,22 @@ class _GradeReservaCell extends StatelessWidget {
       onTap: podeTocar
           ? () => onTapCelula(data, turno, periodo, reserva)
           : null,
-      label:
-          'Célula $diaSemana, dia ${data.day}, ${turno.label}, período $periodo, horário $horario.',
+      label: context.l10n.labCelula(
+        context.l10n.diaAbrev(diaSemana),
+        data.day,
+        context.l10n.turno(turno),
+        periodo,
+        horario,
+      ),
       value: reserva == null
-          ? 'Livre'
+          ? context.l10n.labLivre
           : estado == _EstadoCelula.minha
-          ? 'Minha reserva'
-          : 'Reservado por ${reserva.professor}',
+          ? context.l10n.labMinhaReserva
+          : context.l10n.labReservadoPor(reserva.professor),
       hint: reserva != null
-          ? 'Toque para ver os detalhes da reserva.'
+          ? context.l10n.labToqueDetalhes
           : podeEditar
-          ? 'Toque para reservar.'
+          ? context.l10n.labToqueReservar
           : null,
       child: Material(
         color: fundo,
@@ -1902,8 +1926,8 @@ class _DetalhesReservaSheet extends StatelessWidget {
     );
 
     return TelaFormularioReserva(
-      titulo: 'Detalhes da reserva',
-      acaoLabel: podeAlterar ? 'Editar reserva' : null,
+      titulo: context.l10n.labDetalhesReserva,
+      acaoLabel: podeAlterar ? context.l10n.labEditarReserva : null,
       acaoIcone: SigadIcons.editar,
       onAcao: () => Navigator.pop(context, _AcaoReserva.editar),
       acaoSecundaria: podeAlterar
@@ -1916,12 +1940,12 @@ class _DetalhesReservaSheet extends StatelessWidget {
                 SigadIcons.excluir,
                 color: SigadColors.risk,
               ),
-              label: const Text('Excluir reserva'),
+              label: Text(context.l10n.labExcluirReserva),
             )
           : null,
       children: [
         Text(
-          reserva.disciplina ?? 'Reserva de laboratório',
+          reserva.disciplina ?? context.l10n.labReservaDeLaboratorio,
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.w800,
           ),
@@ -1930,25 +1954,37 @@ class _DetalhesReservaSheet extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 4),
             child: Text(
-              'Sua reserva',
+              context.l10n.labSuaReserva,
               style: theme.textTheme.labelLarge?.copyWith(
                 color: SigadColors.brand,
               ),
             ),
           ),
         const SizedBox(height: 12),
-        linha(SigadIcons.laboratorio, 'Laboratório', reserva.laboratorio),
-        linha(SigadIcons.calendario, 'Data', _dataPorExtenso(data)),
+        linha(
+          SigadIcons.laboratorio,
+          context.l10n.labLaboratorio,
+          reserva.laboratorio,
+        ),
+        linha(
+          SigadIcons.calendario,
+          context.l10n.labData,
+          context.l10n.dataPorExtenso(data),
+        ),
         linha(
           SigadIcons.relogio,
-          'Horário',
-          '${reserva.turno.label}, ${_horarioLegivel(reserva.turno.horarioDo(reserva.periodo))}',
+          context.l10n.labHorario,
+          '${context.l10n.turno(reserva.turno)}, ${_horarioLegivel(reserva.turno.horarioDo(reserva.periodo))}',
         ),
-        linha(SigadIcons.pessoa, 'Reservado por', reserva.professor),
+        linha(
+          SigadIcons.pessoa,
+          context.l10n.labReservadoPorRotulo,
+          reserva.professor,
+        ),
         const SizedBox(height: 16),
         if (!podeAlterar)
           Text(
-            'Só quem fez a reserva ou a chefia pode alterá-la.',
+            context.l10n.labSoQuemFez,
             style: theme.textTheme.bodySmall?.copyWith(
               color: SigadColors.muted,
             ),
@@ -1964,15 +2000,15 @@ class _TurnoTabs extends StatelessWidget {
   final Turno? selecionado;
   final ValueChanged<Turno?> onSelected;
 
-  static const _opcoes = <MapEntry<String, Turno?>>[
-    MapEntry('Todos', null),
-    MapEntry('Manhã', Turno.matutino),
-    MapEntry('Tarde', Turno.vespertino),
-    MapEntry('Noite', Turno.noturno),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final opcoes = <MapEntry<String, Turno?>>[
+      MapEntry(l10n.turnoTodos, null),
+      MapEntry(l10n.turnoManha, Turno.matutino),
+      MapEntry(l10n.turnoTarde, Turno.vespertino),
+      MapEntry(l10n.turnoNoite, Turno.noturno),
+    ];
     final colors = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(4),
@@ -1982,7 +2018,7 @@ class _TurnoTabs extends StatelessWidget {
       ),
       child: Row(
         children: [
-          for (final opcao in _opcoes)
+          for (final opcao in opcoes)
             Expanded(
               child: _TurnoTabButton(
                 label: opcao.key,
@@ -2061,7 +2097,7 @@ class _TurnoDividerRow extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            turno.label,
+            context.l10n.turno(turno),
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.w700,
               color: turno.chipTextColor,
@@ -2091,14 +2127,14 @@ class _AccessDenied extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Acesso restrito',
+              context.l10n.labAcessoRestrito,
               style: Theme.of(
                 context,
               ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 8),
             Text(
-              'Este módulo está disponível para professor, coordenador e chefe do departamento.',
+              context.l10n.labAcessoRestritoMsg,
               textAlign: TextAlign.center,
               style: Theme.of(
                 context,
@@ -2188,7 +2224,7 @@ class _PainelOtimizacaoLaboratorio extends StatelessWidget {
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
-                      'Otimização de laboratórios',
+                      context.l10n.labOtimizacao,
                       maxLines: stacked ? 2 : 1,
                       overflow: TextOverflow.ellipsis,
                       style: textTheme.titleSmall?.copyWith(
@@ -2213,7 +2249,7 @@ class _PainelOtimizacaoLaboratorio extends StatelessWidget {
                             SigadIcons.automatico,
                             size: 16,
                           ),
-                          label: const Text('Reservar sugestão'),
+                          label: Text(context.l10n.labReservarSugestao),
                         ),
                       ),
                     ],
@@ -2228,7 +2264,7 @@ class _PainelOtimizacaoLaboratorio extends StatelessWidget {
                     TextButton.icon(
                       onPressed: onAplicarSugestao,
                       icon: const SigadIcon(SigadIcons.automatico, size: 16),
-                      label: const Text('Reservar sugestão'),
+                      label: Text(context.l10n.labReservarSugestao),
                     ),
                 ],
               );
@@ -2253,7 +2289,11 @@ class _PainelOtimizacaoLaboratorio extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'ocupado na semana em ${laboratorioSelecionado.isEmpty ? 'N/D' : laboratorioSelecionado}',
+                  context.l10n.labOcupadoNaSemana(
+                    laboratorioSelecionado.isEmpty
+                        ? 'N/D'
+                        : laboratorioSelecionado,
+                  ),
                   style: textTheme.bodySmall?.copyWith(
                     color: SigadColors.muted,
                   ),
@@ -2288,7 +2328,11 @@ class _PainelOtimizacaoLaboratorio extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      '${indicador.laboratorio}: ${(indicador.taxaOcupacao * 100).toStringAsFixed(0)}% · ${indicador.slotsLivres} livres',
+                      context.l10n.labIndicadorOcupacao(
+                        indicador.laboratorio,
+                        (indicador.taxaOcupacao * 100).toStringAsFixed(0),
+                        indicador.slotsLivres,
+                      ),
                       style: textTheme.labelSmall?.copyWith(
                         color: selecionado ? SigadColors.brandDark : tone,
                         fontWeight: FontWeight.w600,
@@ -2301,7 +2345,7 @@ class _PainelOtimizacaoLaboratorio extends StatelessWidget {
           if (sugestoes.isNotEmpty) ...[
             const SizedBox(height: 10),
             Text(
-              'Sugestões de slots livres',
+              context.l10n.labSugestoesSlots,
               style: textTheme.labelLarge?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
@@ -2313,7 +2357,7 @@ class _PainelOtimizacaoLaboratorio extends StatelessWidget {
                   (sugestao) => Padding(
                     padding: const EdgeInsets.only(bottom: 4),
                     child: Text(
-                      '• ${sugestao.laboratorio} · ${sugestao.diaSemana} · ${sugestao.horario} (${sugestao.turno.shortLabel}${sugestao.periodo})',
+                      '• ${sugestao.laboratorio} · ${context.l10n.diaAbrev(sugestao.diaSemana)} · ${sugestao.horario} (${sugestao.turno.shortLabel}${sugestao.periodo})',
                       style: textTheme.bodySmall?.copyWith(
                         color: SigadColors.ink,
                       ),
@@ -2324,7 +2368,7 @@ class _PainelOtimizacaoLaboratorio extends StatelessWidget {
           if (recomendacoesCruzadas.isNotEmpty) ...[
             const SizedBox(height: 10),
             Text(
-              'Recomendações cruzadas com carga docente',
+              context.l10n.labRecomendacoesCruzadas,
               style: textTheme.labelLarge?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
@@ -2368,8 +2412,8 @@ class _AvisoSituacao extends StatelessWidget {
     final interditado = laboratorio.status == StatusLaboratorio.interditado;
     final cor = interditado ? SigadColors.risk : SigadColors.warning;
     final texto = interditado
-        ? 'Este laboratório está interditado. Confirme com a chefia antes de reservar.'
-        : 'Este laboratório está em manutenção. Confirme se ele estará disponível antes de reservar.';
+        ? context.l10n.labAvisoInterditado
+        : context.l10n.labAvisoManutencao;
     return Semantics(
       liveRegion: true,
       child: Container(

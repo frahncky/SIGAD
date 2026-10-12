@@ -853,6 +853,905 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Faça login para acessar configurações.'**
   String get facaLogin;
+
+  /// No description provided for @salvar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Salvar'**
+  String get salvar;
+
+  /// No description provided for @excluir.
+  ///
+  /// In pt, this message translates to:
+  /// **'Excluir'**
+  String get excluir;
+
+  /// No description provided for @continuar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Continuar'**
+  String get continuar;
+
+  /// No description provided for @reservar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reservar'**
+  String get reservar;
+
+  /// No description provided for @hoje.
+  ///
+  /// In pt, this message translates to:
+  /// **'Hoje'**
+  String get hoje;
+
+  /// No description provided for @feriado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Feriado'**
+  String get feriado;
+
+  /// No description provided for @detalhes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Detalhes'**
+  String get detalhes;
+
+  /// No description provided for @erroSalvar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível salvar. Tente novamente.'**
+  String get erroSalvar;
+
+  /// No description provided for @diaSeg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Seg'**
+  String get diaSeg;
+
+  /// No description provided for @diaTer.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ter'**
+  String get diaTer;
+
+  /// No description provided for @diaQua.
+  ///
+  /// In pt, this message translates to:
+  /// **'Qua'**
+  String get diaQua;
+
+  /// No description provided for @diaQui.
+  ///
+  /// In pt, this message translates to:
+  /// **'Qui'**
+  String get diaQui;
+
+  /// No description provided for @diaSex.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sex'**
+  String get diaSex;
+
+  /// No description provided for @diaSegunda.
+  ///
+  /// In pt, this message translates to:
+  /// **'segunda-feira'**
+  String get diaSegunda;
+
+  /// No description provided for @diaTerca.
+  ///
+  /// In pt, this message translates to:
+  /// **'terça-feira'**
+  String get diaTerca;
+
+  /// No description provided for @diaQuarta.
+  ///
+  /// In pt, this message translates to:
+  /// **'quarta-feira'**
+  String get diaQuarta;
+
+  /// No description provided for @diaQuinta.
+  ///
+  /// In pt, this message translates to:
+  /// **'quinta-feira'**
+  String get diaQuinta;
+
+  /// No description provided for @diaSexta.
+  ///
+  /// In pt, this message translates to:
+  /// **'sexta-feira'**
+  String get diaSexta;
+
+  /// No description provided for @turnoTodos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos'**
+  String get turnoTodos;
+
+  /// No description provided for @turnoManha.
+  ///
+  /// In pt, this message translates to:
+  /// **'Manhã'**
+  String get turnoManha;
+
+  /// No description provided for @turnoTarde.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tarde'**
+  String get turnoTarde;
+
+  /// No description provided for @turnoNoite.
+  ///
+  /// In pt, this message translates to:
+  /// **'Noite'**
+  String get turnoNoite;
+
+  /// No description provided for @turnoMatutino.
+  ///
+  /// In pt, this message translates to:
+  /// **'Matutino'**
+  String get turnoMatutino;
+
+  /// No description provided for @turnoVespertino.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tarde'**
+  String get turnoVespertino;
+
+  /// No description provided for @turnoNoturno.
+  ///
+  /// In pt, this message translates to:
+  /// **'Noite'**
+  String get turnoNoturno;
+
+  /// No description provided for @mesAbrev.
+  ///
+  /// In pt, this message translates to:
+  /// **'{mes, select, 1{jan.} 2{fev.} 3{mar.} 4{abr.} 5{maio} 6{jun.} 7{jul.} 8{ago.} 9{set.} 10{out.} 11{nov.} other{dez.}}'**
+  String mesAbrev(String mes);
+
+  /// No description provided for @labAgenda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agenda'**
+  String get labAgenda;
+
+  /// No description provided for @labErroCarregar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível carregar as reservas.'**
+  String get labErroCarregar;
+
+  /// No description provided for @labIrParaSemana.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ir para a semana de'**
+  String get labIrParaSemana;
+
+  /// No description provided for @labSugestoes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sugestões de horários'**
+  String get labSugestoes;
+
+  /// No description provided for @labSugestoesSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ocupação da semana e horários livres'**
+  String get labSugestoesSub;
+
+  /// No description provided for @labSomenteDocentes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Somente perfis docentes podem reservar horários.'**
+  String get labSomenteDocentes;
+
+  /// No description provided for @labHorarioOcupado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Esse horário já está ocupado. Escolha outro horário livre.'**
+  String get labHorarioOcupado;
+
+  /// No description provided for @labReservaFeita.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reserva feita: {lab}, {dia} {data}, {horario}.'**
+  String labReservaFeita(String lab, String dia, String data, String horario);
+
+  /// No description provided for @labHorariosReservados.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =1{1 horário reservado.} other{{count} horários reservados.}}'**
+  String labHorariosReservados(int count);
+
+  /// No description provided for @labJaOcupados.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =1{1 já estava ocupado.} other{{count} já estavam ocupados.}}'**
+  String labJaOcupados(int count);
+
+  /// No description provided for @labErroOperacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível concluir a operação. Tente novamente.'**
+  String get labErroOperacao;
+
+  /// No description provided for @labEditarOcorrencias.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar ocorrências'**
+  String get labEditarOcorrencias;
+
+  /// No description provided for @labRepeteEditar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Essa reserva se repete em {count} ocorrências. Selecione quais você quer editar.'**
+  String labRepeteEditar(int count);
+
+  /// No description provided for @labRepeteExcluir.
+  ///
+  /// In pt, this message translates to:
+  /// **'Essa reserva se repete em {count} ocorrências. Selecione quais você quer excluir.'**
+  String labRepeteExcluir(int count);
+
+  /// No description provided for @labNovoHorarioOcupado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível salvar: o novo horário já está ocupado em todas as ocorrências selecionadas.'**
+  String get labNovoHorarioOcupado;
+
+  /// No description provided for @labReservaAtualizada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reserva atualizada.'**
+  String get labReservaAtualizada;
+
+  /// No description provided for @labOcorrenciasAtualizadas.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count} ocorrências atualizadas.'**
+  String labOcorrenciasAtualizadas(int count);
+
+  /// No description provided for @labNaoMovidas.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count} não puderam ser movidas (horário ocupado).'**
+  String labNaoMovidas(int count);
+
+  /// No description provided for @labExcluirOcorrencias.
+  ///
+  /// In pt, this message translates to:
+  /// **'Excluir ocorrências'**
+  String get labExcluirOcorrencias;
+
+  /// No description provided for @labRevisarExclusao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Revisar exclusão'**
+  String get labRevisarExclusao;
+
+  /// No description provided for @labExcluirReserva.
+  ///
+  /// In pt, this message translates to:
+  /// **'Excluir reserva'**
+  String get labExcluirReserva;
+
+  /// No description provided for @labRemoverUma.
+  ///
+  /// In pt, this message translates to:
+  /// **'Deseja remover a reserva de {ocorrencia} no {lab}?'**
+  String labRemoverUma(String ocorrencia, String lab);
+
+  /// No description provided for @labRemoverVarias.
+  ///
+  /// In pt, this message translates to:
+  /// **'Deseja remover as {count} ocorrências selecionadas no {lab}?'**
+  String labRemoverVarias(int count, String lab);
+
+  /// No description provided for @labReservaRemovida.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reserva removida.'**
+  String get labReservaRemovida;
+
+  /// No description provided for @labOcorrenciasRemovidas.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count} ocorrências removidas.'**
+  String labOcorrenciasRemovidas(int count);
+
+  /// No description provided for @labFacaLogin.
+  ///
+  /// In pt, this message translates to:
+  /// **'Faça login para reservar horários.'**
+  String get labFacaLogin;
+
+  /// No description provided for @labSemSugestoes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não há horários livres sugeridos para esta semana.'**
+  String get labSemSugestoes;
+
+  /// No description provided for @labReservarSugeridoTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reservar horário sugerido?'**
+  String get labReservarSugeridoTitulo;
+
+  /// No description provided for @labReservaNoSeuNome.
+  ///
+  /// In pt, this message translates to:
+  /// **'A reserva fica no seu nome.'**
+  String get labReservaNoSeuNome;
+
+  /// No description provided for @labSugestaoIndisponivel.
+  ///
+  /// In pt, this message translates to:
+  /// **'A sugestão ficou indisponível. Tente novamente.'**
+  String get labSugestaoIndisponivel;
+
+  /// No description provided for @labEditarReserva.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar reserva'**
+  String get labEditarReserva;
+
+  /// No description provided for @labDisciplinaOpcional.
+  ///
+  /// In pt, this message translates to:
+  /// **'Disciplina (opcional)'**
+  String get labDisciplinaOpcional;
+
+  /// No description provided for @labDiaSemana.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dia da semana'**
+  String get labDiaSemana;
+
+  /// No description provided for @labHorario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Horário'**
+  String get labHorario;
+
+  /// No description provided for @labHorarioJaOcupado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Horário já ocupado'**
+  String get labHorarioJaOcupado;
+
+  /// No description provided for @labLaboratorio.
+  ///
+  /// In pt, this message translates to:
+  /// **'Laboratório'**
+  String get labLaboratorio;
+
+  /// No description provided for @labSemanaMesmoMes.
+  ///
+  /// In pt, this message translates to:
+  /// **'{inicio} a {fim} de {mes}'**
+  String labSemanaMesmoMes(int inicio, int fim, String mes);
+
+  /// No description provided for @labSemanaDoisMeses.
+  ///
+  /// In pt, this message translates to:
+  /// **'{inicio} de {mesInicio} a {fim} de {mesFim}'**
+  String labSemanaDoisMeses(
+    int inicio,
+    String mesInicio,
+    int fim,
+    String mesFim,
+  );
+
+  /// No description provided for @labSemanaAnterior.
+  ///
+  /// In pt, this message translates to:
+  /// **'Semana anterior'**
+  String get labSemanaAnterior;
+
+  /// No description provided for @labProximaSemana.
+  ///
+  /// In pt, this message translates to:
+  /// **'Próxima semana'**
+  String get labProximaSemana;
+
+  /// No description provided for @labSemanaSemantica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Semana de {rotulo} de {ano}. Escolher outra data'**
+  String labSemanaSemantica(String rotulo, String ano);
+
+  /// No description provided for @labEstaSemana.
+  ///
+  /// In pt, this message translates to:
+  /// **'Esta semana'**
+  String get labEstaSemana;
+
+  /// No description provided for @labHorarioLivre.
+  ///
+  /// In pt, this message translates to:
+  /// **'Horário livre'**
+  String get labHorarioLivre;
+
+  /// No description provided for @labMinhaReserva.
+  ///
+  /// In pt, this message translates to:
+  /// **'Minha reserva'**
+  String get labMinhaReserva;
+
+  /// No description provided for @labReservadoPorOutro.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reservado por outro'**
+  String get labReservadoPorOutro;
+
+  /// No description provided for @labArrasteAgenda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Arraste a agenda para o lado para ver todos os dias.'**
+  String get labArrasteAgenda;
+
+  /// No description provided for @labCabecalhoDia.
+  ///
+  /// In pt, this message translates to:
+  /// **'{dia}, {data}'**
+  String labCabecalhoDia(String dia, String data);
+
+  /// No description provided for @labHojeSufixo.
+  ///
+  /// In pt, this message translates to:
+  /// **', hoje'**
+  String get labHojeSufixo;
+
+  /// No description provided for @labFeriadoSufixo.
+  ///
+  /// In pt, this message translates to:
+  /// **', feriado: {nome}'**
+  String labFeriadoSufixo(String nome);
+
+  /// No description provided for @labCelula.
+  ///
+  /// In pt, this message translates to:
+  /// **'Célula {dia}, dia {numero}, {turno}, período {periodo}, horário {horario}.'**
+  String labCelula(
+    String dia,
+    int numero,
+    String turno,
+    int periodo,
+    String horario,
+  );
+
+  /// No description provided for @labLivre.
+  ///
+  /// In pt, this message translates to:
+  /// **'Livre'**
+  String get labLivre;
+
+  /// No description provided for @labReservadoPor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reservado por {nome}'**
+  String labReservadoPor(String nome);
+
+  /// No description provided for @labToqueDetalhes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Toque para ver os detalhes da reserva.'**
+  String get labToqueDetalhes;
+
+  /// No description provided for @labToqueReservar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Toque para reservar.'**
+  String get labToqueReservar;
+
+  /// No description provided for @labDetalhesReserva.
+  ///
+  /// In pt, this message translates to:
+  /// **'Detalhes da reserva'**
+  String get labDetalhesReserva;
+
+  /// No description provided for @labReservaDeLaboratorio.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reserva de laboratório'**
+  String get labReservaDeLaboratorio;
+
+  /// No description provided for @labSuaReserva.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sua reserva'**
+  String get labSuaReserva;
+
+  /// No description provided for @labData.
+  ///
+  /// In pt, this message translates to:
+  /// **'Data'**
+  String get labData;
+
+  /// No description provided for @labReservadoPorRotulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reservado por'**
+  String get labReservadoPorRotulo;
+
+  /// No description provided for @labSoQuemFez.
+  ///
+  /// In pt, this message translates to:
+  /// **'Só quem fez a reserva ou a chefia pode alterá-la.'**
+  String get labSoQuemFez;
+
+  /// No description provided for @labAcessoRestrito.
+  ///
+  /// In pt, this message translates to:
+  /// **'Acesso restrito'**
+  String get labAcessoRestrito;
+
+  /// No description provided for @labAcessoRestritoMsg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Este módulo está disponível para professor, coordenador e chefe do departamento.'**
+  String get labAcessoRestritoMsg;
+
+  /// No description provided for @labOtimizacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Otimização de laboratórios'**
+  String get labOtimizacao;
+
+  /// No description provided for @labReservarSugestao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reservar sugestão'**
+  String get labReservarSugestao;
+
+  /// No description provided for @labOcupadoNaSemana.
+  ///
+  /// In pt, this message translates to:
+  /// **'ocupado na semana em {lab}'**
+  String labOcupadoNaSemana(String lab);
+
+  /// No description provided for @labIndicadorOcupacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'{lab}: {taxa}% · {livres} livres'**
+  String labIndicadorOcupacao(String lab, String taxa, int livres);
+
+  /// No description provided for @labSugestoesSlots.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sugestões de horários livres'**
+  String get labSugestoesSlots;
+
+  /// No description provided for @labRecomendacoesCruzadas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Recomendações cruzadas com carga docente'**
+  String get labRecomendacoesCruzadas;
+
+  /// No description provided for @labRecomendacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'{nome}: priorizar {lab} em {dia} {horario} para aliviar carga em turmas práticas.'**
+  String labRecomendacao(String nome, String lab, String dia, String horario);
+
+  /// No description provided for @labAvisoInterditado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Este laboratório está interditado. Confirme com a chefia antes de reservar.'**
+  String get labAvisoInterditado;
+
+  /// No description provided for @labAvisoManutencao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Este laboratório está em manutenção. Confirme se ele estará disponível antes de reservar.'**
+  String get labAvisoManutencao;
+
+  /// No description provided for @labTodosCount.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos ({count})'**
+  String labTodosCount(int count);
+
+  /// No description provided for @labStatusCount.
+  ///
+  /// In pt, this message translates to:
+  /// **'{status} ({count})'**
+  String labStatusCount(String status, int count);
+
+  /// No description provided for @labOcorrenciaRegistrada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ocorrência registrada.'**
+  String get labOcorrenciaRegistrada;
+
+  /// No description provided for @labMarcarResolvida.
+  ///
+  /// In pt, this message translates to:
+  /// **'Marcar como resolvida?'**
+  String get labMarcarResolvida;
+
+  /// No description provided for @labDeixaraDeContar.
+  ///
+  /// In pt, this message translates to:
+  /// **'\"{titulo}\" deixará de contar como ativa.'**
+  String labDeixaraDeContar(String titulo);
+
+  /// No description provided for @labResolvida.
+  ///
+  /// In pt, this message translates to:
+  /// **'Resolvida'**
+  String get labResolvida;
+
+  /// No description provided for @labOcorrenciaResolvidaMsg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ocorrência marcada como resolvida.'**
+  String get labOcorrenciaResolvidaMsg;
+
+  /// No description provided for @labReportarProblema.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reportar problema'**
+  String get labReportarProblema;
+
+  /// No description provided for @labProximasReservas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Próximas reservas'**
+  String get labProximasReservas;
+
+  /// No description provided for @labVerAgenda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ver agenda'**
+  String get labVerAgenda;
+
+  /// No description provided for @labNenhumaReservaFutura.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma reserva futura para este laboratório.'**
+  String get labNenhumaReservaFutura;
+
+  /// No description provided for @labEquipamentos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Equipamentos'**
+  String get labEquipamentos;
+
+  /// No description provided for @labNenhumEquipamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum equipamento cadastrado.'**
+  String get labNenhumEquipamento;
+
+  /// No description provided for @labUnidades.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =1{1 unidade} other{{count} unidades}}'**
+  String labUnidades(int count);
+
+  /// No description provided for @labManutencao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Manutenção'**
+  String get labManutencao;
+
+  /// No description provided for @labConcluida.
+  ///
+  /// In pt, this message translates to:
+  /// **'Concluída'**
+  String get labConcluida;
+
+  /// No description provided for @labEmAndamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em andamento'**
+  String get labEmAndamento;
+
+  /// No description provided for @labOcorrencias.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ocorrências'**
+  String get labOcorrencias;
+
+  /// No description provided for @labResolverOcorrencia.
+  ///
+  /// In pt, this message translates to:
+  /// **'Resolver ocorrência: {titulo}'**
+  String labResolverOcorrencia(String titulo);
+
+  /// No description provided for @labResolver.
+  ///
+  /// In pt, this message translates to:
+  /// **'Resolver'**
+  String get labResolver;
+
+  /// No description provided for @labOperando.
+  ///
+  /// In pt, this message translates to:
+  /// **'Operando'**
+  String get labOperando;
+
+  /// No description provided for @labEmManutencao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em manutenção'**
+  String get labEmManutencao;
+
+  /// No description provided for @labInterditado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Interditado'**
+  String get labInterditado;
+
+  /// No description provided for @labReservasNoMes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reservas no mês'**
+  String get labReservasNoMes;
+
+  /// No description provided for @labOcorrenciasAtivas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ocorrências ativas'**
+  String get labOcorrenciasAtivas;
+
+  /// No description provided for @labCapacidadePessoas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Capacidade: {count} pessoas'**
+  String labCapacidadePessoas(int count);
+
+  /// No description provided for @labPessoas.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count} pessoas'**
+  String labPessoas(int count);
+
+  /// No description provided for @labEquipamentosDisponiveisCount.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =0{0 equipamentos disponíveis} =1{1 equipamento disponível} other{{count} equipamentos disponíveis}}'**
+  String labEquipamentosDisponiveisCount(int count);
+
+  /// No description provided for @labReservasNesteMes.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =0{0 reservas neste mês} =1{1 reserva neste mês} other{{count} reservas neste mês}}'**
+  String labReservasNesteMes(int count);
+
+  /// No description provided for @labOcorrenciasAtivasCount.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =1{1 ocorrência ativa} other{{count} ocorrências ativas}}'**
+  String labOcorrenciasAtivasCount(int count);
+
+  /// No description provided for @labCapacidade.
+  ///
+  /// In pt, this message translates to:
+  /// **'Capacidade'**
+  String get labCapacidade;
+
+  /// No description provided for @labResponsavelTecnico.
+  ///
+  /// In pt, this message translates to:
+  /// **'Responsável técnico'**
+  String get labResponsavelTecnico;
+
+  /// No description provided for @labEquipamentosDisponiveis.
+  ///
+  /// In pt, this message translates to:
+  /// **'Equipamentos disponíveis'**
+  String get labEquipamentosDisponiveis;
+
+  /// No description provided for @labNenhumLabStatus.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum laboratório encontrado com este status.'**
+  String get labNenhumLabStatus;
+
+  /// No description provided for @labDisponivel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Disponível'**
+  String get labDisponivel;
+
+  /// No description provided for @labEmUso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em uso'**
+  String get labEmUso;
+
+  /// No description provided for @labIndisponivel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Indisponível'**
+  String get labIndisponivel;
+
+  /// No description provided for @labRegistrarOcorrencia.
+  ///
+  /// In pt, this message translates to:
+  /// **'Registrar ocorrência'**
+  String get labRegistrarOcorrencia;
+
+  /// No description provided for @labOQueAconteceu.
+  ///
+  /// In pt, this message translates to:
+  /// **'O que aconteceu?'**
+  String get labOQueAconteceu;
+
+  /// No description provided for @labExemploProblema.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ex.: Osciloscópio da bancada 3 não liga'**
+  String get labExemploProblema;
+
+  /// No description provided for @labDescrevaProblema.
+  ///
+  /// In pt, this message translates to:
+  /// **'Descreva o problema em poucas palavras.'**
+  String get labDescrevaProblema;
+
+  /// No description provided for @labDetalhesOpcional.
+  ///
+  /// In pt, this message translates to:
+  /// **'Detalhes (opcional)'**
+  String get labDetalhesOpcional;
+
+  /// No description provided for @labDetalhesHint.
+  ///
+  /// In pt, this message translates to:
+  /// **'Onde, desde quando e o que já foi tentado.'**
+  String get labDetalhesHint;
+
+  /// No description provided for @labSemDadosPessoais.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não inclua nomes, matrículas ou dados pessoais.'**
+  String get labSemDadosPessoais;
+
+  /// No description provided for @labSoEstaSemana.
+  ///
+  /// In pt, this message translates to:
+  /// **'Só esta semana'**
+  String get labSoEstaSemana;
+
+  /// No description provided for @labEstaEMais.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =1{Esta e mais 1 semana} other{Esta e mais {count} semanas}}'**
+  String labEstaEMais(int count);
+
+  /// No description provided for @labReservarHorario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reservar horário'**
+  String get labReservarHorario;
+
+  /// No description provided for @labHorarioEMais.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =1{{horario} e mais 1 horário} other{{horario} e mais {count} horários}}'**
+  String labHorarioEMais(String horario, int count);
+
+  /// No description provided for @labRepetir.
+  ///
+  /// In pt, this message translates to:
+  /// **'Repetir'**
+  String get labRepetir;
+
+  /// No description provided for @labRepeticaoAte.
+  ///
+  /// In pt, this message translates to:
+  /// **'A repetição vai no máximo até {data}, fim do mês.'**
+  String labRepeticaoAte(String data);
+
+  /// No description provided for @labOutrosHorarios.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reservar outros horários deste dia'**
+  String get labOutrosHorarios;
 }
 
 class _AppLocalizationsDelegate
