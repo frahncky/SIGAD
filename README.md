@@ -222,6 +222,4 @@ O padrão adotado para as features é separar as camadas **`domain`** (entidades
 <div align="center">
 <br>
 <img src="docs/readme/icones/menu.svg" width="28" alt="">
-<br>
-<sub>Feito para o <b>IFMA</b></sub>
 </div>
