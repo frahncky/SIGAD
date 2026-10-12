@@ -19,6 +19,8 @@ import '../../../demandas/domain/demanda_models.dart';
 import '../../../demandas/domain/demandas_service.dart';
 import '../../../kanban/data/kanban_repository.dart';
 import '../../../kanban/domain/kanban_models.dart';
+import '../../../mural/presentation/mural_visual.dart';
+import '../../../mural/presentation/state/mural_controller.dart';
 import '../../../../shared/widgets/icon_avatar.dart';
 import '../../../../shared/widgets/welcome_hero.dart';
 
@@ -66,6 +68,8 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     final userContext = context.watch<UserContextProvider>();
     final role = userContext.userRole;
+    final mural = _maybeMural(context);
+    final avisos = mural?.avisosVisiveis(role) ?? const [];
 
     return FutureBuilder<_DashboardData>(
       future: _dashboardData,
@@ -95,6 +99,16 @@ class _DashboardPageState extends State<DashboardPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       WelcomeHero(
+                        avisos: [
+                          for (final aviso in avisos)
+                            WelcomeHeroItem(
+                              icon: aviso.modelo.icone,
+                              title: aviso.titulo,
+                              subtitle: aviso.conteudo,
+                              color: aviso.modelo.cor,
+                            ),
+                        ],
+                        frase: mural?.fraseAtual?.texto,
                         resumo: [
                           for (final alert in alerts)
                             WelcomeHeroItem(
@@ -816,5 +830,13 @@ class _AmbientBackground extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+MuralController? _maybeMural(BuildContext context) {
+  try {
+    return Provider.of<MuralController>(context);
+  } on ProviderNotFoundException {
+    return null;
   }
 }

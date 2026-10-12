@@ -13,4 +13,5 @@ abstract final class AppRoutes {
   static const String notas = '/notas';
   static const String calendario = '/calendario';
   static const String mais = '/mais';
+  static const String mural = '/mural';
 }

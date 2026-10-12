@@ -8,11 +8,13 @@ import '../../data/laboratorio_repository.dart';
 import '../../data/reserva_repository.dart';
 import '../../domain/laboratorio_models.dart';
 import '../../domain/reserva_models.dart';
+import '../../domain/reserva_service.dart';
 
 class LaboratoriosCatalogoPage extends StatefulWidget {
   const LaboratoriosCatalogoPage({super.key, required this.onAbrirReservas});
 
-  final VoidCallback onAbrirReservas;
+  /// Abre a agenda, já com o laboratório informado selecionado.
+  final ValueChanged<String?> onAbrirReservas;
 
   @override
   State<LaboratoriosCatalogoPage> createState() =>
@@ -88,8 +90,6 @@ class _LaboratoriosCatalogoPageState extends State<LaboratoriosCatalogoPage> {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
         children: [
-          _Header(onAbrirReservas: widget.onAbrirReservas),
-          const SizedBox(height: 16),
           _Metrics(
             operando: operando,
             manutencao: manutencao,
@@ -108,13 +108,16 @@ class _LaboratoriosCatalogoPageState extends State<LaboratoriosCatalogoPage> {
             runSpacing: 8,
             children: [
               ChoiceChip(
-                label: const Text('Todos'),
+                label: Text('Todos (${_laboratorios.length})'),
                 selected: _status == null,
                 onSelected: (_) => setState(() => _status = null),
               ),
               for (final status in StatusLaboratorio.values)
                 ChoiceChip(
-                  label: Text(_statusLabel(status)),
+                  label: Text(
+                    '${_statusLabel(status)} '
+                    '(${_laboratorios.where((item) => item.status == status).length})',
+                  ),
                   selected: _status == status,
                   onSelected: (_) => setState(() => _status = status),
                 ),
@@ -143,6 +146,8 @@ class _LaboratoriosCatalogoPageState extends State<LaboratoriosCatalogoPage> {
                           child: _LaboratorioCard(
                             laboratorio: laboratorio,
                             reservasDoMes: _reservasDoMes(laboratorio),
+                            onVerAgenda: () =>
+                                widget.onAbrirReservas(laboratorio.nome),
                             onTap: () => Navigator.of(context).push(
                               MaterialPageRoute<void>(
                                 builder: (_) => LaboratorioDetalhesPage(
@@ -183,7 +188,7 @@ class LaboratorioDetalhesPage extends StatefulWidget {
   final Laboratorio laboratorio;
   final List<ReservaLaboratorio> reservas;
   final ValueChanged<Laboratorio> onChanged;
-  final VoidCallback onAbrirReservas;
+  final ValueChanged<String?> onAbrirReservas;
 
   @override
   State<LaboratorioDetalhesPage> createState() =>
@@ -195,7 +200,7 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
 
   void _abrirReservas() {
     Navigator.of(context).pop();
-    widget.onAbrirReservas();
+    widget.onAbrirReservas(_laboratorio.nome);
   }
 
   Future<void> _reportarProblema() async {
@@ -252,9 +257,35 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
   Widget build(BuildContext context) {
     final statusColor = _statusColor(_laboratorio.status);
     final textScale = MediaQuery.textScalerOf(context).scale(1);
-    final expandedHeight = 216.0 + (72.0 * (textScale - 1).clamp(0.0, 1.0));
-    final proximas = List<ReservaLaboratorio>.from(widget.reservas)
-      ..sort((a, b) => a.semanaDoMes.compareTo(b.semanaDoMes));
+    // O nome aparece inteiro: o topo cresce uma linha a cada quebra.
+    final estiloNome = Theme.of(
+      context,
+    ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800);
+    final linhasNome =
+        (TextPainter(
+              text: TextSpan(text: _laboratorio.nome, style: estiloNome),
+              textDirection: Directionality.of(context),
+              textScaler: MediaQuery.textScalerOf(context),
+            )..layout(maxWidth: MediaQuery.sizeOf(context).width - 92))
+            .computeLineMetrics();
+    final alturaExtraNome = linhasNome
+        .skip(1)
+        .fold<double>(0, (total, linha) => total + linha.height);
+    final expandedHeight =
+        216.0 + (72.0 * (textScale - 1).clamp(0.0, 1.0)) + alturaExtraNome;
+    final hoje = DateUtils.dateOnly(DateTime.now());
+    final proximas =
+        [
+          for (final reserva in widget.reservas)
+            if (ReservaService.dataDaReserva(reserva) case final data?)
+              if (!data.isBefore(hoje)) (reserva: reserva, data: data),
+        ]..sort((a, b) {
+          final porData = a.data.compareTo(b.data);
+          if (porData != 0) return porData;
+          return a.reserva.turno.index * 10 +
+              a.reserva.periodo -
+              (b.reserva.turno.index * 10 + b.reserva.periodo);
+        });
     return Scaffold(
       backgroundColor: SigadColors.canvas,
       body: CustomScrollView(
@@ -266,17 +297,6 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
             foregroundColor: Colors.white,
             elevation: 0,
             flexibleSpace: FlexibleSpaceBar(
-              titlePadding: const EdgeInsetsDirectional.only(
-                start: 56,
-                bottom: 16,
-                end: 72,
-              ),
-              title: Text(
-                _laboratorio.nome,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontWeight: FontWeight.w800),
-              ),
               background: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -329,8 +349,6 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                                 children: [
                                   Text(
                                     _laboratorio.nome,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
                                     style: Theme.of(context)
                                         .textTheme
                                         .headlineSmall
@@ -386,19 +404,19 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                   tone: SigadColors.info,
                   action: TextButton(
                     onPressed: _abrirReservas,
-                    child: const Text('Ver agenda semanal'),
+                    child: const Text('Ver agenda'),
                   ),
                   child: proximas.isEmpty
                       ? const _SectionEmptyState(
                           icon: SigadIcons.eventoOcupado,
                           message:
-                              'Nenhuma reserva cadastrada para este laboratório.',
+                              'Nenhuma reserva futura para este laboratório.',
                         )
                       : Column(
                           children: proximas
                               .take(4)
                               .map(
-                                (reserva) => ListTile(
+                                (item) => ListTile(
                                   contentPadding: EdgeInsets.zero,
                                   leading: CircleAvatar(
                                     radius: 18,
@@ -411,15 +429,11 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                                     ),
                                   ),
                                   title: Text(
-                                    reserva.disciplina ??
+                                    item.reserva.disciplina ??
                                         'Reserva de laboratório',
                                   ),
                                   subtitle: Text(
-                                    '${reserva.diaSemana} · ${reserva.turno.horarioDo(reserva.periodo)} · ${reserva.professor}',
-                                  ),
-                                  trailing: const _StatusPill(
-                                    label: 'Confirmada',
-                                    color: SigadColors.success,
+                                    '${item.reserva.diaSemana} ${item.data.day.toString().padLeft(2, '0')}/${item.data.month.toString().padLeft(2, '0')} · ${item.reserva.turno.horarioDo(item.reserva.periodo).replaceAll('-', '–')} · ${item.reserva.professor}',
                                   ),
                                 ),
                               )
@@ -571,46 +585,6 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
   }
 }
 
-class _Header extends StatelessWidget {
-  const _Header({required this.onAbrirReservas});
-  final VoidCallback onAbrirReservas;
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final title = Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Laboratórios',
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
-          ),
-          const Text('Recursos, disponibilidade, manutenção e ocorrências.'),
-        ],
-      );
-      final action = FilledButton.icon(
-        onPressed: onAbrirReservas,
-        icon: const SigadIcon(SigadIcons.calendario),
-        label: const Text('Reservas'),
-      );
-      if (constraints.maxWidth < 430) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [title, const SizedBox(height: 12), action],
-        );
-      }
-      return Row(
-        children: [
-          Expanded(child: title),
-          const SizedBox(width: 12),
-          action,
-        ],
-      );
-    },
-  );
-}
-
 class _Metrics extends StatelessWidget {
   const _Metrics({
     required this.operando,
@@ -620,10 +594,8 @@ class _Metrics extends StatelessWidget {
   });
   final int operando, manutencao, reservas, ocorrencias;
   @override
-  Widget build(BuildContext context) => Wrap(
-    spacing: 10,
-    runSpacing: 10,
-    children: [
+  Widget build(BuildContext context) {
+    final itens = [
       _Metric(
         label: 'Operando',
         value: '$operando',
@@ -648,8 +620,21 @@ class _Metrics extends StatelessWidget {
         icon: SigadIcons.alerta,
         color: SigadColors.risk,
       ),
-    ],
-  );
+    ];
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final colunas = constraints.maxWidth >= 720 ? 4 : 2;
+        final largura = (constraints.maxWidth - (colunas - 1) * 10) / colunas;
+        return Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: [
+            for (final item in itens) SizedBox(width: largura, child: item),
+          ],
+        );
+      },
+    );
+  }
 }
 
 class _Metric extends StatelessWidget {
@@ -663,29 +648,49 @@ class _Metric extends StatelessWidget {
   final IconData icon;
   final Color color;
   @override
-  Widget build(BuildContext context) => Container(
-    width: 180,
-    padding: const EdgeInsets.all(14),
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.surface,
-      borderRadius: BorderRadius.circular(14),
-      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-    ),
-    child: Row(
-      children: [
-        SigadIcon(icon, color: color),
-        const SizedBox(width: 10),
-        Text(
-          value,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Semantics(
+      container: true,
+      label: '$label: $value',
+      excludeSemantics: true,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: SigadColors.divider),
         ),
-        const SizedBox(width: 7),
-        Expanded(
-          child: Text(label, style: Theme.of(context).textTheme.bodySmall),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: SigadIcon(icon, color: color, size: 20),
+                ),
+                const Spacer(),
+                Text(
+                  value,
+                  style: textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(label, style: textTheme.bodyMedium),
+          ],
         ),
-      ],
-    ),
-  );
+      ),
+    );
+  }
 }
 
 class _LaboratorioCard extends StatelessWidget {
@@ -693,55 +698,99 @@ class _LaboratorioCard extends StatelessWidget {
     required this.laboratorio,
     required this.reservasDoMes,
     required this.onTap,
+    required this.onVerAgenda,
   });
   final Laboratorio laboratorio;
   final int reservasDoMes;
   final VoidCallback onTap;
+  final VoidCallback onVerAgenda;
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     final color = _statusColor(laboratorio.status);
+    Widget info(IconData icone, String texto, {Color? cor}) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        children: [
+          SigadIcon(icone, size: 18, color: cor ?? SigadColors.muted),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              texto,
+              style: textTheme.bodyMedium?.copyWith(color: cor),
+            ),
+          ),
+        ],
+      ),
+    );
+
     return Card(
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: const BorderSide(color: SigadColors.divider),
+      ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(left: BorderSide(color: color, width: 5)),
+          ),
+          padding: const EdgeInsets.fromLTRB(16, 14, 12, 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    backgroundColor: SigadColors.brandLight,
-                    child: const SigadIcon(
-                      SigadIcons.laboratorio,
-                      color: SigadColors.brand,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      laboratorio.nome,
-                      style: const TextStyle(fontWeight: FontWeight.w800),
-                    ),
-                  ),
-                  const SigadIcon(SigadIcons.chevronDireita),
-                ],
-              ),
-              const SizedBox(height: 12),
               _StatusPill(
                 label: _statusLabel(laboratorio.status),
                 color: color,
               ),
-              const SizedBox(height: 10),
-              Text(laboratorio.localizacao),
+              const SizedBox(height: 8),
               Text(
-                'Capacidade: ${laboratorio.capacidade} · $reservasDoMes reservas no mês',
+                laboratorio.nome,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
               ),
-              const Divider(height: 24),
-              Text(
-                '${laboratorio.equipamentosDisponiveis} equipamentos disponíveis · ${laboratorio.ocorrenciasAtivas} ocorrências ativas',
-                style: Theme.of(context).textTheme.bodySmall,
+              const SizedBox(height: 10),
+              info(SigadIcons.local, laboratorio.localizacao),
+              info(
+                SigadIcons.grupo,
+                'Capacidade: ${laboratorio.capacidade} pessoas',
+              ),
+              info(
+                SigadIcons.equipamento,
+                '${laboratorio.equipamentosDisponiveis} equipamentos disponíveis',
+              ),
+              info(
+                SigadIcons.evento,
+                reservasDoMes == 1
+                    ? '1 reserva neste mês'
+                    : '$reservasDoMes reservas neste mês',
+              ),
+              if (laboratorio.ocorrenciasAtivas > 0)
+                info(
+                  SigadIcons.alerta,
+                  laboratorio.ocorrenciasAtivas == 1
+                      ? '1 ocorrência ativa'
+                      : '${laboratorio.ocorrenciasAtivas} ocorrências ativas',
+                  cor: SigadColors.risk,
+                ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                alignment: WrapAlignment.end,
+                children: [
+                  TextButton(onPressed: onTap, child: const Text('Detalhes')),
+                  FilledButton.tonalIcon(
+                    onPressed: onVerAgenda,
+                    icon: const SigadIcon(SigadIcons.calendarioSemana),
+                    label: const Text('Ver agenda'),
+                  ),
+                ],
               ),
             ],
           ),

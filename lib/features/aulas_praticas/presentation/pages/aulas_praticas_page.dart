@@ -7,6 +7,7 @@ import '../../../../app/theme/sigad_icons.dart';
 import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../data/laboratorio_repository.dart';
 import '../../data/reserva_repository.dart';
+import '../../domain/feriado_models.dart';
 import '../../domain/feriado_service.dart';
 import '../../domain/reserva_models.dart';
 import '../../domain/reserva_service.dart';
@@ -16,6 +17,7 @@ import '../../../../core/security/authorization_policy.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../../shared/widgets/horizontal_scroll_hint.dart';
 import '../../../../shared/widgets/icon_avatar.dart';
 import '../widgets/dialog_disciplina_semanas_reserva.dart';
 import 'laboratorios_catalogo_page.dart';
@@ -29,8 +31,35 @@ class _ResultadoReserva {
 
 enum _AcaoReserva { editar, excluir }
 
+const _mesesAbrev = [
+  'jan.',
+  'fev.',
+  'mar.',
+  'abr.',
+  'maio',
+  'jun.',
+  'jul.',
+  'ago.',
+  'set.',
+  'out.',
+  'nov.',
+  'dez.',
+];
+
+String _dataCurta(DateTime data) =>
+    '${data.day.toString().padLeft(2, '0')}/${data.month.toString().padLeft(2, '0')}';
+
+String _dataPorExtenso(DateTime data) =>
+    '${ReservaService.diaCompleto(ReservaService.diaSemanaDe(data) ?? '')}, '
+    '${_dataCurta(data)}/${data.year}';
+
+String _horarioLegivel(String horario) => horario.replaceAll('-', '–');
+
 class AulasPraticasPage extends StatefulWidget {
-  const AulasPraticasPage({super.key});
+  const AulasPraticasPage({super.key, this.dataInicial});
+
+  /// Data usada para escolher a semana inicial. Padrão: hoje.
+  final DateTime? dataInicial;
 
   @override
   State<AulasPraticasPage> createState() => _AulasPraticasPageState();
@@ -45,70 +74,52 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     'Lab. de Automação',
   ];
 
-  static const List<String> _mesesDefault = [
-    'Janeiro',
-    'Fevereiro',
-    'Março',
-    'Abril',
-    'Maio',
-    'Junho',
-    'Julho',
-    'Agosto',
-    'Setembro',
-    'Outubro',
-    'Novembro',
-    'Dezembro',
-  ];
-
   final ReservaRepository _reservaRepository = ReservaRepository();
   final LaboratorioRepository _laboratorioRepository = LaboratorioRepository();
   final DocenteRepository _docenteRepository = DocenteRepository();
-  final List<ReservaLaboratorio> _reservas = ReservaService.defaultReservas(
-    ano: DateTime.now().year,
-    mes: DateTime.now().month,
-  );
+  final List<ReservaLaboratorio> _reservas = [];
   final List<Docente> _docentes = [];
 
-  final TransformationController _transformationController =
-      TransformationController();
-
+  bool _carregando = true;
   String? _laboratorioSelecionado;
-  int _anoSelecionado = DateTime.now().year;
-  int _mesSelecionado = DateTime.now().month;
-  int _diaSelecionado = DateTime.now().day;
+  late DateTime _segunda;
 
   @override
   void initState() {
     super.initState();
+    _segunda = ReservaService.segundaDaSemana(
+      widget.dataInicial ?? DateTime.now(),
+    );
     _loadData();
   }
 
-  @override
-  void dispose() {
-    _transformationController.dispose();
-    super.dispose();
-  }
-
   Future<void> _loadData() async {
-    final catalogoFuture = _laboratorioRepository.load();
-    final list = await _reservaRepository.loadReservas();
-
-    final docentes = await _docenteRepository.loadDocentes(
-      generateFallbackId: () => 'DOC-FALLBACK',
-    );
-    await catalogoFuture;
-
-    if (!mounted) return;
-    setState(() {
-      if (list.isNotEmpty) {
+    try {
+      final catalogoFuture = _laboratorioRepository.load();
+      final list = await _reservaRepository.loadReservas();
+      final docentes = await _docenteRepository.loadDocentes(
+        generateFallbackId: () => 'DOC-FALLBACK',
+      );
+      await catalogoFuture;
+      if (!mounted) return;
+      setState(() {
         _reservas
           ..clear()
           ..addAll(list);
-      }
-      _docentes
-        ..clear()
-        ..addAll(docentes);
-    });
+        _docentes
+          ..clear()
+          ..addAll(docentes);
+      });
+    } catch (error, stackTrace) {
+      AppEventLogger.error(
+        'reservas_load_error',
+        error,
+        stackTrace: stackTrace,
+      );
+      _showError('Não foi possível carregar as reservas.');
+    } finally {
+      if (mounted) setState(() => _carregando = false);
+    }
   }
 
   Future<bool> _saveData() async {
@@ -116,12 +127,33 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       await _reservaRepository.saveReservas(_reservas);
       return true;
     } catch (e) {
-      _showError('Erro ao salvar os dados localmente.');
+      _showError('Não foi possível salvar. Tente novamente.');
       return false;
     }
   }
 
-  int get _semanaSelecionada => ((_diaSelecionado - 1) ~/ 7) + 1;
+  /// Grava e, se falhar, volta as reservas para [antes].
+  Future<bool> _salvarOuDesfazer(List<ReservaLaboratorio> antes) async {
+    final salvo = await _saveData();
+    if (!salvo && mounted) {
+      setState(() {
+        _reservas
+          ..clear()
+          ..addAll(antes);
+      });
+    }
+    return salvo;
+  }
+
+  List<DateTime> get _diasDaSemana => [
+    for (var i = 0; i < 5; i++)
+      DateTime(_segunda.year, _segunda.month, _segunda.day + i),
+  ];
+
+  // Referência da semana para o painel de otimização.
+  int get _anoReferencia => _segunda.year;
+  int get _mesReferencia => _segunda.month;
+  int get _semanaReferencia => ReservaService.semanaDoMesDe(_segunda);
 
   String get _laboratorioSelecionadoValido {
     if (_laboratorioSelecionado != null &&
@@ -131,54 +163,23 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     return _laboratoriosDefault.first;
   }
 
-  String get _diaSemanaAbreviadoDoDiaSelecionado {
-    // Segunda = 1, Domingo = 7
-    const dias = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-    final data = DateTime(_anoSelecionado, _mesSelecionado, _diaSelecionado);
-    // DateTime.weekday: segunda=1, domingo=7
-    return dias[data.weekday - 1];
-  }
-
-  String get _diaSemanaCompletoDoDiaSelecionado {
-    const dias = [
-      'Segunda-feira',
-      'Terça-feira',
-      'Quarta-feira',
-      'Quinta-feira',
-      'Sexta-feira',
-      'Sábado',
-      'Domingo',
-    ];
-    final data = DateTime(_anoSelecionado, _mesSelecionado, _diaSelecionado);
-    return dias[data.weekday - 1];
-  }
-
-  List<ReservaLaboratorio> get _reservasDoLaboratorio =>
-      ReservaService.reservasDoLaboratorio(
-        reservas: _reservas,
-        laboratorio: _laboratorioSelecionadoValido,
-        ano: _anoSelecionado,
-        mes: _mesSelecionado,
-        semanaDoMes: _semanaSelecionada,
-      );
-
   List<IndicadorOcupacaoLaboratorio> get _indicadoresOcupacao =>
       ReservaService.calcularOcupacaoLaboratorios(
         reservas: _reservas,
         laboratorios: _laboratoriosDefault,
-        ano: _anoSelecionado,
-        mes: _mesSelecionado,
-        semanaDoMes: _semanaSelecionada,
+        ano: _anoReferencia,
+        mes: _mesReferencia,
+        semanaDoMes: _semanaReferencia,
       );
 
   List<SugestaoReservaLaboratorio> get _sugestoesReserva =>
       ReservaService.sugerirSlotsLivres(
         reservas: _reservas,
         laboratorios: _laboratoriosDefault,
-        ano: _anoSelecionado,
-        mes: _mesSelecionado,
-        semanaDoMes: _semanaSelecionada,
-        diaSemanaPreferencial: _diaSemanaAbreviadoDoDiaSelecionado,
+        ano: _anoReferencia,
+        mes: _mesReferencia,
+        semanaDoMes: _semanaReferencia,
+        diaSemanaPreferencial: 'Seg',
         limite: 4,
       );
 
@@ -210,125 +211,55 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     return recomendacoes;
   }
 
-  int get _diasNoMesSelecionado {
-    return DateTime(_anoSelecionado, _mesSelecionado + 1, 0).day;
-  }
+  void _mudarSemana(int semanas) => setState(
+    () => _segunda = DateTime(
+      _segunda.year,
+      _segunda.month,
+      _segunda.day + 7 * semanas,
+    ),
+  );
 
-  void _selecionarPeriodo(int ano, int mes) {
-    final periodo = DateTime(ano.clamp(2020, 2100), mes);
-    setState(() {
-      _anoSelecionado = periodo.year;
-      _mesSelecionado = periodo.month;
-      _diaSelecionado = _diaSelecionado.clamp(1, _diasNoMesSelecionado);
-    });
-  }
+  void _irParaHoje() =>
+      setState(() => _segunda = ReservaService.segundaDaSemana(DateTime.now()));
 
-  void _irParaMesAnterior() {
-    if (_anoSelecionado == 2020 && _mesSelecionado == DateTime.january) {
-      return;
-    }
-    final anterior = DateTime(_anoSelecionado, _mesSelecionado - 1);
-    _selecionarPeriodo(anterior.year, anterior.month);
-  }
-
-  void _irParaProximoMes() {
-    if (_anoSelecionado == 2100 && _mesSelecionado == DateTime.december) {
-      return;
-    }
-    final proximo = DateTime(_anoSelecionado, _mesSelecionado + 1);
-    _selecionarPeriodo(proximo.year, proximo.month);
-  }
-
-  Future<void> _abrirSeletorMesAno() async {
-    var ano = _anoSelecionado;
-    var mes = _mesSelecionado;
-    final periodo = await showDialog<DateTime>(
+  Future<void> _escolherData() async {
+    final escolhida = await showDatePicker(
       context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          scrollable: true,
-          title: const Text('Escolher mês e ano'),
-          content: SizedBox(
-            width: 360,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                DropdownButtonFormField<int>(
-                  initialValue: mes,
-                  isExpanded: true,
-                  decoration: const InputDecoration(labelText: 'Mês'),
-                  items: [
-                    for (var index = 0; index < _mesesDefault.length; index++)
-                      DropdownMenuItem(
-                        value: index + 1,
-                        child: Text(_mesesDefault[index]),
-                      ),
-                  ],
-                  onChanged: (value) {
-                    if (value != null) setDialogState(() => mes = value);
-                  },
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<int>(
-                  initialValue: ano,
-                  isExpanded: true,
-                  decoration: const InputDecoration(labelText: 'Ano'),
-                  items: [
-                    for (var value = 2020; value <= 2100; value++)
-                      DropdownMenuItem(value: value, child: Text('$value')),
-                  ],
-                  onChanged: (value) {
-                    if (value != null) setDialogState(() => ano = value);
-                  },
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancelar'),
-            ),
-            FilledButton(
-              onPressed: () =>
-                  Navigator.of(dialogContext).pop(DateTime(ano, mes)),
-              child: const Text('Aplicar'),
-            ),
-          ],
-        ),
-      ),
+      initialDate: _segunda,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100, 12, 31),
+      helpText: 'Ir para a semana de',
     );
-    if (periodo != null) _selecionarPeriodo(periodo.year, periodo.month);
+    if (escolhida != null) {
+      setState(() => _segunda = ReservaService.segundaDaSemana(escolhida));
+    }
   }
 
-  /// Cria a reserva de uma célula na semana atual e, se [totalSemanas] for
-  /// maior que 1, também nas semanas seguintes do mês (pulando semanas já
-  /// ocupadas). Deve ser chamado dentro de um `setState`.
-  _ResultadoReserva _criarReservasParaCelula({
+  /// Cria a reserva na data e, se [totalSemanas] for maior que 1, também nas
+  /// semanas seguintes do mesmo mês (pulando horários já ocupados). Deve ser
+  /// chamado dentro de um `setState`.
+  _ResultadoReserva _criarReservasParaData({
     required String professor,
-    required String diaSemana,
+    required DateTime data,
     required Turno turno,
     required int periodo,
     required String? disciplina,
     required int totalSemanas,
     required String grupoId,
-    int? semanaInicial,
   }) {
-    final semanaBase = semanaInicial ?? _semanaSelecionada;
-    final maxSemana = ((_diasNoMesSelecionado - 1) ~/ 7) + 1;
-    final ultimaSemana = (semanaBase + totalSemanas - 1).clamp(
-      semanaBase,
-      maxSemana,
-    );
-
+    final diaSemana = ReservaService.diaSemanaDe(data)!;
     var criadas = 0;
     var jaOcupadas = 0;
-    for (var semana = semanaBase; semana <= ultimaSemana; semana++) {
+    for (var i = 0; i < totalSemanas; i++) {
+      final dia = DateTime(data.year, data.month, data.day + 7 * i);
+      // A repetição para no fim do mês.
+      if (dia.month != data.month) break;
+      final semana = ReservaService.semanaDoMesDe(dia);
       final ocupado = ReservaService.isSlotOccupied(
         reservas: _reservas,
         laboratorio: _laboratorioSelecionadoValido,
-        ano: _anoSelecionado,
-        mes: _mesSelecionado,
+        ano: dia.year,
+        mes: dia.month,
         semanaDoMes: semana,
         diaSemana: diaSemana,
         turno: turno,
@@ -342,8 +273,8 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         ReservaService.createReserva(
           professor: professor,
           laboratorio: _laboratorioSelecionadoValido,
-          ano: _anoSelecionado,
-          mes: _mesSelecionado,
+          ano: dia.year,
+          mes: dia.month,
           semanaDoMes: semana,
           diaSemana: diaSemana,
           turno: turno,
@@ -367,10 +298,54 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       return const _AccessDenied();
     }
 
+    final navegacao = Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      child: SizedBox(
+        width: double.infinity,
+        child: SegmentedButton<bool>(
+          showSelectedIcon: false,
+          segments: const [
+            ButtonSegment(
+              value: false,
+              icon: SigadIcon(SigadIcons.calendarioSemana),
+              label: Text('Agenda'),
+            ),
+            ButtonSegment(
+              value: true,
+              icon: SigadIcon(SigadIcons.laboratorio),
+              label: Text('Laboratórios'),
+            ),
+          ],
+          selected: {_mostrarCatalogo},
+          onSelectionChanged: (valor) =>
+              setState(() => _mostrarCatalogo = valor.first),
+        ),
+      ),
+    );
+
     if (_mostrarCatalogo) {
-      return Scaffold(
-        body: LaboratoriosCatalogoPage(
-          onAbrirReservas: () => setState(() => _mostrarCatalogo = false),
+      // Voltar do celular retorna à agenda em vez de sair do módulo.
+      return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) setState(() => _mostrarCatalogo = false);
+        },
+        child: Scaffold(
+          body: Column(
+            children: [
+              navegacao,
+              Expanded(
+                child: LaboratoriosCatalogoPage(
+                  onAbrirReservas: (laboratorio) => setState(() {
+                    if (laboratorio != null) {
+                      _laboratorioSelecionado = laboratorio;
+                    }
+                    _mostrarCatalogo = false;
+                  }),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -384,139 +359,87 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       body: Stack(
         children: [
           const _AmbientBackground(),
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(5),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 12),
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final stacked =
-                        constraints.maxWidth < 460 ||
-                        MediaQuery.textScalerOf(context).scale(14) > 18;
-                    final title = Text(
-                      'Reservas de laboratórios',
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(fontWeight: FontWeight.w800),
-                    );
-                    final action = OutlinedButton.icon(
-                      onPressed: () => setState(() => _mostrarCatalogo = true),
-                      icon: const SigadIcon(SigadIcons.laboratorio),
-                      label: const Text('Laboratórios'),
-                    );
-
-                    if (stacked) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          title,
-                          const SizedBox(height: 8),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: action,
+          Column(
+            children: [
+              navegacao,
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _FiltroLabRow(
+                        laboratorioSelecionado: _laboratorioSelecionadoValido,
+                        laboratorios: _laboratoriosDefault,
+                        onChanged: (value) =>
+                            setState(() => _laboratorioSelecionado = value),
+                      ),
+                      const SizedBox(height: 12),
+                      _SemanaNavegador(
+                        segunda: _segunda,
+                        onAnterior: () => _mudarSemana(-1),
+                        onProxima: () => _mudarSemana(1),
+                        onHoje: _irParaHoje,
+                        onEscolherData: _escolherData,
+                      ),
+                      const SizedBox(height: 16),
+                      if (_carregando)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 48),
+                          child: Center(child: CircularProgressIndicator()),
+                        )
+                      else
+                        _AgendaSemanal(
+                          dias: _diasDaSemana,
+                          laboratorio: _laboratorioSelecionadoValido,
+                          reservas: _reservas,
+                          usuarioAtual: userContext.currentUser?.name,
+                          podeEditar: podeEditar,
+                          onTapCelula: (data, turno, periodo, reservaAtual) =>
+                              _onTapCelula(
+                                data: data,
+                                turno: turno,
+                                periodo: periodo,
+                                reservaAtual: reservaAtual,
+                              ),
+                        ),
+                      if (podeVerOtimizacao && !_carregando) ...[
+                        const SizedBox(height: 20),
+                        Card(
+                          margin: EdgeInsets.zero,
+                          clipBehavior: Clip.antiAlias,
+                          child: ExpansionTile(
+                            leading: const SigadIcon(SigadIcons.analise),
+                            title: const Text('Sugestões de horários'),
+                            subtitle: const Text(
+                              'Ocupação da semana e horários livres',
+                            ),
+                            childrenPadding: const EdgeInsets.fromLTRB(
+                              12,
+                              0,
+                              12,
+                              12,
+                            ),
+                            children: [
+                              _PainelOtimizacaoLaboratorio(
+                                indicadores: _indicadoresOcupacao,
+                                sugestoes: _sugestoesReserva,
+                                recomendacoesCruzadas: _recomendacoesCruzadas,
+                                laboratorioSelecionado:
+                                    _laboratorioSelecionadoValido,
+                                onAplicarSugestao: podeEditar
+                                    ? _reservarSugestaoAutomatica
+                                    : null,
+                              ),
+                            ],
                           ),
-                        ],
-                      );
-                    }
-
-                    return Row(
-                      children: [
-                        Expanded(child: title),
-                        action,
+                        ),
                       ],
-                    );
-                  },
-                ),
-                const SizedBox(height: 12),
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final stacked =
-                        constraints.maxWidth < 560 ||
-                        MediaQuery.textScalerOf(context).scale(14) > 18;
-                    final laboratorio = _FiltroLabRow(
-                      laboratorioSelecionado: _laboratorioSelecionadoValido,
-                      laboratorios: _laboratoriosDefault,
-                      onChanged: (value) =>
-                          setState(() => _laboratorioSelecionado = value),
-                    );
-                    final periodo = _FiltroPeriodoRow(
-                      anoSelecionado: _anoSelecionado,
-                      mesSelecionado: _mesSelecionado,
-                      meses: _mesesDefault,
-                      onAnterior: _irParaMesAnterior,
-                      onProximo: _irParaProximoMes,
-                      onSelecionarPeriodo: _abrirSeletorMesAno,
-                    );
-
-                    if (stacked) {
-                      return Column(
-                        children: [
-                          laboratorio,
-                          const SizedBox(height: 10),
-                          periodo,
-                        ],
-                      );
-                    }
-
-                    return Row(
-                      children: [
-                        Expanded(flex: 3, child: laboratorio),
-                        const SizedBox(width: 10),
-                        Expanded(flex: 2, child: periodo),
-                      ],
-                    );
-                  },
-                ),
-                const SizedBox(height: 10),
-                _SelecaoDiaMesRow(
-                  anoSelecionado: _anoSelecionado,
-                  mesSelecionado: _mesSelecionado,
-                  diaSelecionado: _diaSelecionado,
-                  diasNoMes: _diasNoMesSelecionado,
-                  onDiaChanged: (value) =>
-                      setState(() => _diaSelecionado = value),
-                  onMesAnterior: _irParaMesAnterior,
-                  onProximoMes: _irParaProximoMes,
-                ),
-                if (podeVerOtimizacao) ...[
-                  const SizedBox(height: 12),
-                  _PainelOtimizacaoLaboratorio(
-                    indicadores: _indicadoresOcupacao,
-                    sugestoes: _sugestoesReserva,
-                    recomendacoesCruzadas: _recomendacoesCruzadas,
-                    laboratorioSelecionado: _laboratorioSelecionadoValido,
-                    onAplicarSugestao: podeEditar
-                        ? _reservarSugestaoAutomatica
-                        : null,
+                    ],
                   ),
-                ],
-                const SizedBox(height: 12),
-                _MapaSemanal(
-                  anoSelecionado: _anoSelecionado,
-                  mesSelecionado: _mesSelecionado,
-                  mesLabel:
-                      '${ReservaService.nomeMes(_mesSelecionado, _mesesDefault)} de $_anoSelecionado',
-                  semanaLabel: ReservaService.descricaoSemana(
-                    _semanaSelecionada,
-                  ),
-                  diaSelecionado: _diaSelecionado,
-                  diaSemanaSelecionado: _diaSemanaAbreviadoDoDiaSelecionado,
-                  diaSemanaSelecionadoCompleto:
-                      _diaSemanaCompletoDoDiaSelecionado,
-                  reservas: _reservasDoLaboratorio,
-                  podeEditar: podeEditar,
-                  onTapCelula: (diaSemana, turno, periodo, reservaAtual) {
-                    return _onTapCelula(
-                      diaSemana: diaSemana,
-                      turno: turno,
-                      periodo: periodo,
-                      reservaAtual: reservaAtual,
-                    );
-                  },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ],
       ),
@@ -524,7 +447,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   }
 
   Future<void> _onTapCelula({
-    required String diaSemana,
+    required DateTime data,
     required Turno turno,
     required int periodo,
     required ReservaLaboratorio? reservaAtual,
@@ -534,134 +457,112 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       final user = userContext.currentUser;
       final role = userContext.userRole;
 
+      if (reservaAtual != null) {
+        await _abrirReservaExistente(reservaAtual, data);
+        return;
+      }
+
       if (user == null ||
           !ReservaService.canChangeReservation(user: user, role: role)) {
-        _showInfo('Somente perfis docentes podem alterar reservas pela grade.');
+        _showInfo('Somente perfis docentes podem reservar horários.');
         return;
       }
       final currentUser = user;
+      final diaSemana = ReservaService.diaSemanaDe(data)!;
 
-      if (reservaAtual == null) {
-        String? disciplina;
-        var totalSemanas = 1;
-        var periodosSelecionados = <(Turno, int)>[(turno, periodo)];
+      String? disciplina;
+      var totalSemanas = 1;
+      var periodosSelecionados = <(Turno, int)>[(turno, periodo)];
 
-        if (ReservaService.canEdit(role)) {
-          final result = await showDialog<Map<String, dynamic>>(
-            context: context,
-            builder: (_) => DialogDisciplinaSemanasReserva(
-              diaSemanaCompleto: ReservaService.diaCompleto(diaSemana),
-              horarios: ReservaService.gerarLinhasGrade(),
-              turnoInicial: turno,
-              periodoInicial: periodo,
-              isOcupado: (t, p) => ReservaService.isSlotOccupied(
-                reservas: _reservas,
-                laboratorio: _laboratorioSelecionadoValido,
-                ano: _anoSelecionado,
-                mes: _mesSelecionado,
-                semanaDoMes: _semanaSelecionada,
-                diaSemana: diaSemana,
-                turno: t,
-                periodo: p,
+      final ultimoDiaDoMes = DateTime(data.year, data.month + 1, 0);
+      final result = await Navigator.of(context).push<Map<String, dynamic>>(
+        MaterialPageRoute(
+          fullscreenDialog: true,
+          builder: (_) => DialogDisciplinaSemanasReserva(
+            diaSemanaCompleto: _dataPorExtenso(data),
+            laboratorio: _laboratorioSelecionadoValido,
+            horarioInicial: _horarioLegivel(turno.horarioDo(periodo)),
+            ultimoDiaDoMes: _dataCurta(ultimoDiaDoMes),
+            maxSemanas: ((ultimoDiaDoMes.day - data.day) ~/ 7) + 1,
+            horarios: ReservaService.gerarLinhasGrade(),
+            turnoInicial: turno,
+            periodoInicial: periodo,
+            isOcupado: (t, p) =>
+                ReservaService.reservaNaData(
+                  reservas: _reservas,
+                  laboratorio: _laboratorioSelecionadoValido,
+                  data: data,
+                  turno: t,
+                  periodo: p,
+                ) !=
+                null,
+          ),
+        ),
+      );
+      if (result == null) return;
+      disciplina = result['disciplina'] as String?;
+      totalSemanas = result['totalSemanas'] as int? ?? 1;
+      final periodos = result['periodos'] as List<dynamic>?;
+      if (periodos != null && periodos.isNotEmpty) {
+        periodosSelecionados = periodos
+            .cast<Map<String, dynamic>>()
+            .map(
+              (item) => (
+                Turno.values.byName(item['turno'] as String),
+                item['periodo'] as int,
               ),
-            ),
+            )
+            .toList(growable: false);
+      }
+
+      final antes = List<ReservaLaboratorio>.of(_reservas);
+      final grupoId = 'GRP-${DateTime.now().microsecondsSinceEpoch}';
+      var totalCriadas = 0;
+      var totalJaOcupadas = 0;
+      setState(() {
+        for (final (turnoSelecionado, periodoSelecionado)
+            in periodosSelecionados) {
+          final resultado = _criarReservasParaData(
+            professor: currentUser.name,
+            data: data,
+            turno: turnoSelecionado,
+            periodo: periodoSelecionado,
+            disciplina: disciplina,
+            totalSemanas: totalSemanas,
+            grupoId: grupoId,
           );
-          if (result == null) {
-            return;
-          }
-          disciplina = result['disciplina'] as String?;
-          totalSemanas = result['totalSemanas'] as int? ?? 1;
-          final periodos = result['periodos'] as List<dynamic>?;
-          if (periodos != null && periodos.isNotEmpty) {
-            periodosSelecionados = periodos
-                .cast<Map<String, dynamic>>()
-                .map(
-                  (item) => (
-                    Turno.values.byName(item['turno'] as String),
-                    item['periodo'] as int,
-                  ),
-                )
-                .toList(growable: false);
-          }
+          totalCriadas += resultado.criadas;
+          totalJaOcupadas += resultado.jaOcupadas;
         }
+      });
 
-        final grupoId = 'GRP-${DateTime.now().microsecondsSinceEpoch}';
-        var totalCriadas = 0;
-        var totalJaOcupadas = 0;
-        setState(() {
-          for (final (turnoSelecionado, periodoSelecionado)
-              in periodosSelecionados) {
-            final resultado = _criarReservasParaCelula(
-              professor: currentUser.name,
-              diaSemana: diaSemana,
-              turno: turnoSelecionado,
-              periodo: periodoSelecionado,
-              disciplina: disciplina,
-              totalSemanas: totalSemanas,
-              grupoId: grupoId,
-            );
-            totalCriadas += resultado.criadas;
-            totalJaOcupadas += resultado.jaOcupadas;
-          }
-        });
-
-        if (totalCriadas == 0) {
-          _showInfo('Este horário acabou de ser reservado por outro usuário.');
-          return;
-        }
-
-        await _saveData();
-
-        AppEventLogger.action(
-          'reserva_create',
-          details: {
-            'laboratorio': _laboratorioSelecionadoValido,
-            'diaSemana': diaSemana,
-            'turno': turno.name,
-            'periodo': periodo,
-            'professor': currentUser.name,
-            'horariosReservados': periodosSelecionados.length,
-            'reservasCriadas': totalCriadas,
-          },
-        );
-
-        _showInfo(
-          totalCriadas == 1
-              ? 'Horário reservado com sucesso.'
-              : '$totalCriadas horários reservados com sucesso.'
-                    '${totalJaOcupadas > 0 ? ' $totalJaOcupadas já estavam ocupados.' : ''}',
-        );
+      if (totalCriadas == 0) {
+        _showInfo('Esse horário já está ocupado. Escolha outro horário livre.');
         return;
       }
 
-      if (!ReservaService.canRemoveReservation(
-        role: role,
-        currentUserName: currentUser.name,
-        reserva: reservaAtual,
-      )) {
-        _showInfo('Você só pode editar ou remover as próprias reservas.');
-        return;
-      }
+      if (!await _salvarOuDesfazer(antes)) return;
 
-      final grupo = _reservas
-          .where(
-            (item) =>
-                item.grupoId == reservaAtual.grupoId &&
-                item.laboratorio == reservaAtual.laboratorio &&
-                item.ano == reservaAtual.ano &&
-                item.mes == reservaAtual.mes,
-          )
-          .toList(growable: false);
+      AppEventLogger.action(
+        'reserva_create',
+        details: {
+          'laboratorio': _laboratorioSelecionadoValido,
+          'diaSemana': diaSemana,
+          'turno': turno.name,
+          'periodo': periodo,
+          'horariosReservados': periodosSelecionados.length,
+          'reservasCriadas': totalCriadas,
+        },
+      );
 
-      final acao = await _escolherAcaoReserva(reservaAtual);
-      if (acao == null) return;
-
-      if (acao == _AcaoReserva.editar) {
-        await _executarEdicao(reservaAtual: reservaAtual, grupo: grupo);
-        return;
-      }
-
-      await _executarExclusao(reservaAtual: reservaAtual, grupo: grupo);
+      _showSuccess(
+        totalCriadas == 1
+            ? 'Reserva feita: $_laboratorioSelecionadoValido, '
+                  '${ReservaService.diaSemanaDe(data)} ${_dataCurta(data)}, '
+                  '${_horarioLegivel(turno.horarioDo(periodo))}.'
+            : '$totalCriadas horários reservados.'
+                  '${totalJaOcupadas > 0 ? ' $totalJaOcupadas já estavam ocupados.' : ''}',
+      );
     } catch (error, stackTrace) {
       AppEventLogger.error('reserva_error', error, stackTrace: stackTrace);
 
@@ -669,33 +570,53 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     }
   }
 
-  Future<_AcaoReserva?> _escolherAcaoReserva(ReservaLaboratorio reserva) async {
-    return showDialog<_AcaoReserva>(
-      context: context,
-      builder: (dialogContext) => SimpleDialog(
-        title: Text(reserva.disciplina ?? 'Reserva de laboratório'),
-        children: [
-          SimpleDialogOption(
-            onPressed: () =>
-                Navigator.of(dialogContext).pop(_AcaoReserva.editar),
-            child: const ListTile(
-              leading: SigadIcon(SigadIcons.editar),
-              title: Text('Editar reserva'),
-              contentPadding: EdgeInsets.zero,
-            ),
-          ),
-          SimpleDialogOption(
-            onPressed: () =>
-                Navigator.of(dialogContext).pop(_AcaoReserva.excluir),
-            child: const ListTile(
-              leading: SigadIcon(SigadIcons.excluir, color: SigadColors.risk),
-              title: Text('Excluir reserva'),
-              contentPadding: EdgeInsets.zero,
-            ),
-          ),
-        ],
+  /// Mostra os detalhes da reserva e, para quem pode, editar ou excluir.
+  Future<void> _abrirReservaExistente(
+    ReservaLaboratorio reservaAtual,
+    DateTime data,
+  ) async {
+    final userContext = context.read<UserContextProvider>();
+    final user = userContext.currentUser;
+    final podeAlterar =
+        user != null &&
+        ReservaService.canChangeReservation(
+          user: user,
+          role: userContext.userRole,
+        ) &&
+        ReservaService.canRemoveReservation(
+          role: userContext.userRole,
+          currentUserName: user.name,
+          reserva: reservaAtual,
+        );
+
+    final acao = await Navigator.of(context).push<_AcaoReserva>(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => _DetalhesReservaSheet(
+          reserva: reservaAtual,
+          data: data,
+          ehMinha: reservaAtual.professor == user?.name,
+          podeAlterar: podeAlterar,
+        ),
       ),
     );
+    if (acao == null || !podeAlterar) return;
+
+    final grupo = _reservas
+        .where(
+          (item) =>
+              item.grupoId == reservaAtual.grupoId &&
+              item.laboratorio == reservaAtual.laboratorio &&
+              item.ano == reservaAtual.ano &&
+              item.mes == reservaAtual.mes,
+        )
+        .toList(growable: false);
+
+    if (acao == _AcaoReserva.editar) {
+      await _executarEdicao(reservaAtual: reservaAtual, grupo: grupo);
+      return;
+    }
+    await _executarExclusao(reservaAtual: reservaAtual, grupo: grupo);
   }
 
   List<ReservaLaboratorio> _ordenarOcorrencias(
@@ -703,16 +624,21 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   ) {
     final ordenado = List<ReservaLaboratorio>.from(ocorrencias);
     ordenado.sort((a, b) {
-      final porSemana = a.semanaDoMes.compareTo(b.semanaDoMes);
-      if (porSemana != 0) return porSemana;
-      return a.diaSemana.compareTo(b.diaSemana);
+      final dataA = ReservaService.dataDaReserva(a);
+      final dataB = ReservaService.dataDaReserva(b);
+      if (dataA != null && dataB != null) return dataA.compareTo(dataB);
+      return a.semanaDoMes.compareTo(b.semanaDoMes);
     });
     return ordenado;
   }
 
-  String _rotuloOcorrencia(ReservaLaboratorio ocorrencia) =>
-      '${ReservaService.diaCompleto(ocorrencia.diaSemana)} · '
-      '${ocorrencia.turno.horarioDo(ocorrencia.periodo)}';
+  String _rotuloOcorrencia(ReservaLaboratorio ocorrencia) {
+    final data = ReservaService.dataDaReserva(ocorrencia);
+    final dia = data == null
+        ? ReservaService.diaCompleto(ocorrencia.diaSemana)
+        : _dataPorExtenso(data);
+    return '$dia · ${_horarioLegivel(ocorrencia.turno.horarioDo(ocorrencia.periodo))}';
+  }
 
   /// Deixa o usuário escolher exatamente quais ocorrências de uma reserva
   /// recorrente devem ser afetadas, em vez de o app decidir por "esta" ou
@@ -770,26 +696,30 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         .where((item) => idsSelecionados.contains(item.id))
         .toList(growable: false);
 
+    final antes = List<ReservaLaboratorio>.of(_reservas);
     var totalAtualizadas = 0;
     var totalConflitos = 0;
     setState(() {
       for (final ocorrencia in ocorrenciasSelecionadas) {
-        final moveu =
-            novoDiaSemana != ocorrencia.diaSemana ||
-            novoTurno != ocorrencia.turno ||
-            novoPeriodo != ocorrencia.periodo;
+        // O novo dia é o da mesma semana (segunda a sexta) da ocorrência,
+        // e ano/mês/bloco são recalculados a partir da data resultante.
+        final dataAtual = ReservaService.dataDaReserva(ocorrencia);
+        final novaData = dataAtual == null
+            ? null
+            : ReservaService.diaDaMesmaSemana(dataAtual, novoDiaSemana);
+        if (novaData == null) {
+          totalConflitos++;
+          continue;
+        }
 
-        if (moveu &&
-            ReservaService.isSlotOccupied(
-              reservas: _reservas,
-              laboratorio: _laboratorioSelecionadoValido,
-              ano: ocorrencia.ano,
-              mes: _mesSelecionado,
-              semanaDoMes: ocorrencia.semanaDoMes,
-              diaSemana: novoDiaSemana,
-              turno: novoTurno,
-              periodo: novoPeriodo,
-            )) {
+        final ocupante = ReservaService.reservaNaData(
+          reservas: _reservas,
+          laboratorio: ocorrencia.laboratorio,
+          data: novaData,
+          turno: novoTurno,
+          periodo: novoPeriodo,
+        );
+        if (ocupante != null && ocupante.id != ocorrencia.id) {
           totalConflitos++;
           continue;
         }
@@ -800,9 +730,9 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
             id: ocorrencia.id,
             professor: ocorrencia.professor,
             laboratorio: ocorrencia.laboratorio,
-            ano: ocorrencia.ano,
-            mes: ocorrencia.mes,
-            semanaDoMes: ocorrencia.semanaDoMes,
+            ano: novaData.year,
+            mes: novaData.month,
+            semanaDoMes: ReservaService.semanaDoMesDe(novaData),
             diaSemana: novoDiaSemana,
             turno: novoTurno,
             periodo: novoPeriodo,
@@ -821,7 +751,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       return;
     }
 
-    await _saveData();
+    if (!await _salvarOuDesfazer(antes)) return;
 
     AppEventLogger.action(
       'reserva_edit',
@@ -835,7 +765,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       },
     );
 
-    _showInfo(
+    _showSuccess(
       totalAtualizadas == 1
           ? 'Reserva atualizada.'
           : '$totalAtualizadas ocorrências atualizadas.'
@@ -868,22 +798,19 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     final confirmarExclusao = await _confirmarAcao(
       titulo: 'Excluir reserva',
       mensagem: unica != null
-          ? 'Deseja remover sua reserva de ${ReservaService.diaCompleto(unica.diaSemana)}, ${unica.turno.horarioDo(unica.periodo)}, ${ReservaService.descricaoSemana(unica.semanaDoMes)} de ${ReservaService.nomeMes(unica.mes, _mesesDefault)} de ${unica.ano} no ${unica.laboratorio}?'
-          : 'Deseja remover as ${idsSelecionados.length} ocorrências selecionadas no $_laboratorioSelecionadoValido?',
+          ? 'Deseja remover a reserva de ${_rotuloOcorrencia(unica)} no ${unica.laboratorio}?'
+          : 'Deseja remover as ${idsSelecionados.length} ocorrências selecionadas no ${reservaAtual.laboratorio}?',
       confirmarLabel: 'Excluir',
       isDelete: true,
     );
 
     if (!confirmarExclusao) return;
 
+    final antes = List<ReservaLaboratorio>.of(_reservas);
     setState(() {
       _reservas.removeWhere((reserva) => idsSelecionados.contains(reserva.id));
     });
-    final salvo = await _saveData();
-    if (!salvo) {
-      setState(() => _reservas.addAll(ocorrenciasSelecionadas));
-      return;
-    }
+    if (!await _salvarOuDesfazer(antes)) return;
 
     AppEventLogger.action(
       'reserva_remove',
@@ -894,7 +821,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       },
     );
 
-    _showInfo(
+    _showSuccess(
       idsSelecionados.length == 1
           ? 'Reserva removida.'
           : '${idsSelecionados.length} ocorrências removidas.',
@@ -902,21 +829,27 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   }
 
   Future<Map<String, dynamic>?> _editarReserva(ReservaLaboratorio reserva) {
-    return showDialog<Map<String, dynamic>>(
-      context: context,
-      builder: (_) => _DialogEditarReserva(
-        reserva: reserva,
-        horarios: ReservaService.gerarLinhasGrade(),
-        isOcupado: (dia, t, p) => _reservas.any(
-          (item) =>
-              item.id != reserva.id &&
-              item.laboratorio == _laboratorioSelecionadoValido &&
-              item.ano == _anoSelecionado &&
-              item.mes == _mesSelecionado &&
-              item.semanaDoMes == _semanaSelecionada &&
-              item.diaSemana == dia &&
-              item.turno == t &&
-              item.periodo == p,
+    return Navigator.of(context).push<Map<String, dynamic>>(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => _DialogEditarReserva(
+          reserva: reserva,
+          horarios: ReservaService.gerarLinhasGrade(),
+          isOcupado: (dia, t, p) {
+            final dataAtual = ReservaService.dataDaReserva(reserva);
+            final data = dataAtual == null
+                ? null
+                : ReservaService.diaDaMesmaSemana(dataAtual, dia);
+            if (data == null) return true;
+            final ocupante = ReservaService.reservaNaData(
+              reservas: _reservas,
+              laboratorio: reserva.laboratorio,
+              data: data,
+              turno: t,
+              periodo: p,
+            );
+            return ocupante != null && ocupante.id != reserva.id;
+          },
         ),
       ),
     );
@@ -939,45 +872,61 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
 
     final sugestoes = _sugestoesReserva;
     if (sugestoes.isEmpty) {
-      _showInfo('Não há slots livres recomendados para a semana selecionada.');
+      _showInfo('Não há horários livres sugeridos para esta semana.');
       return;
     }
 
     final sugestao = sugestoes.first;
-    final jaOcupado = ReservaService.isSlotOccupied(
-      reservas: _reservas,
-      laboratorio: sugestao.laboratorio,
-      ano: _anoSelecionado,
-      mes: _mesSelecionado,
-      semanaDoMes: _semanaSelecionada,
-      diaSemana: sugestao.diaSemana,
-      turno: sugestao.turno,
-      periodo: sugestao.periodo,
+    final indiceDia = ReservaService.diasUteis.indexOf(sugestao.diaSemana);
+    if (indiceDia < 0) return;
+    final data = DateTime(
+      _segunda.year,
+      _segunda.month,
+      _segunda.day + indiceDia,
     );
+    final horario = _horarioLegivel(sugestao.horario);
 
+    final confirmar = await _confirmarAcao(
+      titulo: 'Reservar horário sugerido?',
+      mensagem:
+          '${sugestao.laboratorio}\n${_dataPorExtenso(data)}, $horario.\n\n'
+          'A reserva fica no seu nome.',
+      confirmarLabel: 'Reservar',
+    );
+    if (!confirmar) return;
+
+    final jaOcupado =
+        ReservaService.reservaNaData(
+          reservas: _reservas,
+          laboratorio: sugestao.laboratorio,
+          data: data,
+          turno: sugestao.turno,
+          periodo: sugestao.periodo,
+        ) !=
+        null;
     if (jaOcupado) {
       _showInfo('A sugestão ficou indisponível. Tente novamente.');
       return;
     }
 
+    final antes = List<ReservaLaboratorio>.of(_reservas);
     setState(() {
       _laboratorioSelecionado = sugestao.laboratorio;
       _reservas.add(
         ReservaService.createReserva(
           professor: user.name,
           laboratorio: sugestao.laboratorio,
-          ano: _anoSelecionado,
-          mes: _mesSelecionado,
-          semanaDoMes: _semanaSelecionada,
+          ano: data.year,
+          mes: data.month,
+          semanaDoMes: ReservaService.semanaDoMesDe(data),
           diaSemana: sugestao.diaSemana,
           turno: sugestao.turno,
           periodo: sugestao.periodo,
-          disciplina: 'Reserva sugerida automaticamente',
         ),
       );
     });
 
-    await _saveData();
+    if (!await _salvarOuDesfazer(antes)) return;
 
     AppEventLogger.action(
       'reserva_auto_create',
@@ -990,8 +939,9 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       },
     );
 
-    _showInfo(
-      'Reserva automática criada em ${sugestao.laboratorio} (${sugestao.diaSemana} ${sugestao.horario}).',
+    _showSuccess(
+      'Reserva feita: ${sugestao.laboratorio}, ${sugestao.diaSemana} '
+      '${_dataCurta(data)}, $horario.',
     );
   }
 
@@ -1030,6 +980,11 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   void _showInfo(String message) {
     if (!mounted) return;
     AppFeedbackService.info(context, message);
+  }
+
+  void _showSuccess(String message) {
+    if (!mounted) return;
+    AppFeedbackService.success(context, message);
   }
 
   void _showError(String message) {
@@ -1076,125 +1031,98 @@ class _DialogEditarReservaState extends State<_DialogEditarReserva> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return AlertDialog(
-      title: const Text('Editar reserva'),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return TelaFormularioReserva(
+      titulo: 'Editar reserva',
+      acaoLabel: 'Salvar',
+      acaoIcone: SigadIcons.salvar,
+      onAcao: () => Navigator.of(context).pop({
+        'diaSemana': _diaSelecionado,
+        'turno': _turnoSelecionado.name,
+        'periodo': _periodoSelecionado,
+        'disciplina': _disciplinaController.text.trim(),
+      }),
+      children: [
+        TextField(
+          controller: _disciplinaController,
+          decoration: const InputDecoration(labelText: 'Disciplina (opcional)'),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          'Dia da semana',
+          style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 6),
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: [
+            for (final dia in _diasAbreviados)
+              ChoiceChip(
+                label: Text(dia),
+                selected: _diaSelecionado == dia,
+                onSelected: (_) => setState(() => _diaSelecionado = dia),
+              ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Text(
+          'Horário',
+          style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 6),
+        for (final turno in Turno.values) ...[
+          Text(
+            turno.label,
+            style: textTheme.labelSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: turno.chipTextColor,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
             children: [
-              TextField(
-                controller: _disciplinaController,
-                autofocus: true,
-                decoration: const InputDecoration(
-                  labelText: 'Disciplina (opcional)',
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Dia da semana',
-                style: textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: [
-                  for (final dia in _diasAbreviados)
-                    ChoiceChip(
-                      label: Text(dia),
-                      selected: _diaSelecionado == dia,
-                      onSelected: (_) => setState(() => _diaSelecionado = dia),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Horário',
-                style: textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 6),
-              for (final turno in Turno.values) ...[
-                Text(
-                  turno.label,
-                  style: textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: turno.chipTextColor,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: [
-                    for (final linha in widget.horarios.where(
-                      (item) => item.turno == turno,
-                    ))
-                      Builder(
-                        builder: (context) {
-                          final ehAtual = _ehSlotAtual(
-                            _diaSelecionado,
-                            turno,
-                            linha.periodo,
-                          );
-                          final ocupado =
-                              !ehAtual &&
-                              widget.isOcupado(
-                                _diaSelecionado,
-                                turno,
-                                linha.periodo,
-                              );
-                          final selecionado =
-                              _turnoSelecionado == turno &&
-                              _periodoSelecionado == linha.periodo;
-                          return FilterChip(
-                            label: Text(
-                              '${turno.shortLabel}${linha.periodo}',
-                              style: ocupado
-                                  ? const TextStyle(
-                                      decoration: TextDecoration.lineThrough,
-                                    )
-                                  : null,
-                            ),
-                            selected: selecionado,
-                            tooltip: ocupado ? 'Horário já ocupado' : null,
-                            onSelected: ocupado
-                                ? null
-                                : (_) => setState(() {
-                                    _turnoSelecionado = turno;
-                                    _periodoSelecionado = linha.periodo;
-                                  }),
-                          );
-                        },
+              for (final linha in widget.horarios.where(
+                (item) => item.turno == turno,
+              ))
+                Builder(
+                  builder: (context) {
+                    final ehAtual = _ehSlotAtual(
+                      _diaSelecionado,
+                      turno,
+                      linha.periodo,
+                    );
+                    final ocupado =
+                        !ehAtual &&
+                        widget.isOcupado(_diaSelecionado, turno, linha.periodo);
+                    final selecionado =
+                        _turnoSelecionado == turno &&
+                        _periodoSelecionado == linha.periodo;
+                    return FilterChip(
+                      label: Text(
+                        '${turno.shortLabel}${linha.periodo}',
+                        style: ocupado
+                            ? const TextStyle(
+                                decoration: TextDecoration.lineThrough,
+                              )
+                            : null,
                       ),
-                  ],
+                      selected: selecionado,
+                      tooltip: ocupado ? 'Horário já ocupado' : null,
+                      onSelected: ocupado
+                          ? null
+                          : (_) => setState(() {
+                              _turnoSelecionado = turno;
+                              _periodoSelecionado = linha.periodo;
+                            }),
+                    );
+                  },
                 ),
-                const SizedBox(height: 8),
-              ],
             ],
           ),
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancelar'),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop({
-            'diaSemana': _diaSelecionado,
-            'turno': _turnoSelecionado.name,
-            'periodo': _periodoSelecionado,
-            'disciplina': _disciplinaController.text.trim(),
-          }),
-          child: const Text('Salvar'),
-        ),
+          const SizedBox(height: 8),
+        ],
       ],
     );
   }
@@ -1248,9 +1176,6 @@ class _DialogSelecionarOcorrenciasState
                   contentPadding: EdgeInsets.zero,
                   value: _selecionados.contains(ocorrencia.id),
                   title: Text(widget.rotulo(ocorrencia)),
-                  subtitle: Text(
-                    ReservaService.descricaoSemana(ocorrencia.semanaDoMes),
-                  ),
                   onChanged: (selecionado) => setState(() {
                     if (selecionado ?? false) {
                       _selecionados.add(ocorrencia.id);
@@ -1311,52 +1236,89 @@ class _FiltroLabRow extends StatelessWidget {
   }
 }
 
-class _FiltroPeriodoRow extends StatelessWidget {
-  const _FiltroPeriodoRow({
-    required this.anoSelecionado,
-    required this.mesSelecionado,
-    required this.meses,
+/// Linha "‹ 12 a 16 de out. ›" com atalhos para hoje e para escolher a data.
+class _SemanaNavegador extends StatelessWidget {
+  const _SemanaNavegador({
+    required this.segunda,
     required this.onAnterior,
-    required this.onProximo,
-    required this.onSelecionarPeriodo,
+    required this.onProxima,
+    required this.onHoje,
+    required this.onEscolherData,
   });
 
-  final int anoSelecionado;
-  final int mesSelecionado;
-  final List<String> meses;
+  final DateTime segunda;
   final VoidCallback onAnterior;
-  final VoidCallback onProximo;
-  final VoidCallback onSelecionarPeriodo;
+  final VoidCallback onProxima;
+  final VoidCallback onHoje;
+  final VoidCallback onEscolherData;
+
+  String get _rotulo {
+    final sexta = DateTime(segunda.year, segunda.month, segunda.day + 4);
+    final mesFim = _mesesAbrev[sexta.month - 1];
+    if (segunda.month == sexta.month) {
+      return '${segunda.day} a ${sexta.day} de $mesFim';
+    }
+    return '${segunda.day} de ${_mesesAbrev[segunda.month - 1]} '
+        'a ${sexta.day} de $mesFim';
+  }
 
   @override
   Widget build(BuildContext context) {
-    final titulo = '${meses[mesSelecionado - 1]} de $anoSelecionado';
-    return Semantics(
-      container: true,
-      label: 'Navegação do calendário',
+    final theme = Theme.of(context);
+    final ehSemanaAtual =
+        ReservaService.segundaDaSemana(DateTime.now()) == segunda;
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: SigadColors.divider),
+      ),
       child: Row(
         children: [
           IconButton(
-            onPressed: anoSelecionado == 2020 && mesSelecionado == 1
-                ? null
-                : onAnterior,
-            tooltip: 'Mês anterior',
+            tooltip: 'Semana anterior',
+            onPressed: onAnterior,
             icon: const SigadIcon(SigadIcons.chevronEsquerda),
           ),
           Expanded(
-            child: Tooltip(
-              message: 'Escolher mês e ano',
-              child: OutlinedButton(
-                onPressed: onSelecionarPeriodo,
-                child: Text(titulo, textAlign: TextAlign.center, maxLines: 2),
+            child: Semantics(
+              button: true,
+              label:
+                  'Semana de $_rotulo de ${segunda.year}. Escolher outra data',
+              excludeSemantics: true,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: onEscolherData,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: 48),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        _rotulo,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      Text(
+                        ehSemanaAtual ? 'Esta semana' : _anoDaSemana(segunda),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: SigadColors.muted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
+          if (!ehSemanaAtual)
+            TextButton(onPressed: onHoje, child: const Text('Hoje')),
           IconButton(
-            onPressed: anoSelecionado == 2100 && mesSelecionado == 12
-                ? null
-                : onProximo,
-            tooltip: 'Próximo mês',
+            tooltip: 'Próxima semana',
+            onPressed: onProxima,
             icon: const SigadIcon(SigadIcons.chevronDireita),
           ),
         ],
@@ -1365,226 +1327,84 @@ class _FiltroPeriodoRow extends StatelessWidget {
   }
 }
 
-class _SelecaoDiaMesRow extends StatelessWidget {
-  const _SelecaoDiaMesRow({
-    required this.anoSelecionado,
-    required this.mesSelecionado,
-    required this.diaSelecionado,
-    required this.diasNoMes,
-    required this.onDiaChanged,
-    required this.onMesAnterior,
-    required this.onProximoMes,
-  });
+/// Estado visual de um horário na agenda.
+enum _EstadoCelula { livre, minha, outro }
 
-  final int anoSelecionado;
-  final int mesSelecionado;
-  final int diaSelecionado;
-  final int diasNoMes;
-  final ValueChanged<int> onDiaChanged;
-  final VoidCallback onMesAnterior;
-  final VoidCallback onProximoMes;
+extension on _EstadoCelula {
+  Color get fundo => switch (this) {
+    _EstadoCelula.livre => SigadColors.surface,
+    _EstadoCelula.minha => SigadColors.brandLight,
+    _EstadoCelula.outro => SigadColors.surfaceAlt,
+  };
+}
+
+class _Legenda extends StatelessWidget {
+  const _Legenda();
 
   @override
   Widget build(BuildContext context) {
-    // Calcula em qual dia da semana o mês começa para alinhar o grid
-    final primeiroDiaDoMes = DateTime(anoSelecionado, mesSelecionado, 1);
-    // weekday: 1 (seg) a 7 (dom). Subtraímos 1 para o offset começar na segunda.
-    final offset = primeiroDiaDoMes.weekday - 1;
-
-    const diasSemanaHeader = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-
-    final feriadoSelecionado = FeriadoService.feriadoEm(
-      DateTime(anoSelecionado, mesSelecionado, diaSelecionado),
-    );
-
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onHorizontalDragEnd: (details) {
-        final velocidade = details.primaryVelocity ?? 0;
-        if (velocidade.abs() < 250) return;
-        if (velocidade < 0) {
-          onProximoMes();
-        } else {
-          onMesAnterior();
-        }
-      },
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        decoration: BoxDecoration(
-          color: SigadColors.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: SigadColors.divider),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    Widget item(Color fundo, Color borda, String texto, {bool barra = false}) =>
+        Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // Cabeçalho com as iniciais dos dias da semana
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: diasSemanaHeader
-                  .map(
-                    (d) => Expanded(
-                      child: Center(
-                        child: Text(
-                          d,
-                          style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: const Color.fromARGB(255, 17, 17, 17),
-                                fontSize: 12,
-                              ),
-                        ),
-                      ),
-                    ),
-                  )
-                  .toList(),
-            ),
-            const SizedBox(height: 6),
-            // Grade de dias com offset para alinhamento correto
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 7,
-                mainAxisSpacing: 4,
-                crossAxisSpacing: 4,
-                childAspectRatio:
-                    1.1, // Torna as células levemente mais achatadas
+            Container(
+              width: 18,
+              height: 18,
+              decoration: BoxDecoration(
+                color: fundo,
+                borderRadius: BorderRadius.circular(4),
+                border: barra
+                    ? Border(left: BorderSide(color: borda, width: 4))
+                    : Border.all(color: borda),
               ),
-              itemCount: offset + diasNoMes,
-              itemBuilder: (context, index) {
-                if (index < offset) return const SizedBox.shrink();
-
-                final dia = index - offset + 1;
-                final isSelected = dia == diaSelecionado;
-                final feriado = FeriadoService.feriadoEm(
-                  DateTime(anoSelecionado, mesSelecionado, dia),
-                );
-                return Semantics(
-                  button: true,
-                  selected: isSelected,
-                  label: feriado == null
-                      ? 'Dia $dia'
-                      : 'Dia $dia, feriado: ${feriado.descricao}',
-                  excludeSemantics: true,
-                  child: InkWell(
-                    onTap: () => onDiaChanged(dia),
-                    borderRadius: BorderRadius.circular(4),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? SigadColors.brand
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(
-                          color: isSelected
-                              ? SigadColors.brand
-                              : feriado != null
-                              ? SigadColors.warning
-                              : SigadColors.divider.withValues(alpha: 0.5),
-                          width: feriado != null ? 2 : 1,
-                        ),
-                      ),
-                      child: Stack(
-                        children: [
-                          Center(
-                            child: Text(
-                              '$dia',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: isSelected
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                                color: isSelected
-                                    ? Colors.white
-                                    : SigadColors.ink,
-                              ),
-                            ),
-                          ),
-                          if (feriado != null)
-                            Positioned(
-                              right: 2,
-                              top: 2,
-                              child: SigadIcon(
-                                SigadIcons.bandeira,
-                                size: 10,
-                                color: isSelected
-                                    ? Colors.white
-                                    : SigadColors.warning,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
             ),
-            const SizedBox(height: 8),
-            if (feriadoSelecionado != null)
-              Semantics(
-                liveRegion: true,
-                label: 'Feriado selecionado: ${feriadoSelecionado.descricao}',
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SigadIcon(
-                      SigadIcons.bandeira,
-                      size: 18,
-                      color: SigadColors.warning,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        feriadoSelecionado.descricao,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            const SizedBox(height: 4),
-            Text(
-              FeriadoService.avisoEscopo,
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(texto, style: Theme.of(context).textTheme.bodySmall),
             ),
           ],
+        );
+
+    return Wrap(
+      spacing: 16,
+      runSpacing: 8,
+      children: [
+        item(SigadColors.surface, SigadColors.success, 'Horário livre'),
+        item(
+          SigadColors.brandLight,
+          SigadColors.brand,
+          'Minha reserva',
+          barra: true,
         ),
-      ),
+        item(
+          SigadColors.surfaceAlt,
+          SigadColors.divider,
+          'Reservado por outro',
+        ),
+        item(SigadColors.warningSoft, SigadColors.warning, 'Feriado'),
+      ],
     );
   }
 }
 
-class _MapaSemanal extends StatefulWidget {
-  const _MapaSemanal({
-    required this.anoSelecionado,
-    required this.mesSelecionado,
-    required this.mesLabel,
-    required this.semanaLabel,
-    required this.diaSelecionado,
-    required this.diaSemanaSelecionado,
-    required this.diaSemanaSelecionadoCompleto,
+/// Agenda da semana: abas de turno, legenda e grade.
+class _AgendaSemanal extends StatefulWidget {
+  const _AgendaSemanal({
+    required this.dias,
+    required this.laboratorio,
     required this.reservas,
+    required this.usuarioAtual,
     required this.podeEditar,
     required this.onTapCelula,
   });
 
-  final int anoSelecionado;
-  final int mesSelecionado;
-  final String mesLabel;
-  final String semanaLabel;
-  final int diaSelecionado;
-  final String diaSemanaSelecionado;
-  final String diaSemanaSelecionadoCompleto;
+  final List<DateTime> dias;
+  final String laboratorio;
   final List<ReservaLaboratorio> reservas;
+  final String? usuarioAtual;
   final bool podeEditar;
   final Future<void> Function(
-    String diaSemana,
+    DateTime data,
     Turno turno,
     int periodo,
     ReservaLaboratorio? reservaAtual,
@@ -1592,88 +1412,513 @@ class _MapaSemanal extends StatefulWidget {
   onTapCelula;
 
   @override
-  State<_MapaSemanal> createState() => _MapaSemanalState();
+  State<_AgendaSemanal> createState() => _AgendaSemanalState();
 }
 
-class _MapaSemanalState extends State<_MapaSemanal> {
-  static const List<String> _diasAbreviados = [
-    'Seg',
-    'Ter',
-    'Qua',
-    'Qui',
-    'Sex',
-  ];
-
+class _AgendaSemanalState extends State<_AgendaSemanal> {
   Turno? _turnoSelecionado;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final linhas = _gerarLinhasGrade();
-    final diasDoMesDaSemana = _diasDoMesDaSemanaSelecionada();
+    final linhas = ReservaService.gerarLinhasGrade()
+        .where(
+          (linha) =>
+              _turnoSelecionado == null || linha.turno == _turnoSelecionado,
+        )
+        .toList(growable: false);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Agenda semanal',
-          style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          '${widget.semanaLabel} de ${widget.mesLabel} · Dia ${widget.diaSelecionado} (${widget.diaSemanaSelecionado})',
-          style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-        ),
-        const SizedBox(height: 12),
         _TurnoTabs(
           selecionado: _turnoSelecionado,
           onSelected: (turno) => setState(() => _turnoSelecionado = turno),
         ),
         const SizedBox(height: 12),
+        const _Legenda(),
+        const SizedBox(height: 12),
         _GradeSemanal(
-          diasAbreviados: _diasAbreviados,
-          diasDoMes: diasDoMesDaSemana,
-          diaSemanaSelecionado: widget.diaSemanaSelecionado,
+          dias: widget.dias,
           linhas: linhas,
-          reservaPara: _reservaPara,
+          reservaPara: (data, turno, periodo) => ReservaService.reservaNaData(
+            reservas: widget.reservas,
+            laboratorio: widget.laboratorio,
+            data: data,
+            turno: turno,
+            periodo: periodo,
+          ),
+          usuarioAtual: widget.usuarioAtual,
           podeEditar: widget.podeEditar,
           onTapCelula: widget.onTapCelula,
         ),
       ],
     );
   }
+}
 
-  List<HorarioGridRow> _gerarLinhasGrade() {
-    final todasAsLinhas = ReservaService.gerarLinhasGrade();
-    if (_turnoSelecionado == null) return todasAsLinhas;
-    return todasAsLinhas
-        .where((linha) => linha.turno == _turnoSelecionado)
-        .toList(growable: false);
-  }
+class _GradeSemanal extends StatelessWidget {
+  const _GradeSemanal({
+    required this.dias,
+    required this.linhas,
+    required this.reservaPara,
+    required this.usuarioAtual,
+    required this.podeEditar,
+    required this.onTapCelula,
+  });
 
-  ReservaLaboratorio? _reservaPara(
-    String diaSemana,
+  final List<DateTime> dias;
+  final List<HorarioGridRow> linhas;
+  final ReservaLaboratorio? Function(DateTime data, Turno turno, int periodo)
+  reservaPara;
+  final String? usuarioAtual;
+  final bool podeEditar;
+  final Future<void> Function(
+    DateTime data,
     Turno turno,
     int periodo,
-  ) => ReservaService.reservaPara(
-    reservas: widget.reservas,
-    diaSemana: diaSemana,
-    turno: turno,
-    periodo: periodo,
-  );
+    ReservaLaboratorio? reservaAtual,
+  )
+  onTapCelula;
 
-  List<int> _diasDoMesDaSemanaSelecionada() {
-    final dataSelecionada = DateTime(
-      widget.anoSelecionado,
-      widget.mesSelecionado,
-      widget.diaSelecionado,
+  static const double _larguraHorario = 64;
+  static const double _larguraMinimaDia = 76;
+
+  @override
+  Widget build(BuildContext context) {
+    final hoje = DateUtils.dateOnly(DateTime.now());
+    final feriados = [for (final dia in dias) FeriadoService.feriadoEm(dia)];
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final escala = MediaQuery.textScalerOf(context).scale(1);
+        final larguraDia = _larguraMinimaDia * escala.clamp(1.0, 1.6);
+        final larguraMinima =
+            _larguraHorario * escala.clamp(1.0, 1.4) + larguraDia * dias.length;
+        final rola = constraints.maxWidth < larguraMinima;
+        final largura = rola ? larguraMinima : constraints.maxWidth;
+        final larguraHorario = _larguraHorario * escala.clamp(1.0, 1.4);
+
+        final grade = Container(
+          width: largura,
+          decoration: BoxDecoration(
+            color: SigadColors.surface,
+            border: Border.all(color: SigadColors.divider),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(width: larguraHorario),
+                    for (var i = 0; i < dias.length; i++)
+                      Expanded(
+                        child: _CabecalhoDia(
+                          data: dias[i],
+                          hoje: dias[i] == hoje,
+                          feriado: feriados[i],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              for (var index = 0; index < linhas.length; index++) ...[
+                if (index == 0 ||
+                    linhas[index - 1].turno != linhas[index].turno)
+                  _TurnoDividerRow(turno: linhas[index].turno),
+                IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(
+                        width: larguraHorario,
+                        child: _CelulaHorario(horario: linhas[index].horario),
+                      ),
+                      for (var i = 0; i < dias.length; i++)
+                        Expanded(
+                          child: _GradeReservaCell(
+                            data: dias[i],
+                            horario: linhas[index].horario,
+                            turno: linhas[index].turno,
+                            periodo: linhas[index].periodo,
+                            reserva: reservaPara(
+                              dias[i],
+                              linhas[index].turno,
+                              linhas[index].periodo,
+                            ),
+                            usuarioAtual: usuarioAtual,
+                            feriado: feriados[i] != null,
+                            ultimaColuna: i == dias.length - 1,
+                            podeEditar: podeEditar,
+                            onTapCelula: onTapCelula,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
+        );
+
+        if (!rola) return grade;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const HorizontalScrollHint(
+              message: 'Arraste a agenda para o lado para ver todos os dias.',
+            ),
+            const SizedBox(height: 8),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: grade,
+            ),
+          ],
+        );
+      },
     );
-    final inicioDaSemana = dataSelecionada.subtract(
-      Duration(days: dataSelecionada.weekday - DateTime.monday),
+  }
+}
+
+class _CabecalhoDia extends StatelessWidget {
+  const _CabecalhoDia({
+    required this.data,
+    required this.hoje,
+    required this.feriado,
+  });
+
+  final DateTime data;
+  final bool hoje;
+  final Feriado? feriado;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cor = hoje ? SigadColors.surface : SigadColors.ink;
+    final dia = ReservaService.diaSemanaDe(data) ?? '';
+    return Semantics(
+      header: true,
+      label:
+          '${ReservaService.diaCompleto(dia)}, ${_dataCurta(data)}'
+          '${hoje ? ', hoje' : ''}'
+          '${feriado != null ? ', feriado: ${feriado!.nome}' : ''}',
+      excludeSemantics: true,
+      child: Tooltip(
+        message: feriado?.nome ?? '',
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
+          decoration: BoxDecoration(
+            color: hoje
+                ? SigadColors.brand
+                : feriado != null
+                ? SigadColors.warningSoft
+                : SigadColors.surfaceAlt,
+            border: const Border(
+              left: BorderSide(color: SigadColors.divider),
+              bottom: BorderSide(color: SigadColors.divider),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                dia,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: cor,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              Text(
+                _dataCurta(data),
+                style: theme.textTheme.bodySmall?.copyWith(color: cor),
+              ),
+              if (feriado != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: SigadIcon(
+                    SigadIcons.bandeira,
+                    size: 14,
+                    color: hoje ? SigadColors.surface : SigadColors.warning,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
-    return List<int>.generate(
-      5,
-      (index) => inicioDaSemana.add(Duration(days: index)).day,
+  }
+}
+
+class _CelulaHorario extends StatelessWidget {
+  const _CelulaHorario({required this.horario});
+
+  final String horario;
+
+  @override
+  Widget build(BuildContext context) {
+    final partes = horario.split('-');
+    final style = Theme.of(context).textTheme.labelMedium?.copyWith(
+      color: SigadColors.ink,
+      fontWeight: FontWeight.w700,
+    );
+    return Container(
+      alignment: Alignment.center,
+      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+      decoration: const BoxDecoration(
+        color: SigadColors.surfaceAlt,
+        border: Border(top: BorderSide(color: SigadColors.divider)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(partes.first, style: style),
+          if (partes.length > 1)
+            Text(
+              partes.last,
+              style: style?.copyWith(
+                color: SigadColors.muted,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GradeReservaCell extends StatelessWidget {
+  const _GradeReservaCell({
+    required this.data,
+    required this.horario,
+    required this.turno,
+    required this.periodo,
+    required this.reserva,
+    required this.usuarioAtual,
+    required this.feriado,
+    required this.ultimaColuna,
+    required this.podeEditar,
+    required this.onTapCelula,
+  });
+
+  final DateTime data;
+  final String horario;
+  final Turno turno;
+  final int periodo;
+  final ReservaLaboratorio? reserva;
+  final String? usuarioAtual;
+  final bool feriado;
+  final bool ultimaColuna;
+  final bool podeEditar;
+  final Future<void> Function(
+    DateTime data,
+    Turno turno,
+    int periodo,
+    ReservaLaboratorio? reservaAtual,
+  )
+  onTapCelula;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final reserva = this.reserva;
+    final estado = reserva == null
+        ? _EstadoCelula.livre
+        : reserva.professor == usuarioAtual
+        ? _EstadoCelula.minha
+        : _EstadoCelula.outro;
+    final diaSemana = ReservaService.diaSemanaDe(data) ?? '';
+    final podeTocar = reserva != null || podeEditar;
+    final fundo = estado == _EstadoCelula.livre && feriado
+        ? SigadColors.warningSoft.withValues(alpha: 0.5)
+        : estado.fundo;
+
+    final Widget conteudo = switch (estado) {
+      _EstadoCelula.livre => const SizedBox.shrink(),
+      _EstadoCelula.minha => Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            reserva!.disciplina ?? 'Minha reserva',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: textTheme.labelMedium?.copyWith(
+              color: SigadColors.brandDark,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+      _EstadoCelula.outro => Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            reserva!.professor.split(' ').first,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: textTheme.labelMedium?.copyWith(
+              color: SigadColors.ink,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          if (reserva.disciplina != null)
+            Text(
+              reserva.disciplina!,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
+            ),
+        ],
+      ),
+    };
+
+    return Semantics(
+      button: podeTocar,
+      excludeSemantics: true,
+      onTap: podeTocar
+          ? () => onTapCelula(data, turno, periodo, reserva)
+          : null,
+      label:
+          'Célula $diaSemana, dia ${data.day}, ${turno.label}, período $periodo, horário $horario.',
+      value: reserva == null
+          ? 'Livre'
+          : estado == _EstadoCelula.minha
+          ? 'Minha reserva'
+          : 'Reservado por ${reserva.professor}',
+      hint: reserva != null
+          ? 'Toque para ver os detalhes da reserva.'
+          : podeEditar
+          ? 'Toque para reservar.'
+          : null,
+      child: Material(
+        color: fundo,
+        child: InkWell(
+          onTap: podeTocar
+              ? () => onTapCelula(data, turno, periodo, reserva)
+              : null,
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 52),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+            decoration: BoxDecoration(
+              border: Border(
+                top: const BorderSide(color: SigadColors.divider),
+                left: estado == _EstadoCelula.minha
+                    ? const BorderSide(color: SigadColors.brand, width: 4)
+                    : const BorderSide(color: SigadColors.divider),
+                right: ultimaColuna
+                    ? BorderSide.none
+                    : const BorderSide(color: Colors.transparent),
+              ),
+            ),
+            alignment: Alignment.center,
+            child: conteudo,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Painel com os detalhes de uma reserva e, se permitido, editar/excluir.
+class _DetalhesReservaSheet extends StatelessWidget {
+  const _DetalhesReservaSheet({
+    required this.reserva,
+    required this.data,
+    required this.ehMinha,
+    required this.podeAlterar,
+  });
+
+  final ReservaLaboratorio reserva;
+  final DateTime data;
+  final bool ehMinha;
+  final bool podeAlterar;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    Widget linha(IconData icone, String rotulo, String valor) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SigadIcon(icone, color: SigadColors.brand),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  rotulo,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: SigadColors.muted,
+                  ),
+                ),
+                Text(valor, style: theme.textTheme.bodyLarge),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return TelaFormularioReserva(
+      titulo: 'Detalhes da reserva',
+      acaoLabel: podeAlterar ? 'Editar reserva' : null,
+      acaoIcone: SigadIcons.editar,
+      onAcao: () => Navigator.pop(context, _AcaoReserva.editar),
+      acaoSecundaria: podeAlterar
+          ? OutlinedButton.icon(
+              onPressed: () => Navigator.pop(context, _AcaoReserva.excluir),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: SigadColors.risk,
+              ),
+              icon: const SigadIcon(
+                SigadIcons.excluir,
+                color: SigadColors.risk,
+              ),
+              label: const Text('Excluir reserva'),
+            )
+          : null,
+      children: [
+        Text(
+          reserva.disciplina ?? 'Reserva de laboratório',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        if (ehMinha)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              'Sua reserva',
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: SigadColors.brand,
+              ),
+            ),
+          ),
+        const SizedBox(height: 12),
+        linha(SigadIcons.laboratorio, 'Laboratório', reserva.laboratorio),
+        linha(SigadIcons.calendario, 'Data', _dataPorExtenso(data)),
+        linha(
+          SigadIcons.relogio,
+          'Horário',
+          '${reserva.turno.label}, ${_horarioLegivel(reserva.turno.horarioDo(reserva.periodo))}',
+        ),
+        linha(SigadIcons.pessoa, 'Reservado por', reserva.professor),
+        const SizedBox(height: 16),
+        if (!podeAlterar)
+          Text(
+            'Só quem fez a reserva ou a chefia pode alterá-la.',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: SigadColors.muted,
+            ),
+          ),
+      ],
     );
   }
 }
@@ -1738,7 +1983,7 @@ class _TurnoTabButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(9),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 9),
+          padding: const EdgeInsets.symmetric(vertical: 14),
           child: Text(
             label,
             textAlign: TextAlign.center,
@@ -1749,100 +1994,6 @@ class _TurnoTabButton extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _GradeSemanal extends StatelessWidget {
-  const _GradeSemanal({
-    required this.diasAbreviados,
-    required this.diasDoMes,
-    required this.diaSemanaSelecionado,
-    required this.linhas,
-    required this.reservaPara,
-    required this.podeEditar,
-    required this.onTapCelula,
-  });
-
-  final List<String> diasAbreviados;
-  final List<int> diasDoMes;
-  final String diaSemanaSelecionado;
-  final List<HorarioGridRow> linhas;
-  final ReservaLaboratorio? Function(String diaSemana, Turno turno, int periodo)
-  reservaPara;
-  final bool podeEditar;
-  final Future<void> Function(
-    String diaSemana,
-    Turno turno,
-    int periodo,
-    ReservaLaboratorio? reservaAtual,
-  )
-  onTapCelula;
-
-  static const double _rowHeight = 60;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final textoAmpliado = MediaQuery.textScalerOf(context).scale(14) > 18;
-        final rowHeight = textoAmpliado ? 96.0 : _rowHeight;
-        final minimumWidth = textoAmpliado ? 700.0 : 560.0;
-        final gridWidth = constraints.maxWidth < minimumWidth
-            ? minimumWidth
-            : constraints.maxWidth;
-
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: SizedBox(
-            width: gridWidth,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: SigadColors.divider),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  for (var index = 0; index < linhas.length; index++) ...[
-                    if (index == 0 ||
-                        linhas[index - 1].turno != linhas[index].turno)
-                      _TurnoDividerRow(turno: linhas[index].turno),
-                    Row(
-                      children: [
-                        for (
-                          var dayIndex = 0;
-                          dayIndex < diasAbreviados.length;
-                          dayIndex++
-                        )
-                          Expanded(
-                            child: _GradeReservaCell(
-                              height: rowHeight,
-                              horario: linhas[index].horario,
-                              turno: linhas[index].turno,
-                              periodo: linhas[index].periodo,
-                              diaSemana: diasAbreviados[dayIndex],
-                              diaDoMes: diasDoMes[dayIndex],
-                              reserva: reservaPara(
-                                diasAbreviados[dayIndex],
-                                linhas[index].turno,
-                                linhas[index].periodo,
-                              ),
-                              podeEditar: podeEditar,
-                              onTapCelula: onTapCelula,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }
@@ -1883,249 +2034,6 @@ class _TurnoDividerRow extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _GradeReservaCell extends StatelessWidget {
-  const _GradeReservaCell({
-    required this.height,
-    required this.horario,
-    required this.turno,
-    required this.periodo,
-    required this.diaSemana,
-    required this.diaDoMes,
-    required this.reserva,
-    required this.podeEditar,
-    required this.onTapCelula,
-  });
-
-  final double height;
-  final String horario;
-  final Turno turno;
-  final int periodo;
-  final String diaSemana;
-  final int diaDoMes;
-  final ReservaLaboratorio? reserva;
-  final bool podeEditar;
-  final Future<void> Function(
-    String diaSemana,
-    Turno turno,
-    int periodo,
-    ReservaLaboratorio? reservaAtual,
-  )
-  onTapCelula;
-
-  @override
-  Widget build(BuildContext context) {
-    final livre = reserva == null;
-    final tone = livre ? SigadColors.success : SigadColors.warning;
-    final background = livre
-        ? SigadColors.successSoft.withValues(alpha: 0.95)
-        : SigadColors.accentSoft.withValues(alpha: 0.95);
-    return Semantics(
-      button: podeEditar,
-      label:
-          'Célula $diaSemana, dia $diaDoMes, ${turno.label}, período $periodo, horário $horario.',
-      value: livre ? 'Livre' : 'Reservado por ${reserva!.professor}',
-      hint: podeEditar ? 'Toque para reservar ou remover reserva.' : null,
-      child: InkWell(
-        onTap: podeEditar
-            ? () => onTapCelula(diaSemana, turno, periodo, reserva)
-            : null,
-        child: Container(
-          height: height,
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
-          decoration: BoxDecoration(
-            color: background,
-            border: Border(
-              top: const BorderSide(color: SigadColors.divider),
-              right: BorderSide(
-                color: diaSemana == 'Sex'
-                    ? Colors.transparent
-                    : SigadColors.divider,
-              ),
-              bottom: BorderSide(color: tone.withValues(alpha: 0.25), width: 1),
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        '$diaSemana · $diaDoMes',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: SigadColors.brandDark,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 4,
-                        vertical: 1,
-                      ),
-                      decoration: BoxDecoration(
-                        color: turno.chipBackground,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        '${turno.shortLabel}$periodo',
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: turno.chipTextColor,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 9,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 1),
-              Text(
-                horario,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: SigadColors.muted,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 9,
-                ),
-              ),
-              const SizedBox(height: 1),
-              Flexible(
-                child: Row(
-                  children: [
-                    SigadIcon(
-                      livre ? SigadIcons.concluido : SigadIcons.eventoOcupado,
-                      size: 12,
-                      color: tone,
-                    ),
-                    const SizedBox(width: 2),
-                    Expanded(
-                      child: Text(
-                        livre ? 'Livre' : 'Reservado',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: tone,
-                          fontSize: 9,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (!livre) ...[
-                const SizedBox(height: 1),
-                Flexible(
-                  child: Text(
-                    reserva!.professor,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: SigadColors.brandDark,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 9,
-                    ),
-                  ),
-                ),
-                if (reserva!.disciplina != null)
-                  Flexible(
-                    child: Text(
-                      reserva!.disciplina!,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: SigadColors.brandDark,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 9,
-                      ),
-                    ),
-                  ),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _DialogDisciplinaReserva extends StatefulWidget {
-  const _DialogDisciplinaReserva();
-
-  @override
-  State<_DialogDisciplinaReserva> createState() =>
-      _DialogDisciplinaReservaState();
-}
-
-class _DialogDisciplinaReservaState extends State<_DialogDisciplinaReserva> {
-  late final TextEditingController _controller;
-  String? _erro;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _continuar() {
-    final value = _controller.text.trim();
-    if (value.isEmpty) {
-      setState(() => _erro = 'Informe a disciplina.');
-      return;
-    }
-    Navigator.of(context).pop(value);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Disciplina da reserva'),
-      content: TextField(
-        controller: _controller,
-        autofocus: true,
-        textInputAction: TextInputAction.done,
-        decoration: InputDecoration(
-          labelText: 'Disciplina',
-          hintText: 'Ex.: Química Orgânica',
-          errorText: _erro,
-        ),
-        onChanged: (_) {
-          if (_erro != null) {
-            setState(() => _erro = null);
-          } else {
-            setState(() {});
-          }
-        },
-        onSubmitted: (_) => _continuar(),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancelar'),
-        ),
-        FilledButton(
-          onPressed: _controller.text.trim().isEmpty ? null : _continuar,
-          child: const Text('Reservar'),
-        ),
-      ],
     );
   }
 }
@@ -2405,4 +2313,11 @@ class _PainelOtimizacaoLaboratorio extends StatelessWidget {
       ),
     );
   }
+}
+
+String _anoDaSemana(DateTime segunda) {
+  final sexta = DateTime(segunda.year, segunda.month, segunda.day + 4);
+  return segunda.year == sexta.year
+      ? '${segunda.year}'
+      : '${segunda.year}–${sexta.year}';
 }

@@ -20,6 +20,7 @@ import '../../features/mais/presentation/pages/mais_page.dart';
 import '../../features/notas/presentation/pages/notas_page.dart';
 import '../../features/redesign/presentation/pages/module_workspace_page.dart';
 import '../../features/redesign/presentation/pages/sigad_redesign_pages.dart';
+import '../../features/mural/presentation/pages/mural_page.dart';
 import '../../features/relatorios/presentation/pages/relatorios_page.dart';
 import '../theme/sigad_icon.dart';
 import '../theme/sigad_icons.dart';
@@ -118,6 +119,8 @@ abstract final class AppRouter {
         return _shell(routeName, const CalendarioPage());
       case AppRoutes.mais:
         return _shell(routeName, const MaisPage());
+      case AppRoutes.mural:
+        return _shell(routeName, const MuralPage());
       default:
         return MaterialPageRoute<void>(
           settings: const RouteSettings(name: '/404'),
