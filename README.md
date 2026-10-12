@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/readme/banner.svg" alt="SIGAD — Sistema Integrado de Gestão Acadêmica e Departamental · IFMA Campus São Luís – Monte Castelo" width="100%">
+<img src="docs/readme/banner.svg" alt="SIGAD — Sistema Integrado de Gestão Acadêmica e Departamental" width="100%">
 
 <br>
 
@@ -25,7 +25,7 @@ demandas, laboratórios, agenda, carga docente, atividades e comunicação em um
 
 ## ✨ Sobre
 
-O **SIGAD** é um aplicativo Flutter responsivo para os perfis institucionais do IFMA — Campus São Luís/Monte Castelo, como professores, coordenação, chefia de departamento e apoio administrativo. Cada perfil vê um painel e um menu próprios, com os módulos que fazem sentido para o seu trabalho.
+O **SIGAD** é um aplicativo Flutter responsivo para os perfis institucionais do IFMA, como professores, coordenação, chefia de departamento e apoio administrativo. Cada perfil vê um painel e um menu próprios, com os módulos que fazem sentido para o seu trabalho.
 
 O app tem identidade visual própria: as cores do logotipo e um conjunto de **ícones exclusivos** em duas camadas, com o traço na cor do tema e um destaque em laranja.
 
@@ -223,5 +223,5 @@ Cada feature segue as camadas **`domain`** (entidades, regras e serviços puros)
 <br>
 <img src="docs/readme/icones/menu.svg" width="28" alt="">
 <br>
-<sub>Feito para o <b>IFMA — Campus São Luís/Monte Castelo</b></sub>
+<sub>Feito para o <b>IFMA</b></sub>
 </div>
