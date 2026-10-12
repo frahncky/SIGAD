@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../../../core/services/local_storage_service.dart';
 import '../domain/laboratorio_models.dart';
 
@@ -6,6 +8,10 @@ class LaboratorioRepository {
 
   final String storageKey;
   static final Map<String, List<Laboratorio>> _memoryCache = {};
+
+  /// Esvazia o cache em memória (usado entre testes).
+  @visibleForTesting
+  static void limparCache() => _memoryCache.clear();
 
   Future<List<Laboratorio>> load() async {
     final cached = _memoryCache[storageKey];

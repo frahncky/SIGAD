@@ -134,5 +134,66 @@ void main() {
         isNull,
       );
     });
+
+    test('ocupação e sugestões usam as datas reais da semana', () {
+      // Semana de 26 a 30/10/2026: a sexta 30/10 está no bloco 5.
+      final dias = [
+        for (var dia = 26; dia <= 30; dia++) DateTime(2026, 10, dia),
+      ];
+      final sexta30 = _reserva(ano: 2026, mes: 10, semana: 5, dia: 'Sex');
+      // Mesma sexta, mas do bloco 4 (23/10): não pertence a esta semana.
+      final sexta23 = _reserva(ano: 2026, mes: 10, semana: 4, dia: 'Sex');
+
+      final ocupacao = ReservaService.calcularOcupacaoNosDias(
+        reservas: [sexta30, sexta23],
+        laboratorios: ['Lab'],
+        dias: dias,
+      ).single;
+      expect(ocupacao.slotsReservados, 1);
+
+      final sugestoes = ReservaService.sugerirSlotsLivresNosDias(
+        reservas: [sexta30],
+        laboratorios: ['Lab'],
+        dias: dias,
+        limite: 200,
+      );
+      expect(
+        sugestoes.any(
+          (s) =>
+              s.diaSemana == 'Sex' &&
+              s.turno == Turno.matutino &&
+              s.periodo == 1,
+        ),
+        isFalse,
+      );
+      expect(sugestoes, isNotEmpty);
+    });
+
+    test(
+      'sugestões pulam feriado, dia indisponível e lab fora de operação',
+      () {
+        // 12/10/2026 é feriado (Nossa Senhora Aparecida).
+        final dias = [
+          for (var dia = 12; dia <= 16; dia++) DateTime(2026, 10, dia),
+        ];
+        final sugestoes = ReservaService.sugerirSlotsLivresNosDias(
+          reservas: const [],
+          laboratorios: ['Lab A', 'Lab B'],
+          dias: dias,
+          limite: 500,
+          diaIndisponivel: (dia) => dia.day == 12 || dia.day == 13,
+          laboratoriosIndisponiveis: {'Lab B'},
+        );
+        expect(sugestoes.any((s) => s.diaSemana == 'Seg'), isFalse);
+        expect(sugestoes.any((s) => s.diaSemana == 'Ter'), isFalse);
+        expect(sugestoes.any((s) => s.laboratorio == 'Lab B'), isFalse);
+        // Ordem previsível: primeiro dia válido, manhã, primeiro horário.
+        final primeira = sugestoes.first;
+        expect(primeira.laboratorio, 'Lab A');
+        expect(primeira.diaSemana, 'Qua');
+        expect(primeira.turno, Turno.matutino);
+        expect(primeira.periodo, 1);
+      },
+    );
   });
 }

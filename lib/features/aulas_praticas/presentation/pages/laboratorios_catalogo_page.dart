@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../app/theme/sigad_icon.dart';
@@ -9,6 +10,11 @@ import '../../data/reserva_repository.dart';
 import '../../domain/laboratorio_models.dart';
 import '../../domain/reserva_models.dart';
 import '../../domain/reserva_service.dart';
+import '../../../../core/models/user_role.dart';
+import '../../../../core/security/authorization_policy.dart';
+import '../../../../core/services/app_feedback_service.dart';
+import '../../../../core/services/user_context_provider.dart';
+import '../widgets/dialog_disciplina_semanas_reserva.dart';
 
 class LaboratoriosCatalogoPage extends StatefulWidget {
   const LaboratoriosCatalogoPage({super.key, required this.onAbrirReservas});
@@ -51,12 +57,17 @@ class _LaboratoriosCatalogoPageState extends State<LaboratoriosCatalogoPage> {
   Future<void> _saveLaboratorio(Laboratorio laboratorio) async {
     final index = _laboratorios.indexWhere((item) => item.id == laboratorio.id);
     if (index < 0) return;
-    setState(() {
-      final atualizados = List<Laboratorio>.from(_laboratorios);
-      atualizados[index] = laboratorio;
-      _laboratorios = atualizados;
-    });
-    await _repository.save(_laboratorios);
+    final anteriores = _laboratorios;
+    final atualizados = List<Laboratorio>.from(_laboratorios);
+    atualizados[index] = laboratorio;
+    setState(() => _laboratorios = atualizados);
+    try {
+      await _repository.save(atualizados);
+    } catch (_) {
+      await _repository.save(anteriores).catchError((_) {});
+      if (mounted) setState(() => _laboratorios = anteriores);
+      rethrow;
+    }
   }
 
   int _reservasDoMes(Laboratorio laboratorio) => _reservas
@@ -187,7 +198,9 @@ class LaboratorioDetalhesPage extends StatefulWidget {
 
   final Laboratorio laboratorio;
   final List<ReservaLaboratorio> reservas;
-  final ValueChanged<Laboratorio> onChanged;
+
+  /// Grava o laboratório; lança erro se não conseguir.
+  final Future<void> Function(Laboratorio laboratorio) onChanged;
   final ValueChanged<String?> onAbrirReservas;
 
   @override
@@ -204,58 +217,94 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
   }
 
   Future<void> _reportarProblema() async {
-    final titulo = TextEditingController();
-    final descricao = TextEditingController();
+    final resultado = await Navigator.of(context).push<(String, String)>(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => _ReportarProblemaPage(laboratorio: _laboratorio.nome),
+      ),
+    );
+    if (resultado == null || !mounted) return;
+    final ocorrencia = OcorrenciaLaboratorio(
+      id: 'OCO-${DateTime.now().microsecondsSinceEpoch}',
+      titulo: resultado.$1,
+      descricao: resultado.$2,
+      criadaEm: DateTime.now(),
+    );
+    await _gravar(
+      _laboratorio.copyWith(
+        ocorrencias: [..._laboratorio.ocorrencias, ocorrencia],
+      ),
+      sucesso: 'Ocorrência registrada.',
+    );
+  }
+
+  /// Atualiza a tela e grava; se falhar, desfaz e avisa.
+  Future<void> _gravar(Laboratorio novo, {required String sucesso}) async {
+    final anterior = _laboratorio;
+    setState(() => _laboratorio = novo);
+    try {
+      await widget.onChanged(novo);
+      if (mounted) AppFeedbackService.success(context, sucesso);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _laboratorio = anterior);
+      AppFeedbackService.error(
+        context,
+        'Não foi possível salvar. Tente novamente.',
+      );
+    }
+  }
+
+  bool get _podeResolver =>
+      AuthorizationPolicy.canResolverOcorrenciasLaboratorio(
+        _perfilAtual(context, listen: false),
+      );
+
+  Future<void> _resolverOcorrencia(OcorrenciaLaboratorio ocorrencia) async {
+    if (!_podeResolver) return;
     final confirmar = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Reportar problema'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: titulo,
-              autofocus: true,
-              decoration: const InputDecoration(labelText: 'Título'),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: descricao,
-              maxLines: 3,
-              decoration: const InputDecoration(labelText: 'Descrição'),
-            ),
-          ],
-        ),
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Marcar como resolvida?'),
+        content: Text('"${ocorrencia.titulo}" deixará de contar como ativa.'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(dialogContext, false),
             child: const Text('Cancelar'),
           ),
           FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Registrar'),
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Resolvida'),
           ),
         ],
       ),
     );
-    if (confirmar != true || titulo.text.trim().isEmpty) return;
-    final ocorrencia = OcorrenciaLaboratorio(
-      id: 'OCO-${DateTime.now().microsecondsSinceEpoch}',
-      titulo: titulo.text.trim(),
-      descricao: descricao.text.trim(),
-      criadaEm: DateTime.now(),
+    if (confirmar != true || !mounted || !_podeResolver) return;
+    await _gravar(
+      _laboratorio.copyWith(
+        ocorrencias: [
+          for (final item in _laboratorio.ocorrencias)
+            item.id == ocorrencia.id
+                ? OcorrenciaLaboratorio(
+                    id: item.id,
+                    titulo: item.titulo,
+                    descricao: item.descricao,
+                    criadaEm: item.criadaEm,
+                    resolvida: true,
+                  )
+                : item,
+        ],
+      ),
+      sucesso: 'Ocorrência marcada como resolvida.',
     );
-    setState(() {
-      _laboratorio = _laboratorio.copyWith(
-        ocorrencias: [..._laboratorio.ocorrencias, ocorrencia],
-      );
-    });
-    widget.onChanged(_laboratorio);
   }
 
   @override
   Widget build(BuildContext context) {
     final statusColor = _statusColor(_laboratorio.status);
+    final podeResolver = AuthorizationPolicy.canResolverOcorrenciasLaboratorio(
+      _perfilAtual(context),
+    );
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     // O nome aparece inteiro: o topo cresce uma linha a cada quebra.
     final estiloNome = Theme.of(
@@ -266,13 +315,13 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
               text: TextSpan(text: _laboratorio.nome, style: estiloNome),
               textDirection: Directionality.of(context),
               textScaler: MediaQuery.textScalerOf(context),
-            )..layout(maxWidth: MediaQuery.sizeOf(context).width - 92))
+            )..layout(maxWidth: MediaQuery.sizeOf(context).width - 106))
             .computeLineMetrics();
     final alturaExtraNome = linhasNome
         .skip(1)
         .fold<double>(0, (total, linha) => total + linha.height);
     final expandedHeight =
-        216.0 + (72.0 * (textScale - 1).clamp(0.0, 1.0)) + alturaExtraNome;
+        224.0 + (84.0 * (textScale - 1).clamp(0.0, 1.0)) + alturaExtraNome;
     final hoje = DateUtils.dateOnly(DateTime.now());
     final proximas =
         [
@@ -286,8 +335,40 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
               a.reserva.periodo -
               (b.reserva.turno.index * 10 + b.reserva.periodo);
         });
+    final rodapeFixo =
+        textScale <= 1.3 && MediaQuery.sizeOf(context).width >= 360;
+    final reportar = OutlinedButton.icon(
+      onPressed: _reportarProblema,
+      icon: const SigadIcon(SigadIcons.alerta),
+      label: const Text('Reportar problema'),
+    );
+    final reservar = FilledButton.icon(
+      onPressed: _abrirReservas,
+      icon: const SigadIcon(SigadIcons.calendario),
+      label: const Text('Reservar'),
+    );
+    final acoes = rodapeFixo
+        ? Row(
+            children: [
+              Expanded(child: reportar),
+              const SizedBox(width: 10),
+              Expanded(child: reservar),
+            ],
+          )
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [reservar, const SizedBox(height: 10), reportar],
+          );
     return Scaffold(
       backgroundColor: SigadColors.canvas,
+      bottomNavigationBar: rodapeFixo
+          ? SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                child: acoes,
+              ),
+            )
+          : null,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -445,38 +526,42 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                   title: 'Equipamentos',
                   icon: SigadIcons.equipamento,
                   tone: SigadColors.brand,
-                  child: Column(
-                    children: _laboratorio.equipamentos
-                        .map(
-                          (equipamento) => ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: CircleAvatar(
-                              radius: 18,
-                              backgroundColor: SigadColors.brand.withValues(
-                                alpha: .12,
-                              ),
-                              child: const SigadIcon(
-                                SigadIcons.equipamento,
-                                color: SigadColors.brand,
-                                size: 18,
-                              ),
-                            ),
-                            title: Text(equipamento.nome),
-                            subtitle: Text(
-                              '${equipamento.quantidade} unidade(s)',
-                            ),
-                            trailing: _StatusPill(
-                              label: _equipamentoStatusLabel(
-                                equipamento.status,
-                              ),
-                              color: _equipamentoStatusColor(
-                                equipamento.status,
-                              ),
-                            ),
-                          ),
+                  child: _laboratorio.equipamentos.isEmpty
+                      ? const _SectionEmptyState(
+                          icon: SigadIcons.equipamento,
+                          message: 'Nenhum equipamento cadastrado.',
                         )
-                        .toList(),
-                  ),
+                      : Column(
+                          children: _laboratorio.equipamentos
+                              .map(
+                                (equipamento) => ListTile(
+                                  contentPadding: EdgeInsets.zero,
+                                  leading: CircleAvatar(
+                                    radius: 18,
+                                    backgroundColor: SigadColors.brand
+                                        .withValues(alpha: .12),
+                                    child: const SigadIcon(
+                                      SigadIcons.equipamento,
+                                      color: SigadColors.brand,
+                                      size: 18,
+                                    ),
+                                  ),
+                                  title: Text(equipamento.nome),
+                                  subtitle: Text(
+                                    '${equipamento.quantidade} unidade(s)',
+                                  ),
+                                  trailing: _StatusPill(
+                                    label: _equipamentoStatusLabel(
+                                      equipamento.status,
+                                    ),
+                                    color: _equipamentoStatusColor(
+                                      equipamento.status,
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
                 ),
                 if (_laboratorio.manutencoes.isNotEmpty) ...[
                   const SizedBox(height: 14),
@@ -553,6 +638,24 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                                 '${item.descricao}\n${DateFormat('dd/MM/yyyy HH:mm').format(item.criadaEm)}',
                               ),
                               isThreeLine: item.descricao.isNotEmpty,
+                              trailing: item.resolvida
+                                  ? const _StatusPill(
+                                      label: 'Resolvida',
+                                      color: SigadColors.success,
+                                    )
+                                  : podeResolver
+                                  ? Semantics(
+                                      button: true,
+                                      label:
+                                          'Resolver ocorrência: ${item.titulo}',
+                                      excludeSemantics: true,
+                                      child: TextButton(
+                                        onPressed: () =>
+                                            _resolverOcorrencia(item),
+                                        child: const Text('Resolver'),
+                                      ),
+                                    )
+                                  : null,
                             ),
                           )
                           .toList(),
@@ -560,22 +663,7 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                   ),
                 ],
                 const SizedBox(height: 18),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: [
-                    FilledButton.icon(
-                      onPressed: _abrirReservas,
-                      icon: const SigadIcon(SigadIcons.calendario),
-                      label: const Text('Reservar'),
-                    ),
-                    OutlinedButton.icon(
-                      onPressed: _reportarProblema,
-                      icon: const SigadIcon(SigadIcons.alerta),
-                      label: const Text('Reportar problema'),
-                    ),
-                  ],
-                ),
+                if (!rodapeFixo) acoes,
               ]),
             ),
           ),
@@ -1100,3 +1188,99 @@ Color _equipamentoStatusColor(StatusEquipamento status) => switch (status) {
   StatusEquipamento.manutencao => SigadColors.warning,
   StatusEquipamento.indisponivel => SigadColors.risk,
 };
+
+/// Registro de ocorrência em tela inteira, com campo grande de descrição.
+class _ReportarProblemaPage extends StatefulWidget {
+  const _ReportarProblemaPage({required this.laboratorio});
+
+  final String laboratorio;
+
+  @override
+  State<_ReportarProblemaPage> createState() => _ReportarProblemaPageState();
+}
+
+class _ReportarProblemaPageState extends State<_ReportarProblemaPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _titulo = TextEditingController();
+  final _descricao = TextEditingController();
+
+  @override
+  void dispose() {
+    _titulo.dispose();
+    _descricao.dispose();
+    super.dispose();
+  }
+
+  void _registrar() {
+    if (!_formKey.currentState!.validate()) return;
+    Navigator.of(context).pop((_titulo.text.trim(), _descricao.text.trim()));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Form(
+      key: _formKey,
+      child: TelaFormularioReserva(
+        titulo: 'Reportar problema',
+        acaoLabel: 'Registrar ocorrência',
+        acaoIcone: SigadIcons.enviar,
+        onAcao: _registrar,
+        children: [
+          Row(
+            children: [
+              const SigadIcon(SigadIcons.laboratorio, color: SigadColors.brand),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  widget.laboratorio,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _titulo,
+            maxLength: 80,
+            textCapitalization: TextCapitalization.sentences,
+            decoration: const InputDecoration(
+              labelText: 'O que aconteceu?',
+              hintText: 'Ex.: Osciloscópio da bancada 3 não liga',
+            ),
+            validator: (valor) => (valor ?? '').trim().isEmpty
+                ? 'Descreva o problema em poucas palavras.'
+                : null,
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: _descricao,
+            minLines: 6,
+            maxLines: null,
+            maxLength: 800,
+            keyboardType: TextInputType.multiline,
+            textCapitalization: TextCapitalization.sentences,
+            decoration: const InputDecoration(
+              labelText: 'Detalhes (opcional)',
+              hintText: 'Onde, desde quando e o que já foi tentado.',
+              helperText: 'Não inclua nomes, matrículas ou dados pessoais.',
+              helperMaxLines: 2,
+              alignLabelWithHint: true,
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+UserRole? _perfilAtual(BuildContext context, {bool listen = true}) {
+  try {
+    return Provider.of<UserContextProvider>(context, listen: listen).userRole;
+  } on ProviderNotFoundException {
+    return null;
+  }
+}

@@ -263,7 +263,13 @@ class TelaFormularioReserva extends StatelessWidget {
           ? null
           : SafeArea(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+                // Sobe junto com o teclado para o botão continuar visível.
+                padding: EdgeInsets.fromLTRB(
+                  20,
+                  8,
+                  20,
+                  12 + MediaQuery.viewInsetsOf(context).bottom,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -9,6 +9,7 @@ import '../../data/laboratorio_repository.dart';
 import '../../data/reserva_repository.dart';
 import '../../domain/feriado_models.dart';
 import '../../domain/feriado_service.dart';
+import '../../domain/laboratorio_models.dart';
 import '../../domain/reserva_models.dart';
 import '../../domain/reserva_service.dart';
 import '../../../carga_docente/data/docente_repository.dart';
@@ -79,6 +80,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   final DocenteRepository _docenteRepository = DocenteRepository();
   final List<ReservaLaboratorio> _reservas = [];
   final List<Docente> _docentes = [];
+  List<Laboratorio> _catalogo = const [];
 
   bool _carregando = true;
   String? _laboratorioSelecionado;
@@ -100,9 +102,10 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       final docentes = await _docenteRepository.loadDocentes(
         generateFallbackId: () => 'DOC-FALLBACK',
       );
-      await catalogoFuture;
+      final catalogo = await catalogoFuture;
       if (!mounted) return;
       setState(() {
+        _catalogo = catalogo;
         _reservas
           ..clear()
           ..addAll(list);
@@ -150,40 +153,62 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       DateTime(_segunda.year, _segunda.month, _segunda.day + i),
   ];
 
-  // Referência da semana para o painel de otimização.
-  int get _anoReferencia => _segunda.year;
-  int get _mesReferencia => _segunda.month;
-  int get _semanaReferencia => ReservaService.semanaDoMesDe(_segunda);
+  /// Laboratórios do catálogo; a lista fixa só vale se o catálogo vier vazio.
+  /// Laboratórios do catálogo e, para nenhuma reserva sumir da agenda,
+  /// também os que só aparecem em reservas já gravadas. A lista fixa só é
+  /// usada quando não há nenhum dos dois.
+  List<String> get _laboratorios {
+    final nomes = <String>[
+      for (final laboratorio in _catalogo) laboratorio.nome,
+    ];
+    final extras = {
+      for (final reserva in _reservas)
+        if (!nomes.contains(reserva.laboratorio)) reserva.laboratorio,
+    }.toList()..sort();
+    final todos = [...nomes, ...extras];
+    return todos.isEmpty ? _laboratoriosDefault : todos;
+  }
+
+  Laboratorio? get _laboratorioAtual {
+    for (final laboratorio in _catalogo) {
+      if (laboratorio.nome == _laboratorioSelecionadoValido) return laboratorio;
+    }
+    return null;
+  }
 
   String get _laboratorioSelecionadoValido {
     if (_laboratorioSelecionado != null &&
-        _laboratoriosDefault.contains(_laboratorioSelecionado)) {
+        _laboratorios.contains(_laboratorioSelecionado)) {
       return _laboratorioSelecionado!;
     }
-    return _laboratoriosDefault.first;
+    return _laboratorios.first;
   }
 
   List<IndicadorOcupacaoLaboratorio> get _indicadoresOcupacao =>
-      ReservaService.calcularOcupacaoLaboratorios(
+      ReservaService.calcularOcupacaoNosDias(
         reservas: _reservas,
-        laboratorios: _laboratoriosDefault,
-        ano: _anoReferencia,
-        mes: _mesReferencia,
-        semanaDoMes: _semanaReferencia,
+        laboratorios: _laboratorios,
+        dias: _diasDaSemana,
       );
 
   List<SugestaoReservaLaboratorio> get _sugestoesReserva =>
-      ReservaService.sugerirSlotsLivres(
+      ReservaService.sugerirSlotsLivresNosDias(
         reservas: _reservas,
-        laboratorios: _laboratoriosDefault,
-        ano: _anoReferencia,
-        mes: _mesReferencia,
-        semanaDoMes: _semanaReferencia,
-        diaSemanaPreferencial: 'Seg',
+        laboratorios: _laboratorios,
+        dias: _diasDaSemana,
         limite: 4,
+        diaIndisponivel: (dia) =>
+            dia.isBefore(DateUtils.dateOnly(DateTime.now())) ||
+            FeriadoService.feriadoEm(dia) != null,
+        laboratoriosIndisponiveis: {
+          for (final laboratorio in _catalogo)
+            if (laboratorio.status != StatusLaboratorio.operando)
+              laboratorio.nome,
+        },
       );
 
   List<String> get _recomendacoesCruzadas {
+    final sugestoes = _sugestoesReserva;
     final altaCarga = _docentes
         .where((docente) {
           if (docente.cargaMaxima <= 0) return false;
@@ -191,18 +216,18 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         })
         .toList(growable: false);
 
-    if (altaCarga.isEmpty || _sugestoesReserva.isEmpty) {
+    if (altaCarga.isEmpty || sugestoes.isEmpty) {
       return const [];
     }
 
     final recomendacoes = <String>[];
-    final limite = altaCarga.length < _sugestoesReserva.length
+    final limite = altaCarga.length < sugestoes.length
         ? altaCarga.length
-        : _sugestoesReserva.length;
+        : sugestoes.length;
 
     for (var index = 0; index < limite; index++) {
       final docente = altaCarga[index];
-      final sugestao = _sugestoesReserva[index];
+      final sugestao = sugestoes[index];
       recomendacoes.add(
         '${docente.nome.split(' ').first}: priorizar ${sugestao.laboratorio} em ${sugestao.diaSemana} ${sugestao.horario} para aliviar carga em turmas práticas.',
       );
@@ -369,11 +394,20 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _FiltroLabRow(
+                        key: ValueKey(
+                          '${_laboratorios.join('|')}#$_laboratorioSelecionadoValido',
+                        ),
                         laboratorioSelecionado: _laboratorioSelecionadoValido,
-                        laboratorios: _laboratoriosDefault,
+                        laboratorios: _laboratorios,
                         onChanged: (value) =>
                             setState(() => _laboratorioSelecionado = value),
                       ),
+                      if (_laboratorioAtual case final laboratorio?
+                          when laboratorio.status != StatusLaboratorio.operando)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 12),
+                          child: _AvisoSituacao(laboratorio: laboratorio),
+                        ),
                       const SizedBox(height: 12),
                       _SemanaNavegador(
                         segunda: _segunda,
@@ -1206,6 +1240,7 @@ class _DialogSelecionarOcorrenciasState
 
 class _FiltroLabRow extends StatelessWidget {
   const _FiltroLabRow({
+    super.key,
     required this.laboratorioSelecionado,
     required this.laboratorios,
     required this.onChanged,
@@ -2320,4 +2355,49 @@ String _anoDaSemana(DateTime segunda) {
   return segunda.year == sexta.year
       ? '${segunda.year}'
       : '${segunda.year}–${sexta.year}';
+}
+
+/// Faixa de aviso quando o laboratório não está operando normalmente.
+class _AvisoSituacao extends StatelessWidget {
+  const _AvisoSituacao({required this.laboratorio});
+
+  final Laboratorio laboratorio;
+
+  @override
+  Widget build(BuildContext context) {
+    final interditado = laboratorio.status == StatusLaboratorio.interditado;
+    final cor = interditado ? SigadColors.risk : SigadColors.warning;
+    final texto = interditado
+        ? 'Este laboratório está interditado. Confirme com a chefia antes de reservar.'
+        : 'Este laboratório está em manutenção. Confirme se ele estará disponível antes de reservar.';
+    return Semantics(
+      liveRegion: true,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: (interditado ? SigadColors.riskSoft : SigadColors.warningSoft),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: cor.withValues(alpha: 0.4)),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SigadIcon(
+              interditado ? SigadIcons.alerta : SigadIcons.manutencao,
+              color: cor,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                texto,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: SigadColors.ink),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

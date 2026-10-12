@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../l10n/l10n.dart';
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../app/theme/sigad_icon.dart';
@@ -96,14 +97,17 @@ class _LoginPageState extends State<LoginPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Entrar',
+          context.l10n.entrar,
           style: compact
               ? theme.textTheme.titleLarge
               : theme.textTheme.headlineSmall,
         ),
         const SizedBox(height: 14),
         if (AppRuntimeConfig.allowLocalDemo) ...[
-          Text('Perfil de demonstração', style: theme.textTheme.labelLarge),
+          Text(
+            context.l10n.perfilDemonstracao,
+            style: theme.textTheme.labelLarge,
+          ),
           const SizedBox(height: 8),
           LayoutBuilder(
             builder: (context, constraints) {
@@ -121,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: ChoiceChip(
                           avatar: SigadIcon(_roleIcon(role), size: 16),
                           label: Text(
-                            role.displayName,
+                            role.nomeEm(context.l10n),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -150,10 +154,10 @@ class _LoginPageState extends State<LoginPage> {
                   AutofillHints.email,
                 ],
                 autocorrect: false,
-                decoration: const InputDecoration(
-                  labelText: 'Email institucional',
+                decoration: InputDecoration(
+                  labelText: context.l10n.emailInstitucional,
                   hintText: 'nome@exemplo.edu.br',
-                  prefixIcon: SigadIcon(SigadIcons.arroba),
+                  prefixIcon: const SigadIcon(SigadIcons.arroba),
                 ),
               ),
               const SizedBox(height: 10),
@@ -166,12 +170,12 @@ class _LoginPageState extends State<LoginPage> {
                   if (!_isLoading) _handleLogin();
                 },
                 decoration: InputDecoration(
-                  labelText: 'Senha',
+                  labelText: context.l10n.senha,
                   prefixIcon: const SigadIcon(SigadIcons.cadeado),
                   suffixIcon: IconButton(
                     tooltip: _obscurePassword
-                        ? 'Mostrar senha'
-                        : 'Ocultar senha',
+                        ? context.l10n.mostrarSenha
+                        : context.l10n.ocultarSenha,
                     onPressed: () =>
                         setState(() => _obscurePassword = !_obscurePassword),
                     icon: SigadIcon(
@@ -188,9 +192,9 @@ class _LoginPageState extends State<LoginPage> {
           child: TextButton(
             onPressed: () => AppFeedbackService.info(
               context,
-              'A recuperação de senha será vinculada ao serviço institucional.',
+              context.l10n.recuperacaoSenhaAviso,
             ),
-            child: const Text('Esqueci minha senha'),
+            child: Text(context.l10n.esqueciSenha),
           ),
         ),
         SizedBox(
@@ -204,7 +208,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const SigadIcon(SigadIcons.entrar),
-            label: const Text('Entrar'),
+            label: Text(context.l10n.entrar),
           ),
         ),
         if (AppRuntimeConfig.allowLocalDemo) ...[
@@ -214,7 +218,7 @@ class _LoginPageState extends State<LoginPage> {
             child: OutlinedButton.icon(
               onPressed: _isLoading ? null : _handleDemoLogin,
               icon: const SigadIcon(SigadIcons.laboratorio),
-              label: const Text('Acesso demo do perfil selecionado'),
+              label: Text(context.l10n.acessoDemo),
             ),
           ),
         ],
@@ -240,24 +244,22 @@ class _LoginPageState extends State<LoginPage> {
     final password = _passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      _showWarning('Preencha email e senha.');
+      _showWarning(context.l10n.preenchaEmailSenha);
       return;
     }
 
     final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
     if (!emailRegex.hasMatch(email)) {
-      _showWarning('Informe um email válido.');
+      _showWarning(context.l10n.emailInvalido);
       return;
     }
 
     if (password.length < 4) {
-      _showWarning('A senha deve ter pelo menos 4 caracteres.');
+      _showWarning(context.l10n.senhaCurta);
       return;
     }
 
-    _showError(
-      'Autenticação institucional indisponível. A integração com o serviço de acesso ainda não foi concluída.',
-    );
+    _showError(context.l10n.autenticacaoIndisponivel);
   }
 
   Future<void> _handleDemoLogin() async {
@@ -281,7 +283,7 @@ class _LoginPageState extends State<LoginPage> {
       await Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
     } catch (error, stackTrace) {
       AppEventLogger.error('demo_login_error', error, stackTrace: stackTrace);
-      if (mounted) _showError('Não foi possível entrar com acesso demo.');
+      if (mounted) _showError(context.l10n.erroAcessoDemo);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -357,7 +359,7 @@ class _LoginHero extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         Text(
-          'Sistema Integrado de Gestão\nAcadêmica e Departamental',
+          context.l10n.loginTitulo,
           textAlign: alinhamentoTexto,
           style: (wide ? textTheme.titleLarge : textTheme.titleMedium)
               ?.copyWith(
@@ -378,25 +380,24 @@ class _LoginHero extends StatelessWidget {
         if (wide) ...[
           const SizedBox(height: 22),
           Text(
-            'Planeje as atividades do departamento: carga docente, '
-            'laboratórios, reuniões e demandas.',
+            context.l10n.loginSubtitulo,
             style: textTheme.bodyLarge?.copyWith(
               color: Colors.white.withValues(alpha: 0.82),
               height: 1.4,
             ),
           ),
           const SizedBox(height: 22),
-          const _FeatureLine(
+          _FeatureLine(
             icon: SigadIcons.relogio,
-            label: 'Planejamento integrado',
+            label: context.l10n.loginDestaquePlanejamento,
           ),
-          const _FeatureLine(
+          _FeatureLine(
             icon: SigadIcons.laboratorio,
-            label: 'Gestão de laboratórios',
+            label: context.l10n.loginDestaqueLaboratorios,
           ),
-          const _FeatureLine(
+          _FeatureLine(
             icon: SigadIcons.analise,
-            label: 'Indicadores e relatórios',
+            label: context.l10n.loginDestaqueIndicadores,
           ),
         ],
       ],
@@ -426,7 +427,7 @@ class _Logomarca extends StatelessWidget {
     );
 
     return Semantics(
-      label: 'Logotipo do SIGAD',
+      label: context.l10n.logotipoSigad,
       image: true,
       child: Container(
         width: tamanho,

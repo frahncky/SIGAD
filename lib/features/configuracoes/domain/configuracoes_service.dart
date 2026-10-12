@@ -19,7 +19,7 @@ abstract final class ConfiguracoesService {
       modoDark: false,
       biometriaAtiva: false,
       backupAutomaticoAtivo: true,
-      idioma: 'Português (Brasil)',
+      idioma: 'Automático',
       tamanhoFonte: 'Médio',
       nomePerfil: 'Usuário Demonstrativo',
       cargoPerfil: 'Coordenação dos Cursos do DEE',

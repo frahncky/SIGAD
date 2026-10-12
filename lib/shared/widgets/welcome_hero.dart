@@ -7,6 +7,7 @@ import '../../app/theme/sigad_colors.dart';
 import '../../app/theme/sigad_icon.dart';
 import '../../app/theme/sigad_icons.dart';
 import '../../core/services/user_context_provider.dart';
+import '../../l10n/l10n.dart';
 
 /// Item exibido em um slide de lista do [WelcomeHero].
 class WelcomeHeroItem {
@@ -112,7 +113,7 @@ class _WelcomeHeroState extends State<WelcomeHero> {
 
     final slides = [
       _Slide(
-        'Boas-vindas',
+        context.l10n.boasVindas,
         _WelcomeCard(
           key: const ValueKey('hero-boas-vindas'),
           nome: userContext?.currentUser?.name,
@@ -122,25 +123,25 @@ class _WelcomeHeroState extends State<WelcomeHero> {
       ),
       if (avisos.isNotEmpty)
         _Slide(
-          'Avisos',
+          context.l10n.avisos,
           _ListaHeroCard(
             key: const ValueKey('hero-avisos'),
             icone: SigadIcons.aviso,
-            titulo: avisos.length == 1 ? '1 aviso' : '${avisos.length} avisos',
-            tituloDialogo: 'Avisos',
-            botao: 'Ver todos os avisos',
+            titulo: context.l10n.quantidadeAvisos(avisos.length),
+            tituloDialogo: context.l10n.avisos,
+            botao: context.l10n.verTodosAvisos,
             itens: avisos,
           ),
         ),
       if (widget.resumo.isNotEmpty)
         _Slide(
-          'Resumo do departamento',
+          context.l10n.resumoDepartamento,
           _ListaHeroCard(
             key: const ValueKey('hero-resumo'),
             icone: SigadIcons.predio,
-            titulo: 'Resumo do departamento',
-            tituloDialogo: 'Resumo do departamento',
-            botao: 'Ver tudo',
+            titulo: context.l10n.resumoDepartamento,
+            tituloDialogo: context.l10n.resumoDepartamento,
+            botao: context.l10n.verTudo,
             maxVisiveis: 3,
             itens: widget.resumo,
           ),
@@ -240,22 +241,19 @@ class _WelcomeCard extends StatelessWidget {
   final DateTime agora;
   final String? frase;
 
-  static const _fraseSemCadastro =
-      'Cada pequena entrega de hoje constrói o departamento de amanhã.';
-
   @override
   Widget build(BuildContext context) {
     final hora = agora.hour;
     final (saudacao, icone) = hora >= 5 && hora < 12
-        ? ('Bom dia', SigadIcons.sol)
+        ? (context.l10n.bomDia, SigadIcons.sol)
         : hora >= 12 && hora < 18
-        ? ('Boa tarde', SigadIcons.entardecer)
-        : ('Boa noite', SigadIcons.lua);
+        ? (context.l10n.boaTarde, SigadIcons.entardecer)
+        : (context.l10n.boaNoite, SigadIcons.lua);
     final primeiroNome = nome?.trim().split(RegExp(r'\s+')).first ?? '';
     final titulo = primeiroNome.isEmpty
-        ? '$saudacao!'
-        : '$saudacao, $primeiroNome!';
-    final frase = this.frase ?? _fraseSemCadastro;
+        ? context.l10n.saudacaoSemNome(saudacao)
+        : context.l10n.saudacaoComNome(saudacao, primeiroNome);
+    final frase = this.frase ?? context.l10n.fraseSemCadastro;
     final textTheme = Theme.of(context).textTheme;
 
     return Semantics(
@@ -297,7 +295,7 @@ class _WelcomeCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Departamento de Eletroeletrônica',
+                  context.l10n.departamentoCampus,
                   style: textTheme.bodyMedium?.copyWith(
                     color: Colors.white.withValues(alpha: 0.66),
                     height: 1.25,
@@ -436,7 +434,7 @@ class _ListaHeroCard extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Fechar'),
+            child: Text(context.l10n.fechar),
           ),
         ],
       ),
@@ -464,7 +462,7 @@ class _HeroDots extends StatelessWidget {
           Semantics(
             button: true,
             selected: i == atual,
-            label: 'Mostrar ${rotulos[i]}',
+            label: context.l10n.mostrarSlide(rotulos[i]),
             excludeSemantics: true,
             child: InkWell(
               customBorder: const StadiumBorder(),

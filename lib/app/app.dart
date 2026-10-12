@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 
 import '../core/config/app_runtime_config.dart';
 import '../core/services/chat_provider.dart';
+import '../core/services/locale_provider.dart';
+import '../l10n/l10n.dart';
 import '../core/services/theme_provider.dart';
 import '../core/services/user_context_provider.dart';
 import '../features/mural/presentation/state/mural_controller.dart';
@@ -19,11 +21,13 @@ class SigadApp extends StatelessWidget {
     this.initialRoute = AppRoutes.login,
     this.userContextProvider,
     this.themeProvider,
+    this.localeProvider,
   });
 
   final String initialRoute;
   final UserContextProvider? userContextProvider;
   final ThemeProvider? themeProvider;
+  final LocaleProvider? localeProvider;
 
   @override
   Widget build(BuildContext context) {
@@ -46,10 +50,21 @@ class SigadApp extends StatelessWidget {
           ChangeNotifierProvider<ThemeProvider>.value(
             value: themeProviderValue,
           ),
+        if (localeProvider == null)
+          ChangeNotifierProvider(create: (_) => LocaleProvider())
+        else
+          ChangeNotifierProvider<LocaleProvider>.value(value: localeProvider!),
       ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeCtrl, _) => MaterialApp(
+      child: Consumer2<ThemeProvider, LocaleProvider>(
+        builder: (context, themeCtrl, localeCtrl, _) => MaterialApp(
           title: 'SIGAD',
+          locale: localeCtrl.locale,
+          supportedLocales: LocaleProvider.suportados,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localeListResolutionCallback: (aparelho, _) =>
+              LocaleProvider.resolver(
+                aparelho == null || aparelho.isEmpty ? null : aparelho.first,
+              ),
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
@@ -70,6 +85,7 @@ class SigadApp extends StatelessWidget {
                 data: MediaQuery.of(context).copyWith(
                   textScaler: AmpliacaoDeTexto(
                     MediaQuery.textScalerOf(context),
+                    fator: themeCtrl.fatorTexto,
                   ),
                 ),
                 child: _FlavorBanner(child: child ?? const SizedBox.shrink()),
@@ -105,11 +121,12 @@ class _FlavorBanner extends StatelessWidget {
 }
 
 /// Amplia todos os textos do app sobre a escala escolhida no sistema,
-/// facilitando a leitura sem ignorar a preferência do usuário.
+/// conforme o "Tamanho do texto" das Configurações, sem ignorar a
+/// preferência do aparelho.
 class AmpliacaoDeTexto extends TextScaler {
-  const AmpliacaoDeTexto(this.base);
+  const AmpliacaoDeTexto(this.base, {this.fator = 1.1});
 
-  static const fator = 1.1;
+  final double fator;
 
   final TextScaler base;
 
@@ -122,8 +139,8 @@ class AmpliacaoDeTexto extends TextScaler {
 
   @override
   bool operator ==(Object other) =>
-      other is AmpliacaoDeTexto && other.base == base;
+      other is AmpliacaoDeTexto && other.base == base && other.fator == fator;
 
   @override
-  int get hashCode => base.hashCode;
+  int get hashCode => Object.hash(base, fator);
 }

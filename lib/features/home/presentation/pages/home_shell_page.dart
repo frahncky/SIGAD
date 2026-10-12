@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../l10n/l10n.dart';
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../app/theme/sigad_icon.dart';
@@ -66,7 +67,7 @@ class HomeShellPage extends StatelessWidget {
                     if (!isDashboard)
                       IconButton(
                         onPressed: () => _showNotifications(context),
-                        tooltip: 'Notificações',
+                        tooltip: context.l10n.notificacoes,
                         icon: notifCount > 0
                             ? Badge(
                                 label: Text(
@@ -78,7 +79,7 @@ class HomeShellPage extends StatelessWidget {
                       ),
                     IconButton(
                       onPressed: () => _showProfileMenu(context, userContext),
-                      tooltip: 'Perfil',
+                      tooltip: context.l10n.perfil,
                       icon: _UserAvatar(userContext: userContext, radius: 18),
                     ),
                     const SizedBox(width: 12),
@@ -104,7 +105,7 @@ class HomeShellPage extends StatelessWidget {
                     for (final item in _bottomNavItems)
                       NavigationDestination(
                         icon: SigadIcon(item['icon'] as IconData),
-                        label: item['label'] as String,
+                        label: _rotulo(context, item),
                       ),
                   ],
                 ),
@@ -230,17 +231,17 @@ class HomeShellPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Notificações',
+                    context.l10n.notificacoes,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   const SizedBox(height: 8),
                   if (notificacoes.isEmpty)
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.symmetric(vertical: 24),
                       child: Center(
-                        child: Text('Nenhuma notificação no momento.'),
+                        child: Text(context.l10n.nenhumaNotificacao),
                       ),
                     )
                   else
@@ -281,8 +282,9 @@ class HomeShellPage extends StatelessWidget {
       builder: (context) => StatefulBuilder(
         builder: (context, setModalState) {
           final filteredItems = availableItems.where((item) {
-            final haystack = '${item.label} ${item.subtitle ?? ''}'
-                .toLowerCase();
+            final haystack =
+                '${item.rotuloEm(context.l10n)} ${item.subtituloEm(context.l10n) ?? ''}'
+                    .toLowerCase();
             return haystack.contains(query.toLowerCase());
           }).toList();
           return SafeArea(
@@ -298,7 +300,7 @@ class HomeShellPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Acesso rápido',
+                    context.l10n.acessoRapido,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
@@ -307,9 +309,9 @@ class HomeShellPage extends StatelessWidget {
                   TextField(
                     autofocus: true,
                     onChanged: (value) => setModalState(() => query = value),
-                    decoration: const InputDecoration(
-                      hintText: 'Buscar módulo',
-                      prefixIcon: SigadIcon(SigadIcons.buscar),
+                    decoration: InputDecoration(
+                      hintText: context.l10n.buscarModulo,
+                      prefixIcon: const SigadIcon(SigadIcons.buscar),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -320,7 +322,7 @@ class HomeShellPage extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 32),
                               child: Text(
-                                'Nenhum módulo encontrado.',
+                                context.l10n.nenhumModulo,
                                 style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(
                                       color: Theme.of(
@@ -348,10 +350,10 @@ class HomeShellPage extends StatelessWidget {
                                   item.icon,
                                   color: SigadColors.brand,
                                 ),
-                                title: Text(item.label),
-                                subtitle: item.subtitle == null
+                                title: Text(item.rotuloEm(context.l10n)),
+                                subtitle: item.subtituloEm(context.l10n) == null
                                     ? null
-                                    : Text(item.subtitle!),
+                                    : Text(item.subtituloEm(context.l10n)!),
                                 onTap: () {
                                   Navigator.pop(context);
                                   _navigate(context, item.route);
@@ -399,7 +401,7 @@ class _UnselectedMobileNavigationBar extends StatelessWidget {
                 Expanded(
                   child: Semantics(
                     button: true,
-                    label: items[index]['label'] as String,
+                    label: _rotulo(context, items[index]),
                     child: InkWell(
                       onTap: () => onDestinationSelected(index),
                       child: ExcludeSemantics(
@@ -419,7 +421,7 @@ class _UnselectedMobileNavigationBar extends StatelessWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                items[index]['label'] as String,
+                                _rotulo(context, items[index]),
                                 maxLines: 2,
                                 textAlign: TextAlign.center,
                                 style: theme.textTheme.labelSmall?.copyWith(
@@ -495,7 +497,7 @@ class _SideNav extends StatelessWidget {
               child: OutlinedButton.icon(
                 onPressed: onQuickAccess,
                 icon: const SigadIcon(SigadIcons.buscar, size: 19),
-                label: const Text('Acesso rápido'),
+                label: Text(context.l10n.acessoRapido),
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(46),
                   alignment: Alignment.centerLeft,
@@ -527,7 +529,7 @@ class _SideNav extends StatelessWidget {
                   SigadIcons.sair,
                   color: SigadColors.risk,
                 ),
-                title: const Text('Sair'),
+                title: Text(context.l10n.sair),
               ),
             ),
           ],
@@ -595,7 +597,7 @@ class _AppDrawer extends StatelessWidget {
                   SigadIcons.sair,
                   color: SigadColors.risk,
                 ),
-                title: const Text('Sair'),
+                title: Text(context.l10n.sair),
               ),
             ),
           ],
@@ -647,7 +649,7 @@ class _NavigationTile extends StatelessWidget {
             ),
           ),
           title: Text(
-            item.label,
+            item.rotuloEm(context.l10n),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
@@ -724,7 +726,7 @@ class _UserCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  user.role.displayName,
+                  user.role.nomeEm(context.l10n),
                   style: Theme.of(
                     context,
                   ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
@@ -817,7 +819,7 @@ class _ProfileMenu extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                        user.role.displayName,
+                        user.role.nomeEm(context.l10n),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: SigadColors.muted,
                         ),
@@ -843,7 +845,7 @@ class _ProfileMenu extends StatelessWidget {
                 SigadIcons.configuracoes,
                 color: SigadColors.brand,
               ),
-              title: const Text('Configurações'),
+              title: Text(context.l10n.navConfiguracoes),
               onTap: () {
                 final navigator = Navigator.of(context);
                 navigator.pop();
@@ -856,7 +858,7 @@ class _ProfileMenu extends StatelessWidget {
                 SigadIcons.sair,
                 color: SigadColors.risk,
               ),
-              title: const Text('Sair'),
+              title: Text(context.l10n.sair),
               onTap: () {
                 final navigator = Navigator.of(context);
                 navigator.pop();
@@ -874,12 +876,12 @@ void _confirmLogout(BuildContext context, UserContextProvider userContext) {
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      title: const Text('Confirmar saída'),
-      content: const Text('Tem certeza de que deseja sair da aplicação?'),
+      title: Text(context.l10n.confirmarSaida),
+      content: Text(context.l10n.confirmarSaidaMensagem),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancelar'),
+          child: Text(context.l10n.cancelar),
         ),
         TextButton(
           onPressed: () async {
@@ -888,9 +890,13 @@ void _confirmLogout(BuildContext context, UserContextProvider userContext) {
             if (!context.mounted) return;
             await Navigator.of(context).pushReplacementNamed(AppRoutes.login);
           },
-          child: const Text('Sair'),
+          child: Text(context.l10n.sair),
         ),
       ],
     ),
   );
 }
+
+String _rotulo(BuildContext context, Map<String, dynamic> item) =>
+    rotuloDaRota(item['route'] as String, context.l10n) ??
+    _rotulo(context, item);

@@ -6,6 +6,7 @@ import 'core/config/app_runtime_config.dart';
 import 'core/services/app_event_logger.dart';
 import 'core/services/app_observability_service.dart';
 import 'core/services/theme_provider.dart';
+import 'core/services/locale_provider.dart';
 import 'core/services/user_context_provider.dart';
 import 'features/configuracoes/data/configuracoes_repository.dart';
 import 'features/carga_docente/data/seed_docentes.dart';
@@ -46,13 +47,18 @@ Future<void> main() async {
       : AppRoutes.login;
 
   final savedConfig = await ConfiguracoesRepository().load();
-  final themeProvider = ThemeProvider(isDark: savedConfig?.modoDark ?? false);
+  final themeProvider = ThemeProvider(
+    isDark: savedConfig?.modoDark ?? false,
+    tamanhoTexto: savedConfig?.tamanhoFonte,
+  );
+  final localeProvider = LocaleProvider(idioma: savedConfig?.idioma);
 
   runApp(
     SigadApp(
       initialRoute: initialRoute,
       userContextProvider: userContext,
       themeProvider: themeProvider,
+      localeProvider: localeProvider,
     ),
   );
 }
