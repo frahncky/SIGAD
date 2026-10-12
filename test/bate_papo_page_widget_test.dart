@@ -19,9 +19,9 @@ void main() {
     final userContext = UserContextProvider();
     await userContext.login(
       User(
-        id: 'user_email_professor.demo@ifma.edu.br',
+        id: 'user_email_professor.demo@exemplo.edu.br',
         name: 'Professor Demo',
-        email: 'professor.demo@ifma.edu.br',
+        email: 'professor.demo@exemplo.edu.br',
         role: UserRole.professor,
         createdAt: DateTime.now(),
       ),

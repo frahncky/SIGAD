@@ -23,7 +23,7 @@ abstract final class ConfiguracoesService {
       tamanhoFonte: 'Médio',
       nomePerfil: 'Usuário Demonstrativo',
       cargoPerfil: 'Coordenação dos Cursos do DEE',
-      emailUsuario: 'usuario.demo@ifma.edu.br',
+      emailUsuario: 'usuario.demo@exemplo.edu.br',
       ultimaAlteracaoSenha: '20/02/2026',
       proximoBackup: '25/04/2026',
       ultimoBackup: '20/04/2026 às 14:30',

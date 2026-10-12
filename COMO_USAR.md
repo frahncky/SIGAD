@@ -36,7 +36,7 @@ Abra uma nova conversa e use:
 
 Exemplo:
 
-> Implemente a consulta e os detalhes dos laboratórios. Use dominio_ifma para validar regras, produto_ux para requisitos e estados, designer_ui para a solução visual, flutter para implementar, backend se houver contrato ou banco, qa_revisor para testar e seguranca_publicacao se a mudança envolver dados, autenticação ou permissões. Coordene tudo, integre os resultados e entregue a funcionalidade testada.
+> Implemente a consulta e os detalhes dos laboratórios. Use dominio_institucional para validar regras, produto_ux para requisitos e estados, designer_ui para a solução visual, flutter para implementar, backend se houver contrato ou banco, qa_revisor para testar e seguranca_publicacao se a mudança envolver dados, autenticação ou permissões. Coordene tudo, integre os resultados e entregue a funcionalidade testada.
 
 ## Revisão de uma implementação existente
 

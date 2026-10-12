@@ -59,7 +59,7 @@ void main() {
       User(
         id: 'u1',
         name: 'Pedro',
-        email: 'pedro@ifma.edu.br',
+        email: 'pedro@exemplo.edu.br',
         role: UserRole.professor,
         createdAt: DateTime.now(),
       ),
@@ -88,7 +88,7 @@ void main() {
       User(
         id: 'u-other-route',
         name: 'Pedro',
-        email: 'pedro@ifma.edu.br',
+        email: 'pedro@exemplo.edu.br',
         role: UserRole.professor,
         createdAt: DateTime.now(),
       ),
@@ -118,7 +118,7 @@ void main() {
       User(
         id: 'u2',
         name: 'Ana',
-        email: 'ana@ifma.edu.br',
+        email: 'ana@exemplo.edu.br',
         role: UserRole.coordenador,
         createdAt: DateTime.now(),
       ),
@@ -146,7 +146,7 @@ void main() {
       User(
         id: 'u-drawer',
         name: 'Marina',
-        email: 'marina@ifma.edu.br',
+        email: 'marina@exemplo.edu.br',
         role: UserRole.coordenador,
         createdAt: DateTime.now(),
       ),
@@ -174,7 +174,7 @@ void main() {
       User(
         id: 'u3',
         name: 'Lucas',
-        email: 'lucas@ifma.edu.br',
+        email: 'lucas@exemplo.edu.br',
         role: UserRole.coordenador,
         createdAt: DateTime.now(),
       ),
@@ -204,7 +204,7 @@ void main() {
         User(
           id: 'u-secondary-route',
           name: 'Marina',
-          email: 'marina@ifma.edu.br',
+          email: 'marina@exemplo.edu.br',
           role: UserRole.coordenador,
           createdAt: DateTime.now(),
         ),
@@ -239,7 +239,7 @@ void main() {
       User(
         id: 'u-notifications',
         name: 'Marina',
-        email: 'marina@ifma.edu.br',
+        email: 'marina@exemplo.edu.br',
         role: UserRole.coordenador,
         createdAt: DateTime.now(),
       ),

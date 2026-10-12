@@ -1,12 +1,7 @@
 abstract final class InstitutionalContext {
-  static const institution = 'Instituto Federal do Maranhão';
-  static const acronym = 'IFMA';
-  static const campus = 'Campus São Luís–Monte Castelo';
-  static const city = 'São Luís';
-  static const state = 'Maranhão';
   static const department = 'Departamento de Eletroeletrônica';
   static const departmentAcronym = 'DEE';
-  static const emailDomain = 'ifma.edu.br';
+  static const emailDomain = 'exemplo.edu.br';
 
   static const courses = <String>[
     'Engenharia Elétrica',

@@ -1,8 +1,8 @@
-# Orientações do projeto — aplicativo mobile do IFMA
+# Orientações do projeto — aplicativo mobile institucional
 
 ## 1. Contexto
 
-Este repositório contém um aplicativo mobile destinado ao IFMA — Campus São Luís/Monte Castelo.
+Este repositório contém um aplicativo mobile institucional de gestão acadêmica e departamental.
 
 O produto deve atender, conforme o escopo aprovado:
 
@@ -91,7 +91,7 @@ Resultados de subagentes são recomendações ou implementações parciais até 
 
 ## 4. Agentes disponíveis
 
-### `dominio_ifma`
+### `dominio_institucional`
 
 Use quando houver:
 
@@ -242,7 +242,7 @@ Codex e Claude não devem modificar os mesmos arquivos simultaneamente.
 
 ### Funcionalidade institucional nova
 
-1. `dominio_ifma`;
+1. `dominio_institucional`;
 2. `produto_ux`;
 3. `designer_ui`;
 4. contratos entre `flutter` e `backend`;
@@ -278,7 +278,7 @@ Quando o pedido for analisar, diagnosticar ou revisar:
 
 ## 8. Produto e interface
 
-- Não repetir o nome do IFMA sem necessidade.
+- Não repetir o nome da instituição sem necessidade.
 - Não repetir título já identificado na navegação.
 - Não repetir o nome do menu no topo automaticamente.
 - Usar a identidade institucional com equilíbrio.

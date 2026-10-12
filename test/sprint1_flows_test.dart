@@ -54,9 +54,9 @@ void main() {
       final userContext = UserContextProvider();
       await userContext.login(
         User(
-          id: 'user_email_coordenador@ifma.edu.br',
+          id: 'user_email_coordenador@exemplo.edu.br',
           name: 'Coordenador',
-          email: 'coordenador@ifma.edu.br',
+          email: 'coordenador@exemplo.edu.br',
           role: UserRole.coordenador,
           createdAt: DateTime.now(),
         ),
@@ -644,7 +644,7 @@ void main() {
       User(
         id: 'coordenador-mobile',
         name: 'Coordenação',
-        email: 'coordenacao@ifma.edu.br',
+        email: 'coordenacao@exemplo.edu.br',
         role: UserRole.coordenador,
         createdAt: DateTime(2026),
       ),
@@ -687,7 +687,7 @@ void main() {
         User(
           id: 'professor-otimizacao',
           name: 'Professor Teste',
-          email: 'professor.teste@ifma.edu.br',
+          email: 'professor.teste@exemplo.edu.br',
           role: UserRole.professor,
           createdAt: DateTime(2026),
         ),
@@ -723,7 +723,7 @@ void main() {
       User(
         id: 'professor-calendario',
         name: 'Professor Teste',
-        email: 'professor.calendario@ifma.edu.br',
+        email: 'professor.calendario@exemplo.edu.br',
         role: UserRole.professor,
         createdAt: DateTime(2026),
       ),
@@ -798,7 +798,7 @@ void main() {
         User(
           id: 'professor-data-real',
           name: 'Professor Teste',
-          email: 'professor.data@ifma.edu.br',
+          email: 'professor.data@exemplo.edu.br',
           role: UserRole.professor,
           createdAt: DateTime(2026),
         ),
@@ -841,7 +841,7 @@ void main() {
       User(
         id: 'professor-voltar',
         name: 'Professor Teste',
-        email: 'professor.voltar@ifma.edu.br',
+        email: 'professor.voltar@exemplo.edu.br',
         role: UserRole.professor,
         createdAt: DateTime(2026),
       ),
@@ -875,7 +875,7 @@ void main() {
       User(
         id: 'professor-ver-agenda',
         name: 'Professor Teste',
-        email: 'professor.agenda@ifma.edu.br',
+        email: 'professor.agenda@exemplo.edu.br',
         role: UserRole.professor,
         createdAt: DateTime(2026),
       ),
