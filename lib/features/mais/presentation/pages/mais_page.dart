@@ -9,6 +9,8 @@ import '../../../../app/theme/sigad_icons.dart';
 import '../../../../app/theme/sigad_tone_palette.dart';
 import '../../../../core/services/notificacoes_service.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../mural/presentation/mural_visual.dart';
+import '../../../mural/presentation/state/mural_controller.dart';
 import '../../../../shared/widgets/icon_avatar.dart';
 
 class MaisPage extends StatelessWidget {
@@ -17,7 +19,14 @@ class MaisPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final role = context.watch<UserContextProvider>().userRole;
-    final avisos = NotificacoesService.porRole(role);
+    final avisos = [
+      for (final aviso in context.watch<MuralController>().avisosVisiveis(role))
+        NotificacaoModel(
+          titulo: aviso.titulo,
+          subtitulo: aviso.conteudo,
+          icone: aviso.modelo.icone,
+        ),
+    ];
     final avisoPrincipal = avisos.isEmpty ? null : avisos.first;
 
     return ListView(

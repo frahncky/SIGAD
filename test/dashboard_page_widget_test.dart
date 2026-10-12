@@ -8,6 +8,8 @@ import 'package:sigad/core/models/user.dart';
 import 'package:sigad/core/models/user_role.dart';
 import 'package:sigad/core/services/user_context_provider.dart';
 import 'package:sigad/features/dashboard/presentation/pages/dashboard_page.dart';
+import 'package:sigad/features/mural/domain/mural_models.dart';
+import 'package:sigad/features/mural/presentation/state/mural_controller.dart';
 
 void main() {
   setUp(() {
@@ -42,9 +44,15 @@ void main() {
     UserRole role = UserRole.coordenador,
     Size size = const Size(390, 844),
     double textScale = 1,
+    List<Aviso> avisos = const [],
   }) async {
     configureView(tester, size: size);
     final userContext = await loggedInContext(role: role);
+    final mural = MuralController();
+    await mural.carregar();
+    for (final aviso in avisos) {
+      await mural.salvarAviso(aviso);
+    }
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light(),
@@ -54,8 +62,13 @@ void main() {
           ).copyWith(textScaler: TextScaler.linear(textScale)),
           child: child!,
         ),
-        home: ChangeNotifierProvider<UserContextProvider>.value(
-          value: userContext,
+        home: MultiProvider(
+          providers: [
+            ChangeNotifierProvider<UserContextProvider>.value(
+              value: userContext,
+            ),
+            ChangeNotifierProvider<MuralController>.value(value: mural),
+          ],
           child: const Scaffold(body: DashboardPage()),
         ),
       ),
@@ -100,12 +113,26 @@ void main() {
     expect(find.text('Fechar'), findsOneWidget);
   });
 
-  testWidgets('rotação automática passa pelos avisos', (tester) async {
+  final avisoReuniao = Aviso(
+    id: 'a1',
+    modelo: ModeloAviso.evento,
+    titulo: 'Reunião de colegiado',
+    conteudo: 'Hoje, 14h, sala 305.',
+    criadoEm: DateTime(2026),
+  );
+
+  testWidgets('sem avisos no mural não há slide de avisos', (tester) async {
     await pumpDashboard(tester);
+    expect(find.bySemanticsLabel('Mostrar Avisos'), findsNothing);
+  });
+
+  testWidgets('rotação automática passa pelos avisos', (tester) async {
+    await pumpDashboard(tester, avisos: [avisoReuniao]);
 
     await tester.pump(const Duration(seconds: 7));
     await tester.pumpAndSettle();
     expect(find.text('Ver todos os avisos'), findsOneWidget);
+    expect(find.text('Reunião de colegiado'), findsOneWidget);
   });
 
   testWidgets('professor recebe resumo compatível com o perfil', (
@@ -121,7 +148,12 @@ void main() {
   testWidgets('não apresenta overflow em 320x568 com texto a 200%', (
     tester,
   ) async {
-    await pumpDashboard(tester, size: const Size(320, 568), textScale: 2);
+    await pumpDashboard(
+      tester,
+      size: const Size(320, 568),
+      textScale: 2,
+      avisos: [avisoReuniao],
+    );
 
     for (final rotulo in ['Avisos', 'Resumo do departamento', 'Boas-vindas']) {
       await irParaSlide(tester, rotulo);

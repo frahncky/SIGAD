@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../../app/theme/sigad_colors.dart';
 import '../../app/theme/sigad_icon.dart';
 import '../../app/theme/sigad_icons.dart';
-import '../../core/services/notificacoes_service.dart';
 import '../../core/services/user_context_provider.dart';
 
 /// Item exibido em um slide de lista do [WelcomeHero].
@@ -27,10 +26,29 @@ class WelcomeHeroItem {
 /// Topo do painel: boas-vindas e, em rotação, avisos e o resumo do
 /// departamento. Sem avisos nem resumo, mostra apenas as boas-vindas.
 class WelcomeHero extends StatefulWidget {
-  const WelcomeHero({super.key, this.resumo = const []});
+  const WelcomeHero({
+    super.key,
+    this.avisos = const [],
+    this.frase,
+    this.resumo = const [],
+    this.paginaInicial = 0,
+    this.rotacaoAutomatica = true,
+  });
+
+  /// Avisos do mural. Sem avisos, o slide de avisos não aparece.
+  final List<WelcomeHeroItem> avisos;
+
+  /// Frase motivacional do período. Nula usa uma frase padrão.
+  final String? frase;
 
   /// Resumo do departamento exibido como um slide extra.
   final List<WelcomeHeroItem> resumo;
+
+  /// Slide exibido primeiro (0 = boas-vindas). Usado na pré-visualização.
+  final int paginaInicial;
+
+  /// Desligue para manter o slide parado (pré-visualização).
+  final bool rotacaoAutomatica;
 
   @override
   State<WelcomeHero> createState() => _WelcomeHeroState();
@@ -51,6 +69,12 @@ class _WelcomeHeroState extends State<WelcomeHero> {
   int _total = 1;
 
   @override
+  void initState() {
+    super.initState();
+    _pagina = widget.paginaInicial;
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _reiniciarRotacao();
@@ -65,7 +89,9 @@ class _WelcomeHeroState extends State<WelcomeHero> {
   void _reiniciarRotacao() {
     _timer?.cancel();
     final animacoesDesativadas = MediaQuery.disableAnimationsOf(context);
-    if (_total < 2 || animacoesDesativadas) return;
+    if (_total < 2 || animacoesDesativadas || !widget.rotacaoAutomatica) {
+      return;
+    }
     _timer = Timer.periodic(_intervalo, (_) => _irPara(_pagina + 1));
   }
 
@@ -82,7 +108,7 @@ class _WelcomeHeroState extends State<WelcomeHero> {
   @override
   Widget build(BuildContext context) {
     final userContext = _maybeUserContext(context);
-    final avisos = NotificacoesService.porRole(userContext?.userRole);
+    final avisos = widget.avisos;
 
     final slides = [
       _Slide(
@@ -91,6 +117,7 @@ class _WelcomeHeroState extends State<WelcomeHero> {
           key: const ValueKey('hero-boas-vindas'),
           nome: userContext?.currentUser?.name,
           agora: DateTime.now(),
+          frase: widget.frase,
         ),
       ),
       if (avisos.isNotEmpty)
@@ -102,14 +129,7 @@ class _WelcomeHeroState extends State<WelcomeHero> {
             titulo: avisos.length == 1 ? '1 aviso' : '${avisos.length} avisos',
             tituloDialogo: 'Avisos',
             botao: 'Ver todos os avisos',
-            itens: [
-              for (final aviso in avisos)
-                WelcomeHeroItem(
-                  icon: aviso.icone,
-                  title: aviso.titulo,
-                  subtitle: aviso.subtitulo,
-                ),
-            ],
+            itens: avisos,
           ),
         ),
       if (widget.resumo.isNotEmpty)
@@ -209,20 +229,19 @@ UserContextProvider? _maybeUserContext(BuildContext context) {
 }
 
 class _WelcomeCard extends StatelessWidget {
-  const _WelcomeCard({super.key, required this.nome, required this.agora});
+  const _WelcomeCard({
+    super.key,
+    required this.nome,
+    required this.agora,
+    required this.frase,
+  });
 
   final String? nome;
   final DateTime agora;
+  final String? frase;
 
-  static const _frases = [
-    'Cada pequena entrega de hoje constrói o departamento de amanhã.',
-    'Bons resultados nascem de equipes que se apoiam.',
-    'Organização hoje é tranquilidade amanhã.',
-    'Ensinar é acender caminhos. Obrigado por fazer parte disso.',
-    'Um passo de cada vez também chega longe.',
-    'Seu trabalho faz diferença na formação de muita gente.',
-    'Foco no essencial, cuidado nos detalhes.',
-  ];
+  static const _fraseSemCadastro =
+      'Cada pequena entrega de hoje constrói o departamento de amanhã.';
 
   @override
   Widget build(BuildContext context) {
@@ -236,8 +255,7 @@ class _WelcomeCard extends StatelessWidget {
     final titulo = primeiroNome.isEmpty
         ? '$saudacao!'
         : '$saudacao, $primeiroNome!';
-    final diaDoAno = agora.difference(DateTime(agora.year)).inDays;
-    final frase = _frases[diaDoAno % _frases.length];
+    final frase = this.frase ?? _fraseSemCadastro;
     final textTheme = Theme.of(context).textTheme;
 
     return Semantics(
@@ -369,6 +387,8 @@ class _ListaHeroCard extends StatelessWidget {
                       ),
                       Text(
                         item.subtitle,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                         style: textTheme.bodyMedium?.copyWith(
                           color: Colors.white.withValues(alpha: 0.76),
                           height: 1.3,

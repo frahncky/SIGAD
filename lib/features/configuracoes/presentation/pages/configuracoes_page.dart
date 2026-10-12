@@ -188,6 +188,22 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
               ),
             ],
           ),
+          if (AuthorizationPolicy.canManageMural(role))
+            _ConfigSection(
+              titulo: 'Departamento',
+              icon: SigadIcons.predio,
+              children: [
+                _ConfigItem(
+                  icon: SigadIcons.aviso,
+                  titulo: 'Mural do departamento',
+                  subtitulo: 'Avisos do painel e frases motivacionais',
+                  onTap: () => Navigator.pushReplacementNamed(
+                    context,
+                    AppRoutes.mural,
+                  ),
+                ),
+              ],
+            ),
           if (_isDocenteComLembrete(role))
             _ConfigSection(
               titulo: 'Disciplinas e lembretes',

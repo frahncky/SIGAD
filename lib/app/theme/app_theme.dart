@@ -115,8 +115,10 @@ abstract final class AppTheme {
         backButtonIconBuilder: (_) =>
             const SigadIcon(SigadIcons.chevronEsquerda),
         closeButtonIconBuilder: (_) => const SigadIcon(SigadIcons.fechar),
-        drawerButtonIconBuilder: (_) => const SigadIcon(SigadIcons.menu),
-        endDrawerButtonIconBuilder: (_) => const SigadIcon(SigadIcons.menu),
+        drawerButtonIconBuilder: (_) =>
+            SigadIcon(SigadIcons.menu, color: colors.primary),
+        endDrawerButtonIconBuilder: (_) =>
+            SigadIcon(SigadIcons.menu, color: colors.primary),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: canvas,

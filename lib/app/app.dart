@@ -6,6 +6,7 @@ import '../core/config/app_runtime_config.dart';
 import '../core/services/chat_provider.dart';
 import '../core/services/theme_provider.dart';
 import '../core/services/user_context_provider.dart';
+import '../features/mural/presentation/state/mural_controller.dart';
 import 'routes/app_router.dart';
 import 'routes/app_routes.dart';
 import 'theme/app_theme.dart';
@@ -38,6 +39,7 @@ class SigadApp extends StatelessWidget {
             value: userProvider,
           ),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ChangeNotifierProvider(create: (_) => MuralController()..carregar()),
         if (themeProviderValue == null)
           ChangeNotifierProvider(create: (_) => ThemeProvider())
         else
