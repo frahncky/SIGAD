@@ -441,4 +441,606 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get facaLogin => 'Faça login para acessar configurações.';
+
+  @override
+  String get salvar => 'Salvar';
+
+  @override
+  String get excluir => 'Excluir';
+
+  @override
+  String get continuar => 'Continuar';
+
+  @override
+  String get reservar => 'Reservar';
+
+  @override
+  String get hoje => 'Hoje';
+
+  @override
+  String get feriado => 'Feriado';
+
+  @override
+  String get detalhes => 'Detalhes';
+
+  @override
+  String get erroSalvar => 'Não foi possível salvar. Tente novamente.';
+
+  @override
+  String get diaSeg => 'Seg';
+
+  @override
+  String get diaTer => 'Ter';
+
+  @override
+  String get diaQua => 'Qua';
+
+  @override
+  String get diaQui => 'Qui';
+
+  @override
+  String get diaSex => 'Sex';
+
+  @override
+  String get diaSegunda => 'segunda-feira';
+
+  @override
+  String get diaTerca => 'terça-feira';
+
+  @override
+  String get diaQuarta => 'quarta-feira';
+
+  @override
+  String get diaQuinta => 'quinta-feira';
+
+  @override
+  String get diaSexta => 'sexta-feira';
+
+  @override
+  String get turnoTodos => 'Todos';
+
+  @override
+  String get turnoManha => 'Manhã';
+
+  @override
+  String get turnoTarde => 'Tarde';
+
+  @override
+  String get turnoNoite => 'Noite';
+
+  @override
+  String get turnoMatutino => 'Matutino';
+
+  @override
+  String get turnoVespertino => 'Tarde';
+
+  @override
+  String get turnoNoturno => 'Noite';
+
+  @override
+  String mesAbrev(String mes) {
+    String _temp0 = intl.Intl.selectLogic(mes, {
+      '1': 'jan.',
+      '2': 'fev.',
+      '3': 'mar.',
+      '4': 'abr.',
+      '5': 'maio',
+      '6': 'jun.',
+      '7': 'jul.',
+      '8': 'ago.',
+      '9': 'set.',
+      '10': 'out.',
+      '11': 'nov.',
+      'other': 'dez.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get labAgenda => 'Agenda';
+
+  @override
+  String get labErroCarregar => 'Não foi possível carregar as reservas.';
+
+  @override
+  String get labIrParaSemana => 'Ir para a semana de';
+
+  @override
+  String get labSugestoes => 'Sugestões de horários';
+
+  @override
+  String get labSugestoesSub => 'Ocupação da semana e horários livres';
+
+  @override
+  String get labSomenteDocentes =>
+      'Somente perfis docentes podem reservar horários.';
+
+  @override
+  String get labHorarioOcupado =>
+      'Esse horário já está ocupado. Escolha outro horário livre.';
+
+  @override
+  String labReservaFeita(String lab, String dia, String data, String horario) {
+    return 'Reserva feita: $lab, $dia $data, $horario.';
+  }
+
+  @override
+  String labHorariosReservados(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count horários reservados.',
+      one: '1 horário reservado.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String labJaOcupados(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count já estavam ocupados.',
+      one: '1 já estava ocupado.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get labErroOperacao =>
+      'Não foi possível concluir a operação. Tente novamente.';
+
+  @override
+  String get labEditarOcorrencias => 'Editar ocorrências';
+
+  @override
+  String labRepeteEditar(int count) {
+    return 'Essa reserva se repete em $count ocorrências. Selecione quais você quer editar.';
+  }
+
+  @override
+  String labRepeteExcluir(int count) {
+    return 'Essa reserva se repete em $count ocorrências. Selecione quais você quer excluir.';
+  }
+
+  @override
+  String get labNovoHorarioOcupado =>
+      'Não foi possível salvar: o novo horário já está ocupado em todas as ocorrências selecionadas.';
+
+  @override
+  String get labReservaAtualizada => 'Reserva atualizada.';
+
+  @override
+  String labOcorrenciasAtualizadas(int count) {
+    return '$count ocorrências atualizadas.';
+  }
+
+  @override
+  String labNaoMovidas(int count) {
+    return '$count não puderam ser movidas (horário ocupado).';
+  }
+
+  @override
+  String get labExcluirOcorrencias => 'Excluir ocorrências';
+
+  @override
+  String get labRevisarExclusao => 'Revisar exclusão';
+
+  @override
+  String get labExcluirReserva => 'Excluir reserva';
+
+  @override
+  String labRemoverUma(String ocorrencia, String lab) {
+    return 'Deseja remover a reserva de $ocorrencia no $lab?';
+  }
+
+  @override
+  String labRemoverVarias(int count, String lab) {
+    return 'Deseja remover as $count ocorrências selecionadas no $lab?';
+  }
+
+  @override
+  String get labReservaRemovida => 'Reserva removida.';
+
+  @override
+  String labOcorrenciasRemovidas(int count) {
+    return '$count ocorrências removidas.';
+  }
+
+  @override
+  String get labFacaLogin => 'Faça login para reservar horários.';
+
+  @override
+  String get labSemSugestoes =>
+      'Não há horários livres sugeridos para esta semana.';
+
+  @override
+  String get labReservarSugeridoTitulo => 'Reservar horário sugerido?';
+
+  @override
+  String get labReservaNoSeuNome => 'A reserva fica no seu nome.';
+
+  @override
+  String get labSugestaoIndisponivel =>
+      'A sugestão ficou indisponível. Tente novamente.';
+
+  @override
+  String get labEditarReserva => 'Editar reserva';
+
+  @override
+  String get labDisciplinaOpcional => 'Disciplina (opcional)';
+
+  @override
+  String get labDiaSemana => 'Dia da semana';
+
+  @override
+  String get labHorario => 'Horário';
+
+  @override
+  String get labHorarioJaOcupado => 'Horário já ocupado';
+
+  @override
+  String get labLaboratorio => 'Laboratório';
+
+  @override
+  String labSemanaMesmoMes(int inicio, int fim, String mes) {
+    return '$inicio a $fim de $mes';
+  }
+
+  @override
+  String labSemanaDoisMeses(
+    int inicio,
+    String mesInicio,
+    int fim,
+    String mesFim,
+  ) {
+    return '$inicio de $mesInicio a $fim de $mesFim';
+  }
+
+  @override
+  String get labSemanaAnterior => 'Semana anterior';
+
+  @override
+  String get labProximaSemana => 'Próxima semana';
+
+  @override
+  String labSemanaSemantica(String rotulo, String ano) {
+    return 'Semana de $rotulo de $ano. Escolher outra data';
+  }
+
+  @override
+  String get labEstaSemana => 'Esta semana';
+
+  @override
+  String get labHorarioLivre => 'Horário livre';
+
+  @override
+  String get labMinhaReserva => 'Minha reserva';
+
+  @override
+  String get labReservadoPorOutro => 'Reservado por outro';
+
+  @override
+  String get labArrasteAgenda =>
+      'Arraste a agenda para o lado para ver todos os dias.';
+
+  @override
+  String labCabecalhoDia(String dia, String data) {
+    return '$dia, $data';
+  }
+
+  @override
+  String get labHojeSufixo => ', hoje';
+
+  @override
+  String labFeriadoSufixo(String nome) {
+    return ', feriado: $nome';
+  }
+
+  @override
+  String labCelula(
+    String dia,
+    int numero,
+    String turno,
+    int periodo,
+    String horario,
+  ) {
+    return 'Célula $dia, dia $numero, $turno, período $periodo, horário $horario.';
+  }
+
+  @override
+  String get labLivre => 'Livre';
+
+  @override
+  String labReservadoPor(String nome) {
+    return 'Reservado por $nome';
+  }
+
+  @override
+  String get labToqueDetalhes => 'Toque para ver os detalhes da reserva.';
+
+  @override
+  String get labToqueReservar => 'Toque para reservar.';
+
+  @override
+  String get labDetalhesReserva => 'Detalhes da reserva';
+
+  @override
+  String get labReservaDeLaboratorio => 'Reserva de laboratório';
+
+  @override
+  String get labSuaReserva => 'Sua reserva';
+
+  @override
+  String get labData => 'Data';
+
+  @override
+  String get labReservadoPorRotulo => 'Reservado por';
+
+  @override
+  String get labSoQuemFez =>
+      'Só quem fez a reserva ou a chefia pode alterá-la.';
+
+  @override
+  String get labAcessoRestrito => 'Acesso restrito';
+
+  @override
+  String get labAcessoRestritoMsg =>
+      'Este módulo está disponível para professor, coordenador e chefe do departamento.';
+
+  @override
+  String get labOtimizacao => 'Otimização de laboratórios';
+
+  @override
+  String get labReservarSugestao => 'Reservar sugestão';
+
+  @override
+  String labOcupadoNaSemana(String lab) {
+    return 'ocupado na semana em $lab';
+  }
+
+  @override
+  String labIndicadorOcupacao(String lab, String taxa, int livres) {
+    return '$lab: $taxa% · $livres livres';
+  }
+
+  @override
+  String get labSugestoesSlots => 'Sugestões de horários livres';
+
+  @override
+  String get labRecomendacoesCruzadas =>
+      'Recomendações cruzadas com carga docente';
+
+  @override
+  String labRecomendacao(String nome, String lab, String dia, String horario) {
+    return '$nome: priorizar $lab em $dia $horario para aliviar carga em turmas práticas.';
+  }
+
+  @override
+  String get labAvisoInterditado =>
+      'Este laboratório está interditado. Confirme com a chefia antes de reservar.';
+
+  @override
+  String get labAvisoManutencao =>
+      'Este laboratório está em manutenção. Confirme se ele estará disponível antes de reservar.';
+
+  @override
+  String labTodosCount(int count) {
+    return 'Todos ($count)';
+  }
+
+  @override
+  String labStatusCount(String status, int count) {
+    return '$status ($count)';
+  }
+
+  @override
+  String get labOcorrenciaRegistrada => 'Ocorrência registrada.';
+
+  @override
+  String get labMarcarResolvida => 'Marcar como resolvida?';
+
+  @override
+  String labDeixaraDeContar(String titulo) {
+    return '\"$titulo\" deixará de contar como ativa.';
+  }
+
+  @override
+  String get labResolvida => 'Resolvida';
+
+  @override
+  String get labOcorrenciaResolvidaMsg => 'Ocorrência marcada como resolvida.';
+
+  @override
+  String get labReportarProblema => 'Reportar problema';
+
+  @override
+  String get labProximasReservas => 'Próximas reservas';
+
+  @override
+  String get labVerAgenda => 'Ver agenda';
+
+  @override
+  String get labNenhumaReservaFutura =>
+      'Nenhuma reserva futura para este laboratório.';
+
+  @override
+  String get labEquipamentos => 'Equipamentos';
+
+  @override
+  String get labNenhumEquipamento => 'Nenhum equipamento cadastrado.';
+
+  @override
+  String labUnidades(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count unidades',
+      one: '1 unidade',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get labManutencao => 'Manutenção';
+
+  @override
+  String get labConcluida => 'Concluída';
+
+  @override
+  String get labEmAndamento => 'Em andamento';
+
+  @override
+  String get labOcorrencias => 'Ocorrências';
+
+  @override
+  String labResolverOcorrencia(String titulo) {
+    return 'Resolver ocorrência: $titulo';
+  }
+
+  @override
+  String get labResolver => 'Resolver';
+
+  @override
+  String get labOperando => 'Operando';
+
+  @override
+  String get labEmManutencao => 'Em manutenção';
+
+  @override
+  String get labInterditado => 'Interditado';
+
+  @override
+  String get labReservasNoMes => 'Reservas no mês';
+
+  @override
+  String get labOcorrenciasAtivas => 'Ocorrências ativas';
+
+  @override
+  String labCapacidadePessoas(int count) {
+    return 'Capacidade: $count pessoas';
+  }
+
+  @override
+  String labPessoas(int count) {
+    return '$count pessoas';
+  }
+
+  @override
+  String labEquipamentosDisponiveisCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count equipamentos disponíveis',
+      one: '1 equipamento disponível',
+      zero: '0 equipamentos disponíveis',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String labReservasNesteMes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reservas neste mês',
+      one: '1 reserva neste mês',
+      zero: '0 reservas neste mês',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String labOcorrenciasAtivasCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ocorrências ativas',
+      one: '1 ocorrência ativa',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get labCapacidade => 'Capacidade';
+
+  @override
+  String get labResponsavelTecnico => 'Responsável técnico';
+
+  @override
+  String get labEquipamentosDisponiveis => 'Equipamentos disponíveis';
+
+  @override
+  String get labNenhumLabStatus =>
+      'Nenhum laboratório encontrado com este status.';
+
+  @override
+  String get labDisponivel => 'Disponível';
+
+  @override
+  String get labEmUso => 'Em uso';
+
+  @override
+  String get labIndisponivel => 'Indisponível';
+
+  @override
+  String get labRegistrarOcorrencia => 'Registrar ocorrência';
+
+  @override
+  String get labOQueAconteceu => 'O que aconteceu?';
+
+  @override
+  String get labExemploProblema => 'Ex.: Osciloscópio da bancada 3 não liga';
+
+  @override
+  String get labDescrevaProblema => 'Descreva o problema em poucas palavras.';
+
+  @override
+  String get labDetalhesOpcional => 'Detalhes (opcional)';
+
+  @override
+  String get labDetalhesHint => 'Onde, desde quando e o que já foi tentado.';
+
+  @override
+  String get labSemDadosPessoais =>
+      'Não inclua nomes, matrículas ou dados pessoais.';
+
+  @override
+  String get labSoEstaSemana => 'Só esta semana';
+
+  @override
+  String labEstaEMais(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Esta e mais $count semanas',
+      one: 'Esta e mais 1 semana',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get labReservarHorario => 'Reservar horário';
+
+  @override
+  String labHorarioEMais(String horario, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$horario e mais $count horários',
+      one: '$horario e mais 1 horário',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get labRepetir => 'Repetir';
+
+  @override
+  String labRepeticaoAte(String data) {
+    return 'A repetição vai no máximo até $data, fim do mês.';
+  }
+
+  @override
+  String get labOutrosHorarios => 'Reservar outros horários deste dia';
 }

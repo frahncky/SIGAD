@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../l10n/l10n.dart';
+import '../laboratorio_l10n.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
@@ -119,15 +121,19 @@ class _LaboratoriosCatalogoPageState extends State<LaboratoriosCatalogoPage> {
             runSpacing: 8,
             children: [
               ChoiceChip(
-                label: Text('Todos (${_laboratorios.length})'),
+                label: Text(context.l10n.labTodosCount(_laboratorios.length)),
                 selected: _status == null,
                 onSelected: (_) => setState(() => _status = null),
               ),
               for (final status in StatusLaboratorio.values)
                 ChoiceChip(
                   label: Text(
-                    '${_statusLabel(status)} '
-                    '(${_laboratorios.where((item) => item.status == status).length})',
+                    context.l10n.labStatusCount(
+                      context.l10n.statusLaboratorio(status),
+                      _laboratorios
+                          .where((item) => item.status == status)
+                          .length,
+                    ),
                   ),
                   selected: _status == status,
                   onSelected: (_) => setState(() => _status = status),
@@ -234,7 +240,7 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
       _laboratorio.copyWith(
         ocorrencias: [..._laboratorio.ocorrencias, ocorrencia],
       ),
-      sucesso: 'Ocorrência registrada.',
+      sucesso: context.l10n.labOcorrenciaRegistrada,
     );
   }
 
@@ -248,10 +254,7 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
     } catch (_) {
       if (!mounted) return;
       setState(() => _laboratorio = anterior);
-      AppFeedbackService.error(
-        context,
-        'Não foi possível salvar. Tente novamente.',
-      );
+      AppFeedbackService.error(context, context.l10n.erroSalvar);
     }
   }
 
@@ -265,16 +268,16 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
     final confirmar = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Marcar como resolvida?'),
-        content: Text('"${ocorrencia.titulo}" deixará de contar como ativa.'),
+        title: Text(context.l10n.labMarcarResolvida),
+        content: Text(context.l10n.labDeixaraDeContar(ocorrencia.titulo)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancelar'),
+            child: Text(context.l10n.cancelar),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Resolvida'),
+            child: Text(context.l10n.labResolvida),
           ),
         ],
       ),
@@ -295,7 +298,7 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                 : item,
         ],
       ),
-      sucesso: 'Ocorrência marcada como resolvida.',
+      sucesso: context.l10n.labOcorrenciaResolvidaMsg,
     );
   }
 
@@ -340,12 +343,12 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
     final reportar = OutlinedButton.icon(
       onPressed: _reportarProblema,
       icon: const SigadIcon(SigadIcons.alerta),
-      label: const Text('Reportar problema'),
+      label: Text(context.l10n.labReportarProblema),
     );
     final reservar = FilledButton.icon(
       onPressed: _abrirReservas,
       icon: const SigadIcon(SigadIcons.calendario),
-      label: const Text('Reservar'),
+      label: Text(context.l10n.reservar),
     );
     final acoes = rodapeFixo
         ? Row(
@@ -465,7 +468,11 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                           ],
                         ),
                         const SizedBox(height: 14),
-                        _GradientPill(label: _statusLabel(_laboratorio.status)),
+                        _GradientPill(
+                          label: context.l10n.statusLaboratorio(
+                            _laboratorio.status,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -480,18 +487,17 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                 _InfoGrid(laboratorio: _laboratorio),
                 const SizedBox(height: 14),
                 _Section(
-                  title: 'Próximas reservas',
+                  title: context.l10n.labProximasReservas,
                   icon: SigadIcons.eventoConfirmado,
                   tone: SigadColors.info,
                   action: TextButton(
                     onPressed: _abrirReservas,
-                    child: const Text('Ver agenda'),
+                    child: Text(context.l10n.labVerAgenda),
                   ),
                   child: proximas.isEmpty
-                      ? const _SectionEmptyState(
+                      ? _SectionEmptyState(
                           icon: SigadIcons.eventoOcupado,
-                          message:
-                              'Nenhuma reserva futura para este laboratório.',
+                          message: context.l10n.labNenhumaReservaFutura,
                         )
                       : Column(
                           children: proximas
@@ -511,10 +517,10 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                                   ),
                                   title: Text(
                                     item.reserva.disciplina ??
-                                        'Reserva de laboratório',
+                                        context.l10n.labReservaDeLaboratorio,
                                   ),
                                   subtitle: Text(
-                                    '${item.reserva.diaSemana} ${item.data.day.toString().padLeft(2, '0')}/${item.data.month.toString().padLeft(2, '0')} · ${item.reserva.turno.horarioDo(item.reserva.periodo).replaceAll('-', '–')} · ${item.reserva.professor}',
+                                    '${context.l10n.diaAbrev(item.reserva.diaSemana)} ${context.l10n.dataCurta(item.data)} · ${item.reserva.turno.horarioDo(item.reserva.periodo).replaceAll('-', '–')} · ${item.reserva.professor}',
                                   ),
                                 ),
                               )
@@ -523,13 +529,13 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                 ),
                 const SizedBox(height: 14),
                 _Section(
-                  title: 'Equipamentos',
+                  title: context.l10n.labEquipamentos,
                   icon: SigadIcons.equipamento,
                   tone: SigadColors.brand,
                   child: _laboratorio.equipamentos.isEmpty
-                      ? const _SectionEmptyState(
+                      ? _SectionEmptyState(
                           icon: SigadIcons.equipamento,
-                          message: 'Nenhum equipamento cadastrado.',
+                          message: context.l10n.labNenhumEquipamento,
                         )
                       : Column(
                           children: _laboratorio.equipamentos
@@ -548,10 +554,12 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                                   ),
                                   title: Text(equipamento.nome),
                                   subtitle: Text(
-                                    '${equipamento.quantidade} unidade(s)',
+                                    context.l10n.labUnidades(
+                                      equipamento.quantidade,
+                                    ),
                                   ),
                                   trailing: _StatusPill(
-                                    label: _equipamentoStatusLabel(
+                                    label: context.l10n.statusEquipamento(
                                       equipamento.status,
                                     ),
                                     color: _equipamentoStatusColor(
@@ -566,7 +574,7 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                 if (_laboratorio.manutencoes.isNotEmpty) ...[
                   const SizedBox(height: 14),
                   _Section(
-                    title: 'Manutenção',
+                    title: context.l10n.labManutencao,
                     icon: SigadIcons.manutencao,
                     tone: SigadColors.warning,
                     child: Column(
@@ -593,8 +601,8 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                               ),
                               trailing: _StatusPill(
                                 label: item.concluida
-                                    ? 'Concluída'
-                                    : 'Em andamento',
+                                    ? context.l10n.labConcluida
+                                    : context.l10n.labEmAndamento,
                                 color: item.concluida
                                     ? SigadColors.success
                                     : SigadColors.warning,
@@ -608,7 +616,7 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                 if (_laboratorio.ocorrencias.isNotEmpty) ...[
                   const SizedBox(height: 14),
                   _Section(
-                    title: 'Ocorrências',
+                    title: context.l10n.labOcorrencias,
                     icon: SigadIcons.alerta,
                     tone: SigadColors.risk,
                     child: Column(
@@ -639,20 +647,21 @@ class _LaboratorioDetalhesPageState extends State<LaboratorioDetalhesPage> {
                               ),
                               isThreeLine: item.descricao.isNotEmpty,
                               trailing: item.resolvida
-                                  ? const _StatusPill(
-                                      label: 'Resolvida',
+                                  ? _StatusPill(
+                                      label: context.l10n.labResolvida,
                                       color: SigadColors.success,
                                     )
                                   : podeResolver
                                   ? Semantics(
                                       button: true,
-                                      label:
-                                          'Resolver ocorrência: ${item.titulo}',
+                                      label: context.l10n.labResolverOcorrencia(
+                                        item.titulo,
+                                      ),
                                       excludeSemantics: true,
                                       child: TextButton(
                                         onPressed: () =>
                                             _resolverOcorrencia(item),
-                                        child: const Text('Resolver'),
+                                        child: Text(context.l10n.labResolver),
                                       ),
                                     )
                                   : null,
@@ -685,25 +694,25 @@ class _Metrics extends StatelessWidget {
   Widget build(BuildContext context) {
     final itens = [
       _Metric(
-        label: 'Operando',
+        label: context.l10n.labOperando,
         value: '$operando',
         icon: SigadIcons.concluido,
         color: SigadColors.success,
       ),
       _Metric(
-        label: 'Em manutenção',
+        label: context.l10n.labEmManutencao,
         value: '$manutencao',
         icon: SigadIcons.manutencao,
         color: SigadColors.warning,
       ),
       _Metric(
-        label: 'Reservas no mês',
+        label: context.l10n.labReservasNoMes,
         value: '$reservas',
         icon: SigadIcons.evento,
         color: SigadColors.info,
       ),
       _Metric(
-        label: 'Ocorrências ativas',
+        label: context.l10n.labOcorrenciasAtivas,
         value: '$ocorrencias',
         icon: SigadIcons.alerta,
         color: SigadColors.risk,
@@ -830,7 +839,7 @@ class _LaboratorioCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _StatusPill(
-                label: _statusLabel(laboratorio.status),
+                label: context.l10n.statusLaboratorio(laboratorio.status),
                 color: color,
               ),
               const SizedBox(height: 8),
@@ -846,24 +855,24 @@ class _LaboratorioCard extends StatelessWidget {
               info(SigadIcons.local, laboratorio.localizacao),
               info(
                 SigadIcons.grupo,
-                'Capacidade: ${laboratorio.capacidade} pessoas',
+                context.l10n.labCapacidadePessoas(laboratorio.capacidade),
               ),
               info(
                 SigadIcons.equipamento,
-                '${laboratorio.equipamentosDisponiveis} equipamentos disponíveis',
+                context.l10n.labEquipamentosDisponiveisCount(
+                  laboratorio.equipamentosDisponiveis,
+                ),
               ),
               info(
                 SigadIcons.evento,
-                reservasDoMes == 1
-                    ? '1 reserva neste mês'
-                    : '$reservasDoMes reservas neste mês',
+                context.l10n.labReservasNesteMes(reservasDoMes),
               ),
               if (laboratorio.ocorrenciasAtivas > 0)
                 info(
                   SigadIcons.alerta,
-                  laboratorio.ocorrenciasAtivas == 1
-                      ? '1 ocorrência ativa'
-                      : '${laboratorio.ocorrenciasAtivas} ocorrências ativas',
+                  context.l10n.labOcorrenciasAtivasCount(
+                    laboratorio.ocorrenciasAtivas,
+                  ),
                   cor: SigadColors.risk,
                 ),
               const SizedBox(height: 8),
@@ -872,11 +881,14 @@ class _LaboratorioCard extends StatelessWidget {
                 runSpacing: 4,
                 alignment: WrapAlignment.end,
                 children: [
-                  TextButton(onPressed: onTap, child: const Text('Detalhes')),
+                  TextButton(
+                    onPressed: onTap,
+                    child: Text(context.l10n.detalhes),
+                  ),
                   FilledButton.tonalIcon(
                     onPressed: onVerAgenda,
                     icon: const SigadIcon(SigadIcons.calendarioSemana),
-                    label: const Text('Ver agenda'),
+                    label: Text(context.l10n.labVerAgenda),
                   ),
                 ],
               ),
@@ -998,25 +1010,25 @@ class _InfoGrid extends StatelessWidget {
     final itens = [
       _InfoTile(
         icon: SigadIcons.grupo,
-        label: 'Capacidade',
-        value: '${laboratorio.capacidade} pessoas',
+        label: context.l10n.labCapacidade,
+        value: context.l10n.labPessoas(laboratorio.capacidade),
         tone: SigadColors.info,
       ),
       _InfoTile(
         icon: SigadIcons.pessoa,
-        label: 'Responsável técnico',
+        label: context.l10n.labResponsavelTecnico,
         value: laboratorio.responsavelTecnico,
         tone: SigadColors.brand,
       ),
       _InfoTile(
         icon: SigadIcons.dispositivos,
-        label: 'Equipamentos disponíveis',
+        label: context.l10n.labEquipamentosDisponiveis,
         value: '${laboratorio.equipamentosDisponiveis}',
         tone: SigadColors.success,
       ),
       _InfoTile(
         icon: SigadIcons.alerta,
-        label: 'Ocorrências ativas',
+        label: context.l10n.labOcorrenciasAtivas,
         value: '${laboratorio.ocorrenciasAtivas}',
         tone: ocorrenciaTone,
       ),
@@ -1158,29 +1170,16 @@ class _StatusPill extends StatelessWidget {
 class _EmptyState extends StatelessWidget {
   const _EmptyState();
   @override
-  Widget build(BuildContext context) => const Padding(
+  Widget build(BuildContext context) => Padding(
     padding: EdgeInsets.all(40),
-    child: Center(
-      child: Text('Nenhum laboratório encontrado com este status.'),
-    ),
+    child: Center(child: Text(context.l10n.labNenhumLabStatus)),
   );
 }
 
-String _statusLabel(StatusLaboratorio status) => switch (status) {
-  StatusLaboratorio.operando => 'Operando',
-  StatusLaboratorio.manutencao => 'Em manutenção',
-  StatusLaboratorio.interditado => 'Interditado',
-};
 Color _statusColor(StatusLaboratorio status) => switch (status) {
   StatusLaboratorio.operando => SigadColors.success,
   StatusLaboratorio.manutencao => SigadColors.warning,
   StatusLaboratorio.interditado => SigadColors.risk,
-};
-String _equipamentoStatusLabel(StatusEquipamento status) => switch (status) {
-  StatusEquipamento.disponivel => 'Disponível',
-  StatusEquipamento.emUso => 'Em uso',
-  StatusEquipamento.manutencao => 'Manutenção',
-  StatusEquipamento.indisponivel => 'Indisponível',
 };
 Color _equipamentoStatusColor(StatusEquipamento status) => switch (status) {
   StatusEquipamento.disponivel => SigadColors.success,
@@ -1222,8 +1221,8 @@ class _ReportarProblemaPageState extends State<_ReportarProblemaPage> {
     return Form(
       key: _formKey,
       child: TelaFormularioReserva(
-        titulo: 'Reportar problema',
-        acaoLabel: 'Registrar ocorrência',
+        titulo: context.l10n.labReportarProblema,
+        acaoLabel: context.l10n.labRegistrarOcorrencia,
         acaoIcone: SigadIcons.enviar,
         onAcao: _registrar,
         children: [
@@ -1246,12 +1245,12 @@ class _ReportarProblemaPageState extends State<_ReportarProblemaPage> {
             controller: _titulo,
             maxLength: 80,
             textCapitalization: TextCapitalization.sentences,
-            decoration: const InputDecoration(
-              labelText: 'O que aconteceu?',
-              hintText: 'Ex.: Osciloscópio da bancada 3 não liga',
+            decoration: InputDecoration(
+              labelText: context.l10n.labOQueAconteceu,
+              hintText: context.l10n.labExemploProblema,
             ),
             validator: (valor) => (valor ?? '').trim().isEmpty
-                ? 'Descreva o problema em poucas palavras.'
+                ? context.l10n.labDescrevaProblema
                 : null,
           ),
           const SizedBox(height: 8),
@@ -1262,10 +1261,10 @@ class _ReportarProblemaPageState extends State<_ReportarProblemaPage> {
             maxLength: 800,
             keyboardType: TextInputType.multiline,
             textCapitalization: TextCapitalization.sentences,
-            decoration: const InputDecoration(
-              labelText: 'Detalhes (opcional)',
-              hintText: 'Onde, desde quando e o que já foi tentado.',
-              helperText: 'Não inclua nomes, matrículas ou dados pessoais.',
+            decoration: InputDecoration(
+              labelText: context.l10n.labDetalhesOpcional,
+              hintText: context.l10n.labDetalhesHint,
+              helperText: context.l10n.labSemDadosPessoais,
               helperMaxLines: 2,
               alignLabelWithHint: true,
               border: OutlineInputBorder(),

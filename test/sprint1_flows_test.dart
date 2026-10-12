@@ -9,6 +9,7 @@ import 'package:sigad/app/theme/app_theme.dart';
 import 'package:sigad/core/models/user.dart';
 import 'package:sigad/core/models/user_role.dart';
 import 'package:sigad/core/services/user_context_provider.dart';
+import 'package:sigad/l10n/l10n.dart';
 import 'package:sigad/features/aulas_praticas/presentation/pages/aulas_praticas_page.dart';
 import 'package:sigad/features/aulas_praticas/presentation/widgets/dialog_disciplina_semanas_reserva.dart';
 import 'package:sigad/features/carga_docente/presentation/pages/carga_docente_page.dart';
@@ -281,7 +282,13 @@ void main() {
     await tester.tap(dropdownSemanas);
     await tester.pumpAndSettle();
     await tester.tap(
-      find.text('Esta e mais ${totalSemanas - 1} semana(s)').last,
+      find
+          .text(
+            totalSemanas == 2
+                ? 'Esta e mais 1 semana'
+                : 'Esta e mais ${totalSemanas - 1} semanas',
+          )
+          .last,
     );
     await tester.pumpAndSettle();
 
@@ -561,7 +568,7 @@ void main() {
       );
       await tester.tap(dropdownSemanas);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Esta e mais 2 semana(s)').last);
+      await tester.tap(find.text('Esta e mais 2 semanas').last);
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Reservar'));
@@ -934,5 +941,38 @@ void main() {
     await tester.tap(find.text('Lab. de Eletrônica').last);
     await tester.pumpAndSettle();
     expect(find.textContaining('em manutenção'), findsOneWidget);
+  });
+
+  testWidgets('agenda de laboratórios em inglês', (tester) async {
+    final userContext = UserContextProvider();
+    await userContext.login(
+      User(
+        id: 'professor-ingles',
+        name: 'Professor Teste',
+        email: 'professor.en@exemplo.edu.br',
+        role: UserRole.professor,
+        createdAt: DateTime(2026),
+      ),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light(),
+        locale: const Locale('en'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: ChangeNotifierProvider<UserContextProvider>.value(
+          value: userContext,
+          child: AulasPraticasPage(dataInicial: DateTime(2026, 10, 5)),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Schedule'), findsOneWidget);
+    expect(find.text('Oct 5–9'), findsOneWidget);
+    expect(find.text('Free slot'), findsOneWidget);
+    expect(find.text('Mon'), findsOneWidget);
+    expect(find.byTooltip('Previous week'), findsOneWidget);
+    expect(find.text('Agenda'), findsNothing);
   });
 }
