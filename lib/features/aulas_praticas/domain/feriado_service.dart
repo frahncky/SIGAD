@@ -2,7 +2,7 @@ import 'feriado_models.dart';
 
 /// Feriados legais exibidos como informação no calendário de reservas.
 ///
-/// O calendário acadêmico do IFMA, recessos e pontos facultativos não fazem
+/// O calendário acadêmico da instituição, recessos e pontos facultativos não fazem
 /// parte desta fonte. A presença de um feriado não altera disponibilidade,
 /// criação ou exclusão de reservas.
 ///
@@ -10,7 +10,7 @@ import 'feriado_models.dart';
 /// Decreto Municipal de São Luís nº 62.168/2025.
 abstract final class FeriadoService {
   static const avisoEscopo =
-      'Calendário acadêmico do IFMA, recessos e pontos facultativos não estão incluídos. Feriados locais validados para 2026.';
+      'Calendário acadêmico da instituição, recessos e pontos facultativos não estão incluídos. Feriados locais validados para 2026.';
 
   static List<Feriado> feriadosDoAno(int ano) {
     final feriados = <Feriado>[

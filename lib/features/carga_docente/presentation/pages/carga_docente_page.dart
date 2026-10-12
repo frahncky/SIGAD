@@ -57,8 +57,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     Docente(
       id: '#DOC-001',
       nome: 'Docente 01',
-      userId: 'user_email_docente01@ifma.edu.br',
-      userEmail: 'docente01@ifma.edu.br',
+      userId: 'user_email_docente01@exemplo.edu.br',
+      userEmail: 'docente01@exemplo.edu.br',
       departamento: 'Engenharia de Software',
       cargaHoraria: 20,
       cargaMaxima: 20,
@@ -100,8 +100,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     Docente(
       id: '#DOC-002',
       nome: 'Docente 02',
-      userId: 'user_email_docente02@ifma.edu.br',
-      userEmail: 'docente02@ifma.edu.br',
+      userId: 'user_email_docente02@exemplo.edu.br',
+      userEmail: 'docente02@exemplo.edu.br',
       departamento: 'Sistemas de Informação',
       cargaHoraria: 16,
       cargaMaxima: 20,
@@ -130,8 +130,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     Docente(
       id: '#DOC-003',
       nome: 'Docente 03',
-      userId: 'user_email_docente03@ifma.edu.br',
-      userEmail: 'docente03@ifma.edu.br',
+      userId: 'user_email_docente03@exemplo.edu.br',
+      userEmail: 'docente03@exemplo.edu.br',
       departamento: 'Engenharia de Software',
       cargaHoraria: 12,
       cargaMaxima: 20,
@@ -160,8 +160,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     Docente(
       id: '#DOC-004',
       nome: 'Docente 04',
-      userId: 'user_email_docente04@ifma.edu.br',
-      userEmail: 'docente04@ifma.edu.br',
+      userId: 'user_email_docente04@exemplo.edu.br',
+      userEmail: 'docente04@exemplo.edu.br',
       departamento: 'Telecomunicações',
       cargaHoraria: 18,
       cargaMaxima: 20,
@@ -199,8 +199,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     Docente(
       id: '#DOC-005',
       nome: 'Docente 05',
-      userId: 'user_email_docente05@ifma.edu.br',
-      userEmail: 'docente05@ifma.edu.br',
+      userId: 'user_email_docente05@exemplo.edu.br',
+      userEmail: 'docente05@exemplo.edu.br',
       departamento: 'Engenharia de Software',
       cargaHoraria: 14,
       cargaMaxima: 20,
@@ -373,7 +373,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                       keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(
                         labelText: 'Email de acesso',
-                        hintText: 'docente@ifma.edu.br',
+                        hintText: 'docente@exemplo.edu.br',
                       ),
                     ),
                     const SizedBox(height: 16),

@@ -4,7 +4,7 @@ description: Revisor de qualidade especializado em testes, regressões, responsi
 tools: Read, Grep, Glob, Bash
 ---
 
-Você é o agente de QA e Revisão do aplicativo mobile do IFMA.
+Você é o agente de QA e Revisão do aplicativo mobile institucional.
 
 Converta critérios de aceite em cenários verificáveis. Revise comportamento, arquitetura, tratamento de erros, testes, acessibilidade, responsividade e riscos de regressão.
 

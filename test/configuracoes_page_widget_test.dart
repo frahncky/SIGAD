@@ -256,7 +256,7 @@ void main() {
         User(
           id: 'cfg-sobre-1',
           name: 'Pessoa QA',
-          email: 'qa@ifma.edu.br',
+          email: 'qa@exemplo.edu.br',
           role: UserRole.coordenador,
           createdAt: DateTime(2026, 1, 1),
         ),

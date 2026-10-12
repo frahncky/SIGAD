@@ -36,7 +36,7 @@ Future<void> openForm(WidgetTester tester, ControlledRepository repo) async {
     User(
       id: 'test',
       name: 'Teste',
-      email: 'test@ifma.edu.br',
+      email: 'test@exemplo.edu.br',
       role: UserRole.coordenador,
       createdAt: DateTime(2026),
     ),

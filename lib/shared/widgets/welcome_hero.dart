@@ -297,7 +297,7 @@ class _WelcomeCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Departamento de Eletroeletrônica · IFMA Campus Monte Castelo',
+                  'Departamento de Eletroeletrônica',
                   style: textTheme.bodyMedium?.copyWith(
                     color: Colors.white.withValues(alpha: 0.66),
                     height: 1.25,

@@ -18,7 +18,7 @@ Widget _buildApp(UserContextProvider userContext) {
 
 Future<UserContextProvider> _loggedIn(
   UserRole role, {
-  String email = 'user@ifma.edu.br',
+  String email = 'user@exemplo.edu.br',
 }) async {
   final ctx = UserContextProvider();
   await ctx.login(
@@ -51,7 +51,7 @@ void main() {
   testWidgets('professor ve apenas os proprios dados', (tester) async {
     final ctx = await _loggedIn(
       UserRole.professor,
-      email: 'docente01@ifma.edu.br',
+      email: 'docente01@exemplo.edu.br',
     );
 
     await tester.pumpWidget(_buildApp(ctx));

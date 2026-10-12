@@ -10,7 +10,7 @@
 ![Dart](https://img.shields.io/badge/Dart-3-087F6D?logo=dart&logoColor=white)
 ![Plataformas](https://img.shields.io/badge/plataformas-Android%20·%20iOS%20·%20Web%20·%20Desktop-F09A4A)
 
-**Aplicativo do IFMA para o dia a dia acadêmico e departamental:**<br>
+**Aplicativo para o dia a dia acadêmico e departamental:**<br>
 demandas, laboratórios, agenda, carga docente, atividades e comunicação em um só lugar.
 
 [Funcionalidades](#-funcionalidades) ·
@@ -25,7 +25,7 @@ demandas, laboratórios, agenda, carga docente, atividades e comunicação em um
 
 ## ✨ Sobre
 
-O **SIGAD** é um aplicativo Flutter responsivo para os perfis institucionais do IFMA, como professores, coordenação, chefia de departamento e apoio administrativo. Cada perfil vê um painel e um menu próprios, com os módulos que fazem sentido para o seu trabalho.
+O **SIGAD** é um aplicativo Flutter responsivo para os perfis institucionais, como professores, coordenação, chefia de departamento e apoio administrativo. Cada perfil vê um painel e um menu próprios, com os módulos que fazem sentido para o seu trabalho.
 
 O app tem identidade visual própria: as cores do logotipo e um conjunto de **ícones exclusivos** em duas camadas, com o traço na cor do tema e um destaque em laranja.
 

@@ -162,7 +162,7 @@ class _LoginPageState extends State<LoginPage> {
                 autocorrect: false,
                 decoration: const InputDecoration(
                   labelText: 'Email institucional',
-                  hintText: 'nome@ifma.edu.br',
+                  hintText: 'nome@exemplo.edu.br',
                   prefixIcon: SigadIcon(SigadIcons.arroba),
                 ),
               ),
@@ -313,13 +313,13 @@ class _LoginPageState extends State<LoginPage> {
   String _demoEmailFor(UserRole role) {
     switch (role) {
       case UserRole.professor:
-        return 'professor.demo@ifma.edu.br';
+        return 'professor.demo@exemplo.edu.br';
       case UserRole.coordenador:
-        return 'coordenacao.demo@ifma.edu.br';
+        return 'coordenacao.demo@exemplo.edu.br';
       case UserRole.servidorAdministrativo:
-        return 'servidor.demo@ifma.edu.br';
+        return 'servidor.demo@exemplo.edu.br';
       case UserRole.chefeDepartamento:
-        return 'chefia.demo@ifma.edu.br';
+        return 'chefia.demo@exemplo.edu.br';
     }
   }
 
@@ -370,7 +370,7 @@ class _InstitutionPanel extends StatelessWidget {
           const BrandTitle(compact: true, light: true),
           const SizedBox(height: 24),
           Text(
-            'Gestão acadêmica e departamental do IFMA — Campus São Luís–Monte Castelo.',
+            'Gestão acadêmica e departamental.',
             style: textTheme.headlineSmall?.copyWith(color: Colors.white),
           ),
           const SizedBox(height: 10),
@@ -474,20 +474,11 @@ class _LoginBackground extends StatelessWidget {
     final compact = width < 760;
 
     return ColoredBox(
+      key: const ValueKey('login-background'),
       color: SigadColors.brandDeep,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(
-            'assets/images/ifma_monte_castelo.jpg',
-            key: const ValueKey('login-campus-background'),
-            fit: compact ? BoxFit.fitWidth : BoxFit.cover,
-            alignment: compact
-                ? Alignment.topCenter
-                : const Alignment(0.08, -0.08),
-            filterQuality: FilterQuality.high,
-            excludeFromSemantics: true,
-          ),
           DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
