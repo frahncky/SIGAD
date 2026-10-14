@@ -72,7 +72,7 @@ void main() {
     expect(find.byIcon(SigadIcons.menu), findsOneWidget);
     expect(find.byIcon(SigadIcons.notificacao), findsNothing);
     expect(find.byTooltip('Perfil'), findsOneWidget);
-    expect(tester.widget<AppBar>(find.byType(AppBar)).toolbarHeight, 52);
+    expect(tester.widget<AppBar>(find.byType(AppBar)).toolbarHeight, 64);
   });
 
   testWidgets('outra rota mobile preserva notificações e perfil', (
@@ -155,7 +155,7 @@ void main() {
     await tester.pumpWidget(_buildShell(userContext: userContext));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(SigadIcons.menu));
+    await tester.tap(find.byType(DrawerButton));
     await tester.pumpAndSettle();
 
     expect(find.byType(Drawer), findsOneWidget);

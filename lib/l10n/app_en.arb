@@ -1,6 +1,11 @@
 {
   "@@locale": "en",
   "cancelar": "Cancel",
+  "nomeSaudacao": "Greeting name",
+  "nomeSaudacaoAjuda": "Only on this device. Leave empty to use the first name from your account.",
+  "nomeSaudacaoErro": "Could not save. Please try again.",
+  "nomeSaudacaoSalvo": "Greeting name saved.",
+  "nomeSaudacaoSalvando": "Saving…",
   "fechar": "Close",
   "sair": "Sign out",
   "verTodas": "See all",

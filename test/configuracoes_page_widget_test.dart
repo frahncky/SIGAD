@@ -11,6 +11,7 @@ import 'package:sigad/core/models/user_role.dart';
 import 'package:sigad/core/services/locale_provider.dart';
 import 'package:sigad/core/services/theme_provider.dart';
 import 'package:sigad/core/services/user_context_provider.dart';
+import 'package:sigad/core/services/greeting_name_provider.dart';
 import 'package:sigad/features/configuracoes/presentation/pages/configuracoes_page.dart';
 
 void main() {
@@ -44,6 +45,9 @@ void main() {
       MultiProvider(
         providers: [
           ChangeNotifierProvider<UserContextProvider>.value(value: userContext),
+          ChangeNotifierProvider(
+            create: (_) => GreetingNameProvider(userContext),
+          ),
           ChangeNotifierProvider<ThemeProvider>.value(value: tema),
           ChangeNotifierProvider<LocaleProvider>(
             create: (_) => LocaleProvider(),
@@ -64,6 +68,35 @@ void main() {
     await tester.pumpAndSettle();
     return tema;
   }
+
+  testWidgets('nome na saudação salva, cancela e restaura fallback', (
+    tester,
+  ) async {
+    await abrir(tester, tamanho: const Size(320, 568), escala: 2);
+    await tester.tap(find.text('Nome na saudação'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Maria Clara Souza');
+    await tester.ensureVisible(find.text('Salvar'));
+    await tester.tap(find.text('Salvar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Maria Clara Souza'), findsOneWidget);
+    expect(find.text('Maria Souza'), findsOneWidget);
+    await tester.tap(find.text('Nome na saudação'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Outro nome');
+    await tester.ensureVisible(find.text('Cancelar'));
+    await tester.tap(find.text('Cancelar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Maria Clara Souza'), findsOneWidget);
+    await tester.tap(find.text('Nome na saudação'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), '');
+    await tester.ensureVisible(find.text('Salvar'));
+    await tester.tap(find.text('Salvar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Maria'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('mostra os dados reais da conta, agrupados', (tester) async {
     await abrir(tester);

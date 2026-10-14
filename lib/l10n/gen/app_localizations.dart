@@ -104,6 +104,36 @@ abstract class AppLocalizations {
   /// **'Cancelar'**
   String get cancelar;
 
+  /// No description provided for @nomeSaudacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome na saudação'**
+  String get nomeSaudacao;
+
+  /// No description provided for @nomeSaudacaoAjuda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Somente neste dispositivo. Deixe vazio para usar o primeiro nome da conta.'**
+  String get nomeSaudacaoAjuda;
+
+  /// No description provided for @nomeSaudacaoErro.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível salvar. Tente novamente.'**
+  String get nomeSaudacaoErro;
+
+  /// No description provided for @nomeSaudacaoSalvo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome na saudação salvo.'**
+  String get nomeSaudacaoSalvo;
+
+  /// No description provided for @nomeSaudacaoSalvando.
+  ///
+  /// In pt, this message translates to:
+  /// **'Salvando…'**
+  String get nomeSaudacaoSalvando;
+
   /// No description provided for @fechar.
   ///
   /// In pt, this message translates to:

@@ -1,6 +1,11 @@
 {
   "@@locale": "pt",
   "cancelar": "Cancelar",
+  "nomeSaudacao": "Nome na saudação",
+  "nomeSaudacaoAjuda": "Somente neste dispositivo. Deixe vazio para usar o primeiro nome da conta.",
+  "nomeSaudacaoErro": "Não foi possível salvar. Tente novamente.",
+  "nomeSaudacaoSalvo": "Nome na saudação salvo.",
+  "nomeSaudacaoSalvando": "Salvando…",
   "fechar": "Fechar",
   "sair": "Sair",
   "verTodas": "Ver todas",

@@ -9,6 +9,8 @@ import '../../../../core/services/theme_provider.dart';
 import '../../../../core/services/locale_provider.dart';
 import '../../../../l10n/l10n.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../../core/services/greeting_name_provider.dart';
+import '../greeting_name_dialog.dart';
 import '../../../../shared/widgets/icon_avatar.dart';
 import '../../data/configuracoes_repository.dart';
 import '../../domain/configuracoes_models.dart';
@@ -115,6 +117,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
     }
     final usuario = userContext.currentUser;
     final tema = context.watch<ThemeProvider>();
+    final greeting = context.watch<GreetingNameProvider>();
 
     return Scaffold(
       body: ListView(
@@ -124,6 +127,25 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
             titulo: context.l10n.minhaConta,
             icon: SigadIcons.pessoa,
             children: [
+              ListTile(
+                leading: const SigadIcon(SigadIcons.pessoa),
+                title: Text(greetingNameLabel(context)),
+                subtitle: Text(greeting.displayName),
+                trailing: const Icon(Icons.edit_outlined),
+                enabled: usuario != null && !greeting.loading,
+                onTap: () async {
+                  final saved = await showDialog<bool>(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (_) => GreetingNameDialog(preference: greeting),
+                  );
+                  if (saved == true && context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(context.l10n.nomeSaudacaoSalvo)),
+                    );
+                  }
+                },
+              ),
               _ConfigInfo(
                 icon: SigadIcons.pessoa,
                 titulo: context.l10n.nome,

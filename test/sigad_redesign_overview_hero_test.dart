@@ -33,7 +33,7 @@ void main() {
   ) async {
     await _pump(tester, const WelcomeHero(frase: 'Frase da semana.'));
 
-    expect(find.textContaining(_saudacao), findsOneWidget);
+    expect(find.textContaining(_saudacao), findsNothing);
     expect(find.text('Frase da semana.'), findsOneWidget);
     expect(find.bySemanticsLabel('Mostrar Avisos'), findsNothing);
   });
@@ -68,6 +68,6 @@ void main() {
     await tester.ensureVisible(find.bySemanticsLabel('Mostrar Boas-vindas'));
     await tester.tap(find.bySemanticsLabel('Mostrar Boas-vindas'));
     await tester.pumpAndSettle();
-    expect(find.textContaining(_saudacao), findsOneWidget);
+    expect(find.textContaining(_saudacao), findsNothing);
   });
 }

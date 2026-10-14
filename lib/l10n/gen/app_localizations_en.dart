@@ -12,6 +12,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancelar => 'Cancel';
 
   @override
+  String get nomeSaudacao => 'Greeting name';
+
+  @override
+  String get nomeSaudacaoAjuda =>
+      'Only on this device. Leave empty to use the first name from your account.';
+
+  @override
+  String get nomeSaudacaoErro => 'Could not save. Please try again.';
+
+  @override
+  String get nomeSaudacaoSalvo => 'Greeting name saved.';
+
+  @override
+  String get nomeSaudacaoSalvando => 'Saving…';
+
+  @override
   String get fechar => 'Close';
 
   @override

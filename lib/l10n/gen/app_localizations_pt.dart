@@ -12,6 +12,22 @@ class AppLocalizationsPt extends AppLocalizations {
   String get cancelar => 'Cancelar';
 
   @override
+  String get nomeSaudacao => 'Nome na saudação';
+
+  @override
+  String get nomeSaudacaoAjuda =>
+      'Somente neste dispositivo. Deixe vazio para usar o primeiro nome da conta.';
+
+  @override
+  String get nomeSaudacaoErro => 'Não foi possível salvar. Tente novamente.';
+
+  @override
+  String get nomeSaudacaoSalvo => 'Nome na saudação salvo.';
+
+  @override
+  String get nomeSaudacaoSalvando => 'Salvando…';
+
+  @override
   String get fechar => 'Fechar';
 
   @override
