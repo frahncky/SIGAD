@@ -733,9 +733,11 @@ class _CustomizableIndicatorsState extends State<_CustomizableIndicators> {
         else
           LayoutBuilder(
             builder: (context, constraints) {
+              final largeText =
+                  MediaQuery.textScalerOf(context).scale(14) > 19;
               final colunas = constraints.maxWidth >= 640
                   ? 4
-                  : constraints.maxWidth >= 420
+                  : constraints.maxWidth >= 320 && !largeText
                   ? 3
                   : 2;
               final largura =
@@ -768,6 +770,7 @@ class _AtalhoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return Container(
+      constraints: const BoxConstraints(minHeight: 96),
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(16),
@@ -781,13 +784,14 @@ class _AtalhoCard extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SigadIcon(item.icon, color: SigadColors.brand, size: 24),
                 const SizedBox(height: 8),
                 Text(
                   item.rotuloEm(context.l10n),
                   textAlign: TextAlign.center,
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w700,
