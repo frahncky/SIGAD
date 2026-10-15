@@ -341,7 +341,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get proximasAtividades => 'Upcoming activities';
 
   @override
-  String get proximasAtividadesSub => 'Commitments that still need attention';
+  String get proximasAtividadesSub => 'Pending commitments';
 
   @override
   String get nenhumaAtividadeAberta => 'No open activities.';
@@ -2317,7 +2317,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cdAcessoRestritoMensagem =>
-      'Only teachers, coordination, department heads and administrative staff can access this area.';
+      'Only teachers, coordination and department heads can access this area.';
 
   @override
   String get cdAgendaDocente => 'Teacher\'s schedule';

@@ -157,7 +157,7 @@
     }
   },
   "proximasAtividades": "Próximas atividades",
-  "proximasAtividadesSub": "Compromissos que ainda pedem atenção",
+  "proximasAtividadesSub": "Compromissos pendentes",
   "nenhumaAtividadeAberta": "Nenhuma atividade aberta.",
   "atualizandoVisao": "Atualizando visão operacional...",
   "erroIndicadores": "Não foi possível atualizar os indicadores.",
@@ -1333,7 +1333,7 @@
   "cdNenhumaRedistribuicao": "Nenhuma redistribuição segura foi encontrada para o cenário atual.",
   "cdAplicarSugestao": "Aplicar sugestão",
   "cdAcessoRestrito": "Acesso restrito",
-  "cdAcessoRestritoMensagem": "Somente docentes, coordenação, chefia e servidor administrativo podem acessar esta área.",
+  "cdAcessoRestritoMensagem": "Somente docentes, coordenação e chefia podem acessar esta área.",
   "cdAgendaDocente": "Agenda do docente",
   "cdDistribuicaoSemanal": "Distribuição semanal",
   "cdConviteReuniao": "Convite para reunião",

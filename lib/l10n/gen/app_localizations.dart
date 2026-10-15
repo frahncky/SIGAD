@@ -671,7 +671,7 @@ abstract class AppLocalizations {
   /// No description provided for @proximasAtividadesSub.
   ///
   /// In pt, this message translates to:
-  /// **'Compromissos que ainda pedem atenção'**
+  /// **'Compromissos pendentes'**
   String get proximasAtividadesSub;
 
   /// No description provided for @nenhumaAtividadeAberta.
@@ -4102,7 +4102,7 @@ abstract class AppLocalizations {
   /// No description provided for @cdAcessoRestritoMensagem.
   ///
   /// In pt, this message translates to:
-  /// **'Somente docentes, coordenação, chefia e servidor administrativo podem acessar esta área.'**
+  /// **'Somente docentes, coordenação e chefia podem acessar esta área.'**
   String get cdAcessoRestritoMensagem;
 
   /// No description provided for @cdAgendaDocente.

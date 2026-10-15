@@ -2,9 +2,12 @@ import '../../../../l10n/l10n.dart';
 import '../../../aulas_praticas/presentation/laboratorio_l10n.dart';
 import '../visao_geral_l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../app/routes/app_routes.dart';
+import '../../../../core/navigation/navigation_items.dart';
+import '../../../../core/services/user_context_provider.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
@@ -168,6 +171,12 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    final role = context.watch<UserContextProvider?>()?.userRole;
+    final podeVerCargaDocente =
+        role == null ||
+        kNavigationItems
+            .firstWhere((item) => item.route == AppRoutes.cargaDocente)
+            .isAvailableFor(role);
     final metricasVisiveis = _todasMetricas
         .where((item) => _visiveis.contains(item.id))
         .toList(growable: false);
@@ -246,17 +255,17 @@ class _SigadDashboardPageState extends State<SigadDashboardPage> {
           trailing: context.l10n.vgPersonalizar,
         ),
         const SizedBox(height: 12),
-        _ResponsiveGrid(
-          minItemWidth: 180,
+        _QuickActionsGrid(
           children: [
-            _QuickAction(
-              icon: SigadIcons.aula,
-              label: context.l10n.navCargaDocente,
-              onTap: () => Navigator.pushReplacementNamed(
-                context,
-                AppRoutes.cargaDocente,
+            if (podeVerCargaDocente)
+              _QuickAction(
+                icon: SigadIcons.aula,
+                label: context.l10n.navCargaDocente,
+                onTap: () => Navigator.pushReplacementNamed(
+                  context,
+                  AppRoutes.cargaDocente,
+                ),
               ),
-            ),
             _QuickAction(
               icon: SigadIcons.laboratorio,
               label: context.l10n.navLaboratorios,
@@ -1929,6 +1938,40 @@ class _PriorityTile extends StatelessWidget {
   }
 }
 
+/// Grade compacta dos atalhos da visão geral, sem afetar as demais grades.
+class _QuickActionsGrid extends StatelessWidget {
+  const _QuickActionsGrid({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final largeText = MediaQuery.textScalerOf(context).scale(14) > 19;
+        final columns = constraints.maxWidth < 220
+            ? 1
+            : constraints.maxWidth >= 650
+            ? 4
+            : constraints.maxWidth >= 320 && !largeText
+            ? 3
+            : 2;
+        const spacing = 10.0;
+        final itemWidth =
+            (constraints.maxWidth - (columns - 1) * spacing) / columns;
+        return Wrap(
+          spacing: spacing,
+          runSpacing: spacing,
+          children: [
+            for (final child in children)
+              SizedBox(width: itemWidth, child: child),
+          ],
+        );
+      },
+    );
+  }
+}
+
 class _QuickAction extends StatelessWidget {
   const _QuickAction({
     required this.icon,
@@ -1943,34 +1986,64 @@ class _QuickAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
-      child: Ink(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-        decoration: BoxDecoration(
-          color: colors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: colors.outlineVariant),
-          boxShadow: [
-            BoxShadow(
-              color: colors.shadow.withValues(alpha: 0.04),
-              blurRadius: 14,
-              offset: const Offset(0, 6),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 170;
+        return InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Ink(
+            padding: compact
+                ? const EdgeInsets.symmetric(horizontal: 6, vertical: 12)
+                : const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: colors.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: colors.outlineVariant),
+              boxShadow: [
+                BoxShadow(
+                  color: colors.shadow.withValues(alpha: 0.04),
+                  blurRadius: 14,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Row(
-          children: [
-            SigadIcon(icon, color: colors.primary),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(label, style: Theme.of(context).textTheme.labelLarge),
-            ),
-            const SigadIcon(SigadIcons.setaDireita, size: 18),
-          ],
-        ),
-      ),
+            child: compact
+                ? ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 64),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SigadIcon(icon, color: colors.primary, size: 24),
+                        const SizedBox(height: 6),
+                        Text(
+                          label,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.labelMedium
+                              ?.copyWith(fontWeight: FontWeight.w700),
+                        ),
+                      ],
+                    ),
+                  )
+                : Row(
+                    children: [
+                      SigadIcon(icon, color: colors.primary),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          label,
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
+                      ),
+                      const SigadIcon(SigadIcons.setaDireita, size: 18),
+                    ],
+                  ),
+          ),
+        );
+      },
     );
   }
 }

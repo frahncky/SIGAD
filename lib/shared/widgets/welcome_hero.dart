@@ -140,6 +140,7 @@ class _WelcomeHeroState extends State<WelcomeHero> {
             botao: context.l10n.verTudo,
             maxVisiveis: 3,
             itens: widget.resumo,
+            tipografiaCompacta: true,
           ),
         ),
     ];
@@ -254,7 +255,7 @@ class _WelcomeCard extends StatelessWidget {
                 Text(
                   frase,
                   style: textTheme.bodyLarge?.copyWith(
-                    color: const Color(0xFF506359),
+                    color: const Color(0xFF3D5146),
                     height: 1.35,
                   ),
                 ),
@@ -262,7 +263,7 @@ class _WelcomeCard extends StatelessWidget {
                 Text(
                   context.l10n.departamentoCampus,
                   style: textTheme.bodyMedium?.copyWith(
-                    color: const Color(0xFF506359),
+                    color: const Color(0xFF3D5146),
                     height: 1.25,
                   ),
                 ),
@@ -284,6 +285,7 @@ class _ListaHeroCard extends StatelessWidget {
     required this.botao,
     required this.itens,
     this.maxVisiveis = 2,
+    this.tipografiaCompacta = false,
   });
 
   final IconData icone;
@@ -292,6 +294,7 @@ class _ListaHeroCard extends StatelessWidget {
   final String botao;
   final List<WelcomeHeroItem> itens;
   final int maxVisiveis;
+  final bool tipografiaCompacta;
 
   @override
   Widget build(BuildContext context) {
@@ -309,7 +312,10 @@ class _ListaHeroCard extends StatelessWidget {
                 titulo,
                 style: textTheme.titleLarge?.copyWith(
                   color: const Color(0xFF243B30),
-                  fontWeight: FontWeight.w800,
+                  fontSize: tipografiaCompacta ? 16 : null,
+                  fontWeight: tipografiaCompacta
+                      ? FontWeight.w700
+                      : FontWeight.w800,
                 ),
               ),
             ),
@@ -344,7 +350,10 @@ class _ListaHeroCard extends StatelessWidget {
                         item.title,
                         style: textTheme.titleMedium?.copyWith(
                           color: const Color(0xFF243B30),
-                          fontWeight: FontWeight.w700,
+                          fontSize: tipografiaCompacta ? 14 : null,
+                          fontWeight: tipografiaCompacta
+                              ? FontWeight.w600
+                              : FontWeight.w700,
                           height: 1.25,
                         ),
                       ),
@@ -353,6 +362,7 @@ class _ListaHeroCard extends StatelessWidget {
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                         style: textTheme.bodyMedium?.copyWith(
+                          fontSize: tipografiaCompacta ? 13 : null,
                           color: const Color(0xFF506359),
                           height: 1.3,
                         ),
@@ -371,7 +381,7 @@ class _ListaHeroCard extends StatelessWidget {
               foregroundColor: const Color(0xFF426F5A),
               minimumSize: const Size(48, 48),
             ),
-            child: Text(botao, style: const TextStyle(fontSize: 16)),
+            child: Text(botao, style: TextStyle(fontSize: 12)),
           ),
         ),
       ],

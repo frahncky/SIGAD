@@ -7,6 +7,7 @@ import '../../../../app/theme/sigad_colors.dart';
 import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
 import '../../../../app/theme/sigad_tone_palette.dart';
+import '../../../../core/navigation/navigation_items.dart';
 import '../../../../core/services/notificacoes_service.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../../../mural/presentation/mural_visual.dart';
@@ -21,6 +22,11 @@ class MaisPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final role = context.watch<UserContextProvider>().userRole;
+    final podeVerCargaDocente =
+        role == null ||
+        kNavigationItems
+            .firstWhere((item) => item.route == AppRoutes.cargaDocente)
+            .isAvailableFor(role);
     final avisos = [
       for (final aviso in context.watch<MuralController>().avisosVisiveis(role))
         NotificacaoModel(
@@ -43,12 +49,13 @@ class MaisPage extends StatelessWidget {
         const SizedBox(height: 12),
         _QuickAccessGrid(
           items: [
-            _QuickAccessItem(
-              icon: SigadIcons.aula,
-              label: l10n.navCargaDocente,
-              description: l10n.maisCargaDocenteDesc,
-              route: AppRoutes.cargaDocente,
-            ),
+            if (podeVerCargaDocente)
+              _QuickAccessItem(
+                icon: SigadIcons.aula,
+                label: l10n.navCargaDocente,
+                description: l10n.maisCargaDocenteDesc,
+                route: AppRoutes.cargaDocente,
+              ),
             _QuickAccessItem(
               icon: SigadIcons.grupo,
               label: l10n.navProfessores,
@@ -337,12 +344,11 @@ class _QuickAccessGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
+        final largeText = MediaQuery.textScalerOf(context).scale(14) > 19;
         final crossAxisCount = constraints.maxWidth >= 900
             ? 4
-            : constraints.maxWidth >= 640
+            : constraints.maxWidth >= 320 && !largeText
             ? 3
-            : constraints.maxWidth >= 340
-            ? 4
             : 2;
         return GridView.builder(
           shrinkWrap: true,
@@ -350,7 +356,11 @@ class _QuickAccessGrid extends StatelessWidget {
           itemCount: items.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
-            mainAxisExtent: 172,
+            mainAxisExtent: constraints.maxWidth >= 640
+                ? 136
+                : largeText
+                ? 140
+                : 108,
             mainAxisSpacing: 10,
             crossAxisSpacing: 10,
           ),
@@ -373,50 +383,60 @@ class _QuickAccessCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return Material(
-      color: colors.surface,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: () => Navigator.of(context).pushReplacementNamed(item.route),
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: tone.withValues(alpha: 0.18)),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 170;
+        return Material(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(16),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () => Navigator.of(context).pushReplacementNamed(item.route),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: tone.withValues(alpha: 0.18)),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SigadIconAvatar(
+                    icon: item.icon,
+                    tone: tone,
+                    size: 34,
+                    iconSize: 18,
+                    borderRadius: 11,
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    item.label,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  if (!compact) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      item.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SigadIconAvatar(
-                icon: item.icon,
-                tone: tone,
-                size: 34,
-                iconSize: 18,
-                borderRadius: 11,
-              ),
-              const Spacer(),
-              Text(
-                item.label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                item.description,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: colors.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

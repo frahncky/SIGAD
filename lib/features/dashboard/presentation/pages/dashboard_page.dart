@@ -444,36 +444,32 @@ class _DashboardPanel extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SigadIconAvatar(icon: icon, tone: tone),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      Text(
-                        subtitle,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Flexible(
-                  child: TextButton(
-                    onPressed: onAction,
-                    child: Text(actionLabel, textAlign: TextAlign.end),
+                  child: Text(
+                    title,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              subtitle,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: onAction,
+                child: Text(actionLabel, textAlign: TextAlign.end),
+              ),
             ),
             const Divider(height: 20),
             child,
@@ -733,9 +729,10 @@ class _CustomizableIndicatorsState extends State<_CustomizableIndicators> {
         else
           LayoutBuilder(
             builder: (context, constraints) {
+              final largeText = MediaQuery.textScalerOf(context).scale(14) > 19;
               final colunas = constraints.maxWidth >= 640
                   ? 4
-                  : constraints.maxWidth >= 420
+                  : constraints.maxWidth >= 320 && !largeText
                   ? 3
                   : 2;
               final largura =
@@ -768,6 +765,7 @@ class _AtalhoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return Container(
+      constraints: const BoxConstraints(minHeight: 96),
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: BorderRadius.circular(16),
@@ -781,13 +779,14 @@ class _AtalhoCard extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SigadIcon(item.icon, color: SigadColors.brand, size: 24),
                 const SizedBox(height: 8),
                 Text(
                   item.rotuloEm(context.l10n),
                   textAlign: TextAlign.center,
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w700,
