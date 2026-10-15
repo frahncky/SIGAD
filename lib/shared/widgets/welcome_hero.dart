@@ -289,7 +289,8 @@ class _WelcomeCard extends StatelessWidget {
                 Text(
                   frase,
                   style: textTheme.bodyLarge?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.86),
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
                     height: 1.35,
                   ),
                 ),
@@ -297,7 +298,7 @@ class _WelcomeCard extends StatelessWidget {
                 Text(
                   context.l10n.departamentoCampus,
                   style: textTheme.bodyMedium?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.66),
+                    color: Colors.white.withValues(alpha: 0.90),
                     height: 1.25,
                   ),
                 ),
