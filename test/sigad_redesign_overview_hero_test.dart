@@ -70,4 +70,16 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining(_saudacao), findsOneWidget);
   });
+  testWidgets('frase motivacional mantém contraste alto no cartão', (
+    tester,
+  ) async {
+    const frase = 'Ensinar transforma o futuro.';
+    await _pump(tester, const WelcomeHero(frase: frase));
+
+    final texto = tester.widget<Text>(find.text(frase));
+    expect(texto.style?.color, Colors.white);
+    expect(texto.style?.fontWeight, FontWeight.w600);
+    expect(tester.takeException(), isNull);
+  });
+
 }
