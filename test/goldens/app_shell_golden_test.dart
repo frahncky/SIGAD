@@ -75,7 +75,7 @@ void main() {
       ChangeNotifierProvider<UserContextProvider>.value(
         value: userContext,
         // No app, o painel sempre fica dentro do Scaffold do shell.
-        child: const Scaffold(body: DashboardPage()),
+        child: Scaffold(body: DashboardPage(agora: DateTime(2026, 1, 1, 9))),
       ),
       size: const Size(1440, 900),
     );
@@ -105,9 +105,9 @@ void main() {
           ChangeNotifierProvider<UserContextProvider>.value(value: userContext),
           ChangeNotifierProvider(create: (_) => ChatProvider()),
         ],
-        child: const HomeShellPage(
+        child: HomeShellPage(
           currentRoute: AppRoutes.dashboard,
-          child: DashboardPage(),
+          child: DashboardPage(agora: DateTime(2026, 1, 1, 9)),
         ),
       ),
       size: const Size(1440, 900),

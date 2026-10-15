@@ -27,12 +27,16 @@ class WelcomeHeroItem {
 class WelcomeHero extends StatefulWidget {
   const WelcomeHero({
     super.key,
+    this.agora,
     this.avisos = const [],
     this.frase,
     this.resumo = const [],
     this.paginaInicial = 0,
     this.rotacaoAutomatica = true,
   });
+
+  /// Instante usado nas boas-vindas. Nulo usa o horário atual.
+  final DateTime? agora;
 
   /// Avisos do mural. Sem avisos, o slide de avisos não aparece.
   final List<WelcomeHeroItem> avisos;
@@ -113,7 +117,7 @@ class _WelcomeHeroState extends State<WelcomeHero> {
         context.l10n.boasVindas,
         _WelcomeCard(
           key: const ValueKey('hero-boas-vindas'),
-          agora: DateTime.now(),
+          agora: widget.agora ?? DateTime.now(),
           frase: widget.frase,
         ),
       ),
