@@ -1,14 +1,15 @@
 """Testes de contrato, autorização e concorrência real no PostgreSQL."""
+
 from concurrent.futures import ThreadPoolExecutor
 from threading import Barrier
 
+from conftest import SessionForTest, identity
 from fastapi import HTTPException
 from sqlalchemy import select
 
 from sigad_api.models import Reservation, Revision
 from sigad_api.reservations import replace_reservations
 from sigad_api.schemas import ReservationWrite
-from conftest import SessionForTest, identity
 
 
 def item(id="r1", professor="Ana", lab="Lab A", turno="matutino", periodo=1):
@@ -75,10 +76,13 @@ def test_duplicate_slot_rejected_without_side_effects(client):
 def test_invalid_slot_and_unprovisioned_or_offline_lab(client):
     invalid = item()
     invalid["diaSemana"] = "Sex"  # 05/01/2026 é segunda-feira.
-    assert client.put(
-        "/laboratorios/reservas",
-        json={"expectedRevision": "rev-0", "items": [invalid]},
-    ).status_code == 422
+    assert (
+        client.put(
+            "/laboratorios/reservas",
+            json={"expectedRevision": "rev-0", "items": [invalid]},
+        ).status_code
+        == 422
+    )
     for lab in ("Lab em manutenção", "Lab inexistente"):
         response = client.put(
             "/laboratorios/reservas",
@@ -88,45 +92,66 @@ def test_invalid_slot_and_unprovisioned_or_offline_lab(client):
 
 
 def test_only_owner_or_head_can_change_or_remove(client, as_user):
-    assert client.put(
-        "/laboratorios/reservas",
-        json={"expectedRevision": "rev-0", "items": [item()]},
-    ).status_code == 200
+    assert (
+        client.put(
+            "/laboratorios/reservas",
+            json={"expectedRevision": "rev-0", "items": [item()]},
+        ).status_code
+        == 200
+    )
     as_user("bia", "Bia", "coordenador")
     data = client.get("/laboratorios/reservas").json()
     changed = {**data["items"][0], "periodo": 2}
-    assert client.put(
-        "/laboratorios/reservas",
-        json={"expectedRevision": "rev-1", "items": [changed]},
-    ).status_code == 403
-    assert client.put(
-        "/laboratorios/reservas",
-        json={"expectedRevision": "rev-1", "items": []},
-    ).status_code == 403
-    assert client.put(
-        "/laboratorios/reservas",
-        json={"expectedRevision": "rev-1", "items": [item("r2", professor="Ana")]},
-    ).status_code == 403
+    assert (
+        client.put(
+            "/laboratorios/reservas",
+            json={"expectedRevision": "rev-1", "items": [changed]},
+        ).status_code
+        == 403
+    )
+    assert (
+        client.put(
+            "/laboratorios/reservas",
+            json={"expectedRevision": "rev-1", "items": []},
+        ).status_code
+        == 403
+    )
+    assert (
+        client.put(
+            "/laboratorios/reservas",
+            json={"expectedRevision": "rev-1", "items": [item("r2", professor="Ana")]},
+        ).status_code
+        == 403
+    )
     assert client.get("/laboratorios/reservas").json()["revision"] == "rev-1"
 
     as_user("chefe", "Chefe", "chefeDepartamento")
-    assert client.put(
-        "/laboratorios/reservas",
-        json={"expectedRevision": "rev-1", "items": [changed]},
-    ).status_code == 200
-    assert client.put(
-        "/laboratorios/reservas",
-        json={"expectedRevision": "rev-2", "items": []},
-    ).status_code == 200
+    assert (
+        client.put(
+            "/laboratorios/reservas",
+            json={"expectedRevision": "rev-1", "items": [changed]},
+        ).status_code
+        == 200
+    )
+    assert (
+        client.put(
+            "/laboratorios/reservas",
+            json={"expectedRevision": "rev-2", "items": []},
+        ).status_code
+        == 200
+    )
 
 
 def test_administrative_profile_has_no_reservation_access(client, as_user):
     as_user("tec", "Técnica", "servidorAdministrativo")
     assert client.get("/laboratorios/reservas").status_code == 403
-    assert client.put(
-        "/laboratorios/reservas",
-        json={"expectedRevision": "rev-0", "items": []},
-    ).status_code == 403
+    assert (
+        client.put(
+            "/laboratorios/reservas",
+            json={"expectedRevision": "rev-0", "items": []},
+        ).status_code
+        == 403
+    )
 
 
 def test_atomic_concurrent_clients_same_revision_one_wins():

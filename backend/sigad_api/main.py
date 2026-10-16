@@ -1,5 +1,6 @@
 """API institucional. Sem endpoints de login por senha ou provisionamento público."""
-from datetime import timezone
+
+from datetime import UTC
 
 from fastapi import Depends, FastAPI
 from sqlalchemy.orm import Session
@@ -8,7 +9,6 @@ from .database import get_db
 from .reservations import list_reservations, replace_reservations
 from .schemas import MeRead, ReservationRead, ReservationWrite, RevisionRead
 from .security import Principal, get_principal, require_reservation_access, require_reservation_edit
-
 
 app = FastAPI(
     title="SIGAD — Backend de Reservas",
@@ -32,7 +32,7 @@ def who_am_i(principal: Principal = Depends(get_principal)):
         "name": principal.name,
         "email": principal.email,
         "role": principal.role,
-        "expiresAt": principal.expires_at.astimezone(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "expiresAt": principal.expires_at.astimezone(UTC).isoformat().replace("+00:00", "Z"),
     }
 
 

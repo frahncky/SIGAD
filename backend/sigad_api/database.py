@@ -1,4 +1,5 @@
 """Banco PostgreSQL gerenciado por migrações SQL versionadas."""
+
 from functools import lru_cache
 
 from sqlalchemy import create_engine

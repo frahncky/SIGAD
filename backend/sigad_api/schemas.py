@@ -1,9 +1,9 @@
 """Contratos de reserva compatíveis com o aplicativo Flutter."""
+
 from datetime import date
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
-
 
 Day = Literal["Seg", "Ter", "Qua", "Qui", "Sex"]
 Shift = Literal["matutino", "vespertino", "noturno"]

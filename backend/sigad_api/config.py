@@ -1,4 +1,5 @@
 """Configuração obrigatória, sem credenciais ou IdP demonstrativos."""
+
 import os
 from urllib.parse import urlparse
 

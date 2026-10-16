@@ -3,8 +3,9 @@
 Nunca aceitar role enviada pelo token como autorização de acesso: o mapeamento
 institucional é mantido por administradores diretamente no PostgreSQL.
 """
+
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from functools import lru_cache
 
 import jwt
@@ -65,9 +66,12 @@ def get_principal(
     email = claims.get("email")
     exp = claims.get("exp")
     if (
-        not isinstance(subject, str) or not subject.strip()
-        or not isinstance(name, str) or not name.strip()
-        or not isinstance(email, str) or not email.strip()
+        not isinstance(subject, str)
+        or not subject.strip()
+        or not isinstance(name, str)
+        or not name.strip()
+        or not isinstance(email, str)
+        or not email.strip()
         or not isinstance(exp, int)
     ):
         raise HTTPException(status_code=401, detail="Identidade institucional incompleta.")
@@ -83,7 +87,7 @@ def get_principal(
         name=name.strip(),
         email=email.strip(),
         role=role,
-        expires_at=datetime.fromtimestamp(exp, tz=timezone.utc),
+        expires_at=datetime.fromtimestamp(exp, tz=UTC),
     )
 
 

@@ -1,22 +1,22 @@
 """Os testes exigem PostgreSQL REAL e nunca usam banco de produção."""
+
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, text
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import sessionmaker
 
 os.environ.setdefault(
     "SIGAD_DATABASE_URL",
     "postgresql+psycopg://sigad_test:sigad_test@127.0.0.1:5432/sigad_test",
 )
 
-from sigad_api.database import get_db  # noqa: E402
-from sigad_api.main import app  # noqa: E402
-from sigad_api.models import Laboratory, Member  # noqa: E402
-from sigad_api.security import Principal, get_principal  # noqa: E402
-
+from sigad_api.database import get_db
+from sigad_api.main import app
+from sigad_api.models import Laboratory, Member
+from sigad_api.security import Principal, get_principal
 
 URL = os.environ["SIGAD_DATABASE_URL"]
 assert URL.rsplit("/", 1)[-1] == "sigad_test", "Testes não podem limpar banco não dedicado."
@@ -30,14 +30,18 @@ def identity(subject="ana", name="Ana", role="professor") -> Principal:
         name=name,
         email=f"{subject}@example.edu.br",
         role=role,
-        expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
+        expires_at=datetime.now(UTC) + timedelta(hours=1),
     )
 
 
 @pytest.fixture(autouse=True)
 def fresh_database():
     with engine.begin() as connection:
-        connection.execute(text("TRUNCATE TABLE sigad_reservations, sigad_members, sigad_laboratories RESTART IDENTITY CASCADE"))
+        connection.execute(
+            text(
+                "TRUNCATE TABLE sigad_reservations, sigad_members, sigad_laboratories RESTART IDENTITY CASCADE"
+            )
+        )
         connection.execute(text("UPDATE sigad_reservation_revision SET value = 0 WHERE id = 1"))
     with SessionForTest.begin() as session:
         session.add_all(
@@ -71,4 +75,5 @@ def client():
 def as_user():
     def set_user(subject="ana", name="Ana", role="professor"):
         app.dependency_overrides[get_principal] = lambda: identity(subject, name, role)
+
     return set_user

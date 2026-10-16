@@ -1,4 +1,5 @@
 """Transações de agenda serializadas pela linha única de revisão."""
+
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -81,13 +82,11 @@ def replace_reservations(db: Session, principal: Principal, payload: Reservation
             if payload.expectedRevision != f"rev-{version.value}":
                 raise HTTPException(status_code=409, detail="Agenda desatualizada. Recarregue.")
 
-            old = {
-                row.id: row
-                for row in db.execute(select(Reservation)).scalars().all()
-            }
+            old = {row.id: row for row in db.execute(select(Reservation)).scalars().all()}
             incoming = {item.id: item for item in payload.items}
             modified = [
-                item for item in payload.items
+                item
+                for item in payload.items
                 if item.id not in old or item != _to_schema(old[item.id])
             ]
             removed = [row for key, row in old.items() if key not in incoming]
@@ -97,31 +96,38 @@ def replace_reservations(db: Session, principal: Principal, payload: Reservation
                 previous = old.get(item.id)
                 if previous is None:
                     if item.professor != principal.name:
-                        raise HTTPException(status_code=403, detail="Reserva deve pertencer ao usuário autenticado.")
+                        raise HTTPException(
+                            status_code=403, detail="Reserva deve pertencer ao usuário autenticado."
+                        )
                 elif (
                     previous.owner_subject != principal.subject
                     and principal.role != "chefeDepartamento"
                 ):
-                    raise HTTPException(status_code=403, detail="Não pode alterar reserva de terceiros.")
+                    raise HTTPException(
+                        status_code=403, detail="Não pode alterar reserva de terceiros."
+                    )
                 elif item.professor != previous.professor:
-                    raise HTTPException(status_code=403, detail="Responsável não pode ser trocado nesta operação.")
+                    raise HTTPException(
+                        status_code=403, detail="Responsável não pode ser trocado nesta operação."
+                    )
 
             for row in removed:
                 if row.owner_subject != principal.subject and principal.role != "chefeDepartamento":
-                    raise HTTPException(status_code=403, detail="Não pode excluir reserva de terceiros.")
+                    raise HTTPException(
+                        status_code=403, detail="Não pode excluir reserva de terceiros."
+                    )
 
             if not modified and not removed:
                 return {"revision": f"rev-{version.value}"}
 
             # Novo horário só pode ser reservado em laboratório provisionado e operante.
-            labs = {
-                x.name: x
-                for x in db.execute(select(Laboratory)).scalars().all()
-            }
+            labs = {x.name: x for x in db.execute(select(Laboratory)).scalars().all()}
             for item in modified:
                 lab = labs.get(item.laboratorio)
                 if lab is None or not lab.operational:
-                    raise HTTPException(status_code=409, detail="Laboratório indisponível ou não cadastrado.")
+                    raise HTTPException(
+                        status_code=409, detail="Laboratório indisponível ou não cadastrado."
+                    )
 
             # DELETE+UPDATE+INSERT preservam as chaves únicas até o commit.
             for row in removed:
