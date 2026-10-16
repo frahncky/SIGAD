@@ -34,10 +34,6 @@ class HomeShellPage extends StatelessWidget {
         final isDashboard = currentRoute == AppRoutes.dashboard;
         final greeting = isDashboard ? greetingText(context) : null;
         // unreadChatCount removido pois não é mais utilizado
-        final notifCount = isDashboard
-            ? 0
-            : NotificacoesService.porRole(userRole).length;
-
         final availableItems = userRole == null
             ? kNavigationItems
             : kNavigationItems
@@ -73,17 +69,28 @@ class HomeShellPage extends StatelessWidget {
                   elevation: 0,
                   actions: [
                     if (!isDashboard)
-                      IconButton(
-                        onPressed: () => _showNotifications(context),
-                        tooltip: context.l10n.notificacoes,
-                        icon: notifCount > 0
-                            ? Badge(
-                                label: Text(
-                                  notifCount > 99 ? '99+' : '$notifCount',
-                                ),
-                                child: const SigadIcon(SigadIcons.notificacao),
-                              )
-                            : const SigadIcon(SigadIcons.notificacao),
+                      FutureBuilder<List<NotificacaoModel>>(
+                        future: NotificacoesService.carregar(
+                          userRole,
+                          userName: userContext.currentUser?.name,
+                        ),
+                        builder: (context, snapshot) {
+                          final notifCount = snapshot.data?.length ?? 0;
+                          return IconButton(
+                            onPressed: () => _showNotifications(context),
+                            tooltip: context.l10n.notificacoes,
+                            icon: notifCount > 0
+                                ? Badge(
+                                    label: Text(
+                                      notifCount > 99 ? '99+' : '$notifCount',
+                                    ),
+                                    child: const SigadIcon(
+                                      SigadIcons.notificacao,
+                                    ),
+                                  )
+                                : const SigadIcon(SigadIcons.notificacao),
+                          );
+                        },
                       ),
                     IconButton(
                       onPressed: () => _showProfileMenu(context, userContext),
@@ -229,42 +236,55 @@ class HomeShellPage extends StatelessWidget {
   }
 
   void _showNotifications(BuildContext context) {
-    final userRole = context.read<UserContextProvider>().userRole;
-    final notificacoes = NotificacoesService.porRole(userRole);
+    final usuario = context.read<UserContextProvider>();
+    final future = NotificacoesService.carregar(
+      usuario.userRole,
+      userName: usuario.currentUser?.name,
+    );
 
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
       isScrollControlled: true,
-      builder: (context) {
-        return SafeArea(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.sizeOf(context).height * 0.72,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    context.l10n.notificacoes,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  if (notificacoes.isEmpty)
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 24),
-                      child: Center(
-                        child: Text(context.l10n.nenhumaNotificacao),
-                      ),
-                    )
-                  else
-                    Flexible(
-                      child: ListView.separated(
+      builder: (context) => SafeArea(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(context).height * 0.72,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  context.l10n.notificacoes,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 8),
+                Flexible(
+                  child: FutureBuilder<List<NotificacaoModel>>(
+                    future: future,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState != ConnectionState.done) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (snapshot.hasError) {
+                        return const Center(
+                          child: Text(
+                            'Não foi possível carregar as notificações.',
+                          ),
+                        );
+                      }
+                      final notificacoes = snapshot.data ?? const [];
+                      if (notificacoes.isEmpty) {
+                        return Center(
+                          child: Text(context.l10n.nenhumaNotificacao),
+                        );
+                      }
+                      return ListView.separated(
                         shrinkWrap: true,
                         itemCount: notificacoes.length,
                         separatorBuilder: (_, _) => const Divider(height: 1),
@@ -277,14 +297,15 @@ class HomeShellPage extends StatelessWidget {
                             subtitle: Text(notificacao.subtitulo),
                           );
                         },
-                      ),
-                    ),
-                ],
-              ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 

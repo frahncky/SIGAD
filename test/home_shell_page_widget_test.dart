@@ -253,13 +253,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Notificações'), findsOneWidget);
-    expect(
-      find.descendant(
-        of: find.byType(BottomSheet),
-        matching: find.byType(ListView),
-      ),
-      findsOneWidget,
-    );
+    expect(find.text('Nenhuma notificação no momento.'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }

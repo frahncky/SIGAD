@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
@@ -29,6 +31,7 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
   String _busca = '';
   String _filtroStatus = 'Todos';
   bool _isLoading = true;
+  bool _usandoDadosDemonstracao = true;
   String? _loadError;
 
   final RelatorioRepository _relatorioRepository = RelatorioRepository();
@@ -56,6 +59,7 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
           _relatorios
             ..clear()
             ..addAll(list);
+          _usandoDadosDemonstracao = false;
         }
         _isLoading = false;
       });
@@ -73,17 +77,50 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
     }
   }
 
-  void _saveData() {
-    _relatorioRepository.saveRelatorios(_relatorios);
+  Future<void> _baixarRelatorio(Relatorio relatorio) async {
+    if (!_canAccessRelatorios()) return;
+    try {
+      await Clipboard.setData(
+        ClipboardData(text: RelatoriosService.resumoCompartilhavel(relatorio)),
+      );
+      if (!mounted) return;
+      AppFeedbackService.success(
+        context,
+        'Resumo copiado. Não foi gerado um arquivo PDF.',
+      );
+    } catch (error, stackTrace) {
+      AppEventLogger.error(
+        'relatorios_copy_error',
+        error,
+        stackTrace: stackTrace,
+      );
+      if (!mounted) return;
+      AppFeedbackService.error(context, 'Não foi possível copiar o resumo.');
+    }
   }
 
-  void _atualizarRelatorio(Relatorio relatorioAtualizado) {
-    setState(() {
-      final index = _relatorios.indexWhere(
-        (item) => item.id == relatorioAtualizado.id,
-      );
-      if (index >= 0) {
-        _relatorios[index] = relatorioAtualizado;
+  Future<void> _compartilharRelatorio(Relatorio relatorio) async {
+    if (!_canAccessRelatorios()) return;
+    final uri = Uri(
+      scheme: 'mailto',
+      queryParameters: {
+        'subject': 'SIGAD — ${relatorio.titulo}',
+        'body': RelatoriosService.resumoCompartilhavel(relatorio),
+      },
+    );
+    try {
+      final abriuEmail = await launchUrl(uri);
+      if (!mounted) return;
+      if (abriuEmail) {
+        AppFeedbackService.info(
+          context,
+          'Rascunho aberto no aplicativo de e-mail. Confirme o envio nele.',
+        );
+      } else {
+        AppFeedbackService.warning(
+          context,
+          'Nenhum aplicativo de e-mail está disponível.',
+        );
       }
     });
     _saveData();
@@ -140,6 +177,13 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
                 .where((r) => r.status.toLowerCase().contains('revis'))
                 .length,
           ),
+          if (_usandoDadosDemonstracao) ...[
+            const SizedBox(height: 12),
+            const Text(
+              'Registros demonstrativos: não são documentos institucionais '
+              'nem arquivos PDF disponíveis para download.',
+            ),
+          ],
           const SizedBox(height: 16),
           TextField(
             onChanged: (value) => setState(() => _busca = value),

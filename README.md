@@ -45,7 +45,7 @@ O app tem identidade visual própria: as cores do logotipo e um conjunto de **í
     <td align="center"><img src="docs/readme/icones/checklist.svg" width="40" alt=""><br><b>Atividades</b><br><sub>Ensino, pesquisa, extensão e gestão</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="docs/readme/icones/analise.svg" width="40" alt=""><br><b>Relatórios</b><br><sub>Visualizar, baixar e compartilhar</sub></td>
+    <td align="center"><img src="docs/readme/icones/analise.svg" width="40" alt=""><br><b>Relatórios</b><br><sub>Consultar, copiar resumo e preparar e-mail</sub></td>
     <td align="center"><img src="docs/readme/icones/nota.svg" width="40" alt=""><br><b>Anotações</b><br><sub>Notas rápidas do dia a dia</sub></td>
     <td align="center"><img src="docs/readme/icones/configuracoes.svg" width="40" alt=""><br><b>Configurações</b><br><sub>Perfil, preferências e backup</sub></td>
     <td align="center"><img src="docs/readme/icones/dispositivos.svg" width="40" alt=""><br><b>Responsivo</b><br><sub>Celular, tablet, web e desktop</sub></td>
