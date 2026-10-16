@@ -5,35 +5,47 @@ import '../models/user.dart';
 import '../models/user_role.dart';
 import 'app_event_logger.dart';
 import 'auth_session_repository.dart';
+import '../security/institutional_auth_gateway.dart';
 
 /// Gerencia o estado do usuário autenticado da aplicação
 class UserContextProvider extends ChangeNotifier {
   UserContextProvider({
     AuthSessionRepository? sessionRepository,
+    InstitutionalAuthGateway? institutionalGateway,
+    DataSourceMode? dataSourceMode,
     DateTime Function()? now,
   }) : _sessionRepository = sessionRepository ?? AuthSessionRepository(),
+       _institutionalGateway = institutionalGateway ?? InstitutionalAuthGateway(),
+       _dataSourceMode = dataSourceMode ?? AppRuntimeConfig.dataSourceMode,
        _now = now ?? DateTime.now;
 
   final DateTime Function() _now;
   Timer? _expiryTimer;
   User? _currentUser;
   final AuthSessionRepository _sessionRepository;
+  final InstitutionalAuthGateway _institutionalGateway;
+  final DataSourceMode _dataSourceMode;
+  bool _institutionalSession = false;
   String? _sessionToken;
   DateTime? _sessionExpiresAt;
   bool _sessionRestored = false;
 
   User? get currentUser => isAuthenticated ? _currentUser : null;
   UserRole? get userRole => currentUser?.role;
-  String? get sessionToken => null; // Demo has no API credential.
+  /// Apenas sessões verificadas pelo backend oferecem token para chamadas API.
+  String? get sessionToken => isAuthenticated && _institutionalSession
+      ? _sessionToken
+      : null;
   DateTime? get sessionExpiresAt => _sessionExpiresAt;
   bool get isSessionRestored => _sessionRestored;
   bool get requiresReauthentication =>
       _sessionExpiresAt != null && !_sessionExpiresAt!.isAfter(_now());
 
   bool get isAuthenticated =>
-      AppRuntimeConfig.allowLocalDemo &&
       _currentUser != null &&
-      !requiresReauthentication;
+      !requiresReauthentication &&
+      ((_institutionalSession && _dataSourceMode == DataSourceMode.remote) ||
+       (!_institutionalSession && AppRuntimeConfig.allowLocalDemo));
 
   /// Abre somente a demonstração local. Não autentica credenciais remotas.
   Future<void> login(User user, {String? sessionToken}) async {
@@ -57,10 +69,27 @@ class UserContextProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Completa o login depois de um fluxo OIDC/PKCE externo confiável.
+  /// Não aceita senha e nunca grava o token em SharedPreferences.
+  Future<void> loginInstitutional(String accessToken) async {
+    if (_dataSourceMode != DataSourceMode.remote) {
+      throw StateError('O acesso institucional exige modo remoto.');
+    }
+    final identity = await _institutionalGateway.verifyAccessToken(accessToken);
+    await _sessionRepository.clear();
+    _currentUser = identity.user;
+    _institutionalSession = true;
+    _sessionToken = accessToken.trim();
+    _sessionExpiresAt = identity.expiresAt;
+    _scheduleExpiry();
+    notifyListeners();
+  }
+
   /// Realiza logout do usuário
   Future<void> logout() async {
     _expiryTimer?.cancel();
     _currentUser = null;
+    _institutionalSession = false;
     _sessionToken = null;
     _sessionExpiresAt = null;
     try {
@@ -74,6 +103,9 @@ class UserContextProvider extends ChangeNotifier {
   /// Atualiza o perfil do usuário autenticado
   Future<void> updateUser(User user) async {
     if (!isAuthenticated) throw StateError('Sessão expirada.');
+    if (_institutionalSession) {
+      throw StateError('O perfil institucional é gerenciado pelo servidor.');
+    }
     _currentUser = user;
     final token = _sessionToken;
     final expiresAt = _sessionExpiresAt;
@@ -105,6 +137,7 @@ class UserContextProvider extends ChangeNotifier {
         AppEventLogger.action('session_restore_expired');
       } else {
         _currentUser = data.user;
+        _institutionalSession = false;
         _sessionToken = data.sessionToken;
         _sessionExpiresAt = data.expiresAt;
         _scheduleExpiry();
@@ -123,6 +156,17 @@ class UserContextProvider extends ChangeNotifier {
   }
 
   Future<void> refreshSession() async {
+    if (_institutionalSession) {
+      if (!isAuthenticated || _sessionToken == null) {
+        throw StateError('É necessário entrar novamente.');
+      }
+      final identity = await _institutionalGateway.verifyAccessToken(_sessionToken!);
+      _currentUser = identity.user;
+      _sessionExpiresAt = identity.expiresAt;
+      _scheduleExpiry();
+      notifyListeners();
+      return;
+    }
     if (!AppRuntimeConfig.allowLocalDemo || !isAuthenticated) {
       throw StateError('É necessário entrar novamente.');
     }
@@ -161,6 +205,7 @@ class UserContextProvider extends ChangeNotifier {
     if (expiresAt == null || !hasListeners) return;
     _expiryTimer = Timer(expiresAt.difference(_now()), () {
       _currentUser = null;
+      _institutionalSession = false;
       _sessionToken = null;
       notifyListeners();
     });
