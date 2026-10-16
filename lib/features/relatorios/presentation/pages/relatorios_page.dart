@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../app/theme/sigad_colors.dart';
@@ -71,40 +73,52 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
     }
   }
 
-  void _saveData() {
-    _relatorioRepository.saveRelatorios(_relatorios);
-  }
-
-  void _atualizarRelatorio(Relatorio relatorioAtualizado) {
-    setState(() {
-      final index = _relatorios.indexWhere(
-        (item) => item.id == relatorioAtualizado.id,
+  Future<void> _baixarRelatorio(Relatorio relatorio) async {
+    if (!_canAccessRelatorios()) return;
+    try {
+      await Clipboard.setData(
+        ClipboardData(text: RelatoriosService.resumoCompartilhavel(relatorio)),
       );
-      if (index >= 0) {
-        _relatorios[index] = relatorioAtualizado;
+      if (!mounted) return;
+      AppFeedbackService.success(
+        context,
+        'Resumo copiado. Não foi gerado um arquivo PDF.',
+      );
+    } catch (error, stackTrace) {
+      AppEventLogger.error('relatorios_copy_error', error, stackTrace: stackTrace);
+      if (!mounted) return;
+      AppFeedbackService.error(context, 'Não foi possível copiar o resumo.');
+    }
+  }
+
+  Future<void> _compartilharRelatorio(Relatorio relatorio) async {
+    if (!_canAccessRelatorios()) return;
+    final uri = Uri(
+      scheme: 'mailto',
+      queryParameters: {
+        'subject': 'SIGAD — ${relatorio.titulo}',
+        'body': RelatoriosService.resumoCompartilhavel(relatorio),
+      },
+    );
+    try {
+      final abriuEmail = await launchUrl(uri);
+      if (!mounted) return;
+      if (abriuEmail) {
+        AppFeedbackService.info(
+          context,
+          'Rascunho aberto no aplicativo de e-mail. Confirme o envio nele.',
+        );
+      } else {
+        AppFeedbackService.warning(
+          context,
+          'Nenhum aplicativo de e-mail está disponível.',
+        );
       }
-    });
-    _saveData();
-  }
-
-  void _baixarRelatorio(Relatorio relatorio) {
-    if (!_canAccessRelatorios()) return;
-    final atualizado = RelatoriosService.registrarDownload(relatorio);
-    _atualizarRelatorio(atualizado);
-    AppFeedbackService.success(
-      context,
-      'Relatorio baixado: ${relatorio.titulo}',
-    );
-  }
-
-  void _compartilharRelatorio(Relatorio relatorio) {
-    if (!_canAccessRelatorios()) return;
-    final atualizado = RelatoriosService.registrarCompartilhamento(relatorio);
-    _atualizarRelatorio(atualizado);
-    AppFeedbackService.info(
-      context,
-      'Link de compartilhamento gerado para ${relatorio.titulo}',
-    );
+    } catch (error, stackTrace) {
+      AppEventLogger.error('relatorios_email_error', error, stackTrace: stackTrace);
+      if (!mounted) return;
+      AppFeedbackService.error(context, 'Não foi possível abrir o e-mail.');
+    }
   }
 
   List<Relatorio> get _relatoriosFiltrados =>
@@ -553,7 +567,7 @@ class _RelatorioCard extends StatelessWidget {
                           children: [
                             SigadIcon(SigadIcons.baixar, size: 18),
                             SizedBox(width: 8),
-                            Text('Baixar PDF'),
+                            Text('Copiar resumo'),
                           ],
                         ),
                       ),
@@ -563,7 +577,7 @@ class _RelatorioCard extends StatelessWidget {
                           children: [
                             SigadIcon(SigadIcons.compartilhar, size: 18),
                             SizedBox(width: 8),
-                            Text('Compartilhar'),
+                            Text('Enviar por e-mail'),
                           ],
                         ),
                       ),
@@ -673,14 +687,6 @@ class _RelatorioCard extends StatelessWidget {
               _DetailSection(label: 'Autor', value: relatorio.autor),
               _DetailSection(label: 'Data', value: relatorio.data),
               _DetailSection(label: 'Status', value: relatorio.status),
-              _DetailSection(
-                label: 'Downloads',
-                value: '${relatorio.downloads}',
-              ),
-              _DetailSection(
-                label: 'Compartilhamentos',
-                value: '${relatorio.compartilhamentos}',
-              ),
               const SizedBox(height: 24),
               Row(
                 children: [
@@ -691,7 +697,7 @@ class _RelatorioCard extends StatelessWidget {
                         onBaixar();
                       },
                       icon: const SigadIcon(SigadIcons.baixar),
-                      label: const Text('Baixar PDF'),
+                      label: const Text('Copiar resumo'),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -702,7 +708,7 @@ class _RelatorioCard extends StatelessWidget {
                         onCompartilhar();
                       },
                       icon: const SigadIcon(SigadIcons.compartilhar),
-                      label: const Text('Compartilhar'),
+                      label: const Text('Enviar por e-mail'),
                     ),
                   ),
                 ],
