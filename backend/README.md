@@ -177,6 +177,9 @@ export SIGAD_BACKUP_DIRECTORY=/VOLUME_PRIVADO/backups
 bash ops/backup_homologacao.sh
 ```
 
+Os arquivos `.dump`, `.dump.sha256` e `.pgpass` locais estão ignorados
+pelo Git, mas os backups devem permanecer **fora da pasta do projeto**.
+
 O hash verifica corrupção acidental, **não autenticidade**; proteger
 o backup e manifesto com armazenamento criptografado e controle de acesso,
 cópia externa imutável/WORM se aprovada, monitoramento e rotação.
