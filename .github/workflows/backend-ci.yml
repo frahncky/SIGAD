@@ -98,13 +98,20 @@ jobs:
         run: |
           set -euo pipefail
           file="$RUNNER_TEMP/sigad-test.dump"
-          PGPASSWORD=sigad_backup_ci pg_dump -h 127.0.0.1 \
-            -U sigad_backup_ci -d sigad_test --format=custom --file="$file"
-          pg_restore --list "$file" >/dev/null
+          # O runner Ubuntu traz pg_dump 16; usar client 17 igual ao servidor.
+          docker run --rm --network host -v "$RUNNER_TEMP:/artifacts" \
+            -e PGPASSWORD=sigad_backup_ci postgres:17 \
+            pg_dump -h 127.0.0.1 -U sigad_backup_ci -d sigad_test \
+            --format=custom --file=/artifacts/sigad-test.dump
+          docker run --rm -v "$RUNNER_TEMP:/artifacts" postgres:17 \
+            pg_restore --list /artifacts/sigad-test.dump >/dev/null
           psql -h 127.0.0.1 -U sigad_test -d postgres -v ON_ERROR_STOP=1 \
             -c 'CREATE DATABASE sigad_restore_ci'
-          pg_restore -h 127.0.0.1 -U sigad_test -d sigad_restore_ci \
-            --exit-on-error --single-transaction --no-owner --no-acl "$file"
+          docker run --rm --network host -v "$RUNNER_TEMP:/artifacts" \
+            -e PGPASSWORD=sigad_test postgres:17 \
+            pg_restore -h 127.0.0.1 -U sigad_test -d sigad_restore_ci \
+            --exit-on-error --single-transaction --no-owner --no-acl \
+            /artifacts/sigad-test.dump
           restored=$(psql -h 127.0.0.1 -U sigad_test -d sigad_restore_ci \
             -X -A -t -v ON_ERROR_STOP=1 -c "SELECT
               (SELECT COUNT(*) FROM sigad_reservations)::text || ':' ||
