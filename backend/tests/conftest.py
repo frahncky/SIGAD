@@ -39,7 +39,7 @@ def fresh_database():
     with engine.begin() as connection:
         connection.execute(
             text(
-                "TRUNCATE TABLE sigad_reservation_audit, sigad_reservations, sigad_members, sigad_laboratories RESTART IDENTITY CASCADE"
+                "TRUNCATE TABLE sigad_write_rate_limits, sigad_reservation_audit, sigad_reservations, sigad_members, sigad_laboratories RESTART IDENTITY CASCADE"
             )
         )
         connection.execute(text("UPDATE sigad_reservation_revision SET value = 0 WHERE id = 1"))

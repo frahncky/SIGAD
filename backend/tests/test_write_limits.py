@@ -6,7 +6,7 @@ from threading import Barrier
 import pytest
 from conftest import SessionForTest, identity
 from fastapi import HTTPException
-from sqlalchemy import select, text
+from sqlalchemy import text
 
 from sigad_api.write_limits import enforce_write_limit
 

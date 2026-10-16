@@ -12,6 +12,7 @@ from test_reservations import item
 
 from sigad_api.reservations import replace_reservations
 from sigad_api.schemas import ReservationWrite
+from sigad_api.write_limits import enforce_write_limit
 
 
 @pytest.fixture
@@ -41,6 +42,7 @@ def backup_session():
 
 
 def test_runtime_role_can_create_and_audit_without_reading_sensitive_log(app_session):
+    enforce_write_limit(app_session, identity())
     saved = replace_reservations(
         app_session,
         identity(),
@@ -51,6 +53,7 @@ def test_runtime_role_can_create_and_audit_without_reading_sensitive_log(app_ses
         assert app_session.execute(
             text("SELECT count(*) FROM sigad_reservations")
         ).scalar_one() == 1
+        assert app_session.execute(text("SELECT count(*) FROM sigad_write_rate_limits")).scalar_one() == 1
         # Restrição por coluna: pode consultar id/time usados no RETURNING.
         assert app_session.execute(
             text("SELECT count(id) FROM sigad_reservation_audit")
@@ -70,6 +73,8 @@ def test_runtime_role_can_create_and_audit_without_reading_sensitive_log(app_ses
         "INSERT INTO sigad_members(subject, role, active) VALUES ('evil','professor',true)",
         "UPDATE sigad_laboratories SET operational=true",
         "CREATE TABLE sigad_unapproved_table(id int)",
+        "DELETE FROM sigad_write_rate_limits",
+        "DROP TABLE sigad_write_rate_limits",
     ],
 )
 def test_runtime_role_cannot_manage_history_members_or_schema(app_session, statement):
@@ -86,6 +91,7 @@ def test_backup_role_reads_all_data_but_cannot_mutate(backup_session):
             "sigad_reservations",
             "sigad_reservation_revision",
             "sigad_reservation_audit",
+            "sigad_write_rate_limits",
         ):
             backup_session.execute(text(f"SELECT count(*) FROM {table}")).scalar_one()
     with pytest.raises(DBAPIError), backup_session.begin():

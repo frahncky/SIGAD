@@ -15,6 +15,7 @@ _TABLES = (
     "sigad_reservation_revision",
     "sigad_reservations",
     "sigad_reservation_audit",
+    "sigad_write_rate_limits",
 )
 
 
