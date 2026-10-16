@@ -29,6 +29,7 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
   String _busca = '';
   String _filtroStatus = 'Todos';
   bool _isLoading = true;
+  bool _usandoDadosDemonstracao = true;
   String? _loadError;
 
   final RelatorioRepository _relatorioRepository = RelatorioRepository();
@@ -56,6 +57,7 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
           _relatorios
             ..clear()
             ..addAll(list);
+          _usandoDadosDemonstracao = false;
         }
         _isLoading = false;
       });
@@ -151,6 +153,13 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
                 .where((r) => r.status.toLowerCase().contains('revis'))
                 .length,
           ),
+          if (_usandoDadosDemonstracao) ...[
+            const SizedBox(height: 12),
+            const Text(
+              'Registros demonstrativos: não são documentos institucionais '
+              'nem arquivos PDF disponíveis para download.',
+            ),
+          ],
           const SizedBox(height: 16),
           TextField(
             onChanged: (value) => setState(() => _busca = value),
