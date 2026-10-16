@@ -34,8 +34,10 @@ O app tem identidade visual própria: as cores do logotipo e um conjunto de **í
 O repositório inclui um **backend FastAPI + PostgreSQL** que implementa
 autenticação via tokens OIDC validados, agenda compartilhada e bloqueio
 transacional de horários concorrentes. Confira [o guia de instalação e
-testes](backend/README.md). O backend **não está implantado no IFMA**;
-o cadastro institucional, o fluxo SSO/PKCE e a homologação permanecem pendentes.
+testes](backend/README.md). O cliente móvel OIDC/PKCE está implementado,
+mas o backend **não está implantado no IFMA**; o cadastro do cliente no IdP,
+as credenciais oficiais de configuração e a homologação permanecem pendentes.
+Consulte o [plano de homologação](docs/HOMOLOGACAO_INSTITUCIONAL.md).
 
 ## 🧭 Funcionalidades
 
@@ -84,11 +86,10 @@ flutter run            # roda no dispositivo conectado
 flutter run -d chrome  # roda na web
 ```
 
-Com fonte de dados remota:
-
-```bash
-flutter run --dart-define=SIGAD_DATA_SOURCE=remote --dart-define=SIGAD_API_BASE_URL=https://api.sigad.local
-```
+O modo remoto **não funciona com uma API de exemplo** e requer que a TI
+autorize e configure o SSO/OIDC e um backend HTTPS em execução. Os parâmetros
+de `flutter run --dart-define` estão no
+[roteiro de homologação](docs/HOMOLOGACAO_INSTITUCIONAL.md).
 
 <details>
 <summary><b>Ambientes e flavors</b></summary>
@@ -96,22 +97,20 @@ flutter run --dart-define=SIGAD_DATA_SOURCE=remote --dart-define=SIGAD_API_BASE_
 <br>
 
 - `SIGAD_FLAVOR=dev|staging|prod` controla o banner visual e as tags de runtime.
-- O Android tem flavors nativos `dev`, `staging` e `prod`.
+- `SIGAD_FLAVOR` é uma opção visual, **não** um flavor nativo Android.
+  O projeto atualmente não define `productFlavors` no Gradle.
 - A observabilidade remota pode ser ligada por define, sem alterar o código:
   - `SIGAD_OBSERVABILITY_ENABLED=true`
   - `SIGAD_OBSERVABILITY_ENDPOINT=https://seu-endpoint/events`
 
 ```bash
-flutter run --flavor dev --dart-define=SIGAD_FLAVOR=dev
-flutter run --flavor staging --dart-define=SIGAD_FLAVOR=staging
-flutter run --flavor prod --dart-define=SIGAD_FLAVOR=prod --dart-define=SIGAD_DATA_SOURCE=remote
+flutter run --dart-define=SIGAD_FLAVOR=dev
+flutter run --dart-define=SIGAD_FLAVOR=staging
 ```
 
-Release Android (AAB):
-
-```bash
-flutter build appbundle --flavor prod --dart-define=SIGAD_FLAVOR=prod
-```
+**Não publicar** a versão Android release atual: o identificador do
+aplicativo é provisório e a assinatura release ainda usa a chave debug.
+Esses bloqueadores exigem configuração institucional antes da distribuição.
 
 </details>
 

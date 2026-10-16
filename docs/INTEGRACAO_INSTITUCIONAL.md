@@ -135,6 +135,18 @@ controle concorrente no banco. A garantia de que dois usuários não reservam
 o mesmo horário somente existe quando o servidor implementar as transações
 e restrições acima.
 
+## Verificação de prontidão do servidor
+
+A rota `GET /ready` agora verifica a configuração **local** do IdP e as
+tabelas/revisão PostgreSQL, retornando 503 sem divulgar dados internos
+quando essas dependências faltam. `GET /health` continua limitado à
+disponibilidade do processo HTTP. A prontidão não valida a confiança na
+chave JWKS nem substitui teste real de login com a TI.
+
+Veja [o roteiro de homologação](HOMOLOGACAO_INSTITUCIONAL.md), incluindo
+a compilação iOS de simulador, teste entre dispositivos e bloqueadores
+atuais de publicação.
+
 ## Checklist de implantação
 
 - Cadastrar o SIGAD no IdP do IFMA; configurar redirect URI e PKCE nas
