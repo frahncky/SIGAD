@@ -74,7 +74,7 @@ void main() {
       }
       expect(req.method, 'PUT');
       final body = jsonDecode(req.body) as Map<String, dynamic>;
-      expect(body['expectedRevision'], 'v1');
+      expect(body['expectedRevision'], calls == 2 ? 'v1' : 'v2');
       expect((body['items'] as List).first['laboratorio'], 'Laboratório 8');
       return http.Response(jsonEncode({'revision': 'v2'}), 200);
     });
