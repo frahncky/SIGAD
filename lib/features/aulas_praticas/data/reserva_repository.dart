@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import '../../../core/config/app_runtime_config.dart';
 import '../../../core/network/api_error.dart';
 import '../../../core/network/api_request.dart';
-import '../../../core/network/api_response.dart';
 import '../../../core/network/app_http_client.dart';
 import '../../../core/network/http_package_client.dart';
 import '../../../core/network/api_config.dart';
@@ -63,7 +62,9 @@ class ReservaRepository {
       // Parse completo antes de atualizar a revisão. Não aceitar agenda
       // parcialmente decodificada e arriscar apagar dados de outros usuários.
       final reservas = items.map((item) {
-        if (item is! Map) throw const FormatException('Reserva inválida.');
+        if (item is! Map || !item.containsKey('ano')) {
+          throw const FormatException('Reserva remota inválida.');
+        }
         return _reservaFromJson(Map<String, dynamic>.from(item));
       }).toList(growable: false);
       _revision = revision;
@@ -91,6 +92,7 @@ class ReservaRepository {
   Future<void> saveReservas(List<ReservaLaboratorio> reservas) async {
     if (isShared) {
       _ensureTrustedRemote();
+      _assertUniqueSlots(reservas);
       final revision = _revision;
       if (revision == null || revision.isEmpty) {
         throw StateError('Carregue a agenda institucional antes de alterar.');
@@ -129,6 +131,17 @@ class ReservaRepository {
       storageKey,
       reservas.map(_reservaToJson).toList(growable: false),
     );
+  }
+
+  void _assertUniqueSlots(List<ReservaLaboratorio> reservas) {
+    final occupied = <String>{};
+    for (final r in reservas) {
+      final slot = '${r.laboratorio}| ${r.ano}|${r.mes}|${r.semanaDoMes}|'
+          '${r.diaSemana}|${r.turno.name}|${r.periodo}';
+      if (!occupied.add(slot)) {
+        throw const ReservaConflitoException();
+      }
+    }
   }
 
   void _ensureTrustedRemote() {
