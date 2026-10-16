@@ -1,0 +1,53 @@
+name: iOS auth build
+
+on:
+  pull_request:
+    paths:
+      - "ios/**"
+      - "lib/core/security/**"
+      - "lib/features/login/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - ".github/workflows/ios-auth-build.yml"
+  push:
+    branches: [main]
+    paths:
+      - "ios/**"
+      - "lib/core/security/**"
+      - "lib/features/login/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - ".github/workflows/ios-auth-build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-auth-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios-simulator:
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.7"
+          channel: stable
+      - name: Check Xcode and iOS SDK
+        run: |
+          xcodebuild -version
+          flutter doctor -v
+      - name: Resolve locked dependencies
+        run: flutter pub get --enforce-lockfile
+      - name: Verify SSO callback scheme
+        run: |
+          actual=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleURLTypes:0:CFBundleURLSchemes:0' ios/Runner/Info.plist)
+          test "$actual" = "sigad-auth"
+      - name: Compile unsigned iOS simulator application
+        run: flutter build ios --simulator --debug --no-codesign --dart-define=SIGAD_DATA_SOURCE=remote
+      - name: Confirm simulator app exists
+        run: test -d build/ios/iphonesimulator/Runner.app

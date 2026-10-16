@@ -71,6 +71,20 @@ oficial do cliente, do emissor, do escopo de API e da URI de retorno com
 o provisionamento de membros/laboratórios e a homologação. Tokens JWT internos
 gerados para testes não representam autenticação de usuários reais.
 
+## Prontidão e CI iOS
+
+- `GET /health` é apenas liveness (processo HTTP acessível).
+- `GET /ready` exige parâmetros OIDC locais e tabelas/revisão PostgreSQL,
+  retornando `503` sem detalhes internos se não estiver pronto.
+- **`/ready = 200` não certifica o acesso ao IdP/JWKS nem a homologação
+  institucional**; exige testes manuais de login e reserva com usuários reais.
+- O fluxo `iOS auth build` valida o app no **simulador iOS sem assinatura**.
+  Não habilita distribuição por App Store/TestFlight nem valida callback em
+  iPhone físico.
+
+Consulte o [plano de homologação](../docs/HOMOLOGACAO_INSTITUCIONAL.md)
+para requisitos, critérios de aceite e rollback.
+
 ## Regras de concorrência
 
 A linha `sigad_reservation_revision(id=1)` é bloqueada antes de comparar
