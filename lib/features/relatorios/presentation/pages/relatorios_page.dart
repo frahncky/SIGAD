@@ -733,14 +733,6 @@ class _RelatorioCard extends StatelessWidget {
                 label: context.l10n.demStatus,
                 value: context.l10n.opcaoRelatorio(relatorio.status),
               ),
-              _DetailSection(
-                label: context.l10n.relDownloads,
-                value: '${relatorio.downloads}',
-              ),
-              _DetailSection(
-                label: context.l10n.relCompartilhamentos,
-                value: '${relatorio.compartilhamentos}',
-              ),
               const SizedBox(height: 24),
               Row(
                 children: [
