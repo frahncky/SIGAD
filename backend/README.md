@@ -89,7 +89,8 @@ para requisitos, critérios de aceite e rollback.
 ## Auditoria de reservas (migração 002)
 
 Depois de aplicar `001_initial.sql`, executar obrigatoriamente
-`002_reservation_audit.sql` **na ordem**. A migração acrescenta uma tabela
+`002_reservation_audit.sql` **na ordem**. Para homologação, aplicar também
+`003_operational_roles.sql` com os papéis provisionados pela TI. A migração acrescenta uma tabela
 de eventos; não elimina reservas já cadastradas. A rota `/ready` exige
 a nova tabela para impedir novas gravações com esquema desatualizado.
 
@@ -116,6 +117,114 @@ pseudonimizados e requerem prazo de retenção, controle de acesso e
 procedimento de exclusão/restrição definidos formalmente pela TI/LGPD.
 Não executar `TRUNCATE` no banco institucional; ele é usado
 **somente** nos testes PostgreSQL efêmeros do GitHub Actions.
+
+## Contas operacionais, backup e restauração (migração 003)
+
+**Sem acesso ao IFMA:** estes arquivos só serão aplicados pela TI em
+PostgreSQL dedicado, com autorização, controle de acesso, cópias externas
+criptografadas, prazos de retenção e procedimento formal de mudança.
+
+A migração `003_operational_roles.sql` **não cria usuários nem senhas**.
+A TI deve criar e manter separadamente três identidades de banco:
+proprietário/migrador (DDL), conta `app_role` (API), e conta
+`backup_role` (leitura lógica); nenhuma das duas últimas deve ser owner,
+superusuário, membro do papel migrador ou ter `CREATEDB`/`CREATEROLE`.
+
+Exemplo **somente sintático** (trocar nomes após aprovação e provisionar
+senhas via gerenciador de segredos da TI):
+
+```sh
+psql -X -v ON_ERROR_STOP=1 \
+  -v app_role=PAPEL_DA_API \
+  -v backup_role=PAPEL_DE_BACKUP \
+  -f migrations/003_operational_roles.sql
+```
+
+Aplicar **após as migrações 001 e 002**, como proprietário autorizado,
+usando uma janela de mudanças. A migração é transacional e idempotente
+para os privilégios *explícitos* dessas duas contas nas tabelas SIGAD.
+Revoga acessos `PUBLIC` às cinco tabelas de domínio. Antes de implantar,
+a TI também precisa revogar privilégios herdados de *outros* papéis,
+validar `search_path`, `CONNECT` à base e garantir que a API não seja
+membro de roles administrativas. A conta da aplicação tem apenas:
+leitura de membros/laboratórios/revisões, leitura/inserção/exclusão de
+reservas, atualização da revisão e **inserção** de auditoria, com leitura
+restrita das colunas `id`/`recorded_at` exigidas pelo `RETURNING`
+do SQLAlchemy. Não pode consultar identificadores pessoais no log de
+auditoria, alterar o cadastro, executar DDL ou remover eventos.
+A conta de backup lê tabelas/estado da sequência, sem escritas.
+O papel de migração deve permanecer separado da aplicação.
+
+### Backup lógico sob custódia da TI
+
+O script [`ops/backup_homologacao.sh`](ops/backup_homologacao.sh)
+requer `SIGAD_ENVIRONMENT=homologacao`, `PGHOST`, `PGDATABASE`,
+`PGUSER` (papel de backup), `PGSSLMODE=verify-full`,
+`PGSSLROOTCERT` legível, `PGPASSFILE` restrito e um diretório
+`SIGAD_BACKUP_DIRECTORY` **preexistente**, privado e fora do Git.
+Usa `pg_dump --format=custom`, verifica o arquivo com `pg_restore --list`,
+gera hash SHA-256 e falha sem criar arquivo final se o dump não concluir.
+Nunca inclui senha em argumento de linha de comando.
+
+```sh
+# Somente host de homologação autorizado, acesso privado e CA aprovada.
+export SIGAD_ENVIRONMENT=homologacao PGSSLMODE=verify-full
+export PGHOST=HOST_DO_BANCO PGPORT=5432 PGDATABASE=BANCO_APROVADO
+export PGUSER=PAPEL_DE_BACKUP
+export PGSSLROOTCERT=/CAMINHO_SEGURO/ca.pem
+export PGPASSFILE=/CAMINHO_SEGURO/pgpass
+export SIGAD_BACKUP_DIRECTORY=/VOLUME_PRIVADO/backups
+bash ops/backup_homologacao.sh
+```
+
+Os arquivos `.dump`, `.dump.sha256` e `.pgpass` locais estão ignorados
+pelo Git, mas os backups devem permanecer **fora da pasta do projeto**.
+
+O hash verifica corrupção acidental, **não autenticidade**; proteger
+o backup e manifesto com armazenamento criptografado e controle de acesso,
+cópia externa imutável/WORM se aprovada, monitoramento e rotação.
+Definir **RPO/RTO e retenção** com a TI/LGPD; `pg_dump` não oferece
+recuperação ponto-no-tempo (PITR), portanto a TI deve avaliar WAL/PITR
+como proteção adicional. Sem testes de restauração, não presumir que
+backups estejam recuperáveis.
+
+### Restauração de ensaio, nunca sobre a agenda atual
+
+O script [`ops/restore_homologacao.sh`](ops/restore_homologacao.sh)
+só aceita um **banco existente e vazio** cujo nome comece com
+`sigad_restore_`, e exige confirmação textual e TLS verificado.
+Recomenda-se cluster isolado, credenciais temporárias do responsável
+pela restauração, sem aplicativos apontando para esse banco.
+
+```sh
+export SIGAD_ENVIRONMENT=homologacao PGSSLMODE=verify-full
+export PGHOST=HOST_ISOLADO PGDATABASE=sigad_restore_ENSAIO
+export PGUSER=PAPEL_RESTAURADOR
+export PGSSLROOTCERT=/CAMINHO_SEGURO/ca.pem
+export PGPASSFILE=/CAMINHO_SEGURO/pgpass
+export SIGAD_RESTORE_TARGET="$PGDATABASE"
+export SIGAD_RESTORE_CONFIRMATION=RESTAURAR_SOMENTE_EM_BANCO_VAZIO
+bash ops/restore_homologacao.sh \
+  /VOLUME_PRIVADO/backups/ARQUIVO.dump \
+  /VOLUME_PRIVADO/backups/ARQUIVO.dump.sha256
+```
+
+O nome real do banco deve ser **minúsculo** (por exemplo,
+`sigad_restore_ensaio`); o valor em maiúsculas acima é somente ilustrativo.
+Antes de restaurar, validar origem, integridade, autorização e isolamento
+dos dados pessoais. O comando usa `pg_restore --single-transaction
+--exit-on-error --no-owner --no-acl`, verifica revisão/esquema e não
+executa `DROP DATABASE` nem `--clean`. O papel restaurador é
+privilegiado **somente naquele banco de ensaio**.
+Os privilégios operacionais da origem **não** são reaplicados
+(`--no-acl`); rodar `003_operational_roles.sql` com os novos papéis
+de destino somente se necessário e aprovado. Em produção a TI deve
+definir processo próprio, plano de parada, integridade e rollback.
+
+O pipeline de CI também restaura um backup sintético gerado por uma
+conta **somente leitura** em outro banco efêmero, verificando que
+revisão, agenda e auditoria são preservadas. **Isso não é backup de dados
+reais nem teste do ambiente institucional.**
 
 ## Regras de concorrência
 
@@ -150,8 +259,9 @@ precisam ser providos pela TI antes de acesso de outros dispositivos**.
    com `sslmode=verify-full` e uma CA confiável via `sslrootcert`.
    Se a CA for privada, provisioná-la no container com volume de leitura
    e controle de acesso aprovado pela TI; não copie chaves para o Git.
-3. Aplicar `migrations/001_initial.sql` no banco autorizado via processo
-   de mudança institucional, com backup anterior. O Compose **não executa
+3. Aplicar `migrations/001_initial.sql`, `002_reservation_audit.sql` e
+   `003_operational_roles.sql` (nessa ordem; a última com as variáveis de
+   papéis criados pela TI), com backup anterior. O Compose **não executa
    migrações automaticamente**.
 4. No host de homologação autorizado, usar:
 
@@ -197,8 +307,9 @@ com um PostgreSQL efêmero.
   configuração do fluxo de logout/renovação (sem versionar credenciais).
 - Confirmação oficial das permissões propostas e provisionamento de membros.
 - Cadastro verificado dos laboratórios, manutenção e políticas de reserva.
-- Backup, migrações operacionais, auditoria persistente, rate limiting,
-  observabilidade sem dados pessoais e revisão LGPD.
+- Implantar as contas com privilégios mínimos e praticar backup/restauração
+  de verdade na infraestrutura autorizada; rate limiting, observabilidade,
+  retenção e revisão LGPD ainda dependem da TI.
 - Testes de homologação entre aparelhos em infraestrutura institucional.
 
 Não afirmar que reservas entre dispositivos estejam ativas até implantação,

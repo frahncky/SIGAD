@@ -46,7 +46,8 @@ a implantação esteja aprovada.**
 No ambiente autorizado:
 
 1. Aplicar as migrações `backend/migrations/001_initial.sql` **e**
-   `backend/migrations/002_reservation_audit.sql`, em ordem, sob procedimento
+   `backend/migrations/002_reservation_audit.sql` e
+   `backend/migrations/003_operational_roles.sql`, em ordem, sob procedimento
    institucional controlado e backup.
 2. Fornecer `SIGAD_DATABASE_URL`, `SIGAD_OIDC_ISSUER`,
    `SIGAD_OIDC_AUDIENCE` e `SIGAD_OIDC_JWKS_URL` por gerenciador de
@@ -141,3 +142,17 @@ os critérios da seção 4. Esses itens **não foram executados em infraestrutur
 do IFMA** e não devem ser marcados como concluídos somente pela aprovação
 do GitHub Actions.
 
+
+## 7. Permissões operacionais e plano de recuperação
+
+O repositório agora tem uma terceira migração com contas separadas para a
+API e backups, e scripts de backup/restauração destinados à **homologação
+aprovada**. O procedimento completo está em
+[`backend/README.md`](../backend/README.md). A restauração aceita
+apenas um banco de ensaio vazio, sem sobrescrever a agenda atual.
+
+A TI deve realizar uma cópia criptografada e testar a restauração em banco
+isolado, validando também a trilha de auditoria e documentando RPO/RTO,
+retenção, chaves, custódia e revogação de acesso. O CI usa somente registros
+fictícios para comprovar os privilégios SQL e o fluxo lógico de recuperação.
+**Nenhum backup ou restauração no IFMA foi realizado.**

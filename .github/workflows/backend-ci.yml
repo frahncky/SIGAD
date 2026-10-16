@@ -49,6 +49,20 @@ jobs:
         run: psql -h 127.0.0.1 -U sigad_test -d sigad_test -v ON_ERROR_STOP=1 -f backend/migrations/001_initial.sql
       - name: Apply audit migration
         run: psql -h 127.0.0.1 -U sigad_test -d sigad_test -v ON_ERROR_STOP=1 -f backend/migrations/002_reservation_audit.sql
+      - name: Provision isolated CI roles and enforce least privileges
+        run: |
+          psql -h 127.0.0.1 -U sigad_test -d sigad_test -v ON_ERROR_STOP=1 <<'SQL'
+          CREATE ROLE sigad_app_ci LOGIN PASSWORD 'sigad_app_ci'
+            NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOINHERIT;
+          CREATE ROLE sigad_backup_ci LOGIN PASSWORD 'sigad_backup_ci'
+            NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOINHERIT;
+          SQL
+          psql -h 127.0.0.1 -U sigad_test -d sigad_test \
+            -v ON_ERROR_STOP=1 -v app_role=sigad_app_ci \
+            -v backup_role=sigad_backup_ci \
+            -f backend/migrations/003_operational_roles.sql
+      - name: Verify backup and restore scripts syntax
+        run: bash -n backend/ops/backup_homologacao.sh backend/ops/restore_homologacao.sh
       - name: Validate homologation Compose syntax (do not launch)
         env:
           SIGAD_HOMOLOGACAO_ENV_FILE: ${{ github.workspace }}/backend/.env.homologacao.example
@@ -61,3 +75,48 @@ jobs:
           fi
       - name: PostgreSQL integration tests
         run: pytest -q backend/tests
+      - name: Seed disposable database for backup and restore drill
+        run: |
+          psql -h 127.0.0.1 -U sigad_test -d sigad_test -v ON_ERROR_STOP=1 <<'SQL'
+          TRUNCATE sigad_reservation_audit, sigad_reservations,
+            sigad_members, sigad_laboratories RESTART IDENTITY CASCADE;
+          UPDATE sigad_reservation_revision SET value = 1 WHERE id = 1;
+          INSERT INTO sigad_members(subject, role, active)
+            VALUES ('ci-docente','professor',true);
+          INSERT INTO sigad_laboratories(name, operational) VALUES ('Lab CI', true);
+          INSERT INTO sigad_reservations
+            (id, owner_subject, professor, laboratorio, ano, mes, semana_do_mes,
+             dia_semana, turno, periodo, disciplina, grupo_id)
+            VALUES ('ci-r1','ci-docente','Docente CI','Lab CI',2026,10,3,
+                    'Seg','matutino',1,NULL,'ci-grupo');
+          INSERT INTO sigad_reservation_audit
+            (revision,reservation_id,actor_subject,owner_subject,event_type,slot_after)
+            VALUES (1,'ci-r1','ci-docente','ci-docente','CREATED',
+                    '{"laboratorio":"Lab CI","periodo":1}');
+          SQL
+      - name: Dump as read-only role and restore into isolated test database
+        run: |
+          set -euo pipefail
+          file="$RUNNER_TEMP/sigad-test.dump"
+          # O runner Ubuntu traz pg_dump 16; usar client 17 igual ao servidor.
+          docker run --rm --network host -v "$RUNNER_TEMP:/artifacts" \
+            -e PGPASSWORD=sigad_backup_ci postgres:17 \
+            pg_dump -h 127.0.0.1 -U sigad_backup_ci -d sigad_test \
+            --format=custom --file=/artifacts/sigad-test.dump
+          docker run --rm -v "$RUNNER_TEMP:/artifacts" postgres:17 \
+            pg_restore --list /artifacts/sigad-test.dump >/dev/null
+          psql -h 127.0.0.1 -U sigad_test -d postgres -v ON_ERROR_STOP=1 \
+            -c 'CREATE DATABASE sigad_restore_ci'
+          docker run --rm --network host -v "$RUNNER_TEMP:/artifacts" \
+            -e PGPASSWORD=sigad_test postgres:17 \
+            pg_restore -h 127.0.0.1 -U sigad_test -d sigad_restore_ci \
+            --exit-on-error --single-transaction --no-owner --no-acl \
+            /artifacts/sigad-test.dump
+          restored=$(psql -h 127.0.0.1 -U sigad_test -d sigad_restore_ci \
+            -X -A -t -v ON_ERROR_STOP=1 -c "SELECT
+              (SELECT COUNT(*) FROM sigad_reservations)::text || ':' ||
+              (SELECT COUNT(*) FROM sigad_reservation_audit)::text || ':' ||
+              (SELECT value FROM sigad_reservation_revision WHERE id=1)::text")
+          test "$restored" = '1:1:1'
+          echo "Restoration drill succeeded: agenda, audit and revision restored."
+
