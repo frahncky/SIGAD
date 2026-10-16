@@ -1,16 +1,12 @@
 """Verifica autenticação, roles provisionados e JWT real assinado."""
-import json
 from datetime import datetime, timedelta, timezone
 
 import jwt
 from cryptography.hazmat.primitives.asymmetric import rsa
-from fastapi.testclient import TestClient
-from sqlalchemy import select
 
-from sigad_api.database import get_db
 from sigad_api.main import app
 from sigad_api.models import Member
-from sigad_api.security import get_principal, verify_token
+from sigad_api.security import get_principal
 from sigad_api import security
 from conftest import SessionForTest
 
