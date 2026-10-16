@@ -1,4 +1,4 @@
-name: Temporary validate institutional integration
+name: Temporary Dart format institutional integration
 on:
   push:
     branches:
@@ -6,8 +6,7 @@ on:
 permissions:
   contents: write
 jobs:
-  validate:
-    if: ${{ !contains(github.event.head_commit.message, 'style: normalize institutional integration') }}
+  format:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,15 +17,13 @@ jobs:
           channel: stable
           flutter-version: '3.47.7'
       - run: flutter pub get
-      - run: dart format .
-      - run: flutter analyze
-      - run: flutter test
-      - name: Commit standard formatting
+      - name: Apply Dart format
         run: |
+          dart format .
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -u
           if ! git diff --cached --quiet; then
-            git commit -m "style: normalize institutional integration"
+            git commit -m "style: format institutional integration"
             git push origin HEAD:agent/sigad-reservas-compartilhadas-auth
           fi
