@@ -40,6 +40,48 @@ o ciclo de renovação segura e o logout do provedor antes do uso em produção.
 O backend precisa impor autorizações em **cada** endpoint, sem confiar no papel
 escolhido ou em nomes informados pelo aplicativo.
 
+## Entrada institucional no Android e no iOS (Authorization Code + PKCE)
+
+O aplicativo possui agora uma integração nativa com AppAuth. No modo remoto
+exibe **Entrar com conta institucional** somente quando a configuração pública
+é completa e a plataforma é compatível; caso contrário, o botão fica
+desabilitado e nenhuma senha é solicitada no próprio SIGAD.
+
+A TI institucional deve cadastrar um **cliente público (sem client secret)**
+e verificar o suporte a OAuth 2.0 Authorization Code com PKCE S256.
+O identificador de aplicativo Android atual ainda é provisório
+(`com.example.sigad`) e **deve ser aprovado/substituído antes da produção**.
+
+| Parâmetro Flutter via `--dart-define` | Significado |
+|---|---|
+| `SIGAD_DATA_SOURCE=remote` | Exige autenticação remota |
+| `SIGAD_API_BASE_URL=https://...` | Backend SIGAD implantado |
+| `SIGAD_OIDC_ISSUER=https://...` | URL HTTPS do emissor oficial |
+| `SIGAD_OIDC_CLIENT_ID=...` | Identificador público registrado pela TI |
+| `SIGAD_OIDC_REDIRECT_URI=sigad-auth://callback` | Callback nativo **exato** |
+| `SIGAD_OIDC_API_SCOPE=...` | Escopo definido pela TI que produz access token para o backend SIGAD |
+
+O redirect `sigad-auth://callback` já está registrado no Android e no iOS.
+O esquema deve ser **registrado e aprovado** pelo IdP institucional antes do
+uso. Para alterá-lo, é necessário atualizar simultaneamente o código, o
+`AndroidManifest`/`build.gradle.kts`, o `Info.plist`, os testes e o
+cadastro no IdP. Não compartilhar identificadores de clientes ou callback
+com outros aplicativos não relacionados, pois esquemas privados podem
+ser interceptados; em produção, avaliar redirect App/Universal Links
+verificados e proteção adicional contra interceptação.
+
+O aplicativo solicita `openid`, `profile`, `email` e o escopo da API.
+O IdP devolve um **access token para a API**, e nunca um ID token utilizado
+como Bearer. O backend checa assinatura, `iss`, `aud`, `exp`, `iat`
+e autorização provisionada, no `GET /auth/me`. Não há perfil selecionável
+na entrada remota, nem token/refresh token salvo em SharedPreferences.
+Ao encerrar a sessão no aplicativo o token de acesso é descartado.
+**Logout federado completo e renovação de sessão pelo IdP exigem homologação
+adicional**, pois dependem dos endpoints e das políticas oficiais.
+
+Suporte nativo implementado para **Android 7+ e iOS 13+**; Web, Linux e
+Windows permanecem sem login institucional nesta etapa.
+
 ## Reservas compartilhadas
 
 Disponíveis somente com `SIGAD_DATA_SOURCE=remote`,

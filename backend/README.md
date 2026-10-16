@@ -63,9 +63,13 @@ Não há senha padrão, rota de login por senha nem usuário com acesso
 automático. Cada `sub` autorizado precisa estar na tabela
 `sigad_members` com `active=true`.
 
-O login no Flutter ainda depende de cliente oficial OIDC Authorization Code
-+ PKCE e aprovação do IFMA. Tokens JWT internos gerados para testes
-não representam autenticação de usuários reais.
+O Flutter agora inclui **cliente nativo OIDC Authorization Code + PKCE**
+para Android/iOS. A autenticação só fica habilitada após a configuração
+oficial do cliente, do emissor, do escopo de API e da URI de retorno com
+`--dart-define`. Veja [o cadastro do SSO](../docs/INTEGRACAO_INSTITUCIONAL.md).
+**Ainda dependem do IFMA** o cadastro oficial no IdP, a implantação da API,
+o provisionamento de membros/laboratórios e a homologação. Tokens JWT internos
+gerados para testes não representam autenticação de usuários reais.
 
 ## Regras de concorrência
 
@@ -99,8 +103,8 @@ com um PostgreSQL efêmero.
 
 ## Pendências para produção
 
-- Integração OIDC+PKCE do aplicativo, configuração e autorização do IdP
-  institucional (credenciais nunca versionadas).
+- Cadastro e homologação do cliente móvel OIDC+PKCE no IdP institucional,
+  configuração do fluxo de logout/renovação (sem versionar credenciais).
 - Confirmação oficial das permissões propostas e provisionamento de membros.
 - Cadastro verificado dos laboratórios, manutenção e políticas de reserva.
 - Backup, migrações operacionais, auditoria persistente, rate limiting,

@@ -1,0 +1,40 @@
+name: Android auth build
+on:
+  pull_request:
+    paths:
+      - 'lib/core/security/**'
+      - 'lib/features/login/**'
+      - 'android/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - '.github/workflows/android-auth-build.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'lib/core/security/**'
+      - 'lib/features/login/**'
+      - 'android/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - '.github/workflows/android-auth-build.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  debug-android-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.7'
+      - name: Resolve locked dependencies
+        run: flutter pub get --enforce-lockfile
+      - name: Verify native AppAuth registration
+        run: flutter build apk --debug --dart-define=SIGAD_DATA_SOURCE=remote
