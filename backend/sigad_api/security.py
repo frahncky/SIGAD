@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from functools import lru_cache
 
 import jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt import PyJWKClient
 from sqlalchemy.orm import Session
