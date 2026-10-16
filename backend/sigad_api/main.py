@@ -11,6 +11,7 @@ from .readiness import check_readiness
 from .reservations import list_reservations, replace_reservations
 from .schemas import MeRead, ReservationRead, ReservationWrite, RevisionRead
 from .security import Principal, get_principal, require_reservation_access, require_reservation_edit
+from .write_limits import enforce_write_limit
 
 app = FastAPI(
     title="SIGAD — Backend de Reservas",
@@ -71,4 +72,5 @@ def write_reservations(
     db: Session = Depends(get_db),
 ):
     require_reservation_edit(principal)
+    enforce_write_limit(db, principal)
     return replace_reservations(db, principal, payload)

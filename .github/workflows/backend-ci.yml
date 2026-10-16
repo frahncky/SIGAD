@@ -63,6 +63,12 @@ jobs:
             -f backend/migrations/003_operational_roles.sql
       - name: Verify backup and restore scripts syntax
         run: bash -n backend/ops/backup_homologacao.sh backend/ops/restore_homologacao.sh
+      - name: Apply shared write limiter migration and permissions
+        run: |
+          psql -h 127.0.0.1 -U sigad_test -d sigad_test \
+            -v ON_ERROR_STOP=1 -v app_role=sigad_app_ci \
+            -v backup_role=sigad_backup_ci \
+            -f backend/migrations/004_write_rate_limits.sql
       - name: Validate homologation Compose syntax (do not launch)
         env:
           SIGAD_HOMOLOGACAO_ENV_FILE: ${{ github.workspace }}/backend/.env.homologacao.example
@@ -78,7 +84,7 @@ jobs:
       - name: Seed disposable database for backup and restore drill
         run: |
           psql -h 127.0.0.1 -U sigad_test -d sigad_test -v ON_ERROR_STOP=1 <<'SQL'
-          TRUNCATE sigad_reservation_audit, sigad_reservations,
+          TRUNCATE sigad_write_rate_limits, sigad_reservation_audit, sigad_reservations,
             sigad_members, sigad_laboratories RESTART IDENTITY CASCADE;
           UPDATE sigad_reservation_revision SET value = 1 WHERE id = 1;
           INSERT INTO sigad_members(subject, role, active)
