@@ -23,7 +23,8 @@ class ReservaLimiteException implements Exception {
   const ReservaLimiteException();
 
   @override
-  String toString() => 'Muitas tentativas. Aguarde um minuto para salvar novamente.';
+  String toString() =>
+      'Muitas tentativas. Aguarde um minuto para salvar novamente.';
 }
 
 class ReservaRepository {

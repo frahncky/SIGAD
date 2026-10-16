@@ -121,25 +121,17 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   String _detalheAviso(_AvisoReserva aviso) {
     if (_emIngles) {
       return switch (aviso) {
-        _AvisoReserva.conflito =>
-          'Another user changed the schedule. Review the current slots before saving again.',
-        _AvisoReserva.limite =>
-          'Wait about one minute before saving again. Your changes were not confirmed.',
-        _AvisoReserva.conexao =>
-          'The server did not confirm your changes. Check the connection and refresh the schedule.',
-        _AvisoReserva.acesso =>
-          'Your session may have expired. Sign in again before changing reservations.',
+        _AvisoReserva.conflito => 'Another user changed the schedule. Review the current slots before saving again.',
+        _AvisoReserva.limite => 'Wait about one minute before saving again. Your changes were not confirmed.',
+        _AvisoReserva.conexao => 'The server did not confirm your changes. Check the connection and refresh the schedule.',
+        _AvisoReserva.acesso => 'Your session may have expired. Sign in again before changing reservations.',
       };
     }
     return switch (aviso) {
-      _AvisoReserva.conflito =>
-        'Outro usuário modificou os horários. Revise a agenda antes de salvar novamente.',
-      _AvisoReserva.limite =>
-        'Aguarde cerca de um minuto antes de salvar novamente. A alteração não foi confirmada.',
-      _AvisoReserva.conexao =>
-        'O servidor não confirmou a operação. Verifique a conexão e atualize a agenda.',
-      _AvisoReserva.acesso =>
-        'Sua sessão pode ter expirado. Entre novamente antes de alterar reservas.',
+      _AvisoReserva.conflito => 'Outro usuário modificou os horários. Revise a agenda antes de salvar novamente.',
+      _AvisoReserva.limite => 'Aguarde cerca de um minuto antes de salvar novamente. A alteração não foi confirmada.',
+      _AvisoReserva.conexao => 'O servidor não confirmou a operação. Verifique a conexão e atualize a agenda.',
+      _AvisoReserva.acesso => 'Sua sessão pode ter expirado. Entre novamente antes de alterar reservas.',
     };
   }
 
@@ -202,7 +194,8 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         stackTrace: stackTrace,
       );
       if (_reservaRepository.isShared) {
-        final aviso = error is ApiError &&
+        final aviso =
+            error is ApiError &&
                 (error.statusCode == 401 || error.statusCode == 403)
             ? _AvisoReserva.acesso
             : _AvisoReserva.conexao;
@@ -529,79 +522,81 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                             ),
                           ),
                         _FiltroLabRow(
-                        key: ValueKey(
-                          '${_laboratorios.join('|')}#$_laboratorioSelecionadoValido',
-                        ),
-                        laboratorioSelecionado: _laboratorioSelecionadoValido,
-                        laboratorios: _laboratorios,
-                        onChanged: (value) =>
-                            setState(() => _laboratorioSelecionado = value),
-                      ),
-                      if (_laboratorioAtual case final laboratorio?
-                          when laboratorio.status != StatusLaboratorio.operando)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 12),
-                          child: _AvisoSituacao(laboratorio: laboratorio),
-                        ),
-                      const SizedBox(height: 12),
-                      _SemanaNavegador(
-                        segunda: _segunda,
-                        onAnterior: () => _mudarSemana(-1),
-                        onProxima: () => _mudarSemana(1),
-                        onHoje: _irParaHoje,
-                        onEscolherData: _escolherData,
-                      ),
-                      const SizedBox(height: 16),
-                      if (_carregando)
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 48),
-                          child: Center(child: CircularProgressIndicator()),
-                        )
-                      else
-                        _AgendaSemanal(
-                          dias: _diasDaSemana,
-                          laboratorio: _laboratorioSelecionadoValido,
-                          reservas: _reservas,
-                          usuarioAtual: userContext.currentUser?.name,
-                          podeEditar: podeEditar && !_salvando && !_atualizando,
-                          onTapCelula: (data, turno, periodo, reservaAtual) =>
-                              _onTapCelula(
-                                data: data,
-                                turno: turno,
-                                periodo: periodo,
-                                reservaAtual: reservaAtual,
-                              ),
-                        ),
-                      if (podeVerOtimizacao && !_carregando) ...[
-                        const SizedBox(height: 20),
-                        Card(
-                          margin: EdgeInsets.zero,
-                          clipBehavior: Clip.antiAlias,
-                          child: ExpansionTile(
-                            leading: const SigadIcon(SigadIcons.analise),
-                            title: Text(_l10n.labSugestoes),
-                            subtitle: Text(_l10n.labSugestoesSub),
-                            childrenPadding: const EdgeInsets.fromLTRB(
-                              12,
-                              0,
-                              12,
-                              12,
-                            ),
-                            children: [
-                              _PainelOtimizacaoLaboratorio(
-                                indicadores: _indicadoresOcupacao,
-                                sugestoes: _sugestoesReserva,
-                                recomendacoesCruzadas: _recomendacoesCruzadas,
-                                laboratorioSelecionado:
-                                    _laboratorioSelecionadoValido,
-                                onAplicarSugestao: podeEditar
-                                    ? _reservarSugestaoAutomatica
-                                    : null,
-                              ),
-                            ],
+                          key: ValueKey(
+                            '${_laboratorios.join('|')}#$_laboratorioSelecionadoValido',
                           ),
+                          laboratorioSelecionado: _laboratorioSelecionadoValido,
+                          laboratorios: _laboratorios,
+                          onChanged: (value) =>
+                              setState(() => _laboratorioSelecionado = value),
                         ),
-                      ],
+                        if (_laboratorioAtual case final laboratorio?
+                            when laboratorio.status !=
+                                StatusLaboratorio.operando)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: _AvisoSituacao(laboratorio: laboratorio),
+                          ),
+                        const SizedBox(height: 12),
+                        _SemanaNavegador(
+                          segunda: _segunda,
+                          onAnterior: () => _mudarSemana(-1),
+                          onProxima: () => _mudarSemana(1),
+                          onHoje: _irParaHoje,
+                          onEscolherData: _escolherData,
+                        ),
+                        const SizedBox(height: 16),
+                        if (_carregando)
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 48),
+                            child: Center(child: CircularProgressIndicator()),
+                          )
+                        else
+                          _AgendaSemanal(
+                            dias: _diasDaSemana,
+                            laboratorio: _laboratorioSelecionadoValido,
+                            reservas: _reservas,
+                            usuarioAtual: userContext.currentUser?.name,
+                            podeEditar:
+                                podeEditar && !_salvando && !_atualizando,
+                            onTapCelula: (data, turno, periodo, reservaAtual) =>
+                                _onTapCelula(
+                                  data: data,
+                                  turno: turno,
+                                  periodo: periodo,
+                                  reservaAtual: reservaAtual,
+                                ),
+                          ),
+                        if (podeVerOtimizacao && !_carregando) ...[
+                          const SizedBox(height: 20),
+                          Card(
+                            margin: EdgeInsets.zero,
+                            clipBehavior: Clip.antiAlias,
+                            child: ExpansionTile(
+                              leading: const SigadIcon(SigadIcons.analise),
+                              title: Text(_l10n.labSugestoes),
+                              subtitle: Text(_l10n.labSugestoesSub),
+                              childrenPadding: const EdgeInsets.fromLTRB(
+                                12,
+                                0,
+                                12,
+                                12,
+                              ),
+                              children: [
+                                _PainelOtimizacaoLaboratorio(
+                                  indicadores: _indicadoresOcupacao,
+                                  sugestoes: _sugestoesReserva,
+                                  recomendacoesCruzadas: _recomendacoesCruzadas,
+                                  laboratorioSelecionado:
+                                      _laboratorioSelecionadoValido,
+                                  onAplicarSugestao: podeEditar
+                                      ? _reservarSugestaoAutomatica
+                                      : null,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ],
                     ],
                   ),
@@ -1858,10 +1853,8 @@ class _CelulaHorario extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final partes = horario.split('-');
-    final style = Theme.of(context).textTheme.labelMedium?.copyWith(
-      color: SigadColors.ink,
-      fontWeight: FontWeight.w700,
-    );
+    final style = Theme.of(context).textTheme.labelMedium
+        ?.copyWith(color: SigadColors.ink, fontWeight: FontWeight.w700);
     return Container(
       alignment: Alignment.center,
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
@@ -2271,17 +2264,15 @@ class _AccessDenied extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               context.l10n.labAcessoRestrito,
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+              style: Theme.of(context).textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 8),
             Text(
               context.l10n.labAcessoRestritoMsg,
               textAlign: TextAlign.center,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: SigadColors.muted),
             ),
           ],
         ),
@@ -2577,9 +2568,8 @@ class _AvisoSituacao extends StatelessWidget {
             Expanded(
               child: Text(
                 texto,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: SigadColors.ink),
+                style: Theme.of(context).textTheme.bodyMedium
+                    ?.copyWith(color: SigadColors.ink),
               ),
             ),
           ],

@@ -21,8 +21,7 @@ void main() {
             child: SingleChildScrollView(
               child: ReservaSyncNotice(
                 title: 'Agenda desatualizada',
-                message:
-                    'Outra pessoa modificou os horários. Confira antes de salvar.',
+                message: 'Outra pessoa modificou os horários. Confira antes de salvar.',
                 actionLabel: 'Atualizar agenda',
                 onRefresh: () => atualizacoes++,
               ),
@@ -57,7 +56,10 @@ void main() {
         ),
       ),
     );
-    expect(tester.widget<TextButton>(find.byType(TextButton)).onPressed, isNull);
+    expect(
+      tester.widget<TextButton>(find.byType(TextButton)).onPressed,
+      isNull,
+    );
     expect(atualizacoes, 0);
   });
 }
