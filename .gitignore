@@ -59,3 +59,9 @@ app.*.map.json
 
 # A referência pública não contém segredos; os arquivos reais continuam ignorados.
 !/backend/.env.homologacao.example
+
+# Backups, manifestos e arquivos de senha do PostgreSQL nunca entram no Git.
+/backend/**/*.dump
+/backend/**/*.dump.sha256
+/backend/backups/
+/backend/.pgpass
