@@ -8,6 +8,7 @@ import '../core/services/locale_provider.dart';
 import '../l10n/l10n.dart';
 import '../core/services/theme_provider.dart';
 import '../core/services/user_context_provider.dart';
+import '../core/services/greeting_name_provider.dart';
 import '../features/mural/presentation/state/mural_controller.dart';
 import 'routes/app_router.dart';
 import 'routes/app_routes.dart';
@@ -42,6 +43,10 @@ class SigadApp extends StatelessWidget {
           ChangeNotifierProvider<UserContextProvider>.value(
             value: userProvider,
           ),
+        ChangeNotifierProvider(
+          create: (context) =>
+              GreetingNameProvider(context.read<UserContextProvider>()),
+        ),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(create: (_) => MuralController()..carregar()),
         if (themeProviderValue == null)

@@ -12,6 +12,22 @@ class AppLocalizationsPt extends AppLocalizations {
   String get cancelar => 'Cancelar';
 
   @override
+  String get nomeSaudacao => 'Nome na saudação';
+
+  @override
+  String get nomeSaudacaoAjuda =>
+      'Somente neste dispositivo. Deixe vazio para usar o primeiro nome da conta.';
+
+  @override
+  String get nomeSaudacaoErro => 'Não foi possível salvar. Tente novamente.';
+
+  @override
+  String get nomeSaudacaoSalvo => 'Nome na saudação salvo.';
+
+  @override
+  String get nomeSaudacaoSalvando => 'Salvando…';
+
+  @override
   String get fechar => 'Fechar';
 
   @override
@@ -330,7 +346,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get proximasAtividades => 'Próximas atividades';
 
   @override
-  String get proximasAtividadesSub => 'Compromissos que ainda pedem atenção';
+  String get proximasAtividadesSub => 'Compromissos pendentes';
 
   @override
   String get nenhumaAtividadeAberta => 'Nenhuma atividade aberta.';
@@ -1043,4 +1059,2055 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get labOutrosHorarios => 'Reservar outros horários deste dia';
+
+  @override
+  String get paginaNaoEncontrada => 'Página não encontrada';
+
+  @override
+  String get paginaNaoEncontradaMensagem =>
+      'O endereço informado não corresponde a um módulo do SIGAD.';
+
+  @override
+  String get voltarVisaoGeral => 'Voltar à visão geral';
+
+  @override
+  String get maisCargaDocenteDesc => 'Planeje e acompanhe a carga horária.';
+
+  @override
+  String get maisProfessoresDesc => 'Gerencie docentes do departamento.';
+
+  @override
+  String get maisLaboratoriosDesc => 'Recursos, reservas e ocupação.';
+
+  @override
+  String get maisReunioes => 'Reuniões';
+
+  @override
+  String get maisReunioesDesc => 'Pautas, atas e participantes.';
+
+  @override
+  String get maisDemandasDesc => 'Acompanhe e gerencie solicitações.';
+
+  @override
+  String get maisNoticias => 'Notícias';
+
+  @override
+  String get maisNoticiasDesc => 'Comunicados e informativos.';
+
+  @override
+  String get maisRelatoriosDesc => 'Indicadores e dados do departamento.';
+
+  @override
+  String get maisCursos => 'Cursos';
+
+  @override
+  String get maisCursosDesc => 'Disciplinas e ofertas acadêmicas.';
+
+  @override
+  String get maisAdministracao => 'Administração';
+
+  @override
+  String get maisAgendaIntegrada => 'Agenda integrada';
+
+  @override
+  String get maisAgendaIntegradaDesc =>
+      'Visualize eventos e compromissos do departamento.';
+
+  @override
+  String get maisConfiguracoesDesc => 'Personalize preferências do aplicativo.';
+
+  @override
+  String get maisAjuda => 'Ajuda';
+
+  @override
+  String get maisAjudaDesc => 'Central de ajuda, tutoriais e suporte.';
+
+  @override
+  String get maisAvisosImportantes => 'Avisos importantes';
+
+  @override
+  String get maisNenhumAviso => 'Nenhum aviso no momento.';
+
+  @override
+  String get maisCentralAjuda => 'Central de ajuda';
+
+  @override
+  String get maisCentralAjudaMensagem =>
+      'Tutoriais e suporte estarão disponíveis em breve. Para dúvidas urgentes, abra um chamado com a equipe de TI do campus.';
+
+  @override
+  String get maisDepartamento => 'DEPARTAMENTO';
+
+  @override
+  String get maisVerTodosAvisos => 'Ver todos os avisos';
+
+  @override
+  String get maisPrecisaSuporte => 'Precisando de suporte?';
+
+  @override
+  String get maisFaleComTi => 'Fale com a equipe de TI do campus.';
+
+  @override
+  String get maisAbrirChamado => 'Abrir chamado';
+
+  @override
+  String get muralErroCarregar =>
+      'Não foi possível ler o mural salvo. A edição está bloqueada para não sobrescrever os dados.';
+
+  @override
+  String get muralFrases => 'Frases';
+
+  @override
+  String get muralAcessoNegado =>
+      'Somente a chefia do departamento pode gerenciar o mural.';
+
+  @override
+  String get muralNovoAviso => 'Novo aviso';
+
+  @override
+  String get muralNenhumAviso =>
+      'Nenhum aviso cadastrado.\nSem avisos, o painel mostra só as boas-vindas.';
+
+  @override
+  String get muralDesativado => 'Desativado';
+
+  @override
+  String get muralAgendado => 'Agendado';
+
+  @override
+  String get muralEncerrado => 'Encerrado';
+
+  @override
+  String get muralNoAr => 'No ar';
+
+  @override
+  String get muralTodosPerfis => 'Todos os perfis';
+
+  @override
+  String get muralFixado => 'Fixado';
+
+  @override
+  String get muralModeloInformativo => 'Informativo';
+
+  @override
+  String get muralModeloImportante => 'Importante';
+
+  @override
+  String get muralModeloEvento => 'Evento';
+
+  @override
+  String get muralModeloLembrete => 'Lembrete';
+
+  @override
+  String get muralExibirAPartirDe => 'Exibir a partir de';
+
+  @override
+  String get muralExibirAte => 'Exibir até';
+
+  @override
+  String get muralDataFinalInvalida =>
+      'A data final deve ser igual ou posterior à inicial.';
+
+  @override
+  String get muralAvisoPublicado => 'Aviso publicado.';
+
+  @override
+  String get muralErroSalvarAviso => 'Não foi possível salvar o aviso.';
+
+  @override
+  String get muralExcluirAvisoTitulo => 'Excluir aviso?';
+
+  @override
+  String muralExcluirAvisoMensagem(String titulo) {
+    return '\"$titulo\" deixará de aparecer.';
+  }
+
+  @override
+  String get muralAvisoExcluido => 'Aviso excluído.';
+
+  @override
+  String get muralErroExcluirAviso => 'Não foi possível excluir o aviso.';
+
+  @override
+  String get muralEditarAviso => 'Editar aviso';
+
+  @override
+  String get muralModelo => 'Modelo';
+
+  @override
+  String get muralTitulo => 'Título';
+
+  @override
+  String get muralInformeTitulo => 'Informe o título do aviso.';
+
+  @override
+  String get muralConteudo => 'Conteúdo';
+
+  @override
+  String get muralConteudoDica =>
+      'Escreva o aviso completo para o departamento.';
+
+  @override
+  String get muralInformeConteudo => 'Escreva o conteúdo do aviso.';
+
+  @override
+  String get muralQuemVe => 'Quem vê';
+
+  @override
+  String get muralTodos => 'Todos';
+
+  @override
+  String get muralPeriodoExibicao => 'Período de exibição';
+
+  @override
+  String get muralAPartirDe => 'A partir de';
+
+  @override
+  String get muralImediatamente => 'Imediatamente';
+
+  @override
+  String get muralLimparDataInicial => 'Limpar data inicial';
+
+  @override
+  String get muralAte => 'Até';
+
+  @override
+  String get muralSemDataSair => 'Sem data para sair';
+
+  @override
+  String get muralLimparDataFinal => 'Limpar data final';
+
+  @override
+  String get muralFixarTopo => 'Fixar no topo';
+
+  @override
+  String get muralFixarTopoSub => 'Aparece antes dos outros avisos.';
+
+  @override
+  String get muralAtivo => 'Ativo';
+
+  @override
+  String get muralAtivoSub => 'Desative para esconder sem excluir.';
+
+  @override
+  String get muralPreviaPainel => 'Pré-visualização no painel';
+
+  @override
+  String get muralPreviaAvisoSub =>
+      'É assim que o aviso aparece no card do topo para quem pode vê-lo.';
+
+  @override
+  String get muralPreviaTitulo => 'Título do aviso';
+
+  @override
+  String get muralPreviaConteudo => 'O conteúdo do aviso aparece aqui.';
+
+  @override
+  String get muralPublicarAviso => 'Publicar aviso';
+
+  @override
+  String get muralExcluirAviso => 'Excluir aviso';
+
+  @override
+  String get muralNovaFrase => 'Nova frase';
+
+  @override
+  String get muralEditarFrase => 'Editar frase';
+
+  @override
+  String get muralTrocarFrase => 'Trocar a frase';
+
+  @override
+  String get muralPeriodoDiaria => 'Todo dia';
+
+  @override
+  String get muralPeriodoSemanal => 'Toda semana';
+
+  @override
+  String get muralPeriodoQuinzenal => 'A cada 15 dias';
+
+  @override
+  String get muralPeriodoMensal => 'Todo mês';
+
+  @override
+  String get muralErroFrequencia => 'Não foi possível salvar a frequência.';
+
+  @override
+  String get muralFraseEmExibicao => 'Frase em exibição';
+
+  @override
+  String get muralNenhumaFrase => 'Nenhuma frase ativa.';
+
+  @override
+  String muralFrasesLista(int count) {
+    return 'Frases ($count) — entram em rodízio as ativas';
+  }
+
+  @override
+  String get muralFraseAtivaRodizio => 'Frase ativa no rodízio';
+
+  @override
+  String get muralExcluirFrase => 'Excluir frase';
+
+  @override
+  String get muralExcluirFraseTitulo => 'Excluir frase?';
+
+  @override
+  String get muralErroSalvarFrase => 'Não foi possível salvar a frase.';
+
+  @override
+  String get muralErroExcluirFrase => 'Não foi possível excluir a frase.';
+
+  @override
+  String get muralFrase => 'Frase';
+
+  @override
+  String get muralFraseDica => 'Escreva uma frase curta e motivadora.';
+
+  @override
+  String get muralEscrevaFrase => 'Escreva a frase.';
+
+  @override
+  String get muralPreviaFraseSub =>
+      'É assim que a frase aparece no card de boas-vindas.';
+
+  @override
+  String get muralPreviaFrase => 'A frase aparece aqui.';
+
+  @override
+  String get muralSalvarFrase => 'Salvar frase';
+
+  @override
+  String get calAgendaCompleta => 'Agenda completa';
+
+  @override
+  String get calResumoSemana => 'Resumo da semana';
+
+  @override
+  String calPeriodoSemana(String inicio, String fim) {
+    return '$inicio a $fim';
+  }
+
+  @override
+  String get calVerAgenda => 'Ver agenda';
+
+  @override
+  String get calEventosAgendados => 'Eventos agendados';
+
+  @override
+  String get calReservasLaboratorio => 'Reservas de laboratório';
+
+  @override
+  String get calReuniaoMarcada => 'Reunião marcada';
+
+  @override
+  String get calDepartamento => 'Departamento';
+
+  @override
+  String get calTipoItem => 'Tipo de item';
+
+  @override
+  String get calTodos => 'Todos';
+
+  @override
+  String get calReuniao => 'Reunião';
+
+  @override
+  String get calLaboratorio => 'Laboratório';
+
+  @override
+  String get calComunicacao => 'Comunicação';
+
+  @override
+  String get calToqueParaAlterar => 'Toque para alterar';
+
+  @override
+  String calAulaPratica(String disciplina) {
+    return 'Aula prática – $disciplina';
+  }
+
+  @override
+  String get calReservaLaboratorio => 'Reserva de laboratório';
+
+  @override
+  String calReservaDe(String laboratorio) {
+    return 'Reserva: $laboratorio';
+  }
+
+  @override
+  String calResponsavel(String professor) {
+    return 'Responsável: $professor';
+  }
+
+  @override
+  String get calProximosCompromissos => 'Próximos compromissos';
+
+  @override
+  String get calVerTodos => 'Ver todos';
+
+  @override
+  String get calNenhumaReservaFutura => 'Nenhuma reserva futura encontrada.';
+
+  @override
+  String get calAgendaDoDia => 'Agenda do dia';
+
+  @override
+  String get calVerAgendaCompleta => 'Ver agenda completa';
+
+  @override
+  String get calNenhumCompromisso => 'Nenhum compromisso neste dia.';
+
+  @override
+  String get calOcupacaoHoje => 'Ocupação dos laboratórios (hoje)';
+
+  @override
+  String get calNenhumaReserva => 'Nenhuma reserva cadastrada.';
+
+  @override
+  String calHorariosReservados(int horas, int total) {
+    return '$horas de $total horários reservados na semana';
+  }
+
+  @override
+  String get calMesAnterior => 'Mês anterior';
+
+  @override
+  String get calProximoMes => 'Próximo mês';
+
+  @override
+  String get calHoje => 'hoje';
+
+  @override
+  String calFeriado(String nome) {
+    return 'feriado: $nome';
+  }
+
+  @override
+  String calEventos(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count eventos',
+      one: '1 evento',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notaGeral => 'Geral';
+
+  @override
+  String get notaReunioes => 'Reuniões';
+
+  @override
+  String get notaPlanejamento => 'Planejamento';
+
+  @override
+  String get notaCargaHoraria => 'Carga horária';
+
+  @override
+  String get notaEventos => 'Eventos';
+
+  @override
+  String get notaTodas => 'Todas';
+
+  @override
+  String get notaNova => 'Nova anotação';
+
+  @override
+  String get notaEditar => 'Editar anotação';
+
+  @override
+  String get notaExcluir => 'Excluir anotação';
+
+  @override
+  String get notaExcluirMensagem =>
+      'Tem certeza que deseja excluir esta anotação?';
+
+  @override
+  String get notaDica => 'Registre uma ideia, encaminhamento ou lembrete...';
+
+  @override
+  String get notaCategoria => 'Categoria';
+
+  @override
+  String get notaGerenciarFixadas => 'Gerenciar fixadas';
+
+  @override
+  String get notaNenhumaCriada => 'Nenhuma anotação criada ainda.';
+
+  @override
+  String get notaBuscar => 'Buscar anotações, reuniões, temas...';
+
+  @override
+  String get notaFixadas => 'Fixadas';
+
+  @override
+  String get notaTodasAnotacoes => 'Todas as anotações';
+
+  @override
+  String get notaMaisRecentes => 'Mais recentes';
+
+  @override
+  String get notaMaisAntigas => 'Mais antigas';
+
+  @override
+  String notaOrdenarPor(String ordem) {
+    return 'Ordenar por: $ordem';
+  }
+
+  @override
+  String get notaNenhumaEncontrada => 'Nenhuma anotação encontrada.';
+
+  @override
+  String get notaVazio => 'Nenhuma anotação. Toque em \"+\" para criar.';
+
+  @override
+  String get notaVazioDica =>
+      'Use este espaço para registrar encaminhamentos, ideias e lembretes rápidos.';
+
+  @override
+  String get notaCriarPrimeira => 'Criar primeira anotação';
+
+  @override
+  String get notaDesafixar => 'Desafixar';
+
+  @override
+  String get notaFixar => 'Fixar anotação';
+
+  @override
+  String notaDataHora(String dia, String mes, String hora) {
+    return '$dia/$mes às $hora';
+  }
+
+  @override
+  String get chatFacaLogin => 'Faça login para acessar o bate-papo.';
+
+  @override
+  String get chatNenhumUsuario => 'Nenhum usuário disponível para conversa.';
+
+  @override
+  String get chatConversas => 'Conversas';
+
+  @override
+  String get chatNovaConversa => 'Nova conversa';
+
+  @override
+  String get chatBuscarConversa => 'Buscar conversa';
+
+  @override
+  String get chatLimparBusca => 'Limpar busca';
+
+  @override
+  String get chatNenhumaEncontrada => 'Nenhuma conversa encontrada.';
+
+  @override
+  String get chatNenhumaAinda =>
+      'Nenhuma conversa ainda.\nToque em ✏️ para iniciar.';
+
+  @override
+  String get chatNenhumaMensagem => 'Nenhuma mensagem ainda.';
+
+  @override
+  String get chatDigiteMensagem => 'Digite sua mensagem';
+
+  @override
+  String get chatEnviar => 'Enviar';
+
+  @override
+  String get chatVoltar => 'Voltar às conversas';
+
+  @override
+  String get chatSelecione => 'Selecione uma conversa\nou inicie uma nova';
+
+  @override
+  String get chatBuscarContato => 'Buscar por nome, e-mail ou cargo';
+
+  @override
+  String get chatNenhumContato => 'Nenhum contato encontrado.';
+
+  @override
+  String chatDiaMes(String dia, String mes) {
+    return '$dia/$mes';
+  }
+
+  @override
+  String get demErroCarregar => 'Não foi possível carregar as demandas.';
+
+  @override
+  String get demErroCarregarTitulo => 'Não foi possível carregar os dados';
+
+  @override
+  String get demErroSalvar =>
+      'Não foi possível salvar a demanda. Seus dados foram mantidos. Tente novamente.';
+
+  @override
+  String get demBuscar => 'Buscar demandas';
+
+  @override
+  String get demBuscarDica => 'Pesquise por título, descrição ou responsável';
+
+  @override
+  String get demBuscarExemplo => 'Título, descrição ou responsável';
+
+  @override
+  String demFiltrosAtivos(int count) {
+    return 'Filtros ativos: $count';
+  }
+
+  @override
+  String get demFiltrar => 'Filtrar demandas';
+
+  @override
+  String get demCarregando => 'Carregando demandas...';
+
+  @override
+  String get demNenhuma => 'Nenhuma demanda encontrada';
+
+  @override
+  String get demLimparFiltrosDica => 'Tente limpar os filtros ativos.';
+
+  @override
+  String get demCrieNova => 'Crie uma nova demanda para começar.';
+
+  @override
+  String get demLimparFiltros => 'Limpar filtros';
+
+  @override
+  String get demCriarNova => 'Criar nova demanda';
+
+  @override
+  String get demFiltros => 'Filtros';
+
+  @override
+  String get demFecharFiltros => 'Fechar filtros';
+
+  @override
+  String get demStatus => 'Status';
+
+  @override
+  String get demPrioridade => 'Prioridade';
+
+  @override
+  String get demOrdenacao => 'Ordenação';
+
+  @override
+  String get demLimpar => 'Limpar';
+
+  @override
+  String get demAplicar => 'Aplicar';
+
+  @override
+  String get demNova => 'Nova Demanda';
+
+  @override
+  String get demEditar => 'Editar Demanda';
+
+  @override
+  String get demFecharFormulario => 'Fechar formulário da demanda';
+
+  @override
+  String get demTitulo => 'Título';
+
+  @override
+  String get demTituloDica => 'Digite o título da demanda';
+
+  @override
+  String get demDescricao => 'Descrição';
+
+  @override
+  String get demDescricaoDica => 'Descreva a demanda em detalhes';
+
+  @override
+  String get demProprietario => 'Proprietário';
+
+  @override
+  String get demStatusInicial => 'Status inicial';
+
+  @override
+  String get demCriar => 'Criar';
+
+  @override
+  String get demSalvando => 'Salvando...';
+
+  @override
+  String get demCriada => 'Demanda criada com sucesso!';
+
+  @override
+  String get demAtualizada => 'Demanda atualizada com sucesso!';
+
+  @override
+  String get demExcluida => 'Demanda excluída com sucesso!';
+
+  @override
+  String get demConfirmarExclusao => 'Confirmar exclusão';
+
+  @override
+  String demExcluirMensagem(String titulo) {
+    return 'Tem certeza que deseja excluir $titulo?';
+  }
+
+  @override
+  String get demSemPermissaoCriar =>
+      'Seu perfil não possui permissão para criar demandas.';
+
+  @override
+  String get demSemPermissaoEditar =>
+      'Seu perfil não possui permissão para editar demandas.';
+
+  @override
+  String get demSemPermissaoExcluir =>
+      'Seu perfil não possui permissão para excluir demandas.';
+
+  @override
+  String get demInformeTitulo => 'Informe o título da demanda';
+
+  @override
+  String get demInformeDescricao => 'Informe a descrição da demanda';
+
+  @override
+  String get demResumo => 'Resumo das demandas';
+
+  @override
+  String get demNoTotal => 'No total';
+
+  @override
+  String get demAbertas => 'Abertas';
+
+  @override
+  String get demUrgentes => 'Urgentes';
+
+  @override
+  String get demEditarAcao => 'Editar';
+
+  @override
+  String demAbrir(String titulo) {
+    return 'Abrir demanda $titulo';
+  }
+
+  @override
+  String get demFecharDetalhes => 'Fechar detalhes da demanda';
+
+  @override
+  String get demPrazo => 'Prazo';
+
+  @override
+  String get demTodas => 'Todas';
+
+  @override
+  String get demStatusNovo => 'Novo';
+
+  @override
+  String get demStatusEmAndamento => 'Em andamento';
+
+  @override
+  String get demStatusAguardando => 'Aguardando';
+
+  @override
+  String get demStatusRevisao => 'Revisão';
+
+  @override
+  String get demStatusConcluido => 'Concluído';
+
+  @override
+  String get demPrioridadeAlta => 'Alta';
+
+  @override
+  String get demPrioridadeMedia => 'Média';
+
+  @override
+  String get demPrioridadeBaixa => 'Baixa';
+
+  @override
+  String get demOrdemPrazo => 'Prazo mais próximo';
+
+  @override
+  String get demOrdemRecentes => 'Recém-criadas';
+
+  @override
+  String get tarErroCarregar =>
+      'Não foi possível carregar o quadro de tarefas.';
+
+  @override
+  String get tarNovoCard => 'Novo card';
+
+  @override
+  String get tarCarregando => 'Carregando quadro de tarefas...';
+
+  @override
+  String get tarNenhumCard => 'Nenhum card criado';
+
+  @override
+  String get tarNenhumCardDica =>
+      'Toque no + para adicionar o primeiro card ao quadro.';
+
+  @override
+  String get tarCriarCard => 'Criar card';
+
+  @override
+  String get tarArrasteDica =>
+      'Arraste lateralmente para navegar entre as colunas do quadro.';
+
+  @override
+  String tarExcluirCardMensagem(String titulo) {
+    return 'Deseja excluir o card \"$titulo\"?';
+  }
+
+  @override
+  String tarCardRemovido(String titulo) {
+    return 'Card \"$titulo\" removido';
+  }
+
+  @override
+  String get tarTituloDica => 'Digite o título do card';
+
+  @override
+  String get tarColuna => 'Coluna';
+
+  @override
+  String get tarCardCriado => 'Card criado com sucesso!';
+
+  @override
+  String get tarSolteAqui => 'Solte aqui';
+
+  @override
+  String tarCardSemantica(String titulo, String prioridade) {
+    return 'Card: $titulo. Prioridade $prioridade.';
+  }
+
+  @override
+  String get tarMaisAcoes => 'Mais ações do card';
+
+  @override
+  String tarId(String id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String tarColunaValor(String coluna) {
+    return 'Coluna: $coluna';
+  }
+
+  @override
+  String tarPrioridadeValor(String prioridade) {
+    return 'Prioridade: $prioridade';
+  }
+
+  @override
+  String get tarExcluirEsteCard => 'Tem certeza que deseja excluir este card?';
+
+  @override
+  String get tarInformeTitulo => 'Informe o título do card';
+
+  @override
+  String get tarColunaBacklog => 'Backlog';
+
+  @override
+  String get tarColunaEmProgresso => 'Em Progresso';
+
+  @override
+  String get tarColunaEmRevisao => 'Em Revisão';
+
+  @override
+  String get tarColunaConcluido => 'Concluído';
+
+  @override
+  String get atvFiltrar => 'Filtrar atividades';
+
+  @override
+  String get atvFecharFiltro => 'Fechar filtro';
+
+  @override
+  String get atvErroCarregar => 'Não foi possível carregar as atividades.';
+
+  @override
+  String get atvBuscarDica => 'Buscar por título, descrição ou responsável';
+
+  @override
+  String get atvCarregando => 'Carregando atividades...';
+
+  @override
+  String get atvNenhuma => 'Nenhuma atividade encontrada';
+
+  @override
+  String get atvNenhumaDica => 'Ajuste os filtros ou crie uma nova atividade.';
+
+  @override
+  String get atvCriarNova => 'Criar nova atividade';
+
+  @override
+  String get atvNova => 'Nova Atividade';
+
+  @override
+  String get atvEditar => 'Editar Atividade';
+
+  @override
+  String get atvFecharFormulario => 'Fechar formulário';
+
+  @override
+  String get atvTituloDica => 'Digite o título da atividade';
+
+  @override
+  String get atvDescricaoDica => 'Descreva a atividade em detalhes';
+
+  @override
+  String get atvResponsavel => 'Responsável';
+
+  @override
+  String get atvCriada => 'Atividade criada com sucesso!';
+
+  @override
+  String get atvAtualizada => 'Atividade atualizada com sucesso!';
+
+  @override
+  String get atvExcluida => 'Atividade excluída com sucesso!';
+
+  @override
+  String get atvAgendaOperacional => 'Agenda operacional';
+
+  @override
+  String get atvConcluidas => 'Concluídas';
+
+  @override
+  String get atvPendentes => 'Pendentes';
+
+  @override
+  String atvAbrir(String titulo) {
+    return 'Abrir atividade $titulo';
+  }
+
+  @override
+  String get atvMaisAcoes => 'Mais ações da atividade';
+
+  @override
+  String get atvFecharDetalhes => 'Fechar detalhes da atividade';
+
+  @override
+  String get atvData => 'Data';
+
+  @override
+  String get atvInformeTitulo => 'Informe o título da atividade';
+
+  @override
+  String get atvInformeDescricao => 'Informe a descrição da atividade';
+
+  @override
+  String get atvStatusConcluida => 'Concluída';
+
+  @override
+  String get atvStatusEmProgresso => 'Em progresso';
+
+  @override
+  String get atvStatusAgendada => 'Agendada';
+
+  @override
+  String get atvStatusPendente => 'Pendente';
+
+  @override
+  String get relErroCarregar => 'Não foi possível carregar os relatórios.';
+
+  @override
+  String relBaixado(String titulo) {
+    return 'Relatório baixado: $titulo';
+  }
+
+  @override
+  String relLinkGerado(String titulo) {
+    return 'Link de compartilhamento gerado para $titulo';
+  }
+
+  @override
+  String get relBuscarDica => 'Buscar por título, descrição ou autor';
+
+  @override
+  String get relArrasteDica => 'Arraste lateralmente para ver todos os status.';
+
+  @override
+  String get relDisponiveisConsulta => 'relatórios disponíveis para consulta';
+
+  @override
+  String get relCarregando => 'Carregando relatórios...';
+
+  @override
+  String get relNenhum => 'Nenhum relatório encontrado';
+
+  @override
+  String get relNenhumDica => 'Ajuste os filtros para visualizar resultados.';
+
+  @override
+  String get relSemPermissao =>
+      'Seu perfil não possui permissão para relatórios.';
+
+  @override
+  String get relAcessoNegado => 'Acesso não permitido para este perfil.';
+
+  @override
+  String get relCentral => 'Central de relatórios';
+
+  @override
+  String get relDisponiveis => 'Disponíveis';
+
+  @override
+  String get relPublicados => 'Publicados';
+
+  @override
+  String get relEmRevisao => 'Em revisão';
+
+  @override
+  String relVer(String titulo) {
+    return 'Ver relatório $titulo';
+  }
+
+  @override
+  String get relMaisAcoes => 'Mais ações do relatório';
+
+  @override
+  String get relVisualizar => 'Visualizar';
+
+  @override
+  String get relBaixarPdf => 'Baixar PDF';
+
+  @override
+  String get relCompartilhar => 'Compartilhar';
+
+  @override
+  String get relFecharDetalhes => 'Fechar detalhes do relatório';
+
+  @override
+  String get relTipo => 'Tipo de relatório';
+
+  @override
+  String get relAutor => 'Autor';
+
+  @override
+  String get relDownloads => 'Downloads';
+
+  @override
+  String get relCompartilhamentos => 'Compartilhamentos';
+
+  @override
+  String get relStatusTodos => 'Todos';
+
+  @override
+  String get relStatusPublicado => 'Publicado';
+
+  @override
+  String get relStatusAgendado => 'Agendado';
+
+  @override
+  String get relStatusDisponivel => 'Disponível';
+
+  @override
+  String get relTipoAnaliseGeral => 'Análise Geral';
+
+  @override
+  String get relTipoRecursosHumanos => 'Recursos Humanos';
+
+  @override
+  String get relTipoDesempenho => 'Desempenho';
+
+  @override
+  String get relTipoInfraestrutura => 'Infraestrutura';
+
+  @override
+  String get relTipoConformidade => 'Conformidade';
+
+  @override
+  String get relPdfBaixadoAgora => 'PDF baixado agora';
+
+  @override
+  String get relCompartilhadoAgora => 'Compartilhado agora';
+
+  @override
+  String get cdBuscarDocente =>
+      'Buscar docente por nome, e-mail ou departamento';
+
+  @override
+  String get cdOrdemCrescente => 'Ordem crescente';
+
+  @override
+  String get cdOrdemDecrescente => 'Ordem decrescente';
+
+  @override
+  String get cdNenhumDocente => 'Nenhum docente encontrado';
+
+  @override
+  String get cdAdicionarDocente => 'Adicionar docente';
+
+  @override
+  String get cdNovoDocente => 'Novo Docente';
+
+  @override
+  String get cdEditarDocente => 'Editar Docente';
+
+  @override
+  String get cdAdicionar => 'Adicionar';
+
+  @override
+  String get cdDocenteAdicionado => 'Docente adicionado com sucesso!';
+
+  @override
+  String get cdDocenteAtualizado => 'Docente atualizado com sucesso!';
+
+  @override
+  String get cdDocenteExcluido => 'Docente excluído com sucesso!';
+
+  @override
+  String get cdFecharFormulario => 'Fechar formulário do docente';
+
+  @override
+  String get cdNomeCompleto => 'Nome Completo';
+
+  @override
+  String get cdNomeDica => 'Digite o nome do docente';
+
+  @override
+  String get cdEmailAcesso => 'Email de acesso';
+
+  @override
+  String get cdDepartamento => 'Departamento';
+
+  @override
+  String get cdDepartamentoDica => 'Digite o departamento';
+
+  @override
+  String get cdCargaMaxima => 'Carga Horária Máxima Semanal (horas)';
+
+  @override
+  String get cdRegimeEbtt => 'Regime EBTT';
+
+  @override
+  String cdRegimeOpcao(String label, String code) {
+    return '$label ($code)';
+  }
+
+  @override
+  String cdDistribuicaoAulasSemana(int horas) {
+    return 'Distribuição em aulas: ${horas}h/sem';
+  }
+
+  @override
+  String cdRegimeLimite(String code, int limite) {
+    return 'Regime $code: limite legal semanal de ${limite}h na carreira EBTT. Pesquisa, extensão e gestão continuam dependentes da normativa interna da instituição.';
+  }
+
+  @override
+  String get cdDisciplinas => 'Disciplinas';
+
+  @override
+  String get cdHorariosAula => 'Horários de Aula';
+
+  @override
+  String get cdNenhumHorario => 'Nenhum horário cadastrado';
+
+  @override
+  String cdHorasSemana(int horas) {
+    return '${horas}h/sem';
+  }
+
+  @override
+  String cdCargaDistribuida(int horas) {
+    return 'Carga distribuída em aulas: ${horas}h/sem';
+  }
+
+  @override
+  String get cdAdicionarDisciplina => 'Adicionar Disciplina';
+
+  @override
+  String get cdNomeDisciplina => 'Nome da Disciplina';
+
+  @override
+  String get cdExemploDisciplina => 'Ex: Programação I';
+
+  @override
+  String get cdAdicionarHorario => 'Adicionar Horário';
+
+  @override
+  String get cdDiaSemana => 'Dia da Semana';
+
+  @override
+  String get cdInicio => 'Início';
+
+  @override
+  String get cdFim => 'Fim';
+
+  @override
+  String get cdDisciplina => 'Disciplina';
+
+  @override
+  String get cdCargaHoraria => 'Carga Horária';
+
+  @override
+  String get cdExemploCarga => 'Ex: 2h/sem · 80h';
+
+  @override
+  String get cdTurma => 'Turma';
+
+  @override
+  String get cdModalidade => 'Modalidade';
+
+  @override
+  String cdExcluirMensagem(String nome) {
+    return 'Tem certeza que deseja excluir $nome?';
+  }
+
+  @override
+  String get cdSugestaoEquilibrada =>
+      'A distribuição atual está equilibrada. Priorize acompanhamento quinzenal e ajuste fino por disciplina.';
+
+  @override
+  String cdSugestaoPressao(String nomes) {
+    return 'Docentes com maior pressão: $nomes. Considere redistribuir turmas práticas e orientações para reduzir risco de sobrecarga.';
+  }
+
+  @override
+  String cdSugestaoOciosa(String nomes) {
+    return 'Há capacidade ociosa com $nomes. Priorize alocação de componentes compartilhados e reforço em horários de laboratório.';
+  }
+
+  @override
+  String get cdSugestaoRevisao =>
+      'Programe revisão semanal conjunta entre coordenação e laboratórios para reduzir conflitos de agenda e janelas vazias.';
+
+  @override
+  String cdRedistribuicoesAplicadas(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count redistribuições aplicadas com sucesso.',
+      one: '1 redistribuição aplicada com sucesso.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cdMaisAcoes => 'Mais ações do docente';
+
+  @override
+  String cdRegimeDocente(String label, String code) {
+    return 'Regime EBTT: $label ($code)';
+  }
+
+  @override
+  String cdDistribuicaoAulas(int horas, int maximo) {
+    return 'Distribuição em aulas: ${horas}h/${maximo}h';
+  }
+
+  @override
+  String get cdOtimizacao => 'Otimização da distribuição';
+
+  @override
+  String get cdSimular => 'Simular';
+
+  @override
+  String get cdAproveitamentoMedio =>
+      'de aproveitamento médio da carga horária';
+
+  @override
+  String get cdOcupacaoMedia => 'Ocupação média';
+
+  @override
+  String get cdAltaCarga => 'Alta carga (>=90%)';
+
+  @override
+  String get cdBaixaCarga => 'Baixa carga (<=50%)';
+
+  @override
+  String get cdSimulacao => 'Simulação de redistribuição';
+
+  @override
+  String cdOcupacaoPrevista(String antes, String depois) {
+    return 'Ocupação média prevista: $antes% -> $depois%';
+  }
+
+  @override
+  String get cdNenhumaRedistribuicao =>
+      'Nenhuma redistribuição segura foi encontrada para o cenário atual.';
+
+  @override
+  String get cdAplicarSugestao => 'Aplicar sugestão';
+
+  @override
+  String get cdAcessoRestrito => 'Acesso restrito';
+
+  @override
+  String get cdAcessoRestritoMensagem =>
+      'Somente docentes, coordenação e chefia podem acessar esta área.';
+
+  @override
+  String get cdAgendaDocente => 'Agenda do docente';
+
+  @override
+  String get cdDistribuicaoSemanal => 'Distribuição semanal';
+
+  @override
+  String get cdConviteReuniao => 'Convite para reunião';
+
+  @override
+  String get cdConviteEnviadoAgenda => 'Convite enviado via agenda do SIGAD.';
+
+  @override
+  String get cdEnviarConviteReuniao => 'Enviar convite de reunião';
+
+  @override
+  String get cdTituloConvite => 'Título do convite';
+
+  @override
+  String get cdTituloConviteDica => 'Ex: Reunião de alinhamento';
+
+  @override
+  String get cdDescricaoConviteDica => 'Detalhes do convite';
+
+  @override
+  String get cdLocal => 'Local';
+
+  @override
+  String get cdLocalDica => 'Sala 12 ou Online';
+
+  @override
+  String get cdHorarioInvalido =>
+      'Não foi possível interpretar o horário da célula.';
+
+  @override
+  String get cdInformeTituloConvite => 'Informe o título do convite.';
+
+  @override
+  String get cdInformeLocalConvite => 'Informe o local do convite.';
+
+  @override
+  String get cdConviteEnviado =>
+      'Convite enviado com sucesso para a agenda do docente.';
+
+  @override
+  String get cdEnviarConvite => 'Enviar convite';
+
+  @override
+  String get cdAgendaSemanal => 'Agenda semanal';
+
+  @override
+  String cdSemanaDe(String semana, String mes) {
+    return '$semana de $mes';
+  }
+
+  @override
+  String cdIntervalo(String inicio, String fim) {
+    return '$inicio a $fim';
+  }
+
+  @override
+  String cdDiaSelecionado(int dia, String abreviado, String completo) {
+    return 'Dia selecionado: $dia ($abreviado - $completo)';
+  }
+
+  @override
+  String cdMes(String mes) {
+    String _temp0 = intl.Intl.selectLogic(mes, {
+      '1': 'Janeiro',
+      '2': 'Fevereiro',
+      '3': 'Março',
+      '4': 'Abril',
+      '5': 'Maio',
+      '6': 'Junho',
+      '7': 'Julho',
+      '8': 'Agosto',
+      '9': 'Setembro',
+      '10': 'Outubro',
+      '11': 'Novembro',
+      'other': 'Dezembro',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get cdDiaSab => 'Sab';
+
+  @override
+  String get cdDiaDom => 'Dom';
+
+  @override
+  String get cdDiaSabado => 'sábado';
+
+  @override
+  String get cdDiaDomingo => 'domingo';
+
+  @override
+  String get cdTurnoCurtoM => 'M';
+
+  @override
+  String get cdTurnoCurtoT => 'T';
+
+  @override
+  String get cdTurnoCurtoN => 'N';
+
+  @override
+  String get cdLivre => 'Livre';
+
+  @override
+  String get cdAula => 'Aula';
+
+  @override
+  String get cdOcupado => 'Ocupado';
+
+  @override
+  String get cdHorarioIndefinido => 'Horário indefinido';
+
+  @override
+  String get cdSegunda => 'Segunda';
+
+  @override
+  String get cdTerca => 'Terça';
+
+  @override
+  String get cdQuarta => 'Quarta';
+
+  @override
+  String get cdQuinta => 'Quinta';
+
+  @override
+  String get cdSexta => 'Sexta';
+
+  @override
+  String get cdModalidadeIntegral => 'Integral';
+
+  @override
+  String get cdModalidadeConcomitante => 'Concomitante';
+
+  @override
+  String get cdModalidadeSubsequente => 'Subsequente';
+
+  @override
+  String get cdModalidadeEja => 'EJA';
+
+  @override
+  String get cdModalidadeSuperior => 'Superior';
+
+  @override
+  String get cdRegime20h => '20 horas';
+
+  @override
+  String get cdRegime40h => '40 horas';
+
+  @override
+  String get cdRegimeDe => 'Dedicação exclusiva';
+
+  @override
+  String get cdInformeNome => 'Informe o nome do docente';
+
+  @override
+  String get cdInformeDepartamento => 'Informe o departamento';
+
+  @override
+  String get cdInformeCargaMaxima => 'Informe uma carga horária máxima válida';
+
+  @override
+  String cdRegimePermite(String code, String limite) {
+    return 'O regime $code permite até ${limite}h semanais.';
+  }
+
+  @override
+  String get cdAdicioneDisciplina => 'Adicione pelo menos uma disciplina';
+
+  @override
+  String cdDistribuicaoExcede(String distribuida, String maxima) {
+    return 'A distribuição semanal cadastrada (${distribuida}h) excede a carga máxima do docente (${maxima}h).';
+  }
+
+  @override
+  String get cdInformeNomeDisciplina => 'Informe o nome da disciplina.';
+
+  @override
+  String get cdDisciplinaJaAdicionada => 'Disciplina já adicionada.';
+
+  @override
+  String get cdInformeInicioFim => 'Informe horário de início e fim.';
+
+  @override
+  String get cdFormatoHorario => 'Use o formato HH:MM para os horários.';
+
+  @override
+  String get cdFimPosterior =>
+      'O horário de fim deve ser posterior ao de início.';
+
+  @override
+  String cdConflitoHorario(String dia) {
+    return 'Já existe horário cadastrado em conflito para $dia.';
+  }
+
+  @override
+  String get vgCargaAlocada => 'Carga horária alocada';
+
+  @override
+  String get vgVsMesAnterior6 => '↑ 6% vs. mês anterior';
+
+  @override
+  String get vgLabsEmUso => 'Laboratórios em uso';
+
+  @override
+  String get vgVsSemana12 => '↑ 12% vs. semana anterior';
+
+  @override
+  String get vgNoticiasEnviadas => 'Notícias enviadas';
+
+  @override
+  String get vgVsSemana3 => '↑ 3 vs. semana anterior';
+
+  @override
+  String get vgPendenciasAbertas => 'Pendências em aberto';
+
+  @override
+  String get vgVsSemana1 => '↓ 1 vs. semana anterior';
+
+  @override
+  String get vgIndicadoresPainel => 'Indicadores do painel';
+
+  @override
+  String get vgEscolhaIndicadores =>
+      'Escolha quais indicadores aparecem no panorama.';
+
+  @override
+  String get vgPanorama => 'Panorama do departamento';
+
+  @override
+  String get vgAtualizadoAgora => 'Atualizado agora';
+
+  @override
+  String get vgPersonalizarIndicadores => 'Personalizar indicadores';
+
+  @override
+  String get vgProximasPrioridades => 'Próximas prioridades';
+
+  @override
+  String get vgPrioridadesDepartamento => 'Prioridades do departamento';
+
+  @override
+  String get vgPrioridadesSub => 'Planejamento e atividades mais próximas';
+
+  @override
+  String get vgPersonalizar => 'Personalizar';
+
+  @override
+  String get vgNenhumIndicador =>
+      'Nenhum indicador selecionado. Toque no ícone ao lado para escolher.';
+
+  @override
+  String get vgOntem => 'Ontem';
+
+  @override
+  String get vgMensagemEnviada => 'Mensagem enviada.';
+
+  @override
+  String get vgSelecioneUsuarios =>
+      'Selecione usuários ou grupos para iniciar uma conversa.';
+
+  @override
+  String get vgPeriodo => 'Período';
+
+  @override
+  String get vgTipo => 'Tipo';
+
+  @override
+  String get vgArea => 'Área';
+
+  @override
+  String get vgLaboratorio => 'Laboratório';
+
+  @override
+  String get vgVisualizacao => 'Visualização';
+
+  @override
+  String get vgAcaoRegistrada => 'Ação registrada.';
+
+  @override
+  String get vgContinuar => 'Continuar';
+
+  @override
+  String vgResultados(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count resultados',
+      one: '1 resultado',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String vgItens(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count itens',
+      one: '1 item',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String vgPrazo(String data) {
+    return 'Prazo $data';
+  }
+
+  @override
+  String get vgComunicacao => 'COMUNICAÇÃO';
+
+  @override
+  String get vgChatSub => 'Conversas, grupos e avisos internos do DEE.';
+
+  @override
+  String get vgSelecioneConversa => 'Selecione uma conversa.';
+
+  @override
+  String get vgDisponivel => 'Disponível';
+
+  @override
+  String get vgEscreverMensagem => 'Escrever mensagem';
+
+  @override
+  String get vgGestaoAcademica => 'GESTÃO ACADÊMICA';
+
+  @override
+  String get vgCargaSub =>
+      'Distribuição, limites, conflitos e validação das atividades.';
+
+  @override
+  String get vgNovaDistribuicao => 'Nova distribuição';
+
+  @override
+  String get vgNovaDistribuicaoMsg =>
+      'Cadastre disciplinas, atividades e carga do docente.';
+
+  @override
+  String get vgBuscarProfessor => 'Buscar professor';
+
+  @override
+  String get vgDocentes => 'Docentes';
+
+  @override
+  String vgPeriodoValor(String periodo) {
+    return 'Período $periodo';
+  }
+
+  @override
+  String get vgCargaRegular => 'Carga regular';
+
+  @override
+  String get vgDoQuadro => '75% do quadro';
+
+  @override
+  String get vgRequerAtencao => 'Requer atenção';
+
+  @override
+  String get vgAbaixoAcima => 'Abaixo ou acima do limite';
+
+  @override
+  String get vgConflitos => 'Conflitos';
+
+  @override
+  String get vgHorariosSobrepostos => 'Horários sobrepostos';
+
+  @override
+  String get vgDistribuicaoPorDocente => 'Distribuição por docente';
+
+  @override
+  String get vgDistribuicaoSub =>
+      'Ensino, pesquisa, extensão, gestão e orientações';
+
+  @override
+  String vgEnsinoOutras(String ensino, String outras) {
+    return 'Ensino: ${ensino}h · Outras atividades: ${outras}h';
+  }
+
+  @override
+  String vgTotalDeMaximo(String total, String maximo) {
+    return '$total h de $maximo h';
+  }
+
+  @override
+  String get vgGestaoPessoas => 'GESTÃO DE PESSOAS';
+
+  @override
+  String get vgProfessoresSub =>
+      'Quadro docente, áreas, situação funcional e carga atual.';
+
+  @override
+  String get vgCadastrar => 'Cadastrar';
+
+  @override
+  String get vgCadastrarProfessor => 'Cadastrar professor';
+
+  @override
+  String get vgCadastrarProfessorMsg =>
+      'Informe dados funcionais, área e vínculo.';
+
+  @override
+  String get vgBuscarNomeArea => 'Buscar nome ou área';
+
+  @override
+  String vgProfessorDetalhe(String area, String carga, String situacao) {
+    return 'Área: $area\nCarga atual: $carga\nSituação: $situacao';
+  }
+
+  @override
+  String vgCargaAtual(String carga) {
+    return 'Carga atual: $carga';
+  }
+
+  @override
+  String get vgPlanejamento => 'PLANEJAMENTO';
+
+  @override
+  String get vgDemandasSub =>
+      'Solicitações, responsáveis, prazos e acompanhamento.';
+
+  @override
+  String get vgNovaDemanda => 'Nova demanda';
+
+  @override
+  String get vgNovaDemandaMsg =>
+      'Cadastre descrição, responsável, prazo e prioridade.';
+
+  @override
+  String get vgNoPeriodoAtual => 'No período atual';
+
+  @override
+  String get vgDoTotal58 => '58% do total';
+
+  @override
+  String get vgAtrasadas => 'Atrasadas';
+
+  @override
+  String get vgAcaoNecessaria => 'Ação necessária';
+
+  @override
+  String get vgBuscarDemanda => 'Buscar demanda';
+
+  @override
+  String get vgListaDemandas => 'Lista de demandas';
+
+  @override
+  String vgDemandaDetalhe(
+    String id,
+    String responsavel,
+    String prazo,
+    String prioridade,
+  ) {
+    return '$id\nResponsável: $responsavel\nPrazo: $prazo\nPrioridade: $prioridade';
+  }
+
+  @override
+  String get vgExecucao => 'EXECUÇÃO';
+
+  @override
+  String get vgTarefasSub =>
+      'Quadro visual para acompanhar atividades e responsáveis.';
+
+  @override
+  String get vgNovaTarefa => 'Nova tarefa';
+
+  @override
+  String get vgNovaTarefaMsg =>
+      'Defina título, responsável, prazo e prioridade.';
+
+  @override
+  String vgAdicionarTarefaEm(String coluna) {
+    return 'Ação para adicionar tarefa em $coluna.';
+  }
+
+  @override
+  String get vgInfraestrutura => 'INFRAESTRUTURA';
+
+  @override
+  String get vgLabsSub => 'Disponibilidade, reservas, conflitos e manutenção.';
+
+  @override
+  String get vgNovaReserva => 'Nova reserva';
+
+  @override
+  String get vgNovaReservaMsg =>
+      'Selecione laboratório, data, turno, disciplina e responsável.';
+
+  @override
+  String get vgReservasHoje => 'Reservas hoje';
+
+  @override
+  String get vgCincoLabs => '5 laboratórios';
+
+  @override
+  String get vgEmUso => 'Em uso';
+
+  @override
+  String get vgNesteHorario => 'Neste horário';
+
+  @override
+  String get vgEmManutencao => 'Em manutenção';
+
+  @override
+  String get vgAcessoRestrito => 'Acesso temporariamente restrito';
+
+  @override
+  String get vgNenhumaSobreposicao => 'Nenhuma sobreposição';
+
+  @override
+  String get vgAgendaSemanalSub => 'Períodos de segunda a sexta';
+
+  @override
+  String get vgCalendarioReservas => 'Calendário de reservas';
+
+  @override
+  String get vgVisaoMes => 'Visão consolidada do mês';
+
+  @override
+  String get vgOcupacaoOtimizacao => 'Ocupação e otimização';
+
+  @override
+  String get vgUsoMedio => 'Uso médio e horários disponíveis';
+
+  @override
+  String get vgReservado => 'Reservado';
+
+  @override
+  String get vgLivre => 'Livre';
+
+  @override
+  String get vgComReservas => 'Com reservas';
+
+  @override
+  String get vgAcompanhamento => 'ACOMPANHAMENTO';
+
+  @override
+  String get vgAtividadesSub =>
+      'Ações acadêmicas e administrativas com prazos e responsáveis.';
+
+  @override
+  String get vgNovaAtividade => 'Nova atividade';
+
+  @override
+  String get vgNovaAtividadeMsg =>
+      'Cadastre título, categoria, prazo e responsável.';
+
+  @override
+  String get vgBuscarAtividade => 'Buscar atividade';
+
+  @override
+  String get vgAtividadesPeriodo => 'Atividades do período';
+
+  @override
+  String vgAtividadeDetalhe(String categoria, String prazo, String status) {
+    return 'Categoria: $categoria\nPrazo: $prazo\nStatus: $status';
+  }
+
+  @override
+  String get vgAnalise => 'ANÁLISE';
+
+  @override
+  String get vgRelatoriosSub =>
+      'Indicadores, documentos e exportações para apoio à gestão.';
+
+  @override
+  String get vgGerarRelatorio => 'Gerar relatório';
+
+  @override
+  String get vgGerarRelatorioMsg =>
+      'Selecione fonte, período, formato e filtros.';
+
+  @override
+  String get vgRelatoriosDisponiveis => 'Relatórios disponíveis';
+
+  @override
+  String get vgQuatroCategorias => '4 categorias';
+
+  @override
+  String get vgExportadosMes => 'Exportados no mês';
+
+  @override
+  String get vgAgendados => 'Agendados';
+
+  @override
+  String get vgEnvioAutomatico => 'Envio automático';
+
+  @override
+  String vgAbrindo(String titulo) {
+    return 'Abrindo $titulo.';
+  }
+
+  @override
+  String get vgExportacaoPreparada => 'Exportação preparada.';
+
+  @override
+  String get vgExportar => 'Exportar';
+
+  @override
+  String get vgAtualizadoHoje => 'Atualizado hoje';
+
+  @override
+  String get vgAtualizadoOntem => 'Atualizado ontem';
+
+  @override
+  String vgAtualizadoEm(String data) {
+    return 'Atualizado em $data';
+  }
+
+  @override
+  String get vgPreferencias => 'PREFERÊNCIAS';
+
+  @override
+  String get vgConfigSub =>
+      'Conta, notificações, aparência, segurança e dados.';
+
+  @override
+  String get vgConfigSalvas => 'Configurações salvas.';
+
+  @override
+  String get vgPerfilConta => 'Perfil e conta';
+
+  @override
+  String get vgDadosSessao => 'Dados da sessão atual';
+
+  @override
+  String get vgNomeExibicao => 'Nome de exibição';
+
+  @override
+  String get vgUsuarioInstitucional => 'Usuário institucional';
+
+  @override
+  String get vgEmail => 'E-mail';
+
+  @override
+  String get vgContaInstitucional => 'Conta institucional';
+
+  @override
+  String get vgPerfilAcesso => 'Perfil de acesso';
+
+  @override
+  String get vgDefinidoAutenticacao => 'Definido pela autenticação';
+
+  @override
+  String get vgEditarPerfil => 'Editar perfil';
+
+  @override
+  String get vgEditarPerfilMsg => 'Atualize dados pessoais e preferências.';
+
+  @override
+  String get vgCanaisAlertas => 'Canais e alertas';
+
+  @override
+  String get vgNotifApp => 'Notificações no aplicativo';
+
+  @override
+  String get vgNotifAppSub => 'Alertas, convites e prazos';
+
+  @override
+  String get vgNotifEmail => 'Notificações por e-mail';
+
+  @override
+  String get vgNotifEmailSub => 'Resumo e comunicações importantes';
+
+  @override
+  String get vgAparencia => 'Aparência';
+
+  @override
+  String get vgDensidade => 'Densidade e visualização';
+
+  @override
+  String get vgModoCompacto => 'Modo compacto';
+
+  @override
+  String get vgModoCompactoSub => 'Exibe mais informações por tela';
+
+  @override
+  String get vgTema => 'Tema';
+
+  @override
+  String get vgTemaValor => 'Segue a configuração do aplicativo';
+
+  @override
+  String get vgSegurancaDados => 'Segurança e dados';
+
+  @override
+  String get vgSessaoAcesso => 'Sessão, acesso e armazenamento';
+
+  @override
+  String get vgBiometria => 'Biometria';
+
+  @override
+  String get vgBiometriaSub => 'Usar autenticação do dispositivo';
+
+  @override
+  String get vgSincronizacao => 'Sincronização';
+
+  @override
+  String get vgSincronizacaoValor => 'Automática quando disponível';
+
+  @override
+  String get vgLimparDados => 'Limpar dados locais';
+
+  @override
+  String get vgLimparDadosMsg =>
+      'Esta ação remove apenas caches e preferências locais.';
+
+  @override
+  String get vgOpTodos => 'Todos';
+
+  @override
+  String get vgOpTodas => 'Todas';
+
+  @override
+  String get vgOpRegular => 'Regular';
+
+  @override
+  String get vgOpAtencao => 'Atenção';
+
+  @override
+  String get vgOpExcedida => 'Excedida';
+
+  @override
+  String get vgOpAtivo => 'Ativo';
+
+  @override
+  String get vgOpAfastamento => 'Afastamento';
+
+  @override
+  String get vgOpEmAnalise => 'Em análise';
+
+  @override
+  String get vgOpEmAndamento => 'Em andamento';
+
+  @override
+  String get vgOpAguardando => 'Aguardando';
+
+  @override
+  String get vgOpAtrasada => 'Atrasada';
+
+  @override
+  String get vgOpAFazer => 'A fazer';
+
+  @override
+  String get vgOpConcluido => 'Concluído';
+
+  @override
+  String get vgOpPendente => 'Pendente';
+
+  @override
+  String get vgOpEmProgresso => 'Em progresso';
+
+  @override
+  String get vgOpConcluida => 'Concluída';
+
+  @override
+  String get vgOpAgendaSemanal => 'Agenda semanal';
+
+  @override
+  String get vgOpCalendarioMensal => 'Calendário mensal';
+
+  @override
+  String get vgOpOcupacao => 'Ocupação';
+
+  @override
+  String get vgOpAcademico => 'Acadêmico';
+
+  @override
+  String get vgOpGestao => 'Gestão';
+
+  @override
+  String get vgOpProdutividade => 'Produtividade';
 }

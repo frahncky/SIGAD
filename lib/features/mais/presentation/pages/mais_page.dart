@@ -7,18 +7,26 @@ import '../../../../app/theme/sigad_colors.dart';
 import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
 import '../../../../app/theme/sigad_tone_palette.dart';
+import '../../../../core/navigation/navigation_items.dart';
 import '../../../../core/services/notificacoes_service.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../../../mural/presentation/mural_visual.dart';
 import '../../../mural/presentation/state/mural_controller.dart';
 import '../../../../shared/widgets/icon_avatar.dart';
+import '../../../../l10n/l10n.dart';
 
 class MaisPage extends StatelessWidget {
   const MaisPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final role = context.watch<UserContextProvider>().userRole;
+    final podeVerCargaDocente =
+        role == null ||
+        kNavigationItems
+            .firstWhere((item) => item.route == AppRoutes.cargaDocente)
+            .isAvailableFor(role);
     final avisos = [
       for (final aviso in context.watch<MuralController>().avisosVisiveis(role))
         NotificacaoModel(
@@ -37,84 +45,85 @@ class MaisPage extends StatelessWidget {
           onVerTodos: () => _showAvisos(context, avisos),
         ),
         const SizedBox(height: 24),
-        const _SectionTitle(icon: SigadIcons.raio, title: 'Acesso rápido'),
+        _SectionTitle(icon: SigadIcons.raio, title: l10n.acessoRapido),
         const SizedBox(height: 12),
         _QuickAccessGrid(
           items: [
-            _QuickAccessItem(
-              icon: SigadIcons.aula,
-              label: 'Carga docente',
-              description: 'Planeje e acompanhe a carga horária.',
-              route: AppRoutes.cargaDocente,
-            ),
+            if (podeVerCargaDocente)
+              _QuickAccessItem(
+                icon: SigadIcons.aula,
+                label: l10n.navCargaDocente,
+                description: l10n.maisCargaDocenteDesc,
+                route: AppRoutes.cargaDocente,
+              ),
             _QuickAccessItem(
               icon: SigadIcons.grupo,
-              label: 'Professores',
-              description: 'Gerencie docentes do departamento.',
+              label: l10n.navProfessores,
+              description: l10n.maisProfessoresDesc,
               route: AppRoutes.professores,
             ),
             _QuickAccessItem(
               icon: SigadIcons.laboratorio,
-              label: 'Laboratórios',
-              description: 'Recursos, reservas e ocupação.',
+              label: l10n.navLaboratorios,
+              description: l10n.maisLaboratoriosDesc,
               route: AppRoutes.aulasPraticas,
             ),
             _QuickAccessItem(
               icon: SigadIcons.eventoConfirmado,
-              label: 'Reuniões',
-              description: 'Pautas, atas e participantes.',
+              label: l10n.maisReunioes,
+              description: l10n.maisReunioesDesc,
               route: AppRoutes.calendario,
             ),
             _QuickAccessItem(
               icon: SigadIcons.demanda,
-              label: 'Demandas',
-              description: 'Acompanhe e gerencie solicitações.',
+              label: l10n.navDemandas,
+              description: l10n.maisDemandasDesc,
               route: AppRoutes.demandas,
             ),
             _QuickAccessItem(
               icon: SigadIcons.aviso,
-              label: 'Notícias',
-              description: 'Comunicados e informativos.',
+              label: l10n.maisNoticias,
+              description: l10n.maisNoticiasDesc,
               route: AppRoutes.batePapo,
             ),
             _QuickAccessItem(
               icon: SigadIcons.graficoBarras,
-              label: 'Relatórios',
-              description: 'Indicadores e dados do departamento.',
+              label: l10n.navRelatorios,
+              description: l10n.maisRelatoriosDesc,
               route: AppRoutes.relatorios,
             ),
             _QuickAccessItem(
               icon: SigadIcons.professor,
-              label: 'Cursos',
-              description: 'Disciplinas e ofertas acadêmicas.',
+              label: l10n.maisCursos,
+              description: l10n.maisCursosDesc,
               route: AppRoutes.atividades,
             ),
           ],
         ),
         const SizedBox(height: 24),
-        const _SectionTitle(
+        _SectionTitle(
           icon: SigadIcons.escudoVerificado,
-          title: 'Administração',
+          title: l10n.maisAdministracao,
         ),
         const SizedBox(height: 12),
         _AdminCard(
           items: [
             _AdminItem(
               icon: SigadIcons.calendario,
-              title: 'Agenda integrada',
-              subtitle: 'Visualize eventos e compromissos do departamento.',
+              title: l10n.maisAgendaIntegrada,
+              subtitle: l10n.maisAgendaIntegradaDesc,
               route: AppRoutes.calendario,
             ),
             _AdminItem(
               icon: SigadIcons.configuracoes,
-              title: 'Configurações',
-              subtitle: 'Personalize preferências do aplicativo.',
+              title: l10n.navConfiguracoes,
+              subtitle: l10n.maisConfiguracoesDesc,
               route: AppRoutes.configuracoes,
             ),
             _AdminItem(
               icon: SigadIcons.ajuda,
-              title: 'Ajuda',
-              subtitle: 'Central de ajuda, tutoriais e suporte.',
+              title: l10n.maisAjuda,
+              subtitle: l10n.maisAjudaDesc,
               onTap: () => _showAjuda(context),
             ),
           ],
@@ -136,16 +145,16 @@ class MaisPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Avisos importantes',
+              context.l10n.maisAvisosImportantes,
               style: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 8),
             if (avisos.isEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 24),
-                child: Center(child: Text('Nenhum aviso no momento.')),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Center(child: Text(context.l10n.maisNenhumAviso)),
               )
             else
               ...avisos.map(
@@ -166,15 +175,12 @@ class MaisPage extends StatelessWidget {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Central de ajuda'),
-        content: const Text(
-          'Tutoriais e suporte estarão disponíveis em breve. '
-          'Para dúvidas urgentes, abra um chamado com a equipe de TI do campus.',
-        ),
+        title: Text(context.l10n.maisCentralAjuda),
+        content: Text(context.l10n.maisCentralAjudaMensagem),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Fechar'),
+            child: Text(context.l10n.fechar),
           ),
         ],
       ),
@@ -254,7 +260,7 @@ class _AvisosCard extends StatelessWidget {
                   runSpacing: 6,
                   children: [
                     Text(
-                      'Avisos importantes',
+                      context.l10n.maisAvisosImportantes,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
@@ -268,9 +274,9 @@ class _AvisosCard extends StatelessWidget {
                         color: SigadColors.brand,
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: const Text(
-                        'DEPARTAMENTO',
-                        style: TextStyle(
+                      child: Text(
+                        context.l10n.maisDepartamento,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w800,
                           fontSize: 11,
@@ -285,7 +291,7 @@ class _AvisosCard extends StatelessWidget {
           const SizedBox(height: 14),
           Text(
             aviso == null
-                ? 'Nenhum aviso no momento.'
+                ? context.l10n.maisNenhumAviso
                 : '${aviso!.titulo}. ${aviso!.subtitulo}.',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
@@ -295,7 +301,7 @@ class _AvisosCard extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  'Ver todos os avisos',
+                  context.l10n.maisVerTodosAvisos,
                   style: TextStyle(
                     color: SigadColors.brand,
                     fontWeight: FontWeight.w700,
@@ -530,13 +536,13 @@ class _SuporteCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Precisando de suporte?',
+                      context.l10n.maisPrecisaSuporte,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
                     ),
                     Text(
-                      'Fale com a equipe de TI do campus.',
+                      context.l10n.maisFaleComTi,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: colors.onSurfaceVariant,
                       ),
@@ -549,7 +555,7 @@ class _SuporteCard extends StatelessWidget {
           final button = OutlinedButton.icon(
             onPressed: () => _abrirChamado(context),
             icon: const SigadIcon(SigadIcons.abrirExterno, size: 18),
-            label: const Text('Abrir chamado'),
+            label: Text(context.l10n.maisAbrirChamado),
           );
           if (compact) {
             return Column(

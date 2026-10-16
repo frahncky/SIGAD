@@ -28,6 +28,7 @@ import '../../../../l10n/l10n.dart';
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key, this.agora});
 
+  /// Instante opcional para manter as boas-vindas determinísticas.
   final DateTime? agora;
 
   @override
@@ -447,36 +448,32 @@ class _DashboardPanel extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SigadIconAvatar(icon: icon, tone: tone),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      Text(
-                        subtitle,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Flexible(
-                  child: TextButton(
-                    onPressed: onAction,
-                    child: Text(actionLabel, textAlign: TextAlign.end),
+                  child: Text(
+                    title,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              subtitle,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: onAction,
+                child: Text(actionLabel, textAlign: TextAlign.end),
+              ),
             ),
             const Divider(height: 20),
             child,

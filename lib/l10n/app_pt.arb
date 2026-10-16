@@ -1,6 +1,11 @@
 {
   "@@locale": "pt",
   "cancelar": "Cancelar",
+  "nomeSaudacao": "Nome na saudação",
+  "nomeSaudacaoAjuda": "Somente neste dispositivo. Deixe vazio para usar o primeiro nome da conta.",
+  "nomeSaudacaoErro": "Não foi possível salvar. Tente novamente.",
+  "nomeSaudacaoSalvo": "Nome na saudação salvo.",
+  "nomeSaudacaoSalvando": "Salvando…",
   "fechar": "Fechar",
   "sair": "Sair",
   "verTodas": "Ver todas",
@@ -152,7 +157,7 @@
     }
   },
   "proximasAtividades": "Próximas atividades",
-  "proximasAtividadesSub": "Compromissos que ainda pedem atenção",
+  "proximasAtividadesSub": "Compromissos pendentes",
   "nenhumaAtividadeAberta": "Nenhuma atividade aberta.",
   "atualizandoVisao": "Atualizando visão operacional...",
   "erroIndicadores": "Não foi possível atualizar os indicadores.",
@@ -649,5 +654,1097 @@
       }
     }
   },
-  "labOutrosHorarios": "Reservar outros horários deste dia"
+  "labOutrosHorarios": "Reservar outros horários deste dia",
+  "paginaNaoEncontrada": "Página não encontrada",
+  "paginaNaoEncontradaMensagem": "O endereço informado não corresponde a um módulo do SIGAD.",
+  "voltarVisaoGeral": "Voltar à visão geral",
+  "maisCargaDocenteDesc": "Planeje e acompanhe a carga horária.",
+  "maisProfessoresDesc": "Gerencie docentes do departamento.",
+  "maisLaboratoriosDesc": "Recursos, reservas e ocupação.",
+  "maisReunioes": "Reuniões",
+  "maisReunioesDesc": "Pautas, atas e participantes.",
+  "maisDemandasDesc": "Acompanhe e gerencie solicitações.",
+  "maisNoticias": "Notícias",
+  "maisNoticiasDesc": "Comunicados e informativos.",
+  "maisRelatoriosDesc": "Indicadores e dados do departamento.",
+  "maisCursos": "Cursos",
+  "maisCursosDesc": "Disciplinas e ofertas acadêmicas.",
+  "maisAdministracao": "Administração",
+  "maisAgendaIntegrada": "Agenda integrada",
+  "maisAgendaIntegradaDesc": "Visualize eventos e compromissos do departamento.",
+  "maisConfiguracoesDesc": "Personalize preferências do aplicativo.",
+  "maisAjuda": "Ajuda",
+  "maisAjudaDesc": "Central de ajuda, tutoriais e suporte.",
+  "maisAvisosImportantes": "Avisos importantes",
+  "maisNenhumAviso": "Nenhum aviso no momento.",
+  "maisCentralAjuda": "Central de ajuda",
+  "maisCentralAjudaMensagem": "Tutoriais e suporte estarão disponíveis em breve. Para dúvidas urgentes, abra um chamado com a equipe de TI do campus.",
+  "maisDepartamento": "DEPARTAMENTO",
+  "maisVerTodosAvisos": "Ver todos os avisos",
+  "maisPrecisaSuporte": "Precisando de suporte?",
+  "maisFaleComTi": "Fale com a equipe de TI do campus.",
+  "maisAbrirChamado": "Abrir chamado",
+  "muralErroCarregar": "Não foi possível ler o mural salvo. A edição está bloqueada para não sobrescrever os dados.",
+  "muralFrases": "Frases",
+  "muralAcessoNegado": "Somente a chefia do departamento pode gerenciar o mural.",
+  "muralNovoAviso": "Novo aviso",
+  "muralNenhumAviso": "Nenhum aviso cadastrado.\nSem avisos, o painel mostra só as boas-vindas.",
+  "muralDesativado": "Desativado",
+  "muralAgendado": "Agendado",
+  "muralEncerrado": "Encerrado",
+  "muralNoAr": "No ar",
+  "muralTodosPerfis": "Todos os perfis",
+  "muralFixado": "Fixado",
+  "muralModeloInformativo": "Informativo",
+  "muralModeloImportante": "Importante",
+  "muralModeloEvento": "Evento",
+  "muralModeloLembrete": "Lembrete",
+  "muralExibirAPartirDe": "Exibir a partir de",
+  "muralExibirAte": "Exibir até",
+  "muralDataFinalInvalida": "A data final deve ser igual ou posterior à inicial.",
+  "muralAvisoPublicado": "Aviso publicado.",
+  "muralErroSalvarAviso": "Não foi possível salvar o aviso.",
+  "muralExcluirAvisoTitulo": "Excluir aviso?",
+  "muralExcluirAvisoMensagem": "\"{titulo}\" deixará de aparecer.",
+  "@muralExcluirAvisoMensagem": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "muralAvisoExcluido": "Aviso excluído.",
+  "muralErroExcluirAviso": "Não foi possível excluir o aviso.",
+  "muralEditarAviso": "Editar aviso",
+  "muralModelo": "Modelo",
+  "muralTitulo": "Título",
+  "muralInformeTitulo": "Informe o título do aviso.",
+  "muralConteudo": "Conteúdo",
+  "muralConteudoDica": "Escreva o aviso completo para o departamento.",
+  "muralInformeConteudo": "Escreva o conteúdo do aviso.",
+  "muralQuemVe": "Quem vê",
+  "muralTodos": "Todos",
+  "muralPeriodoExibicao": "Período de exibição",
+  "muralAPartirDe": "A partir de",
+  "muralImediatamente": "Imediatamente",
+  "muralLimparDataInicial": "Limpar data inicial",
+  "muralAte": "Até",
+  "muralSemDataSair": "Sem data para sair",
+  "muralLimparDataFinal": "Limpar data final",
+  "muralFixarTopo": "Fixar no topo",
+  "muralFixarTopoSub": "Aparece antes dos outros avisos.",
+  "muralAtivo": "Ativo",
+  "muralAtivoSub": "Desative para esconder sem excluir.",
+  "muralPreviaPainel": "Pré-visualização no painel",
+  "muralPreviaAvisoSub": "É assim que o aviso aparece no card do topo para quem pode vê-lo.",
+  "muralPreviaTitulo": "Título do aviso",
+  "muralPreviaConteudo": "O conteúdo do aviso aparece aqui.",
+  "muralPublicarAviso": "Publicar aviso",
+  "muralExcluirAviso": "Excluir aviso",
+  "muralNovaFrase": "Nova frase",
+  "muralEditarFrase": "Editar frase",
+  "muralTrocarFrase": "Trocar a frase",
+  "muralPeriodoDiaria": "Todo dia",
+  "muralPeriodoSemanal": "Toda semana",
+  "muralPeriodoQuinzenal": "A cada 15 dias",
+  "muralPeriodoMensal": "Todo mês",
+  "muralErroFrequencia": "Não foi possível salvar a frequência.",
+  "muralFraseEmExibicao": "Frase em exibição",
+  "muralNenhumaFrase": "Nenhuma frase ativa.",
+  "muralFrasesLista": "Frases ({count}) — entram em rodízio as ativas",
+  "@muralFrasesLista": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "muralFraseAtivaRodizio": "Frase ativa no rodízio",
+  "muralExcluirFrase": "Excluir frase",
+  "muralExcluirFraseTitulo": "Excluir frase?",
+  "muralErroSalvarFrase": "Não foi possível salvar a frase.",
+  "muralErroExcluirFrase": "Não foi possível excluir a frase.",
+  "muralFrase": "Frase",
+  "muralFraseDica": "Escreva uma frase curta e motivadora.",
+  "muralEscrevaFrase": "Escreva a frase.",
+  "muralPreviaFraseSub": "É assim que a frase aparece no card de boas-vindas.",
+  "muralPreviaFrase": "A frase aparece aqui.",
+  "muralSalvarFrase": "Salvar frase",
+  "calAgendaCompleta": "Agenda completa",
+  "calResumoSemana": "Resumo da semana",
+  "calPeriodoSemana": "{inicio} a {fim}",
+  "@calPeriodoSemana": {
+    "placeholders": {
+      "inicio": {
+        "type": "String"
+      },
+      "fim": {
+        "type": "String"
+      }
+    }
+  },
+  "calVerAgenda": "Ver agenda",
+  "calEventosAgendados": "Eventos agendados",
+  "calReservasLaboratorio": "Reservas de laboratório",
+  "calReuniaoMarcada": "Reunião marcada",
+  "calDepartamento": "Departamento",
+  "calTipoItem": "Tipo de item",
+  "calTodos": "Todos",
+  "calReuniao": "Reunião",
+  "calLaboratorio": "Laboratório",
+  "calComunicacao": "Comunicação",
+  "calToqueParaAlterar": "Toque para alterar",
+  "calAulaPratica": "Aula prática – {disciplina}",
+  "@calAulaPratica": {
+    "placeholders": {
+      "disciplina": {
+        "type": "String"
+      }
+    }
+  },
+  "calReservaLaboratorio": "Reserva de laboratório",
+  "calReservaDe": "Reserva: {laboratorio}",
+  "@calReservaDe": {
+    "placeholders": {
+      "laboratorio": {
+        "type": "String"
+      }
+    }
+  },
+  "calResponsavel": "Responsável: {professor}",
+  "@calResponsavel": {
+    "placeholders": {
+      "professor": {
+        "type": "String"
+      }
+    }
+  },
+  "calProximosCompromissos": "Próximos compromissos",
+  "calVerTodos": "Ver todos",
+  "calNenhumaReservaFutura": "Nenhuma reserva futura encontrada.",
+  "calAgendaDoDia": "Agenda do dia",
+  "calVerAgendaCompleta": "Ver agenda completa",
+  "calNenhumCompromisso": "Nenhum compromisso neste dia.",
+  "calOcupacaoHoje": "Ocupação dos laboratórios (hoje)",
+  "calNenhumaReserva": "Nenhuma reserva cadastrada.",
+  "calHorariosReservados": "{horas} de {total} horários reservados na semana",
+  "@calHorariosReservados": {
+    "placeholders": {
+      "horas": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "calMesAnterior": "Mês anterior",
+  "calProximoMes": "Próximo mês",
+  "calHoje": "hoje",
+  "calFeriado": "feriado: {nome}",
+  "@calFeriado": {
+    "placeholders": {
+      "nome": {
+        "type": "String"
+      }
+    }
+  },
+  "calEventos": "{count, plural, =1{1 evento} other{{count} eventos}}",
+  "@calEventos": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notaGeral": "Geral",
+  "notaReunioes": "Reuniões",
+  "notaPlanejamento": "Planejamento",
+  "notaCargaHoraria": "Carga horária",
+  "notaEventos": "Eventos",
+  "notaTodas": "Todas",
+  "notaNova": "Nova anotação",
+  "notaEditar": "Editar anotação",
+  "notaExcluir": "Excluir anotação",
+  "notaExcluirMensagem": "Tem certeza que deseja excluir esta anotação?",
+  "notaDica": "Registre uma ideia, encaminhamento ou lembrete...",
+  "notaCategoria": "Categoria",
+  "notaGerenciarFixadas": "Gerenciar fixadas",
+  "notaNenhumaCriada": "Nenhuma anotação criada ainda.",
+  "notaBuscar": "Buscar anotações, reuniões, temas...",
+  "notaFixadas": "Fixadas",
+  "notaTodasAnotacoes": "Todas as anotações",
+  "notaMaisRecentes": "Mais recentes",
+  "notaMaisAntigas": "Mais antigas",
+  "notaOrdenarPor": "Ordenar por: {ordem}",
+  "@notaOrdenarPor": {
+    "placeholders": {
+      "ordem": {
+        "type": "String"
+      }
+    }
+  },
+  "notaNenhumaEncontrada": "Nenhuma anotação encontrada.",
+  "notaVazio": "Nenhuma anotação. Toque em \"+\" para criar.",
+  "notaVazioDica": "Use este espaço para registrar encaminhamentos, ideias e lembretes rápidos.",
+  "notaCriarPrimeira": "Criar primeira anotação",
+  "notaDesafixar": "Desafixar",
+  "notaFixar": "Fixar anotação",
+  "notaDataHora": "{dia}/{mes} às {hora}",
+  "@notaDataHora": {
+    "placeholders": {
+      "dia": {
+        "type": "String"
+      },
+      "mes": {
+        "type": "String"
+      },
+      "hora": {
+        "type": "String"
+      }
+    }
+  },
+  "chatFacaLogin": "Faça login para acessar o bate-papo.",
+  "chatNenhumUsuario": "Nenhum usuário disponível para conversa.",
+  "chatConversas": "Conversas",
+  "chatNovaConversa": "Nova conversa",
+  "chatBuscarConversa": "Buscar conversa",
+  "chatLimparBusca": "Limpar busca",
+  "chatNenhumaEncontrada": "Nenhuma conversa encontrada.",
+  "chatNenhumaAinda": "Nenhuma conversa ainda.\nToque em ✏️ para iniciar.",
+  "chatNenhumaMensagem": "Nenhuma mensagem ainda.",
+  "chatDigiteMensagem": "Digite sua mensagem",
+  "chatEnviar": "Enviar",
+  "chatVoltar": "Voltar às conversas",
+  "chatSelecione": "Selecione uma conversa\nou inicie uma nova",
+  "chatBuscarContato": "Buscar por nome, e-mail ou cargo",
+  "chatNenhumContato": "Nenhum contato encontrado.",
+  "chatDiaMes": "{dia}/{mes}",
+  "@chatDiaMes": {
+    "placeholders": {
+      "dia": {
+        "type": "String"
+      },
+      "mes": {
+        "type": "String"
+      }
+    }
+  },
+  "demErroCarregar": "Não foi possível carregar as demandas.",
+  "demErroCarregarTitulo": "Não foi possível carregar os dados",
+  "demErroSalvar": "Não foi possível salvar a demanda. Seus dados foram mantidos. Tente novamente.",
+  "demBuscar": "Buscar demandas",
+  "demBuscarDica": "Pesquise por título, descrição ou responsável",
+  "demBuscarExemplo": "Título, descrição ou responsável",
+  "demFiltrosAtivos": "Filtros ativos: {count}",
+  "@demFiltrosAtivos": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "demFiltrar": "Filtrar demandas",
+  "demCarregando": "Carregando demandas...",
+  "demNenhuma": "Nenhuma demanda encontrada",
+  "demLimparFiltrosDica": "Tente limpar os filtros ativos.",
+  "demCrieNova": "Crie uma nova demanda para começar.",
+  "demLimparFiltros": "Limpar filtros",
+  "demCriarNova": "Criar nova demanda",
+  "demFiltros": "Filtros",
+  "demFecharFiltros": "Fechar filtros",
+  "demStatus": "Status",
+  "demPrioridade": "Prioridade",
+  "demOrdenacao": "Ordenação",
+  "demLimpar": "Limpar",
+  "demAplicar": "Aplicar",
+  "demNova": "Nova Demanda",
+  "demEditar": "Editar Demanda",
+  "demFecharFormulario": "Fechar formulário da demanda",
+  "demTitulo": "Título",
+  "demTituloDica": "Digite o título da demanda",
+  "demDescricao": "Descrição",
+  "demDescricaoDica": "Descreva a demanda em detalhes",
+  "demProprietario": "Proprietário",
+  "demStatusInicial": "Status inicial",
+  "demCriar": "Criar",
+  "demSalvando": "Salvando...",
+  "demCriada": "Demanda criada com sucesso!",
+  "demAtualizada": "Demanda atualizada com sucesso!",
+  "demExcluida": "Demanda excluída com sucesso!",
+  "demConfirmarExclusao": "Confirmar exclusão",
+  "demExcluirMensagem": "Tem certeza que deseja excluir {titulo}?",
+  "@demExcluirMensagem": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "demSemPermissaoCriar": "Seu perfil não possui permissão para criar demandas.",
+  "demSemPermissaoEditar": "Seu perfil não possui permissão para editar demandas.",
+  "demSemPermissaoExcluir": "Seu perfil não possui permissão para excluir demandas.",
+  "demInformeTitulo": "Informe o título da demanda",
+  "demInformeDescricao": "Informe a descrição da demanda",
+  "demResumo": "Resumo das demandas",
+  "demNoTotal": "No total",
+  "demAbertas": "Abertas",
+  "demUrgentes": "Urgentes",
+  "demEditarAcao": "Editar",
+  "demAbrir": "Abrir demanda {titulo}",
+  "@demAbrir": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "demFecharDetalhes": "Fechar detalhes da demanda",
+  "demPrazo": "Prazo",
+  "demTodas": "Todas",
+  "demStatusNovo": "Novo",
+  "demStatusEmAndamento": "Em andamento",
+  "demStatusAguardando": "Aguardando",
+  "demStatusRevisao": "Revisão",
+  "demStatusConcluido": "Concluído",
+  "demPrioridadeAlta": "Alta",
+  "demPrioridadeMedia": "Média",
+  "demPrioridadeBaixa": "Baixa",
+  "demOrdemPrazo": "Prazo mais próximo",
+  "demOrdemRecentes": "Recém-criadas",
+  "tarErroCarregar": "Não foi possível carregar o quadro de tarefas.",
+  "tarNovoCard": "Novo card",
+  "tarCarregando": "Carregando quadro de tarefas...",
+  "tarNenhumCard": "Nenhum card criado",
+  "tarNenhumCardDica": "Toque no + para adicionar o primeiro card ao quadro.",
+  "tarCriarCard": "Criar card",
+  "tarArrasteDica": "Arraste lateralmente para navegar entre as colunas do quadro.",
+  "tarExcluirCardMensagem": "Deseja excluir o card \"{titulo}\"?",
+  "@tarExcluirCardMensagem": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "tarCardRemovido": "Card \"{titulo}\" removido",
+  "@tarCardRemovido": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "tarTituloDica": "Digite o título do card",
+  "tarColuna": "Coluna",
+  "tarCardCriado": "Card criado com sucesso!",
+  "tarSolteAqui": "Solte aqui",
+  "tarCardSemantica": "Card: {titulo}. Prioridade {prioridade}.",
+  "@tarCardSemantica": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      },
+      "prioridade": {
+        "type": "String"
+      }
+    }
+  },
+  "tarMaisAcoes": "Mais ações do card",
+  "tarId": "ID: {id}",
+  "@tarId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tarColunaValor": "Coluna: {coluna}",
+  "@tarColunaValor": {
+    "placeholders": {
+      "coluna": {
+        "type": "String"
+      }
+    }
+  },
+  "tarPrioridadeValor": "Prioridade: {prioridade}",
+  "@tarPrioridadeValor": {
+    "placeholders": {
+      "prioridade": {
+        "type": "String"
+      }
+    }
+  },
+  "tarExcluirEsteCard": "Tem certeza que deseja excluir este card?",
+  "tarInformeTitulo": "Informe o título do card",
+  "tarColunaBacklog": "Backlog",
+  "tarColunaEmProgresso": "Em Progresso",
+  "tarColunaEmRevisao": "Em Revisão",
+  "tarColunaConcluido": "Concluído",
+  "atvFiltrar": "Filtrar atividades",
+  "atvFecharFiltro": "Fechar filtro",
+  "atvErroCarregar": "Não foi possível carregar as atividades.",
+  "atvBuscarDica": "Buscar por título, descrição ou responsável",
+  "atvCarregando": "Carregando atividades...",
+  "atvNenhuma": "Nenhuma atividade encontrada",
+  "atvNenhumaDica": "Ajuste os filtros ou crie uma nova atividade.",
+  "atvCriarNova": "Criar nova atividade",
+  "atvNova": "Nova Atividade",
+  "atvEditar": "Editar Atividade",
+  "atvFecharFormulario": "Fechar formulário",
+  "atvTituloDica": "Digite o título da atividade",
+  "atvDescricaoDica": "Descreva a atividade em detalhes",
+  "atvResponsavel": "Responsável",
+  "atvCriada": "Atividade criada com sucesso!",
+  "atvAtualizada": "Atividade atualizada com sucesso!",
+  "atvExcluida": "Atividade excluída com sucesso!",
+  "atvAgendaOperacional": "Agenda operacional",
+  "atvConcluidas": "Concluídas",
+  "atvPendentes": "Pendentes",
+  "atvAbrir": "Abrir atividade {titulo}",
+  "@atvAbrir": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "atvMaisAcoes": "Mais ações da atividade",
+  "atvFecharDetalhes": "Fechar detalhes da atividade",
+  "atvData": "Data",
+  "atvInformeTitulo": "Informe o título da atividade",
+  "atvInformeDescricao": "Informe a descrição da atividade",
+  "atvStatusConcluida": "Concluída",
+  "atvStatusEmProgresso": "Em progresso",
+  "atvStatusAgendada": "Agendada",
+  "atvStatusPendente": "Pendente",
+  "relErroCarregar": "Não foi possível carregar os relatórios.",
+  "relBaixado": "Relatório baixado: {titulo}",
+  "@relBaixado": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "relLinkGerado": "Link de compartilhamento gerado para {titulo}",
+  "@relLinkGerado": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "relBuscarDica": "Buscar por título, descrição ou autor",
+  "relArrasteDica": "Arraste lateralmente para ver todos os status.",
+  "relDisponiveisConsulta": "relatórios disponíveis para consulta",
+  "relCarregando": "Carregando relatórios...",
+  "relNenhum": "Nenhum relatório encontrado",
+  "relNenhumDica": "Ajuste os filtros para visualizar resultados.",
+  "relSemPermissao": "Seu perfil não possui permissão para relatórios.",
+  "relAcessoNegado": "Acesso não permitido para este perfil.",
+  "relCentral": "Central de relatórios",
+  "relDisponiveis": "Disponíveis",
+  "relPublicados": "Publicados",
+  "relEmRevisao": "Em revisão",
+  "relVer": "Ver relatório {titulo}",
+  "@relVer": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "relMaisAcoes": "Mais ações do relatório",
+  "relVisualizar": "Visualizar",
+  "relBaixarPdf": "Baixar PDF",
+  "relCompartilhar": "Compartilhar",
+  "relFecharDetalhes": "Fechar detalhes do relatório",
+  "relTipo": "Tipo de relatório",
+  "relAutor": "Autor",
+  "relDownloads": "Downloads",
+  "relCompartilhamentos": "Compartilhamentos",
+  "relStatusTodos": "Todos",
+  "relStatusPublicado": "Publicado",
+  "relStatusAgendado": "Agendado",
+  "relStatusDisponivel": "Disponível",
+  "relTipoAnaliseGeral": "Análise Geral",
+  "relTipoRecursosHumanos": "Recursos Humanos",
+  "relTipoDesempenho": "Desempenho",
+  "relTipoInfraestrutura": "Infraestrutura",
+  "relTipoConformidade": "Conformidade",
+  "relPdfBaixadoAgora": "PDF baixado agora",
+  "relCompartilhadoAgora": "Compartilhado agora",
+  "cdBuscarDocente": "Buscar docente por nome, e-mail ou departamento",
+  "cdOrdemCrescente": "Ordem crescente",
+  "cdOrdemDecrescente": "Ordem decrescente",
+  "cdNenhumDocente": "Nenhum docente encontrado",
+  "cdAdicionarDocente": "Adicionar docente",
+  "cdNovoDocente": "Novo Docente",
+  "cdEditarDocente": "Editar Docente",
+  "cdAdicionar": "Adicionar",
+  "cdDocenteAdicionado": "Docente adicionado com sucesso!",
+  "cdDocenteAtualizado": "Docente atualizado com sucesso!",
+  "cdDocenteExcluido": "Docente excluído com sucesso!",
+  "cdFecharFormulario": "Fechar formulário do docente",
+  "cdNomeCompleto": "Nome Completo",
+  "cdNomeDica": "Digite o nome do docente",
+  "cdEmailAcesso": "Email de acesso",
+  "cdDepartamento": "Departamento",
+  "cdDepartamentoDica": "Digite o departamento",
+  "cdCargaMaxima": "Carga Horária Máxima Semanal (horas)",
+  "cdRegimeEbtt": "Regime EBTT",
+  "cdRegimeOpcao": "{label} ({code})",
+  "@cdRegimeOpcao": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "cdDistribuicaoAulasSemana": "Distribuição em aulas: {horas}h/sem",
+  "@cdDistribuicaoAulasSemana": {
+    "placeholders": {
+      "horas": {
+        "type": "int"
+      }
+    }
+  },
+  "cdRegimeLimite": "Regime {code}: limite legal semanal de {limite}h na carreira EBTT. Pesquisa, extensão e gestão continuam dependentes da normativa interna da instituição.",
+  "@cdRegimeLimite": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      },
+      "limite": {
+        "type": "int"
+      }
+    }
+  },
+  "cdDisciplinas": "Disciplinas",
+  "cdHorariosAula": "Horários de Aula",
+  "cdNenhumHorario": "Nenhum horário cadastrado",
+  "cdHorasSemana": "{horas}h/sem",
+  "@cdHorasSemana": {
+    "placeholders": {
+      "horas": {
+        "type": "int"
+      }
+    }
+  },
+  "cdCargaDistribuida": "Carga distribuída em aulas: {horas}h/sem",
+  "@cdCargaDistribuida": {
+    "placeholders": {
+      "horas": {
+        "type": "int"
+      }
+    }
+  },
+  "cdAdicionarDisciplina": "Adicionar Disciplina",
+  "cdNomeDisciplina": "Nome da Disciplina",
+  "cdExemploDisciplina": "Ex: Programação I",
+  "cdAdicionarHorario": "Adicionar Horário",
+  "cdDiaSemana": "Dia da Semana",
+  "cdInicio": "Início",
+  "cdFim": "Fim",
+  "cdDisciplina": "Disciplina",
+  "cdCargaHoraria": "Carga Horária",
+  "cdExemploCarga": "Ex: 2h/sem · 80h",
+  "cdTurma": "Turma",
+  "cdModalidade": "Modalidade",
+  "cdExcluirMensagem": "Tem certeza que deseja excluir {nome}?",
+  "@cdExcluirMensagem": {
+    "placeholders": {
+      "nome": {
+        "type": "String"
+      }
+    }
+  },
+  "cdSugestaoEquilibrada": "A distribuição atual está equilibrada. Priorize acompanhamento quinzenal e ajuste fino por disciplina.",
+  "cdSugestaoPressao": "Docentes com maior pressão: {nomes}. Considere redistribuir turmas práticas e orientações para reduzir risco de sobrecarga.",
+  "@cdSugestaoPressao": {
+    "placeholders": {
+      "nomes": {
+        "type": "String"
+      }
+    }
+  },
+  "cdSugestaoOciosa": "Há capacidade ociosa com {nomes}. Priorize alocação de componentes compartilhados e reforço em horários de laboratório.",
+  "@cdSugestaoOciosa": {
+    "placeholders": {
+      "nomes": {
+        "type": "String"
+      }
+    }
+  },
+  "cdSugestaoRevisao": "Programe revisão semanal conjunta entre coordenação e laboratórios para reduzir conflitos de agenda e janelas vazias.",
+  "cdRedistribuicoesAplicadas": "{count, plural, =1{1 redistribuição aplicada com sucesso.} other{{count} redistribuições aplicadas com sucesso.}}",
+  "@cdRedistribuicoesAplicadas": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cdMaisAcoes": "Mais ações do docente",
+  "cdRegimeDocente": "Regime EBTT: {label} ({code})",
+  "@cdRegimeDocente": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "cdDistribuicaoAulas": "Distribuição em aulas: {horas}h/{maximo}h",
+  "@cdDistribuicaoAulas": {
+    "placeholders": {
+      "horas": {
+        "type": "int"
+      },
+      "maximo": {
+        "type": "int"
+      }
+    }
+  },
+  "cdOtimizacao": "Otimização da distribuição",
+  "cdSimular": "Simular",
+  "cdAproveitamentoMedio": "de aproveitamento médio da carga horária",
+  "cdOcupacaoMedia": "Ocupação média",
+  "cdAltaCarga": "Alta carga (>=90%)",
+  "cdBaixaCarga": "Baixa carga (<=50%)",
+  "cdSimulacao": "Simulação de redistribuição",
+  "cdOcupacaoPrevista": "Ocupação média prevista: {antes}% -> {depois}%",
+  "@cdOcupacaoPrevista": {
+    "placeholders": {
+      "antes": {
+        "type": "String"
+      },
+      "depois": {
+        "type": "String"
+      }
+    }
+  },
+  "cdNenhumaRedistribuicao": "Nenhuma redistribuição segura foi encontrada para o cenário atual.",
+  "cdAplicarSugestao": "Aplicar sugestão",
+  "cdAcessoRestrito": "Acesso restrito",
+  "cdAcessoRestritoMensagem": "Somente docentes, coordenação e chefia podem acessar esta área.",
+  "cdAgendaDocente": "Agenda do docente",
+  "cdDistribuicaoSemanal": "Distribuição semanal",
+  "cdConviteReuniao": "Convite para reunião",
+  "cdConviteEnviadoAgenda": "Convite enviado via agenda do SIGAD.",
+  "cdEnviarConviteReuniao": "Enviar convite de reunião",
+  "cdTituloConvite": "Título do convite",
+  "cdTituloConviteDica": "Ex: Reunião de alinhamento",
+  "cdDescricaoConviteDica": "Detalhes do convite",
+  "cdLocal": "Local",
+  "cdLocalDica": "Sala 12 ou Online",
+  "cdHorarioInvalido": "Não foi possível interpretar o horário da célula.",
+  "cdInformeTituloConvite": "Informe o título do convite.",
+  "cdInformeLocalConvite": "Informe o local do convite.",
+  "cdConviteEnviado": "Convite enviado com sucesso para a agenda do docente.",
+  "cdEnviarConvite": "Enviar convite",
+  "cdAgendaSemanal": "Agenda semanal",
+  "cdSemanaDe": "{semana} de {mes}",
+  "@cdSemanaDe": {
+    "placeholders": {
+      "semana": {
+        "type": "String"
+      },
+      "mes": {
+        "type": "String"
+      }
+    }
+  },
+  "cdIntervalo": "{inicio} a {fim}",
+  "@cdIntervalo": {
+    "placeholders": {
+      "inicio": {
+        "type": "String"
+      },
+      "fim": {
+        "type": "String"
+      }
+    }
+  },
+  "cdDiaSelecionado": "Dia selecionado: {dia} ({abreviado} - {completo})",
+  "@cdDiaSelecionado": {
+    "placeholders": {
+      "dia": {
+        "type": "int"
+      },
+      "abreviado": {
+        "type": "String"
+      },
+      "completo": {
+        "type": "String"
+      }
+    }
+  },
+  "cdMes": "{mes, select, 1{Janeiro} 2{Fevereiro} 3{Março} 4{Abril} 5{Maio} 6{Junho} 7{Julho} 8{Agosto} 9{Setembro} 10{Outubro} 11{Novembro} other{Dezembro}}",
+  "@cdMes": {
+    "placeholders": {
+      "mes": {
+        "type": "String"
+      }
+    }
+  },
+  "cdDiaSab": "Sab",
+  "cdDiaDom": "Dom",
+  "cdDiaSabado": "sábado",
+  "cdDiaDomingo": "domingo",
+  "cdTurnoCurtoM": "M",
+  "cdTurnoCurtoT": "T",
+  "cdTurnoCurtoN": "N",
+  "cdLivre": "Livre",
+  "cdAula": "Aula",
+  "cdOcupado": "Ocupado",
+  "cdHorarioIndefinido": "Horário indefinido",
+  "cdSegunda": "Segunda",
+  "cdTerca": "Terça",
+  "cdQuarta": "Quarta",
+  "cdQuinta": "Quinta",
+  "cdSexta": "Sexta",
+  "cdModalidadeIntegral": "Integral",
+  "cdModalidadeConcomitante": "Concomitante",
+  "cdModalidadeSubsequente": "Subsequente",
+  "cdModalidadeEja": "EJA",
+  "cdModalidadeSuperior": "Superior",
+  "cdRegime20h": "20 horas",
+  "cdRegime40h": "40 horas",
+  "cdRegimeDe": "Dedicação exclusiva",
+  "cdInformeNome": "Informe o nome do docente",
+  "cdInformeDepartamento": "Informe o departamento",
+  "cdInformeCargaMaxima": "Informe uma carga horária máxima válida",
+  "cdRegimePermite": "O regime {code} permite até {limite}h semanais.",
+  "@cdRegimePermite": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      },
+      "limite": {
+        "type": "String"
+      }
+    }
+  },
+  "cdAdicioneDisciplina": "Adicione pelo menos uma disciplina",
+  "cdDistribuicaoExcede": "A distribuição semanal cadastrada ({distribuida}h) excede a carga máxima do docente ({maxima}h).",
+  "@cdDistribuicaoExcede": {
+    "placeholders": {
+      "distribuida": {
+        "type": "String"
+      },
+      "maxima": {
+        "type": "String"
+      }
+    }
+  },
+  "cdInformeNomeDisciplina": "Informe o nome da disciplina.",
+  "cdDisciplinaJaAdicionada": "Disciplina já adicionada.",
+  "cdInformeInicioFim": "Informe horário de início e fim.",
+  "cdFormatoHorario": "Use o formato HH:MM para os horários.",
+  "cdFimPosterior": "O horário de fim deve ser posterior ao de início.",
+  "cdConflitoHorario": "Já existe horário cadastrado em conflito para {dia}.",
+  "@cdConflitoHorario": {
+    "placeholders": {
+      "dia": {
+        "type": "String"
+      }
+    }
+  },
+  "vgCargaAlocada": "Carga horária alocada",
+  "vgVsMesAnterior6": "↑ 6% vs. mês anterior",
+  "vgLabsEmUso": "Laboratórios em uso",
+  "vgVsSemana12": "↑ 12% vs. semana anterior",
+  "vgNoticiasEnviadas": "Notícias enviadas",
+  "vgVsSemana3": "↑ 3 vs. semana anterior",
+  "vgPendenciasAbertas": "Pendências em aberto",
+  "vgVsSemana1": "↓ 1 vs. semana anterior",
+  "vgIndicadoresPainel": "Indicadores do painel",
+  "vgEscolhaIndicadores": "Escolha quais indicadores aparecem no panorama.",
+  "vgPanorama": "Panorama do departamento",
+  "vgAtualizadoAgora": "Atualizado agora",
+  "vgPersonalizarIndicadores": "Personalizar indicadores",
+  "vgProximasPrioridades": "Próximas prioridades",
+  "vgPrioridadesDepartamento": "Prioridades do departamento",
+  "vgPrioridadesSub": "Planejamento e atividades mais próximas",
+  "vgPersonalizar": "Personalizar",
+  "vgNenhumIndicador": "Nenhum indicador selecionado. Toque no ícone ao lado para escolher.",
+  "vgOntem": "Ontem",
+  "vgMensagemEnviada": "Mensagem enviada.",
+  "vgSelecioneUsuarios": "Selecione usuários ou grupos para iniciar uma conversa.",
+  "vgPeriodo": "Período",
+  "vgTipo": "Tipo",
+  "vgArea": "Área",
+  "vgLaboratorio": "Laboratório",
+  "vgVisualizacao": "Visualização",
+  "vgAcaoRegistrada": "Ação registrada.",
+  "vgContinuar": "Continuar",
+  "vgResultados": "{count, plural, =1{1 resultado} other{{count} resultados}}",
+  "@vgResultados": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vgItens": "{count, plural, =1{1 item} other{{count} itens}}",
+  "@vgItens": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vgPrazo": "Prazo {data}",
+  "@vgPrazo": {
+    "placeholders": {
+      "data": {
+        "type": "String"
+      }
+    }
+  },
+  "vgComunicacao": "COMUNICAÇÃO",
+  "vgChatSub": "Conversas, grupos e avisos internos do DEE.",
+  "vgSelecioneConversa": "Selecione uma conversa.",
+  "vgDisponivel": "Disponível",
+  "vgEscreverMensagem": "Escrever mensagem",
+  "vgGestaoAcademica": "GESTÃO ACADÊMICA",
+  "vgCargaSub": "Distribuição, limites, conflitos e validação das atividades.",
+  "vgNovaDistribuicao": "Nova distribuição",
+  "vgNovaDistribuicaoMsg": "Cadastre disciplinas, atividades e carga do docente.",
+  "vgBuscarProfessor": "Buscar professor",
+  "vgDocentes": "Docentes",
+  "vgPeriodoValor": "Período {periodo}",
+  "@vgPeriodoValor": {
+    "placeholders": {
+      "periodo": {
+        "type": "String"
+      }
+    }
+  },
+  "vgCargaRegular": "Carga regular",
+  "vgDoQuadro": "75% do quadro",
+  "vgRequerAtencao": "Requer atenção",
+  "vgAbaixoAcima": "Abaixo ou acima do limite",
+  "vgConflitos": "Conflitos",
+  "vgHorariosSobrepostos": "Horários sobrepostos",
+  "vgDistribuicaoPorDocente": "Distribuição por docente",
+  "vgDistribuicaoSub": "Ensino, pesquisa, extensão, gestão e orientações",
+  "vgEnsinoOutras": "Ensino: {ensino}h · Outras atividades: {outras}h",
+  "@vgEnsinoOutras": {
+    "placeholders": {
+      "ensino": {
+        "type": "String"
+      },
+      "outras": {
+        "type": "String"
+      }
+    }
+  },
+  "vgTotalDeMaximo": "{total} h de {maximo} h",
+  "@vgTotalDeMaximo": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      },
+      "maximo": {
+        "type": "String"
+      }
+    }
+  },
+  "vgGestaoPessoas": "GESTÃO DE PESSOAS",
+  "vgProfessoresSub": "Quadro docente, áreas, situação funcional e carga atual.",
+  "vgCadastrar": "Cadastrar",
+  "vgCadastrarProfessor": "Cadastrar professor",
+  "vgCadastrarProfessorMsg": "Informe dados funcionais, área e vínculo.",
+  "vgBuscarNomeArea": "Buscar nome ou área",
+  "vgProfessorDetalhe": "Área: {area}\nCarga atual: {carga}\nSituação: {situacao}",
+  "@vgProfessorDetalhe": {
+    "placeholders": {
+      "area": {
+        "type": "String"
+      },
+      "carga": {
+        "type": "String"
+      },
+      "situacao": {
+        "type": "String"
+      }
+    }
+  },
+  "vgCargaAtual": "Carga atual: {carga}",
+  "@vgCargaAtual": {
+    "placeholders": {
+      "carga": {
+        "type": "String"
+      }
+    }
+  },
+  "vgPlanejamento": "PLANEJAMENTO",
+  "vgDemandasSub": "Solicitações, responsáveis, prazos e acompanhamento.",
+  "vgNovaDemanda": "Nova demanda",
+  "vgNovaDemandaMsg": "Cadastre descrição, responsável, prazo e prioridade.",
+  "vgNoPeriodoAtual": "No período atual",
+  "vgDoTotal58": "58% do total",
+  "vgAtrasadas": "Atrasadas",
+  "vgAcaoNecessaria": "Ação necessária",
+  "vgBuscarDemanda": "Buscar demanda",
+  "vgListaDemandas": "Lista de demandas",
+  "vgDemandaDetalhe": "{id}\nResponsável: {responsavel}\nPrazo: {prazo}\nPrioridade: {prioridade}",
+  "@vgDemandaDetalhe": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      },
+      "responsavel": {
+        "type": "String"
+      },
+      "prazo": {
+        "type": "String"
+      },
+      "prioridade": {
+        "type": "String"
+      }
+    }
+  },
+  "vgExecucao": "EXECUÇÃO",
+  "vgTarefasSub": "Quadro visual para acompanhar atividades e responsáveis.",
+  "vgNovaTarefa": "Nova tarefa",
+  "vgNovaTarefaMsg": "Defina título, responsável, prazo e prioridade.",
+  "vgAdicionarTarefaEm": "Ação para adicionar tarefa em {coluna}.",
+  "@vgAdicionarTarefaEm": {
+    "placeholders": {
+      "coluna": {
+        "type": "String"
+      }
+    }
+  },
+  "vgInfraestrutura": "INFRAESTRUTURA",
+  "vgLabsSub": "Disponibilidade, reservas, conflitos e manutenção.",
+  "vgNovaReserva": "Nova reserva",
+  "vgNovaReservaMsg": "Selecione laboratório, data, turno, disciplina e responsável.",
+  "vgReservasHoje": "Reservas hoje",
+  "vgCincoLabs": "5 laboratórios",
+  "vgEmUso": "Em uso",
+  "vgNesteHorario": "Neste horário",
+  "vgEmManutencao": "Em manutenção",
+  "vgAcessoRestrito": "Acesso temporariamente restrito",
+  "vgNenhumaSobreposicao": "Nenhuma sobreposição",
+  "vgAgendaSemanalSub": "Períodos de segunda a sexta",
+  "vgCalendarioReservas": "Calendário de reservas",
+  "vgVisaoMes": "Visão consolidada do mês",
+  "vgOcupacaoOtimizacao": "Ocupação e otimização",
+  "vgUsoMedio": "Uso médio e horários disponíveis",
+  "vgReservado": "Reservado",
+  "vgLivre": "Livre",
+  "vgComReservas": "Com reservas",
+  "vgAcompanhamento": "ACOMPANHAMENTO",
+  "vgAtividadesSub": "Ações acadêmicas e administrativas com prazos e responsáveis.",
+  "vgNovaAtividade": "Nova atividade",
+  "vgNovaAtividadeMsg": "Cadastre título, categoria, prazo e responsável.",
+  "vgBuscarAtividade": "Buscar atividade",
+  "vgAtividadesPeriodo": "Atividades do período",
+  "vgAtividadeDetalhe": "Categoria: {categoria}\nPrazo: {prazo}\nStatus: {status}",
+  "@vgAtividadeDetalhe": {
+    "placeholders": {
+      "categoria": {
+        "type": "String"
+      },
+      "prazo": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "vgAnalise": "ANÁLISE",
+  "vgRelatoriosSub": "Indicadores, documentos e exportações para apoio à gestão.",
+  "vgGerarRelatorio": "Gerar relatório",
+  "vgGerarRelatorioMsg": "Selecione fonte, período, formato e filtros.",
+  "vgRelatoriosDisponiveis": "Relatórios disponíveis",
+  "vgQuatroCategorias": "4 categorias",
+  "vgExportadosMes": "Exportados no mês",
+  "vgAgendados": "Agendados",
+  "vgEnvioAutomatico": "Envio automático",
+  "vgAbrindo": "Abrindo {titulo}.",
+  "@vgAbrindo": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      }
+    }
+  },
+  "vgExportacaoPreparada": "Exportação preparada.",
+  "vgExportar": "Exportar",
+  "vgAtualizadoHoje": "Atualizado hoje",
+  "vgAtualizadoOntem": "Atualizado ontem",
+  "vgAtualizadoEm": "Atualizado em {data}",
+  "@vgAtualizadoEm": {
+    "placeholders": {
+      "data": {
+        "type": "String"
+      }
+    }
+  },
+  "vgPreferencias": "PREFERÊNCIAS",
+  "vgConfigSub": "Conta, notificações, aparência, segurança e dados.",
+  "vgConfigSalvas": "Configurações salvas.",
+  "vgPerfilConta": "Perfil e conta",
+  "vgDadosSessao": "Dados da sessão atual",
+  "vgNomeExibicao": "Nome de exibição",
+  "vgUsuarioInstitucional": "Usuário institucional",
+  "vgEmail": "E-mail",
+  "vgContaInstitucional": "Conta institucional",
+  "vgPerfilAcesso": "Perfil de acesso",
+  "vgDefinidoAutenticacao": "Definido pela autenticação",
+  "vgEditarPerfil": "Editar perfil",
+  "vgEditarPerfilMsg": "Atualize dados pessoais e preferências.",
+  "vgCanaisAlertas": "Canais e alertas",
+  "vgNotifApp": "Notificações no aplicativo",
+  "vgNotifAppSub": "Alertas, convites e prazos",
+  "vgNotifEmail": "Notificações por e-mail",
+  "vgNotifEmailSub": "Resumo e comunicações importantes",
+  "vgAparencia": "Aparência",
+  "vgDensidade": "Densidade e visualização",
+  "vgModoCompacto": "Modo compacto",
+  "vgModoCompactoSub": "Exibe mais informações por tela",
+  "vgTema": "Tema",
+  "vgTemaValor": "Segue a configuração do aplicativo",
+  "vgSegurancaDados": "Segurança e dados",
+  "vgSessaoAcesso": "Sessão, acesso e armazenamento",
+  "vgBiometria": "Biometria",
+  "vgBiometriaSub": "Usar autenticação do dispositivo",
+  "vgSincronizacao": "Sincronização",
+  "vgSincronizacaoValor": "Automática quando disponível",
+  "vgLimparDados": "Limpar dados locais",
+  "vgLimparDadosMsg": "Esta ação remove apenas caches e preferências locais.",
+  "vgOpTodos": "Todos",
+  "vgOpTodas": "Todas",
+  "vgOpRegular": "Regular",
+  "vgOpAtencao": "Atenção",
+  "vgOpExcedida": "Excedida",
+  "vgOpAtivo": "Ativo",
+  "vgOpAfastamento": "Afastamento",
+  "vgOpEmAnalise": "Em análise",
+  "vgOpEmAndamento": "Em andamento",
+  "vgOpAguardando": "Aguardando",
+  "vgOpAtrasada": "Atrasada",
+  "vgOpAFazer": "A fazer",
+  "vgOpConcluido": "Concluído",
+  "vgOpPendente": "Pendente",
+  "vgOpEmProgresso": "Em progresso",
+  "vgOpConcluida": "Concluída",
+  "vgOpAgendaSemanal": "Agenda semanal",
+  "vgOpCalendarioMensal": "Calendário mensal",
+  "vgOpOcupacao": "Ocupação",
+  "vgOpAcademico": "Acadêmico",
+  "vgOpGestao": "Gestão",
+  "vgOpProdutividade": "Produtividade"
 }

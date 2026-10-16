@@ -59,7 +59,6 @@ const List<NavigationItem> kNavigationItems = [
     availableFor: {
       UserRole.professor,
       UserRole.coordenador,
-      UserRole.servidorAdministrativo,
       UserRole.chefeDepartamento,
     },
   ),

@@ -1,12 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../app/theme/sigad_colors.dart';
 import '../../app/theme/sigad_icon.dart';
 import '../../app/theme/sigad_icons.dart';
-import '../../core/services/user_context_provider.dart';
 import '../../l10n/l10n.dart';
 
 /// Item exibido em um slide de lista do [WelcomeHero].
@@ -37,7 +35,7 @@ class WelcomeHero extends StatefulWidget {
     this.rotacaoAutomatica = true,
   });
 
-  /// Horário opcional para capturas de interface determinísticas.
+  /// Instante usado nas boas-vindas. Nulo usa o horário atual.
   final DateTime? agora;
 
   /// Avisos do mural. Sem avisos, o slide de avisos não aparece.
@@ -112,7 +110,6 @@ class _WelcomeHeroState extends State<WelcomeHero> {
 
   @override
   Widget build(BuildContext context) {
-    final userContext = _maybeUserContext(context);
     final avisos = widget.avisos;
 
     final slides = [
@@ -120,7 +117,6 @@ class _WelcomeHeroState extends State<WelcomeHero> {
         context.l10n.boasVindas,
         _WelcomeCard(
           key: const ValueKey('hero-boas-vindas'),
-          nome: userContext?.currentUser?.name,
           agora: widget.agora ?? DateTime.now(),
           frase: widget.frase,
         ),
@@ -148,6 +144,7 @@ class _WelcomeHeroState extends State<WelcomeHero> {
             botao: context.l10n.verTudo,
             maxVisiveis: 3,
             itens: widget.resumo,
+            tipografiaCompacta: true,
           ),
         ),
     ];
@@ -165,17 +162,13 @@ class _WelcomeHeroState extends State<WelcomeHero> {
       key: const Key('welcome-hero'),
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [SigadColors.brand, SigadColors.brandDeep],
-        ),
+        color: const Color(0xFFF0F6F2),
         borderRadius: BorderRadius.circular(28),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x33004D40),
-            blurRadius: 24,
-            offset: Offset(0, 10),
+            color: Color(0x0A004D40),
+            blurRadius: 12,
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -225,44 +218,26 @@ class _WelcomeHeroState extends State<WelcomeHero> {
   }
 }
 
-UserContextProvider? _maybeUserContext(BuildContext context) {
-  try {
-    return Provider.of<UserContextProvider>(context);
-  } on ProviderNotFoundException {
-    return null;
-  }
-}
-
 class _WelcomeCard extends StatelessWidget {
-  const _WelcomeCard({
-    super.key,
-    required this.nome,
-    required this.agora,
-    required this.frase,
-  });
+  const _WelcomeCard({super.key, required this.agora, required this.frase});
 
-  final String? nome;
   final DateTime agora;
   final String? frase;
 
   @override
   Widget build(BuildContext context) {
     final hora = agora.hour;
-    final (saudacao, icone) = hora >= 5 && hora < 12
-        ? (context.l10n.bomDia, SigadIcons.sol)
+    final icone = hora >= 5 && hora < 12
+        ? SigadIcons.sol
         : hora >= 12 && hora < 18
-        ? (context.l10n.boaTarde, SigadIcons.entardecer)
-        : (context.l10n.boaNoite, SigadIcons.lua);
-    final primeiroNome = nome?.trim().split(RegExp(r'\s+')).first ?? '';
-    final titulo = primeiroNome.isEmpty
-        ? context.l10n.saudacaoSemNome(saudacao)
-        : context.l10n.saudacaoComNome(saudacao, primeiroNome);
+        ? SigadIcons.entardecer
+        : SigadIcons.lua;
     final frase = this.frase ?? context.l10n.fraseSemCadastro;
     final textTheme = Theme.of(context).textTheme;
 
     return Semantics(
       container: true,
-      label: '$titulo $frase',
+      label: frase,
       excludeSemantics: true,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -271,10 +246,10 @@ class _WelcomeCard extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: SigadColors.accent.withValues(alpha: 0.22),
+              color: const Color(0xFF426F5A).withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: SigadIcon(icone, color: SigadColors.accent, size: 26),
+            child: SigadIcon(icone, color: const Color(0xFF426F5A), size: 26),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -282,19 +257,9 @@ class _WelcomeCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  titulo,
-                  style: textTheme.headlineSmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                    height: 1.2,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
                   frase,
                   style: textTheme.bodyLarge?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF3D5146),
                     height: 1.35,
                   ),
                 ),
@@ -302,7 +267,7 @@ class _WelcomeCard extends StatelessWidget {
                 Text(
                   context.l10n.departamentoCampus,
                   style: textTheme.bodyMedium?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.90),
+                    color: const Color(0xFF3D5146),
                     height: 1.25,
                   ),
                 ),
@@ -324,6 +289,7 @@ class _ListaHeroCard extends StatelessWidget {
     required this.botao,
     required this.itens,
     this.maxVisiveis = 2,
+    this.tipografiaCompacta = false,
   });
 
   final IconData icone;
@@ -332,6 +298,7 @@ class _ListaHeroCard extends StatelessWidget {
   final String botao;
   final List<WelcomeHeroItem> itens;
   final int maxVisiveis;
+  final bool tipografiaCompacta;
 
   @override
   Widget build(BuildContext context) {
@@ -342,14 +309,17 @@ class _ListaHeroCard extends StatelessWidget {
       children: [
         Row(
           children: [
-            SigadIcon(icone, color: SigadColors.accent),
+            SigadIcon(icone, color: const Color(0xFF426F5A)),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 titulo,
                 style: textTheme.titleLarge?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF243B30),
+                  fontSize: tipografiaCompacta ? 16 : null,
+                  fontWeight: tipografiaCompacta
+                      ? FontWeight.w700
+                      : FontWeight.w800,
                 ),
               ),
             ),
@@ -366,12 +336,12 @@ class _ListaHeroCard extends StatelessWidget {
                   width: 42,
                   height: 42,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.14),
+                    color: const Color(0xFF426F5A).withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: SigadIcon(
                     item.icon,
-                    color: _tomClaro(item.color),
+                    color: _tomEscuro(item.color),
                     size: 24,
                   ),
                 ),
@@ -383,8 +353,11 @@ class _ListaHeroCard extends StatelessWidget {
                       Text(
                         item.title,
                         style: textTheme.titleMedium?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF243B30),
+                          fontSize: tipografiaCompacta ? 14 : null,
+                          fontWeight: tipografiaCompacta
+                              ? FontWeight.w600
+                              : FontWeight.w700,
                           height: 1.25,
                         ),
                       ),
@@ -393,7 +366,8 @@ class _ListaHeroCard extends StatelessWidget {
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                         style: textTheme.bodyMedium?.copyWith(
-                          color: Colors.white.withValues(alpha: 0.76),
+                          fontSize: tipografiaCompacta ? 13 : null,
+                          color: const Color(0xFF506359),
                           height: 1.3,
                         ),
                       ),
@@ -408,10 +382,10 @@ class _ListaHeroCard extends StatelessWidget {
           child: TextButton(
             onPressed: () => _mostrarTodos(context),
             style: TextButton.styleFrom(
-              foregroundColor: Colors.white,
+              foregroundColor: const Color(0xFF426F5A),
               minimumSize: const Size(48, 48),
             ),
-            child: Text(botao, style: const TextStyle(fontSize: 16)),
+            child: Text(botao, style: TextStyle(fontSize: 12)),
           ),
         ),
       ],
@@ -481,9 +455,9 @@ class _HeroDots extends StatelessWidget {
                     width: i == atual ? 18 : 8,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(
-                        alpha: i == atual ? 0.95 : 0.4,
-                      ),
+                      color: const Color(
+                        0xFF426F5A,
+                      ).withValues(alpha: i == atual ? 1 : 0.3),
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -496,5 +470,5 @@ class _HeroDots extends StatelessWidget {
   }
 }
 
-/// Clareia o tom para manter contraste sobre o fundo verde escuro do card.
-Color _tomClaro(Color tom) => Color.lerp(tom, Colors.white, 0.72)!;
+/// Escurece o tom para manter contraste sobre o fundo verde claro do card.
+Color _tomEscuro(Color tom) => Color.lerp(tom, const Color(0xFF243B30), 0.72)!;

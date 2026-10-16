@@ -12,6 +12,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancelar => 'Cancel';
 
   @override
+  String get nomeSaudacao => 'Greeting name';
+
+  @override
+  String get nomeSaudacaoAjuda =>
+      'Only on this device. Leave empty to use the first name from your account.';
+
+  @override
+  String get nomeSaudacaoErro => 'Could not save. Please try again.';
+
+  @override
+  String get nomeSaudacaoSalvo => 'Greeting name saved.';
+
+  @override
+  String get nomeSaudacaoSalvando => 'Saving…';
+
+  @override
   String get fechar => 'Close';
 
   @override
@@ -325,7 +341,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get proximasAtividades => 'Upcoming activities';
 
   @override
-  String get proximasAtividadesSub => 'Commitments that still need attention';
+  String get proximasAtividadesSub => 'Pending commitments';
 
   @override
   String get nenhumaAtividadeAberta => 'No open activities.';
@@ -1034,4 +1050,2042 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get labOutrosHorarios => 'Book other slots on this day';
+
+  @override
+  String get paginaNaoEncontrada => 'Page not found';
+
+  @override
+  String get paginaNaoEncontradaMensagem =>
+      'The address does not match any SIGAD module.';
+
+  @override
+  String get voltarVisaoGeral => 'Back to overview';
+
+  @override
+  String get maisCargaDocenteDesc => 'Plan and track teaching hours.';
+
+  @override
+  String get maisProfessoresDesc => 'Manage department faculty.';
+
+  @override
+  String get maisLaboratoriosDesc => 'Resources, bookings and occupancy.';
+
+  @override
+  String get maisReunioes => 'Meetings';
+
+  @override
+  String get maisReunioesDesc => 'Agendas, minutes and attendees.';
+
+  @override
+  String get maisDemandasDesc => 'Track and manage requests.';
+
+  @override
+  String get maisNoticias => 'News';
+
+  @override
+  String get maisNoticiasDesc => 'Announcements and bulletins.';
+
+  @override
+  String get maisRelatoriosDesc => 'Department indicators and data.';
+
+  @override
+  String get maisCursos => 'Courses';
+
+  @override
+  String get maisCursosDesc => 'Subjects and academic offerings.';
+
+  @override
+  String get maisAdministracao => 'Administration';
+
+  @override
+  String get maisAgendaIntegrada => 'Integrated calendar';
+
+  @override
+  String get maisAgendaIntegradaDesc =>
+      'View department events and appointments.';
+
+  @override
+  String get maisConfiguracoesDesc => 'Customize app preferences.';
+
+  @override
+  String get maisAjuda => 'Help';
+
+  @override
+  String get maisAjudaDesc => 'Help center, tutorials and support.';
+
+  @override
+  String get maisAvisosImportantes => 'Important notices';
+
+  @override
+  String get maisNenhumAviso => 'No notices right now.';
+
+  @override
+  String get maisCentralAjuda => 'Help center';
+
+  @override
+  String get maisCentralAjudaMensagem =>
+      'Tutorials and support will be available soon. For urgent questions, open a ticket with the campus IT team.';
+
+  @override
+  String get maisDepartamento => 'DEPARTMENT';
+
+  @override
+  String get maisVerTodosAvisos => 'See all notices';
+
+  @override
+  String get maisPrecisaSuporte => 'Need support?';
+
+  @override
+  String get maisFaleComTi => 'Contact the campus IT team.';
+
+  @override
+  String get maisAbrirChamado => 'Open a ticket';
+
+  @override
+  String get muralErroCarregar =>
+      'Could not read the saved board. Editing is locked so data is not overwritten.';
+
+  @override
+  String get muralFrases => 'Quotes';
+
+  @override
+  String get muralAcessoNegado =>
+      'Only the department head can manage the board.';
+
+  @override
+  String get muralNovoAviso => 'New notice';
+
+  @override
+  String get muralNenhumAviso =>
+      'No notices yet.\nWithout notices, the dashboard shows only the welcome message.';
+
+  @override
+  String get muralDesativado => 'Disabled';
+
+  @override
+  String get muralAgendado => 'Scheduled';
+
+  @override
+  String get muralEncerrado => 'Ended';
+
+  @override
+  String get muralNoAr => 'Live';
+
+  @override
+  String get muralTodosPerfis => 'All profiles';
+
+  @override
+  String get muralFixado => 'Pinned';
+
+  @override
+  String get muralModeloInformativo => 'Information';
+
+  @override
+  String get muralModeloImportante => 'Important';
+
+  @override
+  String get muralModeloEvento => 'Event';
+
+  @override
+  String get muralModeloLembrete => 'Reminder';
+
+  @override
+  String get muralExibirAPartirDe => 'Show from';
+
+  @override
+  String get muralExibirAte => 'Show until';
+
+  @override
+  String get muralDataFinalInvalida =>
+      'The end date must be on or after the start date.';
+
+  @override
+  String get muralAvisoPublicado => 'Notice published.';
+
+  @override
+  String get muralErroSalvarAviso => 'Could not save the notice.';
+
+  @override
+  String get muralExcluirAvisoTitulo => 'Delete notice?';
+
+  @override
+  String muralExcluirAvisoMensagem(String titulo) {
+    return '\"$titulo\" will no longer be shown.';
+  }
+
+  @override
+  String get muralAvisoExcluido => 'Notice deleted.';
+
+  @override
+  String get muralErroExcluirAviso => 'Could not delete the notice.';
+
+  @override
+  String get muralEditarAviso => 'Edit notice';
+
+  @override
+  String get muralModelo => 'Type';
+
+  @override
+  String get muralTitulo => 'Title';
+
+  @override
+  String get muralInformeTitulo => 'Enter the notice title.';
+
+  @override
+  String get muralConteudo => 'Content';
+
+  @override
+  String get muralConteudoDica => 'Write the full notice for the department.';
+
+  @override
+  String get muralInformeConteudo => 'Write the notice content.';
+
+  @override
+  String get muralQuemVe => 'Who sees it';
+
+  @override
+  String get muralTodos => 'Everyone';
+
+  @override
+  String get muralPeriodoExibicao => 'Display period';
+
+  @override
+  String get muralAPartirDe => 'From';
+
+  @override
+  String get muralImediatamente => 'Immediately';
+
+  @override
+  String get muralLimparDataInicial => 'Clear start date';
+
+  @override
+  String get muralAte => 'Until';
+
+  @override
+  String get muralSemDataSair => 'No end date';
+
+  @override
+  String get muralLimparDataFinal => 'Clear end date';
+
+  @override
+  String get muralFixarTopo => 'Pin to top';
+
+  @override
+  String get muralFixarTopoSub => 'Shown before other notices.';
+
+  @override
+  String get muralAtivo => 'Active';
+
+  @override
+  String get muralAtivoSub => 'Turn off to hide without deleting.';
+
+  @override
+  String get muralPreviaPainel => 'Dashboard preview';
+
+  @override
+  String get muralPreviaAvisoSub =>
+      'This is how the notice appears in the top card for those who can see it.';
+
+  @override
+  String get muralPreviaTitulo => 'Notice title';
+
+  @override
+  String get muralPreviaConteudo => 'The notice content appears here.';
+
+  @override
+  String get muralPublicarAviso => 'Publish notice';
+
+  @override
+  String get muralExcluirAviso => 'Delete notice';
+
+  @override
+  String get muralNovaFrase => 'New quote';
+
+  @override
+  String get muralEditarFrase => 'Edit quote';
+
+  @override
+  String get muralTrocarFrase => 'Change the quote';
+
+  @override
+  String get muralPeriodoDiaria => 'Every day';
+
+  @override
+  String get muralPeriodoSemanal => 'Every week';
+
+  @override
+  String get muralPeriodoQuinzenal => 'Every 15 days';
+
+  @override
+  String get muralPeriodoMensal => 'Every month';
+
+  @override
+  String get muralErroFrequencia => 'Could not save the frequency.';
+
+  @override
+  String get muralFraseEmExibicao => 'Quote on display';
+
+  @override
+  String get muralNenhumaFrase => 'No active quote.';
+
+  @override
+  String muralFrasesLista(int count) {
+    return 'Quotes ($count) — active ones rotate';
+  }
+
+  @override
+  String get muralFraseAtivaRodizio => 'Quote active in rotation';
+
+  @override
+  String get muralExcluirFrase => 'Delete quote';
+
+  @override
+  String get muralExcluirFraseTitulo => 'Delete quote?';
+
+  @override
+  String get muralErroSalvarFrase => 'Could not save the quote.';
+
+  @override
+  String get muralErroExcluirFrase => 'Could not delete the quote.';
+
+  @override
+  String get muralFrase => 'Quote';
+
+  @override
+  String get muralFraseDica => 'Write a short, motivating quote.';
+
+  @override
+  String get muralEscrevaFrase => 'Write the quote.';
+
+  @override
+  String get muralPreviaFraseSub =>
+      'This is how the quote appears in the welcome card.';
+
+  @override
+  String get muralPreviaFrase => 'The quote appears here.';
+
+  @override
+  String get muralSalvarFrase => 'Save quote';
+
+  @override
+  String get calAgendaCompleta => 'Full schedule';
+
+  @override
+  String get calResumoSemana => 'Week summary';
+
+  @override
+  String calPeriodoSemana(String inicio, String fim) {
+    return '$inicio – $fim';
+  }
+
+  @override
+  String get calVerAgenda => 'View schedule';
+
+  @override
+  String get calEventosAgendados => 'Scheduled events';
+
+  @override
+  String get calReservasLaboratorio => 'Lab bookings';
+
+  @override
+  String get calReuniaoMarcada => 'Scheduled meeting';
+
+  @override
+  String get calDepartamento => 'Department';
+
+  @override
+  String get calTipoItem => 'Item type';
+
+  @override
+  String get calTodos => 'All';
+
+  @override
+  String get calReuniao => 'Meeting';
+
+  @override
+  String get calLaboratorio => 'Laboratory';
+
+  @override
+  String get calComunicacao => 'Communication';
+
+  @override
+  String get calToqueParaAlterar => 'Tap to change';
+
+  @override
+  String calAulaPratica(String disciplina) {
+    return 'Practical class – $disciplina';
+  }
+
+  @override
+  String get calReservaLaboratorio => 'Lab booking';
+
+  @override
+  String calReservaDe(String laboratorio) {
+    return 'Booking: $laboratorio';
+  }
+
+  @override
+  String calResponsavel(String professor) {
+    return 'Responsible: $professor';
+  }
+
+  @override
+  String get calProximosCompromissos => 'Upcoming appointments';
+
+  @override
+  String get calVerTodos => 'See all';
+
+  @override
+  String get calNenhumaReservaFutura => 'No upcoming bookings found.';
+
+  @override
+  String get calAgendaDoDia => 'Day\'s schedule';
+
+  @override
+  String get calVerAgendaCompleta => 'View full schedule';
+
+  @override
+  String get calNenhumCompromisso => 'No appointments on this day.';
+
+  @override
+  String get calOcupacaoHoje => 'Lab occupancy (today)';
+
+  @override
+  String get calNenhumaReserva => 'No bookings yet.';
+
+  @override
+  String calHorariosReservados(int horas, int total) {
+    return '$horas of $total slots booked this week';
+  }
+
+  @override
+  String get calMesAnterior => 'Previous month';
+
+  @override
+  String get calProximoMes => 'Next month';
+
+  @override
+  String get calHoje => 'today';
+
+  @override
+  String calFeriado(String nome) {
+    return 'holiday: $nome';
+  }
+
+  @override
+  String calEventos(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count events',
+      one: '1 event',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notaGeral => 'General';
+
+  @override
+  String get notaReunioes => 'Meetings';
+
+  @override
+  String get notaPlanejamento => 'Planning';
+
+  @override
+  String get notaCargaHoraria => 'Teaching hours';
+
+  @override
+  String get notaEventos => 'Events';
+
+  @override
+  String get notaTodas => 'All';
+
+  @override
+  String get notaNova => 'New note';
+
+  @override
+  String get notaEditar => 'Edit note';
+
+  @override
+  String get notaExcluir => 'Delete note';
+
+  @override
+  String get notaExcluirMensagem =>
+      'Are you sure you want to delete this note?';
+
+  @override
+  String get notaDica => 'Write down an idea, follow-up or reminder...';
+
+  @override
+  String get notaCategoria => 'Category';
+
+  @override
+  String get notaGerenciarFixadas => 'Manage pinned';
+
+  @override
+  String get notaNenhumaCriada => 'No notes created yet.';
+
+  @override
+  String get notaBuscar => 'Search notes, meetings, topics...';
+
+  @override
+  String get notaFixadas => 'Pinned';
+
+  @override
+  String get notaTodasAnotacoes => 'All notes';
+
+  @override
+  String get notaMaisRecentes => 'Newest';
+
+  @override
+  String get notaMaisAntigas => 'Oldest';
+
+  @override
+  String notaOrdenarPor(String ordem) {
+    return 'Sort by: $ordem';
+  }
+
+  @override
+  String get notaNenhumaEncontrada => 'No notes found.';
+
+  @override
+  String get notaVazio => 'No notes. Tap \"+\" to create one.';
+
+  @override
+  String get notaVazioDica =>
+      'Use this space to record follow-ups, ideas and quick reminders.';
+
+  @override
+  String get notaCriarPrimeira => 'Create first note';
+
+  @override
+  String get notaDesafixar => 'Unpin';
+
+  @override
+  String get notaFixar => 'Pin note';
+
+  @override
+  String notaDataHora(String dia, String mes, String hora) {
+    return '$mes/$dia at $hora';
+  }
+
+  @override
+  String get chatFacaLogin => 'Sign in to use the chat.';
+
+  @override
+  String get chatNenhumUsuario => 'No users available to chat with.';
+
+  @override
+  String get chatConversas => 'Conversations';
+
+  @override
+  String get chatNovaConversa => 'New conversation';
+
+  @override
+  String get chatBuscarConversa => 'Search conversations';
+
+  @override
+  String get chatLimparBusca => 'Clear search';
+
+  @override
+  String get chatNenhumaEncontrada => 'No conversations found.';
+
+  @override
+  String get chatNenhumaAinda => 'No conversations yet.\nTap ✏️ to start one.';
+
+  @override
+  String get chatNenhumaMensagem => 'No messages yet.';
+
+  @override
+  String get chatDigiteMensagem => 'Type your message';
+
+  @override
+  String get chatEnviar => 'Send';
+
+  @override
+  String get chatVoltar => 'Back to conversations';
+
+  @override
+  String get chatSelecione => 'Select a conversation\nor start a new one';
+
+  @override
+  String get chatBuscarContato => 'Search by name, email or role';
+
+  @override
+  String get chatNenhumContato => 'No contacts found.';
+
+  @override
+  String chatDiaMes(String dia, String mes) {
+    return '$mes/$dia';
+  }
+
+  @override
+  String get demErroCarregar => 'Could not load the requests.';
+
+  @override
+  String get demErroCarregarTitulo => 'Could not load the data';
+
+  @override
+  String get demErroSalvar =>
+      'Could not save the request. Your data was kept. Please try again.';
+
+  @override
+  String get demBuscar => 'Search requests';
+
+  @override
+  String get demBuscarDica => 'Search by title, description or owner';
+
+  @override
+  String get demBuscarExemplo => 'Title, description or owner';
+
+  @override
+  String demFiltrosAtivos(int count) {
+    return 'Active filters: $count';
+  }
+
+  @override
+  String get demFiltrar => 'Filter requests';
+
+  @override
+  String get demCarregando => 'Loading requests...';
+
+  @override
+  String get demNenhuma => 'No requests found';
+
+  @override
+  String get demLimparFiltrosDica => 'Try clearing the active filters.';
+
+  @override
+  String get demCrieNova => 'Create a new request to get started.';
+
+  @override
+  String get demLimparFiltros => 'Clear filters';
+
+  @override
+  String get demCriarNova => 'Create new request';
+
+  @override
+  String get demFiltros => 'Filters';
+
+  @override
+  String get demFecharFiltros => 'Close filters';
+
+  @override
+  String get demStatus => 'Status';
+
+  @override
+  String get demPrioridade => 'Priority';
+
+  @override
+  String get demOrdenacao => 'Sort order';
+
+  @override
+  String get demLimpar => 'Clear';
+
+  @override
+  String get demAplicar => 'Apply';
+
+  @override
+  String get demNova => 'New Request';
+
+  @override
+  String get demEditar => 'Edit Request';
+
+  @override
+  String get demFecharFormulario => 'Close request form';
+
+  @override
+  String get demTitulo => 'Title';
+
+  @override
+  String get demTituloDica => 'Enter the request title';
+
+  @override
+  String get demDescricao => 'Description';
+
+  @override
+  String get demDescricaoDica => 'Describe the request in detail';
+
+  @override
+  String get demProprietario => 'Owner';
+
+  @override
+  String get demStatusInicial => 'Initial status';
+
+  @override
+  String get demCriar => 'Create';
+
+  @override
+  String get demSalvando => 'Saving...';
+
+  @override
+  String get demCriada => 'Request created successfully!';
+
+  @override
+  String get demAtualizada => 'Request updated successfully!';
+
+  @override
+  String get demExcluida => 'Request deleted successfully!';
+
+  @override
+  String get demConfirmarExclusao => 'Confirm deletion';
+
+  @override
+  String demExcluirMensagem(String titulo) {
+    return 'Are you sure you want to delete $titulo?';
+  }
+
+  @override
+  String get demSemPermissaoCriar =>
+      'Your profile is not allowed to create requests.';
+
+  @override
+  String get demSemPermissaoEditar =>
+      'Your profile is not allowed to edit requests.';
+
+  @override
+  String get demSemPermissaoExcluir =>
+      'Your profile is not allowed to delete requests.';
+
+  @override
+  String get demInformeTitulo => 'Enter the request title';
+
+  @override
+  String get demInformeDescricao => 'Enter the request description';
+
+  @override
+  String get demResumo => 'Requests summary';
+
+  @override
+  String get demNoTotal => 'Total';
+
+  @override
+  String get demAbertas => 'Open';
+
+  @override
+  String get demUrgentes => 'Urgent';
+
+  @override
+  String get demEditarAcao => 'Edit';
+
+  @override
+  String demAbrir(String titulo) {
+    return 'Open request $titulo';
+  }
+
+  @override
+  String get demFecharDetalhes => 'Close request details';
+
+  @override
+  String get demPrazo => 'Due date';
+
+  @override
+  String get demTodas => 'All';
+
+  @override
+  String get demStatusNovo => 'New';
+
+  @override
+  String get demStatusEmAndamento => 'In progress';
+
+  @override
+  String get demStatusAguardando => 'Waiting';
+
+  @override
+  String get demStatusRevisao => 'Review';
+
+  @override
+  String get demStatusConcluido => 'Done';
+
+  @override
+  String get demPrioridadeAlta => 'High';
+
+  @override
+  String get demPrioridadeMedia => 'Medium';
+
+  @override
+  String get demPrioridadeBaixa => 'Low';
+
+  @override
+  String get demOrdemPrazo => 'Nearest due date';
+
+  @override
+  String get demOrdemRecentes => 'Recently created';
+
+  @override
+  String get tarErroCarregar => 'Could not load the task board.';
+
+  @override
+  String get tarNovoCard => 'New card';
+
+  @override
+  String get tarCarregando => 'Loading task board...';
+
+  @override
+  String get tarNenhumCard => 'No cards yet';
+
+  @override
+  String get tarNenhumCardDica => 'Tap + to add the first card to the board.';
+
+  @override
+  String get tarCriarCard => 'Create card';
+
+  @override
+  String get tarArrasteDica =>
+      'Swipe sideways to move between the board columns.';
+
+  @override
+  String tarExcluirCardMensagem(String titulo) {
+    return 'Delete the card \"$titulo\"?';
+  }
+
+  @override
+  String tarCardRemovido(String titulo) {
+    return 'Card \"$titulo\" removed';
+  }
+
+  @override
+  String get tarTituloDica => 'Enter the card title';
+
+  @override
+  String get tarColuna => 'Column';
+
+  @override
+  String get tarCardCriado => 'Card created successfully!';
+
+  @override
+  String get tarSolteAqui => 'Drop here';
+
+  @override
+  String tarCardSemantica(String titulo, String prioridade) {
+    return 'Card: $titulo. Priority $prioridade.';
+  }
+
+  @override
+  String get tarMaisAcoes => 'More card actions';
+
+  @override
+  String tarId(String id) {
+    return 'ID: $id';
+  }
+
+  @override
+  String tarColunaValor(String coluna) {
+    return 'Column: $coluna';
+  }
+
+  @override
+  String tarPrioridadeValor(String prioridade) {
+    return 'Priority: $prioridade';
+  }
+
+  @override
+  String get tarExcluirEsteCard => 'Are you sure you want to delete this card?';
+
+  @override
+  String get tarInformeTitulo => 'Enter the card title';
+
+  @override
+  String get tarColunaBacklog => 'Backlog';
+
+  @override
+  String get tarColunaEmProgresso => 'In Progress';
+
+  @override
+  String get tarColunaEmRevisao => 'In Review';
+
+  @override
+  String get tarColunaConcluido => 'Done';
+
+  @override
+  String get atvFiltrar => 'Filter activities';
+
+  @override
+  String get atvFecharFiltro => 'Close filter';
+
+  @override
+  String get atvErroCarregar => 'Could not load the activities.';
+
+  @override
+  String get atvBuscarDica => 'Search by title, description or owner';
+
+  @override
+  String get atvCarregando => 'Loading activities...';
+
+  @override
+  String get atvNenhuma => 'No activities found';
+
+  @override
+  String get atvNenhumaDica => 'Adjust the filters or create a new activity.';
+
+  @override
+  String get atvCriarNova => 'Create new activity';
+
+  @override
+  String get atvNova => 'New Activity';
+
+  @override
+  String get atvEditar => 'Edit Activity';
+
+  @override
+  String get atvFecharFormulario => 'Close form';
+
+  @override
+  String get atvTituloDica => 'Enter the activity title';
+
+  @override
+  String get atvDescricaoDica => 'Describe the activity in detail';
+
+  @override
+  String get atvResponsavel => 'Owner';
+
+  @override
+  String get atvCriada => 'Activity created successfully!';
+
+  @override
+  String get atvAtualizada => 'Activity updated successfully!';
+
+  @override
+  String get atvExcluida => 'Activity deleted successfully!';
+
+  @override
+  String get atvAgendaOperacional => 'Operational agenda';
+
+  @override
+  String get atvConcluidas => 'Completed';
+
+  @override
+  String get atvPendentes => 'Pending';
+
+  @override
+  String atvAbrir(String titulo) {
+    return 'Open activity $titulo';
+  }
+
+  @override
+  String get atvMaisAcoes => 'More activity actions';
+
+  @override
+  String get atvFecharDetalhes => 'Close activity details';
+
+  @override
+  String get atvData => 'Date';
+
+  @override
+  String get atvInformeTitulo => 'Enter the activity title';
+
+  @override
+  String get atvInformeDescricao => 'Enter the activity description';
+
+  @override
+  String get atvStatusConcluida => 'Completed';
+
+  @override
+  String get atvStatusEmProgresso => 'In progress';
+
+  @override
+  String get atvStatusAgendada => 'Scheduled';
+
+  @override
+  String get atvStatusPendente => 'Pending';
+
+  @override
+  String get relErroCarregar => 'Could not load the reports.';
+
+  @override
+  String relBaixado(String titulo) {
+    return 'Report downloaded: $titulo';
+  }
+
+  @override
+  String relLinkGerado(String titulo) {
+    return 'Share link created for $titulo';
+  }
+
+  @override
+  String get relBuscarDica => 'Search by title, description or author';
+
+  @override
+  String get relArrasteDica => 'Swipe sideways to see all statuses.';
+
+  @override
+  String get relDisponiveisConsulta => 'reports available';
+
+  @override
+  String get relCarregando => 'Loading reports...';
+
+  @override
+  String get relNenhum => 'No reports found';
+
+  @override
+  String get relNenhumDica => 'Adjust the filters to see results.';
+
+  @override
+  String get relSemPermissao =>
+      'Your profile is not allowed to access reports.';
+
+  @override
+  String get relAcessoNegado => 'Access not allowed for this profile.';
+
+  @override
+  String get relCentral => 'Reports center';
+
+  @override
+  String get relDisponiveis => 'Available';
+
+  @override
+  String get relPublicados => 'Published';
+
+  @override
+  String get relEmRevisao => 'In review';
+
+  @override
+  String relVer(String titulo) {
+    return 'View report $titulo';
+  }
+
+  @override
+  String get relMaisAcoes => 'More report actions';
+
+  @override
+  String get relVisualizar => 'View';
+
+  @override
+  String get relBaixarPdf => 'Download PDF';
+
+  @override
+  String get relCompartilhar => 'Share';
+
+  @override
+  String get relFecharDetalhes => 'Close report details';
+
+  @override
+  String get relTipo => 'Report type';
+
+  @override
+  String get relAutor => 'Author';
+
+  @override
+  String get relDownloads => 'Downloads';
+
+  @override
+  String get relCompartilhamentos => 'Shares';
+
+  @override
+  String get relStatusTodos => 'All';
+
+  @override
+  String get relStatusPublicado => 'Published';
+
+  @override
+  String get relStatusAgendado => 'Scheduled';
+
+  @override
+  String get relStatusDisponivel => 'Available';
+
+  @override
+  String get relTipoAnaliseGeral => 'General Analysis';
+
+  @override
+  String get relTipoRecursosHumanos => 'Human Resources';
+
+  @override
+  String get relTipoDesempenho => 'Performance';
+
+  @override
+  String get relTipoInfraestrutura => 'Infrastructure';
+
+  @override
+  String get relTipoConformidade => 'Compliance';
+
+  @override
+  String get relPdfBaixadoAgora => 'PDF downloaded just now';
+
+  @override
+  String get relCompartilhadoAgora => 'Shared just now';
+
+  @override
+  String get cdBuscarDocente => 'Search teacher by name, email or department';
+
+  @override
+  String get cdOrdemCrescente => 'Ascending order';
+
+  @override
+  String get cdOrdemDecrescente => 'Descending order';
+
+  @override
+  String get cdNenhumDocente => 'No teachers found';
+
+  @override
+  String get cdAdicionarDocente => 'Add teacher';
+
+  @override
+  String get cdNovoDocente => 'New Teacher';
+
+  @override
+  String get cdEditarDocente => 'Edit Teacher';
+
+  @override
+  String get cdAdicionar => 'Add';
+
+  @override
+  String get cdDocenteAdicionado => 'Teacher added successfully!';
+
+  @override
+  String get cdDocenteAtualizado => 'Teacher updated successfully!';
+
+  @override
+  String get cdDocenteExcluido => 'Teacher deleted successfully!';
+
+  @override
+  String get cdFecharFormulario => 'Close teacher form';
+
+  @override
+  String get cdNomeCompleto => 'Full Name';
+
+  @override
+  String get cdNomeDica => 'Enter the teacher name';
+
+  @override
+  String get cdEmailAcesso => 'Sign-in email';
+
+  @override
+  String get cdDepartamento => 'Department';
+
+  @override
+  String get cdDepartamentoDica => 'Enter the department';
+
+  @override
+  String get cdCargaMaxima => 'Maximum Weekly Hours';
+
+  @override
+  String get cdRegimeEbtt => 'EBTT Regime';
+
+  @override
+  String cdRegimeOpcao(String label, String code) {
+    return '$label ($code)';
+  }
+
+  @override
+  String cdDistribuicaoAulasSemana(int horas) {
+    return 'Class distribution: ${horas}h/week';
+  }
+
+  @override
+  String cdRegimeLimite(String code, int limite) {
+    return 'Regime $code: legal weekly limit of ${limite}h in the EBTT career. Research, outreach and management still depend on the institution\'s internal rules.';
+  }
+
+  @override
+  String get cdDisciplinas => 'Subjects';
+
+  @override
+  String get cdHorariosAula => 'Class Times';
+
+  @override
+  String get cdNenhumHorario => 'No class times yet';
+
+  @override
+  String cdHorasSemana(int horas) {
+    return '${horas}h/wk';
+  }
+
+  @override
+  String cdCargaDistribuida(int horas) {
+    return 'Hours assigned to classes: ${horas}h/week';
+  }
+
+  @override
+  String get cdAdicionarDisciplina => 'Add Subject';
+
+  @override
+  String get cdNomeDisciplina => 'Subject Name';
+
+  @override
+  String get cdExemploDisciplina => 'E.g.: Programming I';
+
+  @override
+  String get cdAdicionarHorario => 'Add Class Time';
+
+  @override
+  String get cdDiaSemana => 'Day of the Week';
+
+  @override
+  String get cdInicio => 'Start';
+
+  @override
+  String get cdFim => 'End';
+
+  @override
+  String get cdDisciplina => 'Subject';
+
+  @override
+  String get cdCargaHoraria => 'Hours';
+
+  @override
+  String get cdExemploCarga => 'E.g.: 2h/week · 80h';
+
+  @override
+  String get cdTurma => 'Class';
+
+  @override
+  String get cdModalidade => 'Modality';
+
+  @override
+  String cdExcluirMensagem(String nome) {
+    return 'Are you sure you want to delete $nome?';
+  }
+
+  @override
+  String get cdSugestaoEquilibrada =>
+      'The current distribution is balanced. Prioritize biweekly follow-up and fine-tuning by subject.';
+
+  @override
+  String cdSugestaoPressao(String nomes) {
+    return 'Teachers under the most pressure: $nomes. Consider redistributing practical classes and advising to reduce the risk of overload.';
+  }
+
+  @override
+  String cdSugestaoOciosa(String nomes) {
+    return 'There is spare capacity with $nomes. Prioritize shared components and extra lab sessions.';
+  }
+
+  @override
+  String get cdSugestaoRevisao =>
+      'Schedule a weekly joint review between coordination and labs to reduce scheduling conflicts and empty gaps.';
+
+  @override
+  String cdRedistribuicoesAplicadas(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count redistributions applied successfully.',
+      one: '1 redistribution applied successfully.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cdMaisAcoes => 'More teacher actions';
+
+  @override
+  String cdRegimeDocente(String label, String code) {
+    return 'EBTT Regime: $label ($code)';
+  }
+
+  @override
+  String cdDistribuicaoAulas(int horas, int maximo) {
+    return 'Class distribution: ${horas}h/${maximo}h';
+  }
+
+  @override
+  String get cdOtimizacao => 'Distribution optimization';
+
+  @override
+  String get cdSimular => 'Simulate';
+
+  @override
+  String get cdAproveitamentoMedio => 'average use of teaching hours';
+
+  @override
+  String get cdOcupacaoMedia => 'Average occupancy';
+
+  @override
+  String get cdAltaCarga => 'High load (>=90%)';
+
+  @override
+  String get cdBaixaCarga => 'Low load (<=50%)';
+
+  @override
+  String get cdSimulacao => 'Redistribution simulation';
+
+  @override
+  String cdOcupacaoPrevista(String antes, String depois) {
+    return 'Expected average occupancy: $antes% -> $depois%';
+  }
+
+  @override
+  String get cdNenhumaRedistribuicao =>
+      'No safe redistribution was found for the current scenario.';
+
+  @override
+  String get cdAplicarSugestao => 'Apply suggestion';
+
+  @override
+  String get cdAcessoRestrito => 'Restricted access';
+
+  @override
+  String get cdAcessoRestritoMensagem =>
+      'Only teachers, coordination and department heads can access this area.';
+
+  @override
+  String get cdAgendaDocente => 'Teacher\'s schedule';
+
+  @override
+  String get cdDistribuicaoSemanal => 'Weekly distribution';
+
+  @override
+  String get cdConviteReuniao => 'Meeting invitation';
+
+  @override
+  String get cdConviteEnviadoAgenda =>
+      'Invitation sent via the SIGAD calendar.';
+
+  @override
+  String get cdEnviarConviteReuniao => 'Send meeting invitation';
+
+  @override
+  String get cdTituloConvite => 'Invitation title';
+
+  @override
+  String get cdTituloConviteDica => 'E.g.: Alignment meeting';
+
+  @override
+  String get cdDescricaoConviteDica => 'Invitation details';
+
+  @override
+  String get cdLocal => 'Location';
+
+  @override
+  String get cdLocalDica => 'Room 12 or Online';
+
+  @override
+  String get cdHorarioInvalido => 'Could not read the time of this cell.';
+
+  @override
+  String get cdInformeTituloConvite => 'Enter the invitation title.';
+
+  @override
+  String get cdInformeLocalConvite => 'Enter the invitation location.';
+
+  @override
+  String get cdConviteEnviado => 'Invitation sent to the teacher\'s calendar.';
+
+  @override
+  String get cdEnviarConvite => 'Send invitation';
+
+  @override
+  String get cdAgendaSemanal => 'Weekly schedule';
+
+  @override
+  String cdSemanaDe(String semana, String mes) {
+    return '$mes $semana';
+  }
+
+  @override
+  String cdIntervalo(String inicio, String fim) {
+    return '$inicio – $fim';
+  }
+
+  @override
+  String cdDiaSelecionado(int dia, String abreviado, String completo) {
+    return 'Selected day: $dia ($abreviado - $completo)';
+  }
+
+  @override
+  String cdMes(String mes) {
+    String _temp0 = intl.Intl.selectLogic(mes, {
+      '1': 'January',
+      '2': 'February',
+      '3': 'March',
+      '4': 'April',
+      '5': 'May',
+      '6': 'June',
+      '7': 'July',
+      '8': 'August',
+      '9': 'September',
+      '10': 'October',
+      '11': 'November',
+      'other': 'December',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get cdDiaSab => 'Sat';
+
+  @override
+  String get cdDiaDom => 'Sun';
+
+  @override
+  String get cdDiaSabado => 'Saturday';
+
+  @override
+  String get cdDiaDomingo => 'Sunday';
+
+  @override
+  String get cdTurnoCurtoM => 'M';
+
+  @override
+  String get cdTurnoCurtoT => 'A';
+
+  @override
+  String get cdTurnoCurtoN => 'E';
+
+  @override
+  String get cdLivre => 'Free';
+
+  @override
+  String get cdAula => 'Class';
+
+  @override
+  String get cdOcupado => 'Busy';
+
+  @override
+  String get cdHorarioIndefinido => 'Undefined time';
+
+  @override
+  String get cdSegunda => 'Monday';
+
+  @override
+  String get cdTerca => 'Tuesday';
+
+  @override
+  String get cdQuarta => 'Wednesday';
+
+  @override
+  String get cdQuinta => 'Thursday';
+
+  @override
+  String get cdSexta => 'Friday';
+
+  @override
+  String get cdModalidadeIntegral => 'Integrated';
+
+  @override
+  String get cdModalidadeConcomitante => 'Concurrent';
+
+  @override
+  String get cdModalidadeSubsequente => 'Subsequent';
+
+  @override
+  String get cdModalidadeEja => 'Adult education';
+
+  @override
+  String get cdModalidadeSuperior => 'Higher education';
+
+  @override
+  String get cdRegime20h => '20 hours';
+
+  @override
+  String get cdRegime40h => '40 hours';
+
+  @override
+  String get cdRegimeDe => 'Exclusive dedication';
+
+  @override
+  String get cdInformeNome => 'Enter the teacher name';
+
+  @override
+  String get cdInformeDepartamento => 'Enter the department';
+
+  @override
+  String get cdInformeCargaMaxima => 'Enter a valid maximum workload';
+
+  @override
+  String cdRegimePermite(String code, String limite) {
+    return 'The $code regime allows up to ${limite}h per week.';
+  }
+
+  @override
+  String get cdAdicioneDisciplina => 'Add at least one subject';
+
+  @override
+  String cdDistribuicaoExcede(String distribuida, String maxima) {
+    return 'The weekly distribution (${distribuida}h) exceeds the teacher\'s maximum load (${maxima}h).';
+  }
+
+  @override
+  String get cdInformeNomeDisciplina => 'Enter the subject name.';
+
+  @override
+  String get cdDisciplinaJaAdicionada => 'Subject already added.';
+
+  @override
+  String get cdInformeInicioFim => 'Enter start and end times.';
+
+  @override
+  String get cdFormatoHorario => 'Use the HH:MM format for times.';
+
+  @override
+  String get cdFimPosterior => 'The end time must be after the start time.';
+
+  @override
+  String cdConflitoHorario(String dia) {
+    return 'There is already a conflicting time on $dia.';
+  }
+
+  @override
+  String get vgCargaAlocada => 'Allocated teaching hours';
+
+  @override
+  String get vgVsMesAnterior6 => '↑ 6% vs. last month';
+
+  @override
+  String get vgLabsEmUso => 'Labs in use';
+
+  @override
+  String get vgVsSemana12 => '↑ 12% vs. last week';
+
+  @override
+  String get vgNoticiasEnviadas => 'News sent';
+
+  @override
+  String get vgVsSemana3 => '↑ 3 vs. last week';
+
+  @override
+  String get vgPendenciasAbertas => 'Open items';
+
+  @override
+  String get vgVsSemana1 => '↓ 1 vs. last week';
+
+  @override
+  String get vgIndicadoresPainel => 'Dashboard indicators';
+
+  @override
+  String get vgEscolhaIndicadores =>
+      'Choose which indicators appear in the overview.';
+
+  @override
+  String get vgPanorama => 'Department overview';
+
+  @override
+  String get vgAtualizadoAgora => 'Updated just now';
+
+  @override
+  String get vgPersonalizarIndicadores => 'Customize indicators';
+
+  @override
+  String get vgProximasPrioridades => 'Upcoming priorities';
+
+  @override
+  String get vgPrioridadesDepartamento => 'Department priorities';
+
+  @override
+  String get vgPrioridadesSub => 'Planning and upcoming activities';
+
+  @override
+  String get vgPersonalizar => 'Customize';
+
+  @override
+  String get vgNenhumIndicador =>
+      'No indicator selected. Tap the icon next to it to choose.';
+
+  @override
+  String get vgOntem => 'Yesterday';
+
+  @override
+  String get vgMensagemEnviada => 'Message sent.';
+
+  @override
+  String get vgSelecioneUsuarios =>
+      'Select users or groups to start a conversation.';
+
+  @override
+  String get vgPeriodo => 'Period';
+
+  @override
+  String get vgTipo => 'Type';
+
+  @override
+  String get vgArea => 'Area';
+
+  @override
+  String get vgLaboratorio => 'Laboratory';
+
+  @override
+  String get vgVisualizacao => 'View';
+
+  @override
+  String get vgAcaoRegistrada => 'Action recorded.';
+
+  @override
+  String get vgContinuar => 'Continue';
+
+  @override
+  String vgResultados(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count results',
+      one: '1 result',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String vgItens(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '1 item',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String vgPrazo(String data) {
+    return 'Due $data';
+  }
+
+  @override
+  String get vgComunicacao => 'COMMUNICATION';
+
+  @override
+  String get vgChatSub => 'Conversations, groups and internal notices.';
+
+  @override
+  String get vgSelecioneConversa => 'Select a conversation.';
+
+  @override
+  String get vgDisponivel => 'Available';
+
+  @override
+  String get vgEscreverMensagem => 'Write a message';
+
+  @override
+  String get vgGestaoAcademica => 'ACADEMIC MANAGEMENT';
+
+  @override
+  String get vgCargaSub =>
+      'Distribution, limits, conflicts and activity validation.';
+
+  @override
+  String get vgNovaDistribuicao => 'New distribution';
+
+  @override
+  String get vgNovaDistribuicaoMsg =>
+      'Register the teacher\'s subjects, activities and workload.';
+
+  @override
+  String get vgBuscarProfessor => 'Search teacher';
+
+  @override
+  String get vgDocentes => 'Teachers';
+
+  @override
+  String vgPeriodoValor(String periodo) {
+    return 'Period $periodo';
+  }
+
+  @override
+  String get vgCargaRegular => 'Regular load';
+
+  @override
+  String get vgDoQuadro => '75% of staff';
+
+  @override
+  String get vgRequerAtencao => 'Needs attention';
+
+  @override
+  String get vgAbaixoAcima => 'Below or above the limit';
+
+  @override
+  String get vgConflitos => 'Conflicts';
+
+  @override
+  String get vgHorariosSobrepostos => 'Overlapping times';
+
+  @override
+  String get vgDistribuicaoPorDocente => 'Distribution by teacher';
+
+  @override
+  String get vgDistribuicaoSub =>
+      'Teaching, research, outreach, management and advising';
+
+  @override
+  String vgEnsinoOutras(String ensino, String outras) {
+    return 'Teaching: ${ensino}h · Other activities: ${outras}h';
+  }
+
+  @override
+  String vgTotalDeMaximo(String total, String maximo) {
+    return '$total h of $maximo h';
+  }
+
+  @override
+  String get vgGestaoPessoas => 'PEOPLE MANAGEMENT';
+
+  @override
+  String get vgProfessoresSub =>
+      'Teaching staff, areas, employment status and current load.';
+
+  @override
+  String get vgCadastrar => 'Register';
+
+  @override
+  String get vgCadastrarProfessor => 'Register teacher';
+
+  @override
+  String get vgCadastrarProfessorMsg =>
+      'Enter employment data, area and contract.';
+
+  @override
+  String get vgBuscarNomeArea => 'Search name or area';
+
+  @override
+  String vgProfessorDetalhe(String area, String carga, String situacao) {
+    return 'Area: $area\nCurrent load: $carga\nStatus: $situacao';
+  }
+
+  @override
+  String vgCargaAtual(String carga) {
+    return 'Current load: $carga';
+  }
+
+  @override
+  String get vgPlanejamento => 'PLANNING';
+
+  @override
+  String get vgDemandasSub => 'Requests, owners, deadlines and follow-up.';
+
+  @override
+  String get vgNovaDemanda => 'New request';
+
+  @override
+  String get vgNovaDemandaMsg =>
+      'Enter description, owner, deadline and priority.';
+
+  @override
+  String get vgNoPeriodoAtual => 'In the current period';
+
+  @override
+  String get vgDoTotal58 => '58% of total';
+
+  @override
+  String get vgAtrasadas => 'Overdue';
+
+  @override
+  String get vgAcaoNecessaria => 'Action needed';
+
+  @override
+  String get vgBuscarDemanda => 'Search request';
+
+  @override
+  String get vgListaDemandas => 'Request list';
+
+  @override
+  String vgDemandaDetalhe(
+    String id,
+    String responsavel,
+    String prazo,
+    String prioridade,
+  ) {
+    return '$id\nOwner: $responsavel\nDue: $prazo\nPriority: $prioridade';
+  }
+
+  @override
+  String get vgExecucao => 'EXECUTION';
+
+  @override
+  String get vgTarefasSub => 'Visual board to track activities and owners.';
+
+  @override
+  String get vgNovaTarefa => 'New task';
+
+  @override
+  String get vgNovaTarefaMsg => 'Set title, owner, deadline and priority.';
+
+  @override
+  String vgAdicionarTarefaEm(String coluna) {
+    return 'Action to add a task to $coluna.';
+  }
+
+  @override
+  String get vgInfraestrutura => 'INFRASTRUCTURE';
+
+  @override
+  String get vgLabsSub => 'Availability, bookings, conflicts and maintenance.';
+
+  @override
+  String get vgNovaReserva => 'New booking';
+
+  @override
+  String get vgNovaReservaMsg => 'Select lab, date, shift, subject and owner.';
+
+  @override
+  String get vgReservasHoje => 'Bookings today';
+
+  @override
+  String get vgCincoLabs => '5 labs';
+
+  @override
+  String get vgEmUso => 'In use';
+
+  @override
+  String get vgNesteHorario => 'At this time';
+
+  @override
+  String get vgEmManutencao => 'Under maintenance';
+
+  @override
+  String get vgAcessoRestrito => 'Access temporarily restricted';
+
+  @override
+  String get vgNenhumaSobreposicao => 'No overlaps';
+
+  @override
+  String get vgAgendaSemanalSub => 'Periods from Monday to Friday';
+
+  @override
+  String get vgCalendarioReservas => 'Booking calendar';
+
+  @override
+  String get vgVisaoMes => 'Consolidated monthly view';
+
+  @override
+  String get vgOcupacaoOtimizacao => 'Occupancy and optimization';
+
+  @override
+  String get vgUsoMedio => 'Average use and available times';
+
+  @override
+  String get vgReservado => 'Booked';
+
+  @override
+  String get vgLivre => 'Free';
+
+  @override
+  String get vgComReservas => 'Booked';
+
+  @override
+  String get vgAcompanhamento => 'FOLLOW-UP';
+
+  @override
+  String get vgAtividadesSub =>
+      'Academic and administrative actions with deadlines and owners.';
+
+  @override
+  String get vgNovaAtividade => 'New activity';
+
+  @override
+  String get vgNovaAtividadeMsg => 'Enter title, category, deadline and owner.';
+
+  @override
+  String get vgBuscarAtividade => 'Search activity';
+
+  @override
+  String get vgAtividadesPeriodo => 'Activities in the period';
+
+  @override
+  String vgAtividadeDetalhe(String categoria, String prazo, String status) {
+    return 'Category: $categoria\nDue: $prazo\nStatus: $status';
+  }
+
+  @override
+  String get vgAnalise => 'ANALYSIS';
+
+  @override
+  String get vgRelatoriosSub =>
+      'Indicators, documents and exports to support management.';
+
+  @override
+  String get vgGerarRelatorio => 'Generate report';
+
+  @override
+  String get vgGerarRelatorioMsg =>
+      'Select source, period, format and filters.';
+
+  @override
+  String get vgRelatoriosDisponiveis => 'Available reports';
+
+  @override
+  String get vgQuatroCategorias => '4 categories';
+
+  @override
+  String get vgExportadosMes => 'Exported this month';
+
+  @override
+  String get vgAgendados => 'Scheduled';
+
+  @override
+  String get vgEnvioAutomatico => 'Automatic sending';
+
+  @override
+  String vgAbrindo(String titulo) {
+    return 'Opening $titulo.';
+  }
+
+  @override
+  String get vgExportacaoPreparada => 'Export ready.';
+
+  @override
+  String get vgExportar => 'Export';
+
+  @override
+  String get vgAtualizadoHoje => 'Updated today';
+
+  @override
+  String get vgAtualizadoOntem => 'Updated yesterday';
+
+  @override
+  String vgAtualizadoEm(String data) {
+    return 'Updated on $data';
+  }
+
+  @override
+  String get vgPreferencias => 'PREFERENCES';
+
+  @override
+  String get vgConfigSub =>
+      'Account, notifications, appearance, security and data.';
+
+  @override
+  String get vgConfigSalvas => 'Settings saved.';
+
+  @override
+  String get vgPerfilConta => 'Profile and account';
+
+  @override
+  String get vgDadosSessao => 'Current session data';
+
+  @override
+  String get vgNomeExibicao => 'Display name';
+
+  @override
+  String get vgUsuarioInstitucional => 'Institutional user';
+
+  @override
+  String get vgEmail => 'Email';
+
+  @override
+  String get vgContaInstitucional => 'Institutional account';
+
+  @override
+  String get vgPerfilAcesso => 'Access profile';
+
+  @override
+  String get vgDefinidoAutenticacao => 'Set by authentication';
+
+  @override
+  String get vgEditarPerfil => 'Edit profile';
+
+  @override
+  String get vgEditarPerfilMsg => 'Update personal data and preferences.';
+
+  @override
+  String get vgCanaisAlertas => 'Channels and alerts';
+
+  @override
+  String get vgNotifApp => 'In-app notifications';
+
+  @override
+  String get vgNotifAppSub => 'Alerts, invitations and deadlines';
+
+  @override
+  String get vgNotifEmail => 'Email notifications';
+
+  @override
+  String get vgNotifEmailSub => 'Summary and important communications';
+
+  @override
+  String get vgAparencia => 'Appearance';
+
+  @override
+  String get vgDensidade => 'Density and display';
+
+  @override
+  String get vgModoCompacto => 'Compact mode';
+
+  @override
+  String get vgModoCompactoSub => 'Shows more information per screen';
+
+  @override
+  String get vgTema => 'Theme';
+
+  @override
+  String get vgTemaValor => 'Follows the app setting';
+
+  @override
+  String get vgSegurancaDados => 'Security and data';
+
+  @override
+  String get vgSessaoAcesso => 'Session, access and storage';
+
+  @override
+  String get vgBiometria => 'Biometrics';
+
+  @override
+  String get vgBiometriaSub => 'Use device authentication';
+
+  @override
+  String get vgSincronizacao => 'Synchronization';
+
+  @override
+  String get vgSincronizacaoValor => 'Automatic when available';
+
+  @override
+  String get vgLimparDados => 'Clear local data';
+
+  @override
+  String get vgLimparDadosMsg =>
+      'This only removes local caches and preferences.';
+
+  @override
+  String get vgOpTodos => 'All';
+
+  @override
+  String get vgOpTodas => 'All';
+
+  @override
+  String get vgOpRegular => 'Regular';
+
+  @override
+  String get vgOpAtencao => 'Attention';
+
+  @override
+  String get vgOpExcedida => 'Exceeded';
+
+  @override
+  String get vgOpAtivo => 'Active';
+
+  @override
+  String get vgOpAfastamento => 'On leave';
+
+  @override
+  String get vgOpEmAnalise => 'Under review';
+
+  @override
+  String get vgOpEmAndamento => 'In progress';
+
+  @override
+  String get vgOpAguardando => 'Waiting';
+
+  @override
+  String get vgOpAtrasada => 'Overdue';
+
+  @override
+  String get vgOpAFazer => 'To do';
+
+  @override
+  String get vgOpConcluido => 'Done';
+
+  @override
+  String get vgOpPendente => 'Pending';
+
+  @override
+  String get vgOpEmProgresso => 'In progress';
+
+  @override
+  String get vgOpConcluida => 'Completed';
+
+  @override
+  String get vgOpAgendaSemanal => 'Weekly schedule';
+
+  @override
+  String get vgOpCalendarioMensal => 'Monthly calendar';
+
+  @override
+  String get vgOpOcupacao => 'Occupancy';
+
+  @override
+  String get vgOpAcademico => 'Academic';
+
+  @override
+  String get vgOpGestao => 'Management';
+
+  @override
+  String get vgOpProdutividade => 'Productivity';
 }

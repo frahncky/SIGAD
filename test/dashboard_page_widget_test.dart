@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -89,7 +90,7 @@ void main() {
     await pumpDashboard(tester);
 
     expect(find.byKey(const Key('welcome-hero')), findsOneWidget);
-    expect(find.textContaining(RegExp(r', Maria!$')), findsOneWidget);
+    expect(find.textContaining(RegExp(r', Maria!$')), findsNothing);
     expect(find.byKey(const Key('dashboard-alerts-card')), findsNothing);
     expect(find.text('Acesso rápido'), findsOneWidget);
     expect(find.byTooltip('Personalizar atalhos'), findsOneWidget);
@@ -159,4 +160,101 @@ void main() {
       await irParaSlide(tester, rotulo);
     }
   });
+  for (final role in UserRole.values) {
+    for (final size in [
+      const Size(320, 568),
+      const Size(360, 640),
+      const Size(390, 844),
+      const Size(412, 915),
+    ]) {
+      testWidgets(
+        'cabeçalho do painel usa largura disponível ${role.name} ${size.width}',
+        (tester) async {
+          await pumpDashboard(tester, role: role, size: size);
+          final gerencial =
+              role == UserRole.coordenador ||
+              role == UserRole.chefeDepartamento;
+          final textos = gerencial
+              ? ['Atenção agora', 'Itens abertos ordenados por impacto']
+              : ['Próximas atividades', 'Compromissos pendentes'];
+          for (final texto in textos) {
+            final finder = find.text(texto);
+            expect(finder, findsOneWidget);
+            final paragraph = tester.renderObject<RenderParagraph>(finder);
+            final title = texto == textos.first;
+            final availableWidth = size.width - 20 - 36 - (title ? 50 : 0);
+            expect(
+              paragraph.constraints.maxWidth,
+              closeTo(availableWidth, 0.1),
+            );
+            final natural = TextPainter(
+              text: paragraph.text,
+              textDirection: TextDirection.ltr,
+              textScaler: MediaQuery.textScalerOf(tester.element(finder)),
+            )..layout();
+            // A fonte Ahem dos testes pode exigir mais espaço que a fonte do app.
+            // Se o texto couber, ele deve permanecer em uma linha.
+            if (natural.width <= availableWidth) {
+              final boxes = paragraph.getBoxesForSelection(
+                TextSelection(baseOffset: 0, extentOffset: texto.length),
+              );
+              expect(boxes, isNotEmpty);
+              final top = boxes
+                  .map((box) => box.top)
+                  .reduce((a, b) => a > b ? a : b);
+              final bottom = boxes
+                  .map((box) => box.bottom)
+                  .reduce((a, b) => a < b ? a : b);
+              expect(
+                top,
+                lessThan(bottom),
+                reason: 'Texto que cabe deve ocupar uma linha: $texto',
+              );
+            }
+            natural.dispose();
+          }
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+    for (final scale in [1.5, 2.0]) {
+      testWidgets(
+        'cabeçalho do painel permite fonte ampliada ${role.name} $scale',
+        (tester) async {
+          await pumpDashboard(
+            tester,
+            role: role,
+            size: const Size(320, 568),
+            textScale: scale,
+          );
+          final titulo =
+              role == UserRole.coordenador || role == UserRole.chefeDepartamento
+              ? 'Atenção agora'
+              : 'Próximas atividades';
+          await tester.ensureVisible(find.text(titulo));
+          await tester.pumpAndSettle();
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
+  testWidgets(
+    'subtítulo de atividades compacto cabe em uma linha no tamanho médio',
+    (tester) async {
+      await pumpDashboard(tester, role: UserRole.professor, textScale: 1.1);
+      final finder = find.text('Compromissos pendentes');
+      expect(finder, findsOneWidget);
+      final paragraph = tester.renderObject<RenderParagraph>(finder);
+      final boxes = paragraph.getBoxesForSelection(
+        const TextSelection(baseOffset: 0, extentOffset: 22),
+      );
+      expect(boxes, isNotEmpty);
+      final top = boxes.map((box) => box.top).reduce((a, b) => a > b ? a : b);
+      final bottom = boxes
+          .map((box) => box.bottom)
+          .reduce((a, b) => a < b ? a : b);
+      expect(top, lessThan(bottom));
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

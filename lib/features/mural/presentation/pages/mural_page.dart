@@ -7,8 +7,10 @@ import '../../../../core/models/user_role.dart';
 import '../../../../core/security/authorization_policy.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../../l10n/l10n.dart';
 import '../../../../shared/widgets/welcome_hero.dart';
 import '../../domain/mural_models.dart';
+import '../mural_l10n.dart';
 import '../mural_visual.dart';
 import '../state/mural_controller.dart';
 
@@ -33,6 +35,7 @@ class _MuralPageState extends State<MuralPage> {
     if (!AuthorizationPolicy.canManageMural(role)) {
       return const _AcessoNegado();
     }
+    final l10n = context.l10n;
     final falhou = context.select<MuralController, bool>(
       (mural) => mural.falhouAoCarregar,
     );
@@ -42,16 +45,13 @@ class _MuralPageState extends State<MuralPage> {
         children: [
           if (falhou)
             MaterialBanner(
-              content: const Text(
-                'Não foi possível ler o mural salvo. A edição está bloqueada '
-                'para não sobrescrever os dados.',
-              ),
+              content: Text(l10n.muralErroCarregar),
               actions: [const SizedBox.shrink()],
             ),
-          const TabBar(
+          TabBar(
             tabs: [
-              Tab(text: 'Avisos'),
-              Tab(text: 'Frases'),
+              Tab(text: l10n.avisos),
+              Tab(text: l10n.muralFrases),
             ],
           ),
           const Expanded(
@@ -67,13 +67,10 @@ class _AcessoNegado extends StatelessWidget {
   const _AcessoNegado();
 
   @override
-  Widget build(BuildContext context) => const Center(
+  Widget build(BuildContext context) => Center(
     child: Padding(
-      padding: EdgeInsets.all(24),
-      child: Text(
-        'Somente a chefia do departamento pode gerenciar o mural.',
-        textAlign: TextAlign.center,
-      ),
+      padding: const EdgeInsets.all(24),
+      child: Text(context.l10n.muralAcessoNegado, textAlign: TextAlign.center),
     ),
   );
 }
@@ -93,15 +90,14 @@ class _AvisosTab extends StatelessWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _abrirFormulario(context, null),
         icon: const SigadIcon(SigadIcons.adicionar),
-        label: const Text('Novo aviso'),
+        label: Text(context.l10n.muralNovoAviso),
       ),
       body: !mural.carregado
           ? const Center(child: CircularProgressIndicator())
           : avisos.isEmpty
-          ? const _Vazio(
+          ? _Vazio(
               icone: SigadIcons.aviso,
-              texto:
-                  'Nenhum aviso cadastrado.\nSem avisos, o painel mostra só as boas-vindas.',
+              texto: context.l10n.muralNenhumAviso,
             )
           : ListView.separated(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
@@ -143,19 +139,21 @@ class _AvisoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     final hoje = DateUtils.dateOnly(agora);
     final inicio = aviso.inicio;
     final fim = aviso.fim;
     final status = !aviso.ativo
-        ? 'Desativado'
+        ? l10n.muralDesativado
         : inicio != null && hoje.isBefore(DateUtils.dateOnly(inicio))
-        ? 'Agendado'
+        ? l10n.muralAgendado
         : fim != null && hoje.isAfter(DateUtils.dateOnly(fim))
-        ? 'Encerrado'
-        : 'No ar';
+        ? l10n.muralEncerrado
+        : l10n.muralNoAr;
     final publico = aviso.publico.isEmpty
-        ? 'Todos os perfis'
-        : aviso.publico.map((perfil) => perfil.displayName).join(', ');
+        ? l10n.muralTodosPerfis
+        : aviso.publico.map((perfil) => perfil.nomeEm(l10n)).join(', ');
+    final fixado = aviso.fixado ? ' · ${l10n.muralFixado}' : '';
 
     return Card(
       margin: EdgeInsets.zero,
@@ -173,7 +171,7 @@ class _AvisoTile extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          '${aviso.modelo.rotulo} · $status${aviso.fixado ? ' · Fixado' : ''}\n$publico',
+          '${l10n.modeloAviso(aviso.modelo)} · $status$fixado\n$publico',
         ),
         isThreeLine: true,
         trailing: const SigadIcon(SigadIcons.editar),
@@ -249,7 +247,9 @@ class _AvisoFormState extends State<_AvisoForm> {
       initialDate: inicial,
       firstDate: primeira,
       lastDate: ultima,
-      helpText: inicio ? 'Exibir a partir de' : 'Exibir até',
+      helpText: inicio
+          ? context.l10n.muralExibirAPartirDe
+          : context.l10n.muralExibirAte,
     );
     if (escolhida == null) return;
     setState(() => inicio ? _inicio = escolhida : _fim = escolhida);
@@ -258,10 +258,7 @@ class _AvisoFormState extends State<_AvisoForm> {
   Future<void> _salvar() async {
     if (!_formKey.currentState!.validate()) return;
     if (_periodoInvalido) {
-      AppFeedbackService.warning(
-        context,
-        'A data final deve ser igual ou posterior à inicial.',
-      );
+      AppFeedbackService.warning(context, context.l10n.muralDataFinalInvalida);
       return;
     }
     final mural = context.read<MuralController>();
@@ -289,11 +286,11 @@ class _AvisoFormState extends State<_AvisoForm> {
       await mural.salvarAviso(aviso);
       if (!mounted) return;
       Navigator.pop(context);
-      AppFeedbackService.success(context, 'Aviso publicado.');
+      AppFeedbackService.success(context, context.l10n.muralAvisoPublicado);
     } catch (_) {
       if (!mounted) return;
       setState(() => _salvando = false);
-      AppFeedbackService.error(context, 'Não foi possível salvar o aviso.');
+      AppFeedbackService.error(context, context.l10n.muralErroSalvarAviso);
     }
   }
 
@@ -301,16 +298,18 @@ class _AvisoFormState extends State<_AvisoForm> {
     final confirmar = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Excluir aviso?'),
-        content: Text('"${widget.aviso!.titulo}" deixará de aparecer.'),
+        title: Text(context.l10n.muralExcluirAvisoTitulo),
+        content: Text(
+          context.l10n.muralExcluirAvisoMensagem(widget.aviso!.titulo),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancelar'),
+            child: Text(context.l10n.cancelar),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Excluir'),
+            child: Text(context.l10n.excluir),
           ),
         ],
       ),
@@ -322,30 +321,32 @@ class _AvisoFormState extends State<_AvisoForm> {
       await mural.excluirAviso(widget.aviso!.id);
       if (!mounted) return;
       Navigator.pop(context);
-      AppFeedbackService.success(context, 'Aviso excluído.');
+      AppFeedbackService.success(context, context.l10n.muralAvisoExcluido);
     } catch (_) {
       if (!mounted) return;
       setState(() => _salvando = false);
-      AppFeedbackService.error(context, 'Não foi possível excluir o aviso.');
+      AppFeedbackService.error(context, context.l10n.muralErroExcluirAviso);
     }
   }
 
   String _data(DateTime? data, String vazio) => data == null
       ? vazio
-      : '${data.day.toString().padLeft(2, '0')}/'
-            '${data.month.toString().padLeft(2, '0')}/${data.year}';
+      : MaterialLocalizations.of(context).formatCompactDate(data);
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     return Scaffold(
-      appBar: AppBar(title: Text(_editando ? 'Editar aviso' : 'Novo aviso')),
+      appBar: AppBar(
+        title: Text(_editando ? l10n.muralEditarAviso : l10n.muralNovoAviso),
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
           children: [
-            Text('Modelo', style: theme.textTheme.titleSmall),
+            Text(l10n.muralModelo, style: theme.textTheme.titleSmall),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -354,7 +355,7 @@ class _AvisoFormState extends State<_AvisoForm> {
                 for (final modelo in ModeloAviso.values)
                   ChoiceChip(
                     avatar: SigadIcon(modelo.icone, color: modelo.cor),
-                    label: Text(modelo.rotulo),
+                    label: Text(l10n.modeloAviso(modelo)),
                     selected: _modelo == modelo,
                     onSelected: (_) => setState(() => _modelo = modelo),
                   ),
@@ -365,10 +366,9 @@ class _AvisoFormState extends State<_AvisoForm> {
               controller: _titulo,
               maxLength: 80,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(labelText: 'Título'),
-              validator: (valor) => (valor ?? '').trim().isEmpty
-                  ? 'Informe o título do aviso.'
-                  : null,
+              decoration: InputDecoration(labelText: l10n.muralTitulo),
+              validator: (valor) =>
+                  (valor ?? '').trim().isEmpty ? l10n.muralInformeTitulo : null,
             ),
             const SizedBox(height: 8),
             TextFormField(
@@ -378,31 +378,31 @@ class _AvisoFormState extends State<_AvisoForm> {
               maxLength: 1000,
               keyboardType: TextInputType.multiline,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                labelText: 'Conteúdo',
-                hintText: 'Escreva o aviso completo para o departamento.',
+              decoration: InputDecoration(
+                labelText: l10n.muralConteudo,
+                hintText: l10n.muralConteudoDica,
                 alignLabelWithHint: true,
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
               ),
               validator: (valor) => (valor ?? '').trim().isEmpty
-                  ? 'Escreva o conteúdo do aviso.'
+                  ? l10n.muralInformeConteudo
                   : null,
             ),
             const SizedBox(height: 16),
-            Text('Quem vê', style: theme.textTheme.titleSmall),
+            Text(l10n.muralQuemVe, style: theme.textTheme.titleSmall),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: [
                 FilterChip(
-                  label: const Text('Todos'),
+                  label: Text(l10n.muralTodos),
                   selected: _publico.isEmpty,
                   onSelected: (_) => setState(() => _publico = {}),
                 ),
                 for (final perfil in UserRole.values)
                   FilterChip(
-                    label: Text(perfil.displayName),
+                    label: Text(perfil.nomeEm(l10n)),
                     selected: _publico.contains(perfil),
                     onSelected: (selecionado) => setState(() {
                       selecionado
@@ -413,16 +413,16 @@ class _AvisoFormState extends State<_AvisoForm> {
               ],
             ),
             const SizedBox(height: 16),
-            Text('Período de exibição', style: theme.textTheme.titleSmall),
+            Text(l10n.muralPeriodoExibicao, style: theme.textTheme.titleSmall),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const SigadIcon(SigadIcons.calendario),
-              title: const Text('A partir de'),
-              subtitle: Text(_data(_inicio, 'Imediatamente')),
+              title: Text(l10n.muralAPartirDe),
+              subtitle: Text(_data(_inicio, l10n.muralImediatamente)),
               trailing: _inicio == null
                   ? null
                   : IconButton(
-                      tooltip: 'Limpar data inicial',
+                      tooltip: l10n.muralLimparDataInicial,
                       icon: const SigadIcon(SigadIcons.fechar),
                       onPressed: () => setState(() => _inicio = null),
                     ),
@@ -431,12 +431,12 @@ class _AvisoFormState extends State<_AvisoForm> {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const SigadIcon(SigadIcons.eventoOcupado),
-              title: const Text('Até'),
-              subtitle: Text(_data(_fim, 'Sem data para sair')),
+              title: Text(l10n.muralAte),
+              subtitle: Text(_data(_fim, l10n.muralSemDataSair)),
               trailing: _fim == null
                   ? null
                   : IconButton(
-                      tooltip: 'Limpar data final',
+                      tooltip: l10n.muralLimparDataFinal,
                       icon: const SigadIcon(SigadIcons.fechar),
                       onPressed: () => setState(() => _fim = null),
                     ),
@@ -444,43 +444,37 @@ class _AvisoFormState extends State<_AvisoForm> {
             ),
             if (_periodoInvalido)
               Text(
-                'A data final deve ser igual ou posterior à inicial.',
+                l10n.muralDataFinalInvalida,
                 style: TextStyle(color: theme.colorScheme.error),
               ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Fixar no topo'),
-              subtitle: const Text('Aparece antes dos outros avisos.'),
+              title: Text(l10n.muralFixarTopo),
+              subtitle: Text(l10n.muralFixarTopoSub),
               value: _fixado,
               onChanged: (valor) => setState(() => _fixado = valor),
             ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Ativo'),
-              subtitle: const Text('Desative para esconder sem excluir.'),
+              title: Text(l10n.muralAtivo),
+              subtitle: Text(l10n.muralAtivoSub),
               value: _ativo,
               onChanged: (valor) => setState(() => _ativo = valor),
             ),
             const SizedBox(height: 24),
-            Text(
-              'Pré-visualização no painel',
-              style: theme.textTheme.titleSmall,
-            ),
+            Text(l10n.muralPreviaPainel, style: theme.textTheme.titleSmall),
             const SizedBox(height: 4),
-            Text(
-              'É assim que o aviso aparece no card do topo para quem pode vê-lo.',
-              style: theme.textTheme.bodySmall,
-            ),
+            Text(l10n.muralPreviaAvisoSub, style: theme.textTheme.bodySmall),
             const SizedBox(height: 12),
             WelcomeHero(
               avisos: [
                 WelcomeHeroItem(
                   icon: _modelo.icone,
                   title: _titulo.text.trim().isEmpty
-                      ? 'Título do aviso'
+                      ? l10n.muralPreviaTitulo
                       : _titulo.text.trim(),
                   subtitle: _conteudo.text.trim().isEmpty
-                      ? 'O conteúdo do aviso aparece aqui.'
+                      ? l10n.muralPreviaConteudo
                       : _conteudo.text.trim(),
                   color: _modelo.cor,
                 ),
@@ -492,7 +486,7 @@ class _AvisoFormState extends State<_AvisoForm> {
             FilledButton.icon(
               onPressed: _salvando ? null : _salvar,
               icon: const SigadIcon(SigadIcons.enviar),
-              label: const Text('Publicar aviso'),
+              label: Text(l10n.muralPublicarAviso),
             ),
             if (_editando) ...[
               const SizedBox(height: 8),
@@ -503,7 +497,7 @@ class _AvisoFormState extends State<_AvisoForm> {
                   color: theme.colorScheme.error,
                 ),
                 label: Text(
-                  'Excluir aviso',
+                  l10n.muralExcluirAviso,
                   style: TextStyle(color: theme.colorScheme.error),
                 ),
               ),
@@ -525,17 +519,18 @@ class _FrasesTab extends StatelessWidget {
     final mural = context.watch<MuralController>();
     final theme = Theme.of(context);
     final atual = mural.fraseAtual;
+    final l10n = context.l10n;
 
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _editarFrase(context, null),
         icon: const SigadIcon(SigadIcons.adicionar),
-        label: const Text('Nova frase'),
+        label: Text(l10n.muralNovaFrase),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
         children: [
-          Text('Trocar a frase', style: theme.textTheme.titleMedium),
+          Text(l10n.muralTrocarFrase, style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           DropdownButtonFormField<PeriodicidadeFrase>(
             key: ValueKey(mural.periodicidade),
@@ -546,7 +541,10 @@ class _FrasesTab extends StatelessWidget {
             ),
             items: [
               for (final item in PeriodicidadeFrase.values)
-                DropdownMenuItem(value: item, child: Text(item.rotulo)),
+                DropdownMenuItem(
+                  value: item,
+                  child: Text(l10n.periodicidadeFrase(item)),
+                ),
             ],
             onChanged: (valor) async {
               if (valor == null) return;
@@ -554,10 +552,7 @@ class _FrasesTab extends StatelessWidget {
                 await mural.definirPeriodicidade(valor);
               } catch (_) {
                 if (context.mounted) {
-                  AppFeedbackService.error(
-                    context,
-                    'Não foi possível salvar a frequência.',
-                  );
+                  AppFeedbackService.error(context, l10n.muralErroFrequencia);
                 }
               }
             },
@@ -570,10 +565,13 @@ class _FrasesTab extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Frase em exibição', style: theme.textTheme.labelLarge),
+                  Text(
+                    l10n.muralFraseEmExibicao,
+                    style: theme.textTheme.labelLarge,
+                  ),
                   const SizedBox(height: 6),
                   Text(
-                    atual?.texto ?? 'Nenhuma frase ativa.',
+                    atual?.texto ?? l10n.muralNenhumaFrase,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontStyle: FontStyle.italic,
                     ),
@@ -584,7 +582,7 @@ class _FrasesTab extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Frases (${mural.frases.length}) — entram em rodízio as ativas',
+            l10n.muralFrasesLista(mural.frases.length),
             style: theme.textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
@@ -595,7 +593,7 @@ class _FrasesTab extends StatelessWidget {
                 onTap: () => _editarFrase(context, frase),
                 title: Text(frase.texto),
                 leading: Semantics(
-                  label: 'Frase ativa no rodízio',
+                  label: l10n.muralFraseAtivaRodizio,
                   child: Switch(
                     value: frase.ativa,
                     onChanged: (valor) =>
@@ -603,7 +601,7 @@ class _FrasesTab extends StatelessWidget {
                   ),
                 ),
                 trailing: IconButton(
-                  tooltip: 'Excluir frase',
+                  tooltip: l10n.muralExcluirFrase,
                   icon: const SigadIcon(SigadIcons.excluir),
                   onPressed: () => _excluir(context, frase),
                 ),
@@ -619,7 +617,7 @@ class _FrasesTab extends StatelessWidget {
       await context.read<MuralController>().salvarFrase(frase);
     } catch (_) {
       if (context.mounted) {
-        AppFeedbackService.error(context, 'Não foi possível salvar a frase.');
+        AppFeedbackService.error(context, context.l10n.muralErroSalvarFrase);
       }
     }
   }
@@ -628,16 +626,16 @@ class _FrasesTab extends StatelessWidget {
     final confirmar = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Excluir frase?'),
+        title: Text(context.l10n.muralExcluirFraseTitulo),
         content: Text('"${frase.texto}"'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancelar'),
+            child: Text(context.l10n.cancelar),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Excluir'),
+            child: Text(context.l10n.excluir),
           ),
         ],
       ),
@@ -647,7 +645,7 @@ class _FrasesTab extends StatelessWidget {
       await context.read<MuralController>().excluirFrase(frase.id);
     } catch (_) {
       if (context.mounted) {
-        AppFeedbackService.error(context, 'Não foi possível excluir a frase.');
+        AppFeedbackService.error(context, context.l10n.muralErroExcluirFrase);
       }
     }
   }
@@ -703,10 +701,13 @@ class _FraseFormState extends State<_FraseForm> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final texto = _controller.text.trim();
+    final l10n = context.l10n;
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.textoInicial.isEmpty ? 'Nova frase' : 'Editar frase',
+          widget.textoInicial.isEmpty
+              ? l10n.muralNovaFrase
+              : l10n.muralEditarFrase,
         ),
       ),
       body: Form(
@@ -722,35 +723,29 @@ class _FraseFormState extends State<_FraseForm> {
               maxLength: 160,
               keyboardType: TextInputType.multiline,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                labelText: 'Frase',
-                hintText: 'Escreva uma frase curta e motivadora.',
+              decoration: InputDecoration(
+                labelText: l10n.muralFrase,
+                hintText: l10n.muralFraseDica,
                 alignLabelWithHint: true,
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
               ),
               validator: (valor) =>
-                  (valor ?? '').trim().isEmpty ? 'Escreva a frase.' : null,
+                  (valor ?? '').trim().isEmpty ? l10n.muralEscrevaFrase : null,
             ),
             const SizedBox(height: 24),
-            Text(
-              'Pré-visualização no painel',
-              style: theme.textTheme.titleSmall,
-            ),
+            Text(l10n.muralPreviaPainel, style: theme.textTheme.titleSmall),
             const SizedBox(height: 4),
-            Text(
-              'É assim que a frase aparece no card de boas-vindas.',
-              style: theme.textTheme.bodySmall,
-            ),
+            Text(l10n.muralPreviaFraseSub, style: theme.textTheme.bodySmall),
             const SizedBox(height: 12),
             WelcomeHero(
-              frase: texto.isEmpty ? 'A frase aparece aqui.' : texto,
+              frase: texto.isEmpty ? l10n.muralPreviaFrase : texto,
               rotacaoAutomatica: false,
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
               onPressed: _publicar,
               icon: const SigadIcon(SigadIcons.enviar),
-              label: const Text('Salvar frase'),
+              label: Text(l10n.muralSalvarFrase),
             ),
           ],
         ),

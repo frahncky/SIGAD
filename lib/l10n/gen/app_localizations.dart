@@ -104,6 +104,36 @@ abstract class AppLocalizations {
   /// **'Cancelar'**
   String get cancelar;
 
+  /// No description provided for @nomeSaudacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome na saudação'**
+  String get nomeSaudacao;
+
+  /// No description provided for @nomeSaudacaoAjuda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Somente neste dispositivo. Deixe vazio para usar o primeiro nome da conta.'**
+  String get nomeSaudacaoAjuda;
+
+  /// No description provided for @nomeSaudacaoErro.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível salvar. Tente novamente.'**
+  String get nomeSaudacaoErro;
+
+  /// No description provided for @nomeSaudacaoSalvo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome na saudação salvo.'**
+  String get nomeSaudacaoSalvo;
+
+  /// No description provided for @nomeSaudacaoSalvando.
+  ///
+  /// In pt, this message translates to:
+  /// **'Salvando…'**
+  String get nomeSaudacaoSalvando;
+
   /// No description provided for @fechar.
   ///
   /// In pt, this message translates to:
@@ -641,7 +671,7 @@ abstract class AppLocalizations {
   /// No description provided for @proximasAtividadesSub.
   ///
   /// In pt, this message translates to:
-  /// **'Compromissos que ainda pedem atenção'**
+  /// **'Compromissos pendentes'**
   String get proximasAtividadesSub;
 
   /// No description provided for @nenhumaAtividadeAberta.
@@ -1752,6 +1782,3701 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Reservar outros horários deste dia'**
   String get labOutrosHorarios;
+
+  /// No description provided for @paginaNaoEncontrada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Página não encontrada'**
+  String get paginaNaoEncontrada;
+
+  /// No description provided for @paginaNaoEncontradaMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'O endereço informado não corresponde a um módulo do SIGAD.'**
+  String get paginaNaoEncontradaMensagem;
+
+  /// No description provided for @voltarVisaoGeral.
+  ///
+  /// In pt, this message translates to:
+  /// **'Voltar à visão geral'**
+  String get voltarVisaoGeral;
+
+  /// No description provided for @maisCargaDocenteDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Planeje e acompanhe a carga horária.'**
+  String get maisCargaDocenteDesc;
+
+  /// No description provided for @maisProfessoresDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Gerencie docentes do departamento.'**
+  String get maisProfessoresDesc;
+
+  /// No description provided for @maisLaboratoriosDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Recursos, reservas e ocupação.'**
+  String get maisLaboratoriosDesc;
+
+  /// No description provided for @maisReunioes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reuniões'**
+  String get maisReunioes;
+
+  /// No description provided for @maisReunioesDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pautas, atas e participantes.'**
+  String get maisReunioesDesc;
+
+  /// No description provided for @maisDemandasDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Acompanhe e gerencie solicitações.'**
+  String get maisDemandasDesc;
+
+  /// No description provided for @maisNoticias.
+  ///
+  /// In pt, this message translates to:
+  /// **'Notícias'**
+  String get maisNoticias;
+
+  /// No description provided for @maisNoticiasDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Comunicados e informativos.'**
+  String get maisNoticiasDesc;
+
+  /// No description provided for @maisRelatoriosDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Indicadores e dados do departamento.'**
+  String get maisRelatoriosDesc;
+
+  /// No description provided for @maisCursos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cursos'**
+  String get maisCursos;
+
+  /// No description provided for @maisCursosDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Disciplinas e ofertas acadêmicas.'**
+  String get maisCursosDesc;
+
+  /// No description provided for @maisAdministracao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Administração'**
+  String get maisAdministracao;
+
+  /// No description provided for @maisAgendaIntegrada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agenda integrada'**
+  String get maisAgendaIntegrada;
+
+  /// No description provided for @maisAgendaIntegradaDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Visualize eventos e compromissos do departamento.'**
+  String get maisAgendaIntegradaDesc;
+
+  /// No description provided for @maisConfiguracoesDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Personalize preferências do aplicativo.'**
+  String get maisConfiguracoesDesc;
+
+  /// No description provided for @maisAjuda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ajuda'**
+  String get maisAjuda;
+
+  /// No description provided for @maisAjudaDesc.
+  ///
+  /// In pt, this message translates to:
+  /// **'Central de ajuda, tutoriais e suporte.'**
+  String get maisAjudaDesc;
+
+  /// No description provided for @maisAvisosImportantes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Avisos importantes'**
+  String get maisAvisosImportantes;
+
+  /// No description provided for @maisNenhumAviso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum aviso no momento.'**
+  String get maisNenhumAviso;
+
+  /// No description provided for @maisCentralAjuda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Central de ajuda'**
+  String get maisCentralAjuda;
+
+  /// No description provided for @maisCentralAjudaMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tutoriais e suporte estarão disponíveis em breve. Para dúvidas urgentes, abra um chamado com a equipe de TI do campus.'**
+  String get maisCentralAjudaMensagem;
+
+  /// No description provided for @maisDepartamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'DEPARTAMENTO'**
+  String get maisDepartamento;
+
+  /// No description provided for @maisVerTodosAvisos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ver todos os avisos'**
+  String get maisVerTodosAvisos;
+
+  /// No description provided for @maisPrecisaSuporte.
+  ///
+  /// In pt, this message translates to:
+  /// **'Precisando de suporte?'**
+  String get maisPrecisaSuporte;
+
+  /// No description provided for @maisFaleComTi.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fale com a equipe de TI do campus.'**
+  String get maisFaleComTi;
+
+  /// No description provided for @maisAbrirChamado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Abrir chamado'**
+  String get maisAbrirChamado;
+
+  /// No description provided for @muralErroCarregar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível ler o mural salvo. A edição está bloqueada para não sobrescrever os dados.'**
+  String get muralErroCarregar;
+
+  /// No description provided for @muralFrases.
+  ///
+  /// In pt, this message translates to:
+  /// **'Frases'**
+  String get muralFrases;
+
+  /// No description provided for @muralAcessoNegado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Somente a chefia do departamento pode gerenciar o mural.'**
+  String get muralAcessoNegado;
+
+  /// No description provided for @muralNovoAviso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Novo aviso'**
+  String get muralNovoAviso;
+
+  /// No description provided for @muralNenhumAviso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum aviso cadastrado.\nSem avisos, o painel mostra só as boas-vindas.'**
+  String get muralNenhumAviso;
+
+  /// No description provided for @muralDesativado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Desativado'**
+  String get muralDesativado;
+
+  /// No description provided for @muralAgendado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agendado'**
+  String get muralAgendado;
+
+  /// No description provided for @muralEncerrado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Encerrado'**
+  String get muralEncerrado;
+
+  /// No description provided for @muralNoAr.
+  ///
+  /// In pt, this message translates to:
+  /// **'No ar'**
+  String get muralNoAr;
+
+  /// No description provided for @muralTodosPerfis.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos os perfis'**
+  String get muralTodosPerfis;
+
+  /// No description provided for @muralFixado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fixado'**
+  String get muralFixado;
+
+  /// No description provided for @muralModeloInformativo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informativo'**
+  String get muralModeloInformativo;
+
+  /// No description provided for @muralModeloImportante.
+  ///
+  /// In pt, this message translates to:
+  /// **'Importante'**
+  String get muralModeloImportante;
+
+  /// No description provided for @muralModeloEvento.
+  ///
+  /// In pt, this message translates to:
+  /// **'Evento'**
+  String get muralModeloEvento;
+
+  /// No description provided for @muralModeloLembrete.
+  ///
+  /// In pt, this message translates to:
+  /// **'Lembrete'**
+  String get muralModeloLembrete;
+
+  /// No description provided for @muralExibirAPartirDe.
+  ///
+  /// In pt, this message translates to:
+  /// **'Exibir a partir de'**
+  String get muralExibirAPartirDe;
+
+  /// No description provided for @muralExibirAte.
+  ///
+  /// In pt, this message translates to:
+  /// **'Exibir até'**
+  String get muralExibirAte;
+
+  /// No description provided for @muralDataFinalInvalida.
+  ///
+  /// In pt, this message translates to:
+  /// **'A data final deve ser igual ou posterior à inicial.'**
+  String get muralDataFinalInvalida;
+
+  /// No description provided for @muralAvisoPublicado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aviso publicado.'**
+  String get muralAvisoPublicado;
+
+  /// No description provided for @muralErroSalvarAviso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível salvar o aviso.'**
+  String get muralErroSalvarAviso;
+
+  /// No description provided for @muralExcluirAvisoTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Excluir aviso?'**
+  String get muralExcluirAvisoTitulo;
+
+  /// No description provided for @muralExcluirAvisoMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'\"{titulo}\" deixará de aparecer.'**
+  String muralExcluirAvisoMensagem(String titulo);
+
+  /// No description provided for @muralAvisoExcluido.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aviso excluído.'**
+  String get muralAvisoExcluido;
+
+  /// No description provided for @muralErroExcluirAviso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível excluir o aviso.'**
+  String get muralErroExcluirAviso;
+
+  /// No description provided for @muralEditarAviso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar aviso'**
+  String get muralEditarAviso;
+
+  /// No description provided for @muralModelo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Modelo'**
+  String get muralModelo;
+
+  /// No description provided for @muralTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Título'**
+  String get muralTitulo;
+
+  /// No description provided for @muralInformeTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe o título do aviso.'**
+  String get muralInformeTitulo;
+
+  /// No description provided for @muralConteudo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Conteúdo'**
+  String get muralConteudo;
+
+  /// No description provided for @muralConteudoDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escreva o aviso completo para o departamento.'**
+  String get muralConteudoDica;
+
+  /// No description provided for @muralInformeConteudo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escreva o conteúdo do aviso.'**
+  String get muralInformeConteudo;
+
+  /// No description provided for @muralQuemVe.
+  ///
+  /// In pt, this message translates to:
+  /// **'Quem vê'**
+  String get muralQuemVe;
+
+  /// No description provided for @muralTodos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos'**
+  String get muralTodos;
+
+  /// No description provided for @muralPeriodoExibicao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Período de exibição'**
+  String get muralPeriodoExibicao;
+
+  /// No description provided for @muralAPartirDe.
+  ///
+  /// In pt, this message translates to:
+  /// **'A partir de'**
+  String get muralAPartirDe;
+
+  /// No description provided for @muralImediatamente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Imediatamente'**
+  String get muralImediatamente;
+
+  /// No description provided for @muralLimparDataInicial.
+  ///
+  /// In pt, this message translates to:
+  /// **'Limpar data inicial'**
+  String get muralLimparDataInicial;
+
+  /// No description provided for @muralAte.
+  ///
+  /// In pt, this message translates to:
+  /// **'Até'**
+  String get muralAte;
+
+  /// No description provided for @muralSemDataSair.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem data para sair'**
+  String get muralSemDataSair;
+
+  /// No description provided for @muralLimparDataFinal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Limpar data final'**
+  String get muralLimparDataFinal;
+
+  /// No description provided for @muralFixarTopo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fixar no topo'**
+  String get muralFixarTopo;
+
+  /// No description provided for @muralFixarTopoSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aparece antes dos outros avisos.'**
+  String get muralFixarTopoSub;
+
+  /// No description provided for @muralAtivo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ativo'**
+  String get muralAtivo;
+
+  /// No description provided for @muralAtivoSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Desative para esconder sem excluir.'**
+  String get muralAtivoSub;
+
+  /// No description provided for @muralPreviaPainel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pré-visualização no painel'**
+  String get muralPreviaPainel;
+
+  /// No description provided for @muralPreviaAvisoSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'É assim que o aviso aparece no card do topo para quem pode vê-lo.'**
+  String get muralPreviaAvisoSub;
+
+  /// No description provided for @muralPreviaTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Título do aviso'**
+  String get muralPreviaTitulo;
+
+  /// No description provided for @muralPreviaConteudo.
+  ///
+  /// In pt, this message translates to:
+  /// **'O conteúdo do aviso aparece aqui.'**
+  String get muralPreviaConteudo;
+
+  /// No description provided for @muralPublicarAviso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Publicar aviso'**
+  String get muralPublicarAviso;
+
+  /// No description provided for @muralExcluirAviso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Excluir aviso'**
+  String get muralExcluirAviso;
+
+  /// No description provided for @muralNovaFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova frase'**
+  String get muralNovaFrase;
+
+  /// No description provided for @muralEditarFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar frase'**
+  String get muralEditarFrase;
+
+  /// No description provided for @muralTrocarFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'Trocar a frase'**
+  String get muralTrocarFrase;
+
+  /// No description provided for @muralPeriodoDiaria.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todo dia'**
+  String get muralPeriodoDiaria;
+
+  /// No description provided for @muralPeriodoSemanal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Toda semana'**
+  String get muralPeriodoSemanal;
+
+  /// No description provided for @muralPeriodoQuinzenal.
+  ///
+  /// In pt, this message translates to:
+  /// **'A cada 15 dias'**
+  String get muralPeriodoQuinzenal;
+
+  /// No description provided for @muralPeriodoMensal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todo mês'**
+  String get muralPeriodoMensal;
+
+  /// No description provided for @muralErroFrequencia.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível salvar a frequência.'**
+  String get muralErroFrequencia;
+
+  /// No description provided for @muralFraseEmExibicao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Frase em exibição'**
+  String get muralFraseEmExibicao;
+
+  /// No description provided for @muralNenhumaFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma frase ativa.'**
+  String get muralNenhumaFrase;
+
+  /// No description provided for @muralFrasesLista.
+  ///
+  /// In pt, this message translates to:
+  /// **'Frases ({count}) — entram em rodízio as ativas'**
+  String muralFrasesLista(int count);
+
+  /// No description provided for @muralFraseAtivaRodizio.
+  ///
+  /// In pt, this message translates to:
+  /// **'Frase ativa no rodízio'**
+  String get muralFraseAtivaRodizio;
+
+  /// No description provided for @muralExcluirFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'Excluir frase'**
+  String get muralExcluirFrase;
+
+  /// No description provided for @muralExcluirFraseTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Excluir frase?'**
+  String get muralExcluirFraseTitulo;
+
+  /// No description provided for @muralErroSalvarFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível salvar a frase.'**
+  String get muralErroSalvarFrase;
+
+  /// No description provided for @muralErroExcluirFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível excluir a frase.'**
+  String get muralErroExcluirFrase;
+
+  /// No description provided for @muralFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'Frase'**
+  String get muralFrase;
+
+  /// No description provided for @muralFraseDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escreva uma frase curta e motivadora.'**
+  String get muralFraseDica;
+
+  /// No description provided for @muralEscrevaFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escreva a frase.'**
+  String get muralEscrevaFrase;
+
+  /// No description provided for @muralPreviaFraseSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'É assim que a frase aparece no card de boas-vindas.'**
+  String get muralPreviaFraseSub;
+
+  /// No description provided for @muralPreviaFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'A frase aparece aqui.'**
+  String get muralPreviaFrase;
+
+  /// No description provided for @muralSalvarFrase.
+  ///
+  /// In pt, this message translates to:
+  /// **'Salvar frase'**
+  String get muralSalvarFrase;
+
+  /// No description provided for @calAgendaCompleta.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agenda completa'**
+  String get calAgendaCompleta;
+
+  /// No description provided for @calResumoSemana.
+  ///
+  /// In pt, this message translates to:
+  /// **'Resumo da semana'**
+  String get calResumoSemana;
+
+  /// No description provided for @calPeriodoSemana.
+  ///
+  /// In pt, this message translates to:
+  /// **'{inicio} a {fim}'**
+  String calPeriodoSemana(String inicio, String fim);
+
+  /// No description provided for @calVerAgenda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ver agenda'**
+  String get calVerAgenda;
+
+  /// No description provided for @calEventosAgendados.
+  ///
+  /// In pt, this message translates to:
+  /// **'Eventos agendados'**
+  String get calEventosAgendados;
+
+  /// No description provided for @calReservasLaboratorio.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reservas de laboratório'**
+  String get calReservasLaboratorio;
+
+  /// No description provided for @calReuniaoMarcada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reunião marcada'**
+  String get calReuniaoMarcada;
+
+  /// No description provided for @calDepartamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'Departamento'**
+  String get calDepartamento;
+
+  /// No description provided for @calTipoItem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tipo de item'**
+  String get calTipoItem;
+
+  /// No description provided for @calTodos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos'**
+  String get calTodos;
+
+  /// No description provided for @calReuniao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reunião'**
+  String get calReuniao;
+
+  /// No description provided for @calLaboratorio.
+  ///
+  /// In pt, this message translates to:
+  /// **'Laboratório'**
+  String get calLaboratorio;
+
+  /// No description provided for @calComunicacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Comunicação'**
+  String get calComunicacao;
+
+  /// No description provided for @calToqueParaAlterar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Toque para alterar'**
+  String get calToqueParaAlterar;
+
+  /// No description provided for @calAulaPratica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aula prática – {disciplina}'**
+  String calAulaPratica(String disciplina);
+
+  /// No description provided for @calReservaLaboratorio.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reserva de laboratório'**
+  String get calReservaLaboratorio;
+
+  /// No description provided for @calReservaDe.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reserva: {laboratorio}'**
+  String calReservaDe(String laboratorio);
+
+  /// No description provided for @calResponsavel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Responsável: {professor}'**
+  String calResponsavel(String professor);
+
+  /// No description provided for @calProximosCompromissos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Próximos compromissos'**
+  String get calProximosCompromissos;
+
+  /// No description provided for @calVerTodos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ver todos'**
+  String get calVerTodos;
+
+  /// No description provided for @calNenhumaReservaFutura.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma reserva futura encontrada.'**
+  String get calNenhumaReservaFutura;
+
+  /// No description provided for @calAgendaDoDia.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agenda do dia'**
+  String get calAgendaDoDia;
+
+  /// No description provided for @calVerAgendaCompleta.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ver agenda completa'**
+  String get calVerAgendaCompleta;
+
+  /// No description provided for @calNenhumCompromisso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum compromisso neste dia.'**
+  String get calNenhumCompromisso;
+
+  /// No description provided for @calOcupacaoHoje.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ocupação dos laboratórios (hoje)'**
+  String get calOcupacaoHoje;
+
+  /// No description provided for @calNenhumaReserva.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma reserva cadastrada.'**
+  String get calNenhumaReserva;
+
+  /// No description provided for @calHorariosReservados.
+  ///
+  /// In pt, this message translates to:
+  /// **'{horas} de {total} horários reservados na semana'**
+  String calHorariosReservados(int horas, int total);
+
+  /// No description provided for @calMesAnterior.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mês anterior'**
+  String get calMesAnterior;
+
+  /// No description provided for @calProximoMes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Próximo mês'**
+  String get calProximoMes;
+
+  /// No description provided for @calHoje.
+  ///
+  /// In pt, this message translates to:
+  /// **'hoje'**
+  String get calHoje;
+
+  /// No description provided for @calFeriado.
+  ///
+  /// In pt, this message translates to:
+  /// **'feriado: {nome}'**
+  String calFeriado(String nome);
+
+  /// No description provided for @calEventos.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =1{1 evento} other{{count} eventos}}'**
+  String calEventos(int count);
+
+  /// No description provided for @notaGeral.
+  ///
+  /// In pt, this message translates to:
+  /// **'Geral'**
+  String get notaGeral;
+
+  /// No description provided for @notaReunioes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reuniões'**
+  String get notaReunioes;
+
+  /// No description provided for @notaPlanejamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'Planejamento'**
+  String get notaPlanejamento;
+
+  /// No description provided for @notaCargaHoraria.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carga horária'**
+  String get notaCargaHoraria;
+
+  /// No description provided for @notaEventos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Eventos'**
+  String get notaEventos;
+
+  /// No description provided for @notaTodas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todas'**
+  String get notaTodas;
+
+  /// No description provided for @notaNova.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova anotação'**
+  String get notaNova;
+
+  /// No description provided for @notaEditar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar anotação'**
+  String get notaEditar;
+
+  /// No description provided for @notaExcluir.
+  ///
+  /// In pt, this message translates to:
+  /// **'Excluir anotação'**
+  String get notaExcluir;
+
+  /// No description provided for @notaExcluirMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tem certeza que deseja excluir esta anotação?'**
+  String get notaExcluirMensagem;
+
+  /// No description provided for @notaDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Registre uma ideia, encaminhamento ou lembrete...'**
+  String get notaDica;
+
+  /// No description provided for @notaCategoria.
+  ///
+  /// In pt, this message translates to:
+  /// **'Categoria'**
+  String get notaCategoria;
+
+  /// No description provided for @notaGerenciarFixadas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Gerenciar fixadas'**
+  String get notaGerenciarFixadas;
+
+  /// No description provided for @notaNenhumaCriada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma anotação criada ainda.'**
+  String get notaNenhumaCriada;
+
+  /// No description provided for @notaBuscar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar anotações, reuniões, temas...'**
+  String get notaBuscar;
+
+  /// No description provided for @notaFixadas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fixadas'**
+  String get notaFixadas;
+
+  /// No description provided for @notaTodasAnotacoes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todas as anotações'**
+  String get notaTodasAnotacoes;
+
+  /// No description provided for @notaMaisRecentes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mais recentes'**
+  String get notaMaisRecentes;
+
+  /// No description provided for @notaMaisAntigas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mais antigas'**
+  String get notaMaisAntigas;
+
+  /// No description provided for @notaOrdenarPor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ordenar por: {ordem}'**
+  String notaOrdenarPor(String ordem);
+
+  /// No description provided for @notaNenhumaEncontrada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma anotação encontrada.'**
+  String get notaNenhumaEncontrada;
+
+  /// No description provided for @notaVazio.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma anotação. Toque em \"+\" para criar.'**
+  String get notaVazio;
+
+  /// No description provided for @notaVazioDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Use este espaço para registrar encaminhamentos, ideias e lembretes rápidos.'**
+  String get notaVazioDica;
+
+  /// No description provided for @notaCriarPrimeira.
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar primeira anotação'**
+  String get notaCriarPrimeira;
+
+  /// No description provided for @notaDesafixar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Desafixar'**
+  String get notaDesafixar;
+
+  /// No description provided for @notaFixar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fixar anotação'**
+  String get notaFixar;
+
+  /// No description provided for @notaDataHora.
+  ///
+  /// In pt, this message translates to:
+  /// **'{dia}/{mes} às {hora}'**
+  String notaDataHora(String dia, String mes, String hora);
+
+  /// No description provided for @chatFacaLogin.
+  ///
+  /// In pt, this message translates to:
+  /// **'Faça login para acessar o bate-papo.'**
+  String get chatFacaLogin;
+
+  /// No description provided for @chatNenhumUsuario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum usuário disponível para conversa.'**
+  String get chatNenhumUsuario;
+
+  /// No description provided for @chatConversas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Conversas'**
+  String get chatConversas;
+
+  /// No description provided for @chatNovaConversa.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova conversa'**
+  String get chatNovaConversa;
+
+  /// No description provided for @chatBuscarConversa.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar conversa'**
+  String get chatBuscarConversa;
+
+  /// No description provided for @chatLimparBusca.
+  ///
+  /// In pt, this message translates to:
+  /// **'Limpar busca'**
+  String get chatLimparBusca;
+
+  /// No description provided for @chatNenhumaEncontrada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma conversa encontrada.'**
+  String get chatNenhumaEncontrada;
+
+  /// No description provided for @chatNenhumaAinda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma conversa ainda.\nToque em ✏️ para iniciar.'**
+  String get chatNenhumaAinda;
+
+  /// No description provided for @chatNenhumaMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma mensagem ainda.'**
+  String get chatNenhumaMensagem;
+
+  /// No description provided for @chatDigiteMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Digite sua mensagem'**
+  String get chatDigiteMensagem;
+
+  /// No description provided for @chatEnviar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Enviar'**
+  String get chatEnviar;
+
+  /// No description provided for @chatVoltar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Voltar às conversas'**
+  String get chatVoltar;
+
+  /// No description provided for @chatSelecione.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione uma conversa\nou inicie uma nova'**
+  String get chatSelecione;
+
+  /// No description provided for @chatBuscarContato.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar por nome, e-mail ou cargo'**
+  String get chatBuscarContato;
+
+  /// No description provided for @chatNenhumContato.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum contato encontrado.'**
+  String get chatNenhumContato;
+
+  /// No description provided for @chatDiaMes.
+  ///
+  /// In pt, this message translates to:
+  /// **'{dia}/{mes}'**
+  String chatDiaMes(String dia, String mes);
+
+  /// No description provided for @demErroCarregar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível carregar as demandas.'**
+  String get demErroCarregar;
+
+  /// No description provided for @demErroCarregarTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível carregar os dados'**
+  String get demErroCarregarTitulo;
+
+  /// No description provided for @demErroSalvar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível salvar a demanda. Seus dados foram mantidos. Tente novamente.'**
+  String get demErroSalvar;
+
+  /// No description provided for @demBuscar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar demandas'**
+  String get demBuscar;
+
+  /// No description provided for @demBuscarDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pesquise por título, descrição ou responsável'**
+  String get demBuscarDica;
+
+  /// No description provided for @demBuscarExemplo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Título, descrição ou responsável'**
+  String get demBuscarExemplo;
+
+  /// No description provided for @demFiltrosAtivos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Filtros ativos: {count}'**
+  String demFiltrosAtivos(int count);
+
+  /// No description provided for @demFiltrar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Filtrar demandas'**
+  String get demFiltrar;
+
+  /// No description provided for @demCarregando.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carregando demandas...'**
+  String get demCarregando;
+
+  /// No description provided for @demNenhuma.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma demanda encontrada'**
+  String get demNenhuma;
+
+  /// No description provided for @demLimparFiltrosDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tente limpar os filtros ativos.'**
+  String get demLimparFiltrosDica;
+
+  /// No description provided for @demCrieNova.
+  ///
+  /// In pt, this message translates to:
+  /// **'Crie uma nova demanda para começar.'**
+  String get demCrieNova;
+
+  /// No description provided for @demLimparFiltros.
+  ///
+  /// In pt, this message translates to:
+  /// **'Limpar filtros'**
+  String get demLimparFiltros;
+
+  /// No description provided for @demCriarNova.
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar nova demanda'**
+  String get demCriarNova;
+
+  /// No description provided for @demFiltros.
+  ///
+  /// In pt, this message translates to:
+  /// **'Filtros'**
+  String get demFiltros;
+
+  /// No description provided for @demFecharFiltros.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fechar filtros'**
+  String get demFecharFiltros;
+
+  /// No description provided for @demStatus.
+  ///
+  /// In pt, this message translates to:
+  /// **'Status'**
+  String get demStatus;
+
+  /// No description provided for @demPrioridade.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prioridade'**
+  String get demPrioridade;
+
+  /// No description provided for @demOrdenacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ordenação'**
+  String get demOrdenacao;
+
+  /// No description provided for @demLimpar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Limpar'**
+  String get demLimpar;
+
+  /// No description provided for @demAplicar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aplicar'**
+  String get demAplicar;
+
+  /// No description provided for @demNova.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova Demanda'**
+  String get demNova;
+
+  /// No description provided for @demEditar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar Demanda'**
+  String get demEditar;
+
+  /// No description provided for @demFecharFormulario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fechar formulário da demanda'**
+  String get demFecharFormulario;
+
+  /// No description provided for @demTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Título'**
+  String get demTitulo;
+
+  /// No description provided for @demTituloDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Digite o título da demanda'**
+  String get demTituloDica;
+
+  /// No description provided for @demDescricao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Descrição'**
+  String get demDescricao;
+
+  /// No description provided for @demDescricaoDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Descreva a demanda em detalhes'**
+  String get demDescricaoDica;
+
+  /// No description provided for @demProprietario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Proprietário'**
+  String get demProprietario;
+
+  /// No description provided for @demStatusInicial.
+  ///
+  /// In pt, this message translates to:
+  /// **'Status inicial'**
+  String get demStatusInicial;
+
+  /// No description provided for @demCriar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar'**
+  String get demCriar;
+
+  /// No description provided for @demSalvando.
+  ///
+  /// In pt, this message translates to:
+  /// **'Salvando...'**
+  String get demSalvando;
+
+  /// No description provided for @demCriada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Demanda criada com sucesso!'**
+  String get demCriada;
+
+  /// No description provided for @demAtualizada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Demanda atualizada com sucesso!'**
+  String get demAtualizada;
+
+  /// No description provided for @demExcluida.
+  ///
+  /// In pt, this message translates to:
+  /// **'Demanda excluída com sucesso!'**
+  String get demExcluida;
+
+  /// No description provided for @demConfirmarExclusao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Confirmar exclusão'**
+  String get demConfirmarExclusao;
+
+  /// No description provided for @demExcluirMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tem certeza que deseja excluir {titulo}?'**
+  String demExcluirMensagem(String titulo);
+
+  /// No description provided for @demSemPermissaoCriar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Seu perfil não possui permissão para criar demandas.'**
+  String get demSemPermissaoCriar;
+
+  /// No description provided for @demSemPermissaoEditar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Seu perfil não possui permissão para editar demandas.'**
+  String get demSemPermissaoEditar;
+
+  /// No description provided for @demSemPermissaoExcluir.
+  ///
+  /// In pt, this message translates to:
+  /// **'Seu perfil não possui permissão para excluir demandas.'**
+  String get demSemPermissaoExcluir;
+
+  /// No description provided for @demInformeTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe o título da demanda'**
+  String get demInformeTitulo;
+
+  /// No description provided for @demInformeDescricao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe a descrição da demanda'**
+  String get demInformeDescricao;
+
+  /// No description provided for @demResumo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Resumo das demandas'**
+  String get demResumo;
+
+  /// No description provided for @demNoTotal.
+  ///
+  /// In pt, this message translates to:
+  /// **'No total'**
+  String get demNoTotal;
+
+  /// No description provided for @demAbertas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Abertas'**
+  String get demAbertas;
+
+  /// No description provided for @demUrgentes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Urgentes'**
+  String get demUrgentes;
+
+  /// No description provided for @demEditarAcao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar'**
+  String get demEditarAcao;
+
+  /// No description provided for @demAbrir.
+  ///
+  /// In pt, this message translates to:
+  /// **'Abrir demanda {titulo}'**
+  String demAbrir(String titulo);
+
+  /// No description provided for @demFecharDetalhes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fechar detalhes da demanda'**
+  String get demFecharDetalhes;
+
+  /// No description provided for @demPrazo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prazo'**
+  String get demPrazo;
+
+  /// No description provided for @demTodas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todas'**
+  String get demTodas;
+
+  /// No description provided for @demStatusNovo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Novo'**
+  String get demStatusNovo;
+
+  /// No description provided for @demStatusEmAndamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em andamento'**
+  String get demStatusEmAndamento;
+
+  /// No description provided for @demStatusAguardando.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aguardando'**
+  String get demStatusAguardando;
+
+  /// No description provided for @demStatusRevisao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Revisão'**
+  String get demStatusRevisao;
+
+  /// No description provided for @demStatusConcluido.
+  ///
+  /// In pt, this message translates to:
+  /// **'Concluído'**
+  String get demStatusConcluido;
+
+  /// No description provided for @demPrioridadeAlta.
+  ///
+  /// In pt, this message translates to:
+  /// **'Alta'**
+  String get demPrioridadeAlta;
+
+  /// No description provided for @demPrioridadeMedia.
+  ///
+  /// In pt, this message translates to:
+  /// **'Média'**
+  String get demPrioridadeMedia;
+
+  /// No description provided for @demPrioridadeBaixa.
+  ///
+  /// In pt, this message translates to:
+  /// **'Baixa'**
+  String get demPrioridadeBaixa;
+
+  /// No description provided for @demOrdemPrazo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prazo mais próximo'**
+  String get demOrdemPrazo;
+
+  /// No description provided for @demOrdemRecentes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Recém-criadas'**
+  String get demOrdemRecentes;
+
+  /// No description provided for @tarErroCarregar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível carregar o quadro de tarefas.'**
+  String get tarErroCarregar;
+
+  /// No description provided for @tarNovoCard.
+  ///
+  /// In pt, this message translates to:
+  /// **'Novo card'**
+  String get tarNovoCard;
+
+  /// No description provided for @tarCarregando.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carregando quadro de tarefas...'**
+  String get tarCarregando;
+
+  /// No description provided for @tarNenhumCard.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum card criado'**
+  String get tarNenhumCard;
+
+  /// No description provided for @tarNenhumCardDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Toque no + para adicionar o primeiro card ao quadro.'**
+  String get tarNenhumCardDica;
+
+  /// No description provided for @tarCriarCard.
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar card'**
+  String get tarCriarCard;
+
+  /// No description provided for @tarArrasteDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Arraste lateralmente para navegar entre as colunas do quadro.'**
+  String get tarArrasteDica;
+
+  /// No description provided for @tarExcluirCardMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Deseja excluir o card \"{titulo}\"?'**
+  String tarExcluirCardMensagem(String titulo);
+
+  /// No description provided for @tarCardRemovido.
+  ///
+  /// In pt, this message translates to:
+  /// **'Card \"{titulo}\" removido'**
+  String tarCardRemovido(String titulo);
+
+  /// No description provided for @tarTituloDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Digite o título do card'**
+  String get tarTituloDica;
+
+  /// No description provided for @tarColuna.
+  ///
+  /// In pt, this message translates to:
+  /// **'Coluna'**
+  String get tarColuna;
+
+  /// No description provided for @tarCardCriado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Card criado com sucesso!'**
+  String get tarCardCriado;
+
+  /// No description provided for @tarSolteAqui.
+  ///
+  /// In pt, this message translates to:
+  /// **'Solte aqui'**
+  String get tarSolteAqui;
+
+  /// No description provided for @tarCardSemantica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Card: {titulo}. Prioridade {prioridade}.'**
+  String tarCardSemantica(String titulo, String prioridade);
+
+  /// No description provided for @tarMaisAcoes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mais ações do card'**
+  String get tarMaisAcoes;
+
+  /// No description provided for @tarId.
+  ///
+  /// In pt, this message translates to:
+  /// **'ID: {id}'**
+  String tarId(String id);
+
+  /// No description provided for @tarColunaValor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Coluna: {coluna}'**
+  String tarColunaValor(String coluna);
+
+  /// No description provided for @tarPrioridadeValor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prioridade: {prioridade}'**
+  String tarPrioridadeValor(String prioridade);
+
+  /// No description provided for @tarExcluirEsteCard.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tem certeza que deseja excluir este card?'**
+  String get tarExcluirEsteCard;
+
+  /// No description provided for @tarInformeTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe o título do card'**
+  String get tarInformeTitulo;
+
+  /// No description provided for @tarColunaBacklog.
+  ///
+  /// In pt, this message translates to:
+  /// **'Backlog'**
+  String get tarColunaBacklog;
+
+  /// No description provided for @tarColunaEmProgresso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em Progresso'**
+  String get tarColunaEmProgresso;
+
+  /// No description provided for @tarColunaEmRevisao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em Revisão'**
+  String get tarColunaEmRevisao;
+
+  /// No description provided for @tarColunaConcluido.
+  ///
+  /// In pt, this message translates to:
+  /// **'Concluído'**
+  String get tarColunaConcluido;
+
+  /// No description provided for @atvFiltrar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Filtrar atividades'**
+  String get atvFiltrar;
+
+  /// No description provided for @atvFecharFiltro.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fechar filtro'**
+  String get atvFecharFiltro;
+
+  /// No description provided for @atvErroCarregar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível carregar as atividades.'**
+  String get atvErroCarregar;
+
+  /// No description provided for @atvBuscarDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar por título, descrição ou responsável'**
+  String get atvBuscarDica;
+
+  /// No description provided for @atvCarregando.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carregando atividades...'**
+  String get atvCarregando;
+
+  /// No description provided for @atvNenhuma.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma atividade encontrada'**
+  String get atvNenhuma;
+
+  /// No description provided for @atvNenhumaDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ajuste os filtros ou crie uma nova atividade.'**
+  String get atvNenhumaDica;
+
+  /// No description provided for @atvCriarNova.
+  ///
+  /// In pt, this message translates to:
+  /// **'Criar nova atividade'**
+  String get atvCriarNova;
+
+  /// No description provided for @atvNova.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova Atividade'**
+  String get atvNova;
+
+  /// No description provided for @atvEditar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar Atividade'**
+  String get atvEditar;
+
+  /// No description provided for @atvFecharFormulario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fechar formulário'**
+  String get atvFecharFormulario;
+
+  /// No description provided for @atvTituloDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Digite o título da atividade'**
+  String get atvTituloDica;
+
+  /// No description provided for @atvDescricaoDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Descreva a atividade em detalhes'**
+  String get atvDescricaoDica;
+
+  /// No description provided for @atvResponsavel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Responsável'**
+  String get atvResponsavel;
+
+  /// No description provided for @atvCriada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atividade criada com sucesso!'**
+  String get atvCriada;
+
+  /// No description provided for @atvAtualizada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atividade atualizada com sucesso!'**
+  String get atvAtualizada;
+
+  /// No description provided for @atvExcluida.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atividade excluída com sucesso!'**
+  String get atvExcluida;
+
+  /// No description provided for @atvAgendaOperacional.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agenda operacional'**
+  String get atvAgendaOperacional;
+
+  /// No description provided for @atvConcluidas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Concluídas'**
+  String get atvConcluidas;
+
+  /// No description provided for @atvPendentes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pendentes'**
+  String get atvPendentes;
+
+  /// No description provided for @atvAbrir.
+  ///
+  /// In pt, this message translates to:
+  /// **'Abrir atividade {titulo}'**
+  String atvAbrir(String titulo);
+
+  /// No description provided for @atvMaisAcoes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mais ações da atividade'**
+  String get atvMaisAcoes;
+
+  /// No description provided for @atvFecharDetalhes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fechar detalhes da atividade'**
+  String get atvFecharDetalhes;
+
+  /// No description provided for @atvData.
+  ///
+  /// In pt, this message translates to:
+  /// **'Data'**
+  String get atvData;
+
+  /// No description provided for @atvInformeTitulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe o título da atividade'**
+  String get atvInformeTitulo;
+
+  /// No description provided for @atvInformeDescricao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe a descrição da atividade'**
+  String get atvInformeDescricao;
+
+  /// No description provided for @atvStatusConcluida.
+  ///
+  /// In pt, this message translates to:
+  /// **'Concluída'**
+  String get atvStatusConcluida;
+
+  /// No description provided for @atvStatusEmProgresso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em progresso'**
+  String get atvStatusEmProgresso;
+
+  /// No description provided for @atvStatusAgendada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agendada'**
+  String get atvStatusAgendada;
+
+  /// No description provided for @atvStatusPendente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pendente'**
+  String get atvStatusPendente;
+
+  /// No description provided for @relErroCarregar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível carregar os relatórios.'**
+  String get relErroCarregar;
+
+  /// No description provided for @relBaixado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Relatório baixado: {titulo}'**
+  String relBaixado(String titulo);
+
+  /// No description provided for @relLinkGerado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Link de compartilhamento gerado para {titulo}'**
+  String relLinkGerado(String titulo);
+
+  /// No description provided for @relBuscarDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar por título, descrição ou autor'**
+  String get relBuscarDica;
+
+  /// No description provided for @relArrasteDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Arraste lateralmente para ver todos os status.'**
+  String get relArrasteDica;
+
+  /// No description provided for @relDisponiveisConsulta.
+  ///
+  /// In pt, this message translates to:
+  /// **'relatórios disponíveis para consulta'**
+  String get relDisponiveisConsulta;
+
+  /// No description provided for @relCarregando.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carregando relatórios...'**
+  String get relCarregando;
+
+  /// No description provided for @relNenhum.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum relatório encontrado'**
+  String get relNenhum;
+
+  /// No description provided for @relNenhumDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ajuste os filtros para visualizar resultados.'**
+  String get relNenhumDica;
+
+  /// No description provided for @relSemPermissao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Seu perfil não possui permissão para relatórios.'**
+  String get relSemPermissao;
+
+  /// No description provided for @relAcessoNegado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Acesso não permitido para este perfil.'**
+  String get relAcessoNegado;
+
+  /// No description provided for @relCentral.
+  ///
+  /// In pt, this message translates to:
+  /// **'Central de relatórios'**
+  String get relCentral;
+
+  /// No description provided for @relDisponiveis.
+  ///
+  /// In pt, this message translates to:
+  /// **'Disponíveis'**
+  String get relDisponiveis;
+
+  /// No description provided for @relPublicados.
+  ///
+  /// In pt, this message translates to:
+  /// **'Publicados'**
+  String get relPublicados;
+
+  /// No description provided for @relEmRevisao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em revisão'**
+  String get relEmRevisao;
+
+  /// No description provided for @relVer.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ver relatório {titulo}'**
+  String relVer(String titulo);
+
+  /// No description provided for @relMaisAcoes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mais ações do relatório'**
+  String get relMaisAcoes;
+
+  /// No description provided for @relVisualizar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Visualizar'**
+  String get relVisualizar;
+
+  /// No description provided for @relBaixarPdf.
+  ///
+  /// In pt, this message translates to:
+  /// **'Baixar PDF'**
+  String get relBaixarPdf;
+
+  /// No description provided for @relCompartilhar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Compartilhar'**
+  String get relCompartilhar;
+
+  /// No description provided for @relFecharDetalhes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fechar detalhes do relatório'**
+  String get relFecharDetalhes;
+
+  /// No description provided for @relTipo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tipo de relatório'**
+  String get relTipo;
+
+  /// No description provided for @relAutor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Autor'**
+  String get relAutor;
+
+  /// No description provided for @relDownloads.
+  ///
+  /// In pt, this message translates to:
+  /// **'Downloads'**
+  String get relDownloads;
+
+  /// No description provided for @relCompartilhamentos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Compartilhamentos'**
+  String get relCompartilhamentos;
+
+  /// No description provided for @relStatusTodos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos'**
+  String get relStatusTodos;
+
+  /// No description provided for @relStatusPublicado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Publicado'**
+  String get relStatusPublicado;
+
+  /// No description provided for @relStatusAgendado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agendado'**
+  String get relStatusAgendado;
+
+  /// No description provided for @relStatusDisponivel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Disponível'**
+  String get relStatusDisponivel;
+
+  /// No description provided for @relTipoAnaliseGeral.
+  ///
+  /// In pt, this message translates to:
+  /// **'Análise Geral'**
+  String get relTipoAnaliseGeral;
+
+  /// No description provided for @relTipoRecursosHumanos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Recursos Humanos'**
+  String get relTipoRecursosHumanos;
+
+  /// No description provided for @relTipoDesempenho.
+  ///
+  /// In pt, this message translates to:
+  /// **'Desempenho'**
+  String get relTipoDesempenho;
+
+  /// No description provided for @relTipoInfraestrutura.
+  ///
+  /// In pt, this message translates to:
+  /// **'Infraestrutura'**
+  String get relTipoInfraestrutura;
+
+  /// No description provided for @relTipoConformidade.
+  ///
+  /// In pt, this message translates to:
+  /// **'Conformidade'**
+  String get relTipoConformidade;
+
+  /// No description provided for @relPdfBaixadoAgora.
+  ///
+  /// In pt, this message translates to:
+  /// **'PDF baixado agora'**
+  String get relPdfBaixadoAgora;
+
+  /// No description provided for @relCompartilhadoAgora.
+  ///
+  /// In pt, this message translates to:
+  /// **'Compartilhado agora'**
+  String get relCompartilhadoAgora;
+
+  /// No description provided for @cdBuscarDocente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar docente por nome, e-mail ou departamento'**
+  String get cdBuscarDocente;
+
+  /// No description provided for @cdOrdemCrescente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ordem crescente'**
+  String get cdOrdemCrescente;
+
+  /// No description provided for @cdOrdemDecrescente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ordem decrescente'**
+  String get cdOrdemDecrescente;
+
+  /// No description provided for @cdNenhumDocente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum docente encontrado'**
+  String get cdNenhumDocente;
+
+  /// No description provided for @cdAdicionarDocente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar docente'**
+  String get cdAdicionarDocente;
+
+  /// No description provided for @cdNovoDocente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Novo Docente'**
+  String get cdNovoDocente;
+
+  /// No description provided for @cdEditarDocente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar Docente'**
+  String get cdEditarDocente;
+
+  /// No description provided for @cdAdicionar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar'**
+  String get cdAdicionar;
+
+  /// No description provided for @cdDocenteAdicionado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Docente adicionado com sucesso!'**
+  String get cdDocenteAdicionado;
+
+  /// No description provided for @cdDocenteAtualizado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Docente atualizado com sucesso!'**
+  String get cdDocenteAtualizado;
+
+  /// No description provided for @cdDocenteExcluido.
+  ///
+  /// In pt, this message translates to:
+  /// **'Docente excluído com sucesso!'**
+  String get cdDocenteExcluido;
+
+  /// No description provided for @cdFecharFormulario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fechar formulário do docente'**
+  String get cdFecharFormulario;
+
+  /// No description provided for @cdNomeCompleto.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome Completo'**
+  String get cdNomeCompleto;
+
+  /// No description provided for @cdNomeDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Digite o nome do docente'**
+  String get cdNomeDica;
+
+  /// No description provided for @cdEmailAcesso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Email de acesso'**
+  String get cdEmailAcesso;
+
+  /// No description provided for @cdDepartamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'Departamento'**
+  String get cdDepartamento;
+
+  /// No description provided for @cdDepartamentoDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Digite o departamento'**
+  String get cdDepartamentoDica;
+
+  /// No description provided for @cdCargaMaxima.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carga Horária Máxima Semanal (horas)'**
+  String get cdCargaMaxima;
+
+  /// No description provided for @cdRegimeEbtt.
+  ///
+  /// In pt, this message translates to:
+  /// **'Regime EBTT'**
+  String get cdRegimeEbtt;
+
+  /// No description provided for @cdRegimeOpcao.
+  ///
+  /// In pt, this message translates to:
+  /// **'{label} ({code})'**
+  String cdRegimeOpcao(String label, String code);
+
+  /// No description provided for @cdDistribuicaoAulasSemana.
+  ///
+  /// In pt, this message translates to:
+  /// **'Distribuição em aulas: {horas}h/sem'**
+  String cdDistribuicaoAulasSemana(int horas);
+
+  /// No description provided for @cdRegimeLimite.
+  ///
+  /// In pt, this message translates to:
+  /// **'Regime {code}: limite legal semanal de {limite}h na carreira EBTT. Pesquisa, extensão e gestão continuam dependentes da normativa interna da instituição.'**
+  String cdRegimeLimite(String code, int limite);
+
+  /// No description provided for @cdDisciplinas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Disciplinas'**
+  String get cdDisciplinas;
+
+  /// No description provided for @cdHorariosAula.
+  ///
+  /// In pt, this message translates to:
+  /// **'Horários de Aula'**
+  String get cdHorariosAula;
+
+  /// No description provided for @cdNenhumHorario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum horário cadastrado'**
+  String get cdNenhumHorario;
+
+  /// No description provided for @cdHorasSemana.
+  ///
+  /// In pt, this message translates to:
+  /// **'{horas}h/sem'**
+  String cdHorasSemana(int horas);
+
+  /// No description provided for @cdCargaDistribuida.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carga distribuída em aulas: {horas}h/sem'**
+  String cdCargaDistribuida(int horas);
+
+  /// No description provided for @cdAdicionarDisciplina.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar Disciplina'**
+  String get cdAdicionarDisciplina;
+
+  /// No description provided for @cdNomeDisciplina.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome da Disciplina'**
+  String get cdNomeDisciplina;
+
+  /// No description provided for @cdExemploDisciplina.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ex: Programação I'**
+  String get cdExemploDisciplina;
+
+  /// No description provided for @cdAdicionarHorario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicionar Horário'**
+  String get cdAdicionarHorario;
+
+  /// No description provided for @cdDiaSemana.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dia da Semana'**
+  String get cdDiaSemana;
+
+  /// No description provided for @cdInicio.
+  ///
+  /// In pt, this message translates to:
+  /// **'Início'**
+  String get cdInicio;
+
+  /// No description provided for @cdFim.
+  ///
+  /// In pt, this message translates to:
+  /// **'Fim'**
+  String get cdFim;
+
+  /// No description provided for @cdDisciplina.
+  ///
+  /// In pt, this message translates to:
+  /// **'Disciplina'**
+  String get cdDisciplina;
+
+  /// No description provided for @cdCargaHoraria.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carga Horária'**
+  String get cdCargaHoraria;
+
+  /// No description provided for @cdExemploCarga.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ex: 2h/sem · 80h'**
+  String get cdExemploCarga;
+
+  /// No description provided for @cdTurma.
+  ///
+  /// In pt, this message translates to:
+  /// **'Turma'**
+  String get cdTurma;
+
+  /// No description provided for @cdModalidade.
+  ///
+  /// In pt, this message translates to:
+  /// **'Modalidade'**
+  String get cdModalidade;
+
+  /// No description provided for @cdExcluirMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tem certeza que deseja excluir {nome}?'**
+  String cdExcluirMensagem(String nome);
+
+  /// No description provided for @cdSugestaoEquilibrada.
+  ///
+  /// In pt, this message translates to:
+  /// **'A distribuição atual está equilibrada. Priorize acompanhamento quinzenal e ajuste fino por disciplina.'**
+  String get cdSugestaoEquilibrada;
+
+  /// No description provided for @cdSugestaoPressao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Docentes com maior pressão: {nomes}. Considere redistribuir turmas práticas e orientações para reduzir risco de sobrecarga.'**
+  String cdSugestaoPressao(String nomes);
+
+  /// No description provided for @cdSugestaoOciosa.
+  ///
+  /// In pt, this message translates to:
+  /// **'Há capacidade ociosa com {nomes}. Priorize alocação de componentes compartilhados e reforço em horários de laboratório.'**
+  String cdSugestaoOciosa(String nomes);
+
+  /// No description provided for @cdSugestaoRevisao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Programe revisão semanal conjunta entre coordenação e laboratórios para reduzir conflitos de agenda e janelas vazias.'**
+  String get cdSugestaoRevisao;
+
+  /// No description provided for @cdRedistribuicoesAplicadas.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =1{1 redistribuição aplicada com sucesso.} other{{count} redistribuições aplicadas com sucesso.}}'**
+  String cdRedistribuicoesAplicadas(int count);
+
+  /// No description provided for @cdMaisAcoes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mais ações do docente'**
+  String get cdMaisAcoes;
+
+  /// No description provided for @cdRegimeDocente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Regime EBTT: {label} ({code})'**
+  String cdRegimeDocente(String label, String code);
+
+  /// No description provided for @cdDistribuicaoAulas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Distribuição em aulas: {horas}h/{maximo}h'**
+  String cdDistribuicaoAulas(int horas, int maximo);
+
+  /// No description provided for @cdOtimizacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Otimização da distribuição'**
+  String get cdOtimizacao;
+
+  /// No description provided for @cdSimular.
+  ///
+  /// In pt, this message translates to:
+  /// **'Simular'**
+  String get cdSimular;
+
+  /// No description provided for @cdAproveitamentoMedio.
+  ///
+  /// In pt, this message translates to:
+  /// **'de aproveitamento médio da carga horária'**
+  String get cdAproveitamentoMedio;
+
+  /// No description provided for @cdOcupacaoMedia.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ocupação média'**
+  String get cdOcupacaoMedia;
+
+  /// No description provided for @cdAltaCarga.
+  ///
+  /// In pt, this message translates to:
+  /// **'Alta carga (>=90%)'**
+  String get cdAltaCarga;
+
+  /// No description provided for @cdBaixaCarga.
+  ///
+  /// In pt, this message translates to:
+  /// **'Baixa carga (<=50%)'**
+  String get cdBaixaCarga;
+
+  /// No description provided for @cdSimulacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Simulação de redistribuição'**
+  String get cdSimulacao;
+
+  /// No description provided for @cdOcupacaoPrevista.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ocupação média prevista: {antes}% -> {depois}%'**
+  String cdOcupacaoPrevista(String antes, String depois);
+
+  /// No description provided for @cdNenhumaRedistribuicao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma redistribuição segura foi encontrada para o cenário atual.'**
+  String get cdNenhumaRedistribuicao;
+
+  /// No description provided for @cdAplicarSugestao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aplicar sugestão'**
+  String get cdAplicarSugestao;
+
+  /// No description provided for @cdAcessoRestrito.
+  ///
+  /// In pt, this message translates to:
+  /// **'Acesso restrito'**
+  String get cdAcessoRestrito;
+
+  /// No description provided for @cdAcessoRestritoMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Somente docentes, coordenação e chefia podem acessar esta área.'**
+  String get cdAcessoRestritoMensagem;
+
+  /// No description provided for @cdAgendaDocente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agenda do docente'**
+  String get cdAgendaDocente;
+
+  /// No description provided for @cdDistribuicaoSemanal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Distribuição semanal'**
+  String get cdDistribuicaoSemanal;
+
+  /// No description provided for @cdConviteReuniao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Convite para reunião'**
+  String get cdConviteReuniao;
+
+  /// No description provided for @cdConviteEnviadoAgenda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Convite enviado via agenda do SIGAD.'**
+  String get cdConviteEnviadoAgenda;
+
+  /// No description provided for @cdEnviarConviteReuniao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Enviar convite de reunião'**
+  String get cdEnviarConviteReuniao;
+
+  /// No description provided for @cdTituloConvite.
+  ///
+  /// In pt, this message translates to:
+  /// **'Título do convite'**
+  String get cdTituloConvite;
+
+  /// No description provided for @cdTituloConviteDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ex: Reunião de alinhamento'**
+  String get cdTituloConviteDica;
+
+  /// No description provided for @cdDescricaoConviteDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Detalhes do convite'**
+  String get cdDescricaoConviteDica;
+
+  /// No description provided for @cdLocal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Local'**
+  String get cdLocal;
+
+  /// No description provided for @cdLocalDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sala 12 ou Online'**
+  String get cdLocalDica;
+
+  /// No description provided for @cdHorarioInvalido.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível interpretar o horário da célula.'**
+  String get cdHorarioInvalido;
+
+  /// No description provided for @cdInformeTituloConvite.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe o título do convite.'**
+  String get cdInformeTituloConvite;
+
+  /// No description provided for @cdInformeLocalConvite.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe o local do convite.'**
+  String get cdInformeLocalConvite;
+
+  /// No description provided for @cdConviteEnviado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Convite enviado com sucesso para a agenda do docente.'**
+  String get cdConviteEnviado;
+
+  /// No description provided for @cdEnviarConvite.
+  ///
+  /// In pt, this message translates to:
+  /// **'Enviar convite'**
+  String get cdEnviarConvite;
+
+  /// No description provided for @cdAgendaSemanal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agenda semanal'**
+  String get cdAgendaSemanal;
+
+  /// No description provided for @cdSemanaDe.
+  ///
+  /// In pt, this message translates to:
+  /// **'{semana} de {mes}'**
+  String cdSemanaDe(String semana, String mes);
+
+  /// No description provided for @cdIntervalo.
+  ///
+  /// In pt, this message translates to:
+  /// **'{inicio} a {fim}'**
+  String cdIntervalo(String inicio, String fim);
+
+  /// No description provided for @cdDiaSelecionado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dia selecionado: {dia} ({abreviado} - {completo})'**
+  String cdDiaSelecionado(int dia, String abreviado, String completo);
+
+  /// No description provided for @cdMes.
+  ///
+  /// In pt, this message translates to:
+  /// **'{mes, select, 1{Janeiro} 2{Fevereiro} 3{Março} 4{Abril} 5{Maio} 6{Junho} 7{Julho} 8{Agosto} 9{Setembro} 10{Outubro} 11{Novembro} other{Dezembro}}'**
+  String cdMes(String mes);
+
+  /// No description provided for @cdDiaSab.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sab'**
+  String get cdDiaSab;
+
+  /// No description provided for @cdDiaDom.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dom'**
+  String get cdDiaDom;
+
+  /// No description provided for @cdDiaSabado.
+  ///
+  /// In pt, this message translates to:
+  /// **'sábado'**
+  String get cdDiaSabado;
+
+  /// No description provided for @cdDiaDomingo.
+  ///
+  /// In pt, this message translates to:
+  /// **'domingo'**
+  String get cdDiaDomingo;
+
+  /// No description provided for @cdTurnoCurtoM.
+  ///
+  /// In pt, this message translates to:
+  /// **'M'**
+  String get cdTurnoCurtoM;
+
+  /// No description provided for @cdTurnoCurtoT.
+  ///
+  /// In pt, this message translates to:
+  /// **'T'**
+  String get cdTurnoCurtoT;
+
+  /// No description provided for @cdTurnoCurtoN.
+  ///
+  /// In pt, this message translates to:
+  /// **'N'**
+  String get cdTurnoCurtoN;
+
+  /// No description provided for @cdLivre.
+  ///
+  /// In pt, this message translates to:
+  /// **'Livre'**
+  String get cdLivre;
+
+  /// No description provided for @cdAula.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aula'**
+  String get cdAula;
+
+  /// No description provided for @cdOcupado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ocupado'**
+  String get cdOcupado;
+
+  /// No description provided for @cdHorarioIndefinido.
+  ///
+  /// In pt, this message translates to:
+  /// **'Horário indefinido'**
+  String get cdHorarioIndefinido;
+
+  /// No description provided for @cdSegunda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Segunda'**
+  String get cdSegunda;
+
+  /// No description provided for @cdTerca.
+  ///
+  /// In pt, this message translates to:
+  /// **'Terça'**
+  String get cdTerca;
+
+  /// No description provided for @cdQuarta.
+  ///
+  /// In pt, this message translates to:
+  /// **'Quarta'**
+  String get cdQuarta;
+
+  /// No description provided for @cdQuinta.
+  ///
+  /// In pt, this message translates to:
+  /// **'Quinta'**
+  String get cdQuinta;
+
+  /// No description provided for @cdSexta.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sexta'**
+  String get cdSexta;
+
+  /// No description provided for @cdModalidadeIntegral.
+  ///
+  /// In pt, this message translates to:
+  /// **'Integral'**
+  String get cdModalidadeIntegral;
+
+  /// No description provided for @cdModalidadeConcomitante.
+  ///
+  /// In pt, this message translates to:
+  /// **'Concomitante'**
+  String get cdModalidadeConcomitante;
+
+  /// No description provided for @cdModalidadeSubsequente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Subsequente'**
+  String get cdModalidadeSubsequente;
+
+  /// No description provided for @cdModalidadeEja.
+  ///
+  /// In pt, this message translates to:
+  /// **'EJA'**
+  String get cdModalidadeEja;
+
+  /// No description provided for @cdModalidadeSuperior.
+  ///
+  /// In pt, this message translates to:
+  /// **'Superior'**
+  String get cdModalidadeSuperior;
+
+  /// No description provided for @cdRegime20h.
+  ///
+  /// In pt, this message translates to:
+  /// **'20 horas'**
+  String get cdRegime20h;
+
+  /// No description provided for @cdRegime40h.
+  ///
+  /// In pt, this message translates to:
+  /// **'40 horas'**
+  String get cdRegime40h;
+
+  /// No description provided for @cdRegimeDe.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dedicação exclusiva'**
+  String get cdRegimeDe;
+
+  /// No description provided for @cdInformeNome.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe o nome do docente'**
+  String get cdInformeNome;
+
+  /// No description provided for @cdInformeDepartamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe o departamento'**
+  String get cdInformeDepartamento;
+
+  /// No description provided for @cdInformeCargaMaxima.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe uma carga horária máxima válida'**
+  String get cdInformeCargaMaxima;
+
+  /// No description provided for @cdRegimePermite.
+  ///
+  /// In pt, this message translates to:
+  /// **'O regime {code} permite até {limite}h semanais.'**
+  String cdRegimePermite(String code, String limite);
+
+  /// No description provided for @cdAdicioneDisciplina.
+  ///
+  /// In pt, this message translates to:
+  /// **'Adicione pelo menos uma disciplina'**
+  String get cdAdicioneDisciplina;
+
+  /// No description provided for @cdDistribuicaoExcede.
+  ///
+  /// In pt, this message translates to:
+  /// **'A distribuição semanal cadastrada ({distribuida}h) excede a carga máxima do docente ({maxima}h).'**
+  String cdDistribuicaoExcede(String distribuida, String maxima);
+
+  /// No description provided for @cdInformeNomeDisciplina.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe o nome da disciplina.'**
+  String get cdInformeNomeDisciplina;
+
+  /// No description provided for @cdDisciplinaJaAdicionada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Disciplina já adicionada.'**
+  String get cdDisciplinaJaAdicionada;
+
+  /// No description provided for @cdInformeInicioFim.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe horário de início e fim.'**
+  String get cdInformeInicioFim;
+
+  /// No description provided for @cdFormatoHorario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Use o formato HH:MM para os horários.'**
+  String get cdFormatoHorario;
+
+  /// No description provided for @cdFimPosterior.
+  ///
+  /// In pt, this message translates to:
+  /// **'O horário de fim deve ser posterior ao de início.'**
+  String get cdFimPosterior;
+
+  /// No description provided for @cdConflitoHorario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Já existe horário cadastrado em conflito para {dia}.'**
+  String cdConflitoHorario(String dia);
+
+  /// No description provided for @vgCargaAlocada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carga horária alocada'**
+  String get vgCargaAlocada;
+
+  /// No description provided for @vgVsMesAnterior6.
+  ///
+  /// In pt, this message translates to:
+  /// **'↑ 6% vs. mês anterior'**
+  String get vgVsMesAnterior6;
+
+  /// No description provided for @vgLabsEmUso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Laboratórios em uso'**
+  String get vgLabsEmUso;
+
+  /// No description provided for @vgVsSemana12.
+  ///
+  /// In pt, this message translates to:
+  /// **'↑ 12% vs. semana anterior'**
+  String get vgVsSemana12;
+
+  /// No description provided for @vgNoticiasEnviadas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Notícias enviadas'**
+  String get vgNoticiasEnviadas;
+
+  /// No description provided for @vgVsSemana3.
+  ///
+  /// In pt, this message translates to:
+  /// **'↑ 3 vs. semana anterior'**
+  String get vgVsSemana3;
+
+  /// No description provided for @vgPendenciasAbertas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pendências em aberto'**
+  String get vgPendenciasAbertas;
+
+  /// No description provided for @vgVsSemana1.
+  ///
+  /// In pt, this message translates to:
+  /// **'↓ 1 vs. semana anterior'**
+  String get vgVsSemana1;
+
+  /// No description provided for @vgIndicadoresPainel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Indicadores do painel'**
+  String get vgIndicadoresPainel;
+
+  /// No description provided for @vgEscolhaIndicadores.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escolha quais indicadores aparecem no panorama.'**
+  String get vgEscolhaIndicadores;
+
+  /// No description provided for @vgPanorama.
+  ///
+  /// In pt, this message translates to:
+  /// **'Panorama do departamento'**
+  String get vgPanorama;
+
+  /// No description provided for @vgAtualizadoAgora.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atualizado agora'**
+  String get vgAtualizadoAgora;
+
+  /// No description provided for @vgPersonalizarIndicadores.
+  ///
+  /// In pt, this message translates to:
+  /// **'Personalizar indicadores'**
+  String get vgPersonalizarIndicadores;
+
+  /// No description provided for @vgProximasPrioridades.
+  ///
+  /// In pt, this message translates to:
+  /// **'Próximas prioridades'**
+  String get vgProximasPrioridades;
+
+  /// No description provided for @vgPrioridadesDepartamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prioridades do departamento'**
+  String get vgPrioridadesDepartamento;
+
+  /// No description provided for @vgPrioridadesSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Planejamento e atividades mais próximas'**
+  String get vgPrioridadesSub;
+
+  /// No description provided for @vgPersonalizar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Personalizar'**
+  String get vgPersonalizar;
+
+  /// No description provided for @vgNenhumIndicador.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum indicador selecionado. Toque no ícone ao lado para escolher.'**
+  String get vgNenhumIndicador;
+
+  /// No description provided for @vgOntem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ontem'**
+  String get vgOntem;
+
+  /// No description provided for @vgMensagemEnviada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mensagem enviada.'**
+  String get vgMensagemEnviada;
+
+  /// No description provided for @vgSelecioneUsuarios.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione usuários ou grupos para iniciar uma conversa.'**
+  String get vgSelecioneUsuarios;
+
+  /// No description provided for @vgPeriodo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Período'**
+  String get vgPeriodo;
+
+  /// No description provided for @vgTipo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tipo'**
+  String get vgTipo;
+
+  /// No description provided for @vgArea.
+  ///
+  /// In pt, this message translates to:
+  /// **'Área'**
+  String get vgArea;
+
+  /// No description provided for @vgLaboratorio.
+  ///
+  /// In pt, this message translates to:
+  /// **'Laboratório'**
+  String get vgLaboratorio;
+
+  /// No description provided for @vgVisualizacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Visualização'**
+  String get vgVisualizacao;
+
+  /// No description provided for @vgAcaoRegistrada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ação registrada.'**
+  String get vgAcaoRegistrada;
+
+  /// No description provided for @vgContinuar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Continuar'**
+  String get vgContinuar;
+
+  /// No description provided for @vgResultados.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =1{1 resultado} other{{count} resultados}}'**
+  String vgResultados(int count);
+
+  /// No description provided for @vgItens.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =1{1 item} other{{count} itens}}'**
+  String vgItens(int count);
+
+  /// No description provided for @vgPrazo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prazo {data}'**
+  String vgPrazo(String data);
+
+  /// No description provided for @vgComunicacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'COMUNICAÇÃO'**
+  String get vgComunicacao;
+
+  /// No description provided for @vgChatSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Conversas, grupos e avisos internos do DEE.'**
+  String get vgChatSub;
+
+  /// No description provided for @vgSelecioneConversa.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione uma conversa.'**
+  String get vgSelecioneConversa;
+
+  /// No description provided for @vgDisponivel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Disponível'**
+  String get vgDisponivel;
+
+  /// No description provided for @vgEscreverMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escrever mensagem'**
+  String get vgEscreverMensagem;
+
+  /// No description provided for @vgGestaoAcademica.
+  ///
+  /// In pt, this message translates to:
+  /// **'GESTÃO ACADÊMICA'**
+  String get vgGestaoAcademica;
+
+  /// No description provided for @vgCargaSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Distribuição, limites, conflitos e validação das atividades.'**
+  String get vgCargaSub;
+
+  /// No description provided for @vgNovaDistribuicao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova distribuição'**
+  String get vgNovaDistribuicao;
+
+  /// No description provided for @vgNovaDistribuicaoMsg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cadastre disciplinas, atividades e carga do docente.'**
+  String get vgNovaDistribuicaoMsg;
+
+  /// No description provided for @vgBuscarProfessor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar professor'**
+  String get vgBuscarProfessor;
+
+  /// No description provided for @vgDocentes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Docentes'**
+  String get vgDocentes;
+
+  /// No description provided for @vgPeriodoValor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Período {periodo}'**
+  String vgPeriodoValor(String periodo);
+
+  /// No description provided for @vgCargaRegular.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carga regular'**
+  String get vgCargaRegular;
+
+  /// No description provided for @vgDoQuadro.
+  ///
+  /// In pt, this message translates to:
+  /// **'75% do quadro'**
+  String get vgDoQuadro;
+
+  /// No description provided for @vgRequerAtencao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Requer atenção'**
+  String get vgRequerAtencao;
+
+  /// No description provided for @vgAbaixoAcima.
+  ///
+  /// In pt, this message translates to:
+  /// **'Abaixo ou acima do limite'**
+  String get vgAbaixoAcima;
+
+  /// No description provided for @vgConflitos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Conflitos'**
+  String get vgConflitos;
+
+  /// No description provided for @vgHorariosSobrepostos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Horários sobrepostos'**
+  String get vgHorariosSobrepostos;
+
+  /// No description provided for @vgDistribuicaoPorDocente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Distribuição por docente'**
+  String get vgDistribuicaoPorDocente;
+
+  /// No description provided for @vgDistribuicaoSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ensino, pesquisa, extensão, gestão e orientações'**
+  String get vgDistribuicaoSub;
+
+  /// No description provided for @vgEnsinoOutras.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ensino: {ensino}h · Outras atividades: {outras}h'**
+  String vgEnsinoOutras(String ensino, String outras);
+
+  /// No description provided for @vgTotalDeMaximo.
+  ///
+  /// In pt, this message translates to:
+  /// **'{total} h de {maximo} h'**
+  String vgTotalDeMaximo(String total, String maximo);
+
+  /// No description provided for @vgGestaoPessoas.
+  ///
+  /// In pt, this message translates to:
+  /// **'GESTÃO DE PESSOAS'**
+  String get vgGestaoPessoas;
+
+  /// No description provided for @vgProfessoresSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Quadro docente, áreas, situação funcional e carga atual.'**
+  String get vgProfessoresSub;
+
+  /// No description provided for @vgCadastrar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cadastrar'**
+  String get vgCadastrar;
+
+  /// No description provided for @vgCadastrarProfessor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cadastrar professor'**
+  String get vgCadastrarProfessor;
+
+  /// No description provided for @vgCadastrarProfessorMsg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Informe dados funcionais, área e vínculo.'**
+  String get vgCadastrarProfessorMsg;
+
+  /// No description provided for @vgBuscarNomeArea.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar nome ou área'**
+  String get vgBuscarNomeArea;
+
+  /// No description provided for @vgProfessorDetalhe.
+  ///
+  /// In pt, this message translates to:
+  /// **'Área: {area}\nCarga atual: {carga}\nSituação: {situacao}'**
+  String vgProfessorDetalhe(String area, String carga, String situacao);
+
+  /// No description provided for @vgCargaAtual.
+  ///
+  /// In pt, this message translates to:
+  /// **'Carga atual: {carga}'**
+  String vgCargaAtual(String carga);
+
+  /// No description provided for @vgPlanejamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'PLANEJAMENTO'**
+  String get vgPlanejamento;
+
+  /// No description provided for @vgDemandasSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Solicitações, responsáveis, prazos e acompanhamento.'**
+  String get vgDemandasSub;
+
+  /// No description provided for @vgNovaDemanda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova demanda'**
+  String get vgNovaDemanda;
+
+  /// No description provided for @vgNovaDemandaMsg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cadastre descrição, responsável, prazo e prioridade.'**
+  String get vgNovaDemandaMsg;
+
+  /// No description provided for @vgNoPeriodoAtual.
+  ///
+  /// In pt, this message translates to:
+  /// **'No período atual'**
+  String get vgNoPeriodoAtual;
+
+  /// No description provided for @vgDoTotal58.
+  ///
+  /// In pt, this message translates to:
+  /// **'58% do total'**
+  String get vgDoTotal58;
+
+  /// No description provided for @vgAtrasadas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atrasadas'**
+  String get vgAtrasadas;
+
+  /// No description provided for @vgAcaoNecessaria.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ação necessária'**
+  String get vgAcaoNecessaria;
+
+  /// No description provided for @vgBuscarDemanda.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar demanda'**
+  String get vgBuscarDemanda;
+
+  /// No description provided for @vgListaDemandas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Lista de demandas'**
+  String get vgListaDemandas;
+
+  /// No description provided for @vgDemandaDetalhe.
+  ///
+  /// In pt, this message translates to:
+  /// **'{id}\nResponsável: {responsavel}\nPrazo: {prazo}\nPrioridade: {prioridade}'**
+  String vgDemandaDetalhe(
+    String id,
+    String responsavel,
+    String prazo,
+    String prioridade,
+  );
+
+  /// No description provided for @vgExecucao.
+  ///
+  /// In pt, this message translates to:
+  /// **'EXECUÇÃO'**
+  String get vgExecucao;
+
+  /// No description provided for @vgTarefasSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Quadro visual para acompanhar atividades e responsáveis.'**
+  String get vgTarefasSub;
+
+  /// No description provided for @vgNovaTarefa.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova tarefa'**
+  String get vgNovaTarefa;
+
+  /// No description provided for @vgNovaTarefaMsg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Defina título, responsável, prazo e prioridade.'**
+  String get vgNovaTarefaMsg;
+
+  /// No description provided for @vgAdicionarTarefaEm.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ação para adicionar tarefa em {coluna}.'**
+  String vgAdicionarTarefaEm(String coluna);
+
+  /// No description provided for @vgInfraestrutura.
+  ///
+  /// In pt, this message translates to:
+  /// **'INFRAESTRUTURA'**
+  String get vgInfraestrutura;
+
+  /// No description provided for @vgLabsSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Disponibilidade, reservas, conflitos e manutenção.'**
+  String get vgLabsSub;
+
+  /// No description provided for @vgNovaReserva.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova reserva'**
+  String get vgNovaReserva;
+
+  /// No description provided for @vgNovaReservaMsg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione laboratório, data, turno, disciplina e responsável.'**
+  String get vgNovaReservaMsg;
+
+  /// No description provided for @vgReservasHoje.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reservas hoje'**
+  String get vgReservasHoje;
+
+  /// No description provided for @vgCincoLabs.
+  ///
+  /// In pt, this message translates to:
+  /// **'5 laboratórios'**
+  String get vgCincoLabs;
+
+  /// No description provided for @vgEmUso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em uso'**
+  String get vgEmUso;
+
+  /// No description provided for @vgNesteHorario.
+  ///
+  /// In pt, this message translates to:
+  /// **'Neste horário'**
+  String get vgNesteHorario;
+
+  /// No description provided for @vgEmManutencao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em manutenção'**
+  String get vgEmManutencao;
+
+  /// No description provided for @vgAcessoRestrito.
+  ///
+  /// In pt, this message translates to:
+  /// **'Acesso temporariamente restrito'**
+  String get vgAcessoRestrito;
+
+  /// No description provided for @vgNenhumaSobreposicao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma sobreposição'**
+  String get vgNenhumaSobreposicao;
+
+  /// No description provided for @vgAgendaSemanalSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Períodos de segunda a sexta'**
+  String get vgAgendaSemanalSub;
+
+  /// No description provided for @vgCalendarioReservas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Calendário de reservas'**
+  String get vgCalendarioReservas;
+
+  /// No description provided for @vgVisaoMes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Visão consolidada do mês'**
+  String get vgVisaoMes;
+
+  /// No description provided for @vgOcupacaoOtimizacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ocupação e otimização'**
+  String get vgOcupacaoOtimizacao;
+
+  /// No description provided for @vgUsoMedio.
+  ///
+  /// In pt, this message translates to:
+  /// **'Uso médio e horários disponíveis'**
+  String get vgUsoMedio;
+
+  /// No description provided for @vgReservado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Reservado'**
+  String get vgReservado;
+
+  /// No description provided for @vgLivre.
+  ///
+  /// In pt, this message translates to:
+  /// **'Livre'**
+  String get vgLivre;
+
+  /// No description provided for @vgComReservas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Com reservas'**
+  String get vgComReservas;
+
+  /// No description provided for @vgAcompanhamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'ACOMPANHAMENTO'**
+  String get vgAcompanhamento;
+
+  /// No description provided for @vgAtividadesSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ações acadêmicas e administrativas com prazos e responsáveis.'**
+  String get vgAtividadesSub;
+
+  /// No description provided for @vgNovaAtividade.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nova atividade'**
+  String get vgNovaAtividade;
+
+  /// No description provided for @vgNovaAtividadeMsg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Cadastre título, categoria, prazo e responsável.'**
+  String get vgNovaAtividadeMsg;
+
+  /// No description provided for @vgBuscarAtividade.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar atividade'**
+  String get vgBuscarAtividade;
+
+  /// No description provided for @vgAtividadesPeriodo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atividades do período'**
+  String get vgAtividadesPeriodo;
+
+  /// No description provided for @vgAtividadeDetalhe.
+  ///
+  /// In pt, this message translates to:
+  /// **'Categoria: {categoria}\nPrazo: {prazo}\nStatus: {status}'**
+  String vgAtividadeDetalhe(String categoria, String prazo, String status);
+
+  /// No description provided for @vgAnalise.
+  ///
+  /// In pt, this message translates to:
+  /// **'ANÁLISE'**
+  String get vgAnalise;
+
+  /// No description provided for @vgRelatoriosSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Indicadores, documentos e exportações para apoio à gestão.'**
+  String get vgRelatoriosSub;
+
+  /// No description provided for @vgGerarRelatorio.
+  ///
+  /// In pt, this message translates to:
+  /// **'Gerar relatório'**
+  String get vgGerarRelatorio;
+
+  /// No description provided for @vgGerarRelatorioMsg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecione fonte, período, formato e filtros.'**
+  String get vgGerarRelatorioMsg;
+
+  /// No description provided for @vgRelatoriosDisponiveis.
+  ///
+  /// In pt, this message translates to:
+  /// **'Relatórios disponíveis'**
+  String get vgRelatoriosDisponiveis;
+
+  /// No description provided for @vgQuatroCategorias.
+  ///
+  /// In pt, this message translates to:
+  /// **'4 categorias'**
+  String get vgQuatroCategorias;
+
+  /// No description provided for @vgExportadosMes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Exportados no mês'**
+  String get vgExportadosMes;
+
+  /// No description provided for @vgAgendados.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agendados'**
+  String get vgAgendados;
+
+  /// No description provided for @vgEnvioAutomatico.
+  ///
+  /// In pt, this message translates to:
+  /// **'Envio automático'**
+  String get vgEnvioAutomatico;
+
+  /// No description provided for @vgAbrindo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Abrindo {titulo}.'**
+  String vgAbrindo(String titulo);
+
+  /// No description provided for @vgExportacaoPreparada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Exportação preparada.'**
+  String get vgExportacaoPreparada;
+
+  /// No description provided for @vgExportar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Exportar'**
+  String get vgExportar;
+
+  /// No description provided for @vgAtualizadoHoje.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atualizado hoje'**
+  String get vgAtualizadoHoje;
+
+  /// No description provided for @vgAtualizadoOntem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atualizado ontem'**
+  String get vgAtualizadoOntem;
+
+  /// No description provided for @vgAtualizadoEm.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atualizado em {data}'**
+  String vgAtualizadoEm(String data);
+
+  /// No description provided for @vgPreferencias.
+  ///
+  /// In pt, this message translates to:
+  /// **'PREFERÊNCIAS'**
+  String get vgPreferencias;
+
+  /// No description provided for @vgConfigSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Conta, notificações, aparência, segurança e dados.'**
+  String get vgConfigSub;
+
+  /// No description provided for @vgConfigSalvas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Configurações salvas.'**
+  String get vgConfigSalvas;
+
+  /// No description provided for @vgPerfilConta.
+  ///
+  /// In pt, this message translates to:
+  /// **'Perfil e conta'**
+  String get vgPerfilConta;
+
+  /// No description provided for @vgDadosSessao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Dados da sessão atual'**
+  String get vgDadosSessao;
+
+  /// No description provided for @vgNomeExibicao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nome de exibição'**
+  String get vgNomeExibicao;
+
+  /// No description provided for @vgUsuarioInstitucional.
+  ///
+  /// In pt, this message translates to:
+  /// **'Usuário institucional'**
+  String get vgUsuarioInstitucional;
+
+  /// No description provided for @vgEmail.
+  ///
+  /// In pt, this message translates to:
+  /// **'E-mail'**
+  String get vgEmail;
+
+  /// No description provided for @vgContaInstitucional.
+  ///
+  /// In pt, this message translates to:
+  /// **'Conta institucional'**
+  String get vgContaInstitucional;
+
+  /// No description provided for @vgPerfilAcesso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Perfil de acesso'**
+  String get vgPerfilAcesso;
+
+  /// No description provided for @vgDefinidoAutenticacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Definido pela autenticação'**
+  String get vgDefinidoAutenticacao;
+
+  /// No description provided for @vgEditarPerfil.
+  ///
+  /// In pt, this message translates to:
+  /// **'Editar perfil'**
+  String get vgEditarPerfil;
+
+  /// No description provided for @vgEditarPerfilMsg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atualize dados pessoais e preferências.'**
+  String get vgEditarPerfilMsg;
+
+  /// No description provided for @vgCanaisAlertas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Canais e alertas'**
+  String get vgCanaisAlertas;
+
+  /// No description provided for @vgNotifApp.
+  ///
+  /// In pt, this message translates to:
+  /// **'Notificações no aplicativo'**
+  String get vgNotifApp;
+
+  /// No description provided for @vgNotifAppSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Alertas, convites e prazos'**
+  String get vgNotifAppSub;
+
+  /// No description provided for @vgNotifEmail.
+  ///
+  /// In pt, this message translates to:
+  /// **'Notificações por e-mail'**
+  String get vgNotifEmail;
+
+  /// No description provided for @vgNotifEmailSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Resumo e comunicações importantes'**
+  String get vgNotifEmailSub;
+
+  /// No description provided for @vgAparencia.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aparência'**
+  String get vgAparencia;
+
+  /// No description provided for @vgDensidade.
+  ///
+  /// In pt, this message translates to:
+  /// **'Densidade e visualização'**
+  String get vgDensidade;
+
+  /// No description provided for @vgModoCompacto.
+  ///
+  /// In pt, this message translates to:
+  /// **'Modo compacto'**
+  String get vgModoCompacto;
+
+  /// No description provided for @vgModoCompactoSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Exibe mais informações por tela'**
+  String get vgModoCompactoSub;
+
+  /// No description provided for @vgTema.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tema'**
+  String get vgTema;
+
+  /// No description provided for @vgTemaValor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Segue a configuração do aplicativo'**
+  String get vgTemaValor;
+
+  /// No description provided for @vgSegurancaDados.
+  ///
+  /// In pt, this message translates to:
+  /// **'Segurança e dados'**
+  String get vgSegurancaDados;
+
+  /// No description provided for @vgSessaoAcesso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sessão, acesso e armazenamento'**
+  String get vgSessaoAcesso;
+
+  /// No description provided for @vgBiometria.
+  ///
+  /// In pt, this message translates to:
+  /// **'Biometria'**
+  String get vgBiometria;
+
+  /// No description provided for @vgBiometriaSub.
+  ///
+  /// In pt, this message translates to:
+  /// **'Usar autenticação do dispositivo'**
+  String get vgBiometriaSub;
+
+  /// No description provided for @vgSincronizacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sincronização'**
+  String get vgSincronizacao;
+
+  /// No description provided for @vgSincronizacaoValor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Automática quando disponível'**
+  String get vgSincronizacaoValor;
+
+  /// No description provided for @vgLimparDados.
+  ///
+  /// In pt, this message translates to:
+  /// **'Limpar dados locais'**
+  String get vgLimparDados;
+
+  /// No description provided for @vgLimparDadosMsg.
+  ///
+  /// In pt, this message translates to:
+  /// **'Esta ação remove apenas caches e preferências locais.'**
+  String get vgLimparDadosMsg;
+
+  /// No description provided for @vgOpTodos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todos'**
+  String get vgOpTodos;
+
+  /// No description provided for @vgOpTodas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Todas'**
+  String get vgOpTodas;
+
+  /// No description provided for @vgOpRegular.
+  ///
+  /// In pt, this message translates to:
+  /// **'Regular'**
+  String get vgOpRegular;
+
+  /// No description provided for @vgOpAtencao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atenção'**
+  String get vgOpAtencao;
+
+  /// No description provided for @vgOpExcedida.
+  ///
+  /// In pt, this message translates to:
+  /// **'Excedida'**
+  String get vgOpExcedida;
+
+  /// No description provided for @vgOpAtivo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ativo'**
+  String get vgOpAtivo;
+
+  /// No description provided for @vgOpAfastamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'Afastamento'**
+  String get vgOpAfastamento;
+
+  /// No description provided for @vgOpEmAnalise.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em análise'**
+  String get vgOpEmAnalise;
+
+  /// No description provided for @vgOpEmAndamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em andamento'**
+  String get vgOpEmAndamento;
+
+  /// No description provided for @vgOpAguardando.
+  ///
+  /// In pt, this message translates to:
+  /// **'Aguardando'**
+  String get vgOpAguardando;
+
+  /// No description provided for @vgOpAtrasada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atrasada'**
+  String get vgOpAtrasada;
+
+  /// No description provided for @vgOpAFazer.
+  ///
+  /// In pt, this message translates to:
+  /// **'A fazer'**
+  String get vgOpAFazer;
+
+  /// No description provided for @vgOpConcluido.
+  ///
+  /// In pt, this message translates to:
+  /// **'Concluído'**
+  String get vgOpConcluido;
+
+  /// No description provided for @vgOpPendente.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pendente'**
+  String get vgOpPendente;
+
+  /// No description provided for @vgOpEmProgresso.
+  ///
+  /// In pt, this message translates to:
+  /// **'Em progresso'**
+  String get vgOpEmProgresso;
+
+  /// No description provided for @vgOpConcluida.
+  ///
+  /// In pt, this message translates to:
+  /// **'Concluída'**
+  String get vgOpConcluida;
+
+  /// No description provided for @vgOpAgendaSemanal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Agenda semanal'**
+  String get vgOpAgendaSemanal;
+
+  /// No description provided for @vgOpCalendarioMensal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Calendário mensal'**
+  String get vgOpCalendarioMensal;
+
+  /// No description provided for @vgOpOcupacao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Ocupação'**
+  String get vgOpOcupacao;
+
+  /// No description provided for @vgOpAcademico.
+  ///
+  /// In pt, this message translates to:
+  /// **'Acadêmico'**
+  String get vgOpAcademico;
+
+  /// No description provided for @vgOpGestao.
+  ///
+  /// In pt, this message translates to:
+  /// **'Gestão'**
+  String get vgOpGestao;
+
+  /// No description provided for @vgOpProdutividade.
+  ///
+  /// In pt, this message translates to:
+  /// **'Produtividade'**
+  String get vgOpProdutividade;
 }
 
 class _AppLocalizationsDelegate

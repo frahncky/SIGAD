@@ -28,12 +28,56 @@ Future<void> _pump(WidgetTester tester, WelcomeHero hero) async {
 }
 
 void main() {
+  testWidgets('resumo compacto abre conteúdo completo com fonte ampliada', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      WelcomeHero(
+        paginaInicial: 1,
+        rotacaoAutomatica: false,
+        resumo: const [
+          WelcomeHeroItem(
+            icon: SigadIcons.predio,
+            title: 'Laboratórios disponíveis',
+            subtitle: 'Consulte a disponibilidade dos espaços do departamento.',
+          ),
+          WelcomeHeroItem(
+            icon: SigadIcons.evento,
+            title: 'Atividades do departamento',
+            subtitle: 'Consulte as atividades previstas para esta semana.',
+          ),
+          WelcomeHeroItem(
+            icon: SigadIcons.aviso,
+            title: 'Informações do departamento',
+            subtitle: 'Consulte os detalhes completos do resumo.',
+          ),
+        ],
+      ),
+    );
+    expect(find.text('Laboratórios disponíveis'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.ensureVisible(find.text('Ver tudo'));
+    await tester.tap(find.text('Ver tudo'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsOneWidget);
+    expect(
+      find.text('Consulte os detalhes completos do resumo.'),
+      findsWidgets,
+    );
+    expect(tester.takeException(), isNull);
+    await tester.tap(find.text('Fechar'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('sem avisos mostra apenas as boas-vindas com a frase', (
     tester,
   ) async {
     await _pump(tester, const WelcomeHero(frase: 'Frase da semana.'));
 
-    expect(find.textContaining(_saudacao), findsOneWidget);
+    expect(find.textContaining(_saudacao), findsNothing);
     expect(find.text('Frase da semana.'), findsOneWidget);
     expect(find.bySemanticsLabel('Mostrar Avisos'), findsNothing);
   });
@@ -68,7 +112,7 @@ void main() {
     await tester.ensureVisible(find.bySemanticsLabel('Mostrar Boas-vindas'));
     await tester.tap(find.bySemanticsLabel('Mostrar Boas-vindas'));
     await tester.pumpAndSettle();
-    expect(find.textContaining(_saudacao), findsOneWidget);
+    expect(find.textContaining(_saudacao), findsNothing);
   });
   testWidgets('frase motivacional mantém contraste alto no cartão', (
     tester,
@@ -77,8 +121,17 @@ void main() {
     await _pump(tester, const WelcomeHero(frase: frase));
 
     final texto = tester.widget<Text>(find.text(frase));
-    expect(texto.style?.color, Colors.white);
-    expect(texto.style?.fontWeight, FontWeight.w600);
+    final fundo = tester.widget<Container>(
+      find.byKey(const Key('welcome-hero')),
+    );
+    final corFundo = (fundo.decoration! as BoxDecoration).color!;
+    final corTexto = texto.style!.color!;
+    final contraste =
+        (corFundo.computeLuminance() + 0.05) /
+        (corTexto.computeLuminance() + 0.05);
+    expect(corTexto.a, 1);
+    expect(contraste, greaterThanOrEqualTo(4.5));
+
     expect(tester.takeException(), isNull);
   });
 }

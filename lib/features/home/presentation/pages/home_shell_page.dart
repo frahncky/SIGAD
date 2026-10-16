@@ -11,6 +11,7 @@ import '../../../../core/navigation/navigation_items.dart';
 import '../../../../core/services/notificacoes_service.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../../../../shared/widgets/brand_title.dart';
+import '../../../../shared/widgets/greeting_title.dart';
 
 class HomeShellPage extends StatelessWidget {
   const HomeShellPage({
@@ -31,6 +32,7 @@ class HomeShellPage extends StatelessWidget {
         final userContext = context.watch<UserContextProvider>();
         final userRole = userContext.userRole;
         final isDashboard = currentRoute == AppRoutes.dashboard;
+        final greeting = isDashboard ? greetingText(context) : null;
         // unreadChatCount removido pois não é mais utilizado
         final availableItems = userRole == null
             ? kNavigationItems
@@ -55,7 +57,13 @@ class HomeShellPage extends StatelessWidget {
           appBar: isWide
               ? null
               : AppBar(
-                  toolbarHeight: isDashboard ? 52 : 64,
+                  toolbarHeight: isDashboard
+                      ? (MediaQuery.textScalerOf(context).scale(16) * 2.6 + 16)
+                            .clamp(64.0, 120.0)
+                      : 64,
+                  title: greeting == null
+                      ? null
+                      : GreetingTitle(text: greeting),
                   backgroundColor: colors.surface,
                   surfaceTintColor: Colors.transparent,
                   elevation: 0,
@@ -157,7 +165,17 @@ class HomeShellPage extends StatelessWidget {
                                   currentRoute == AppRoutes.dashboard ? 16 : 28,
                                   28,
                                 ),
-                                child: child,
+                                child: isDashboard
+                                    ? Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: [
+                                          GreetingTitle(text: greeting!),
+                                          const SizedBox(height: 16),
+                                          Expanded(child: child),
+                                        ],
+                                      )
+                                    : child,
                               ),
                             ),
                           ),

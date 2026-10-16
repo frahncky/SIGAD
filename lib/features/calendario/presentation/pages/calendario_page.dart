@@ -9,6 +9,8 @@ import '../../../../app/theme/sigad_icons.dart';
 import '../../../aulas_praticas/data/reserva_repository.dart';
 import '../../../aulas_praticas/domain/reserva_models.dart';
 import '../../../aulas_praticas/domain/reserva_service.dart';
+import '../../../../l10n/l10n.dart';
+import '../calendario_l10n.dart';
 import '../widgets/calendario_mes_widget.dart';
 import '../../../../shared/widgets/icon_avatar.dart';
 
@@ -51,7 +53,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
   void initState() {
     super.initState();
     _carregarReservas();
-    initializeDateFormatting('pt_BR', null).then((_) {
+    initializeDateFormatting().then((_) {
       if (!mounted) return;
       setState(() => _intlReady = true);
     });
@@ -131,6 +133,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
   }
 
   List<_Evento> _eventosPara(DateTime dia) {
+    final l10n = context.l10n;
     return _reservasFiltradas
         .where((reserva) {
           final data = _dataDaReserva(reserva, dia.year);
@@ -142,8 +145,8 @@ class _CalendarioPageState extends State<CalendarioPage> {
             partes.first,
             partes.length > 1 ? partes.last : '',
             reserva.disciplina?.trim().isNotEmpty == true
-                ? 'Aula prática – ${reserva.disciplina}'
-                : 'Reserva de laboratório',
+                ? l10n.calAulaPratica(reserva.disciplina!)
+                : l10n.calReservaLaboratorio,
             '${reserva.laboratorio} · ${reserva.professor}',
             'Laboratório',
           );
@@ -171,7 +174,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
                   child: Text(
-                    'Agenda completa',
+                    context.l10n.calAgendaCompleta,
                     style: Theme.of(sheetContext).textTheme.titleLarge,
                   ),
                 ),
@@ -300,9 +303,16 @@ class _ResumoDaSemana extends StatelessWidget {
       final semanaAtual = ((hoje.day - 1) ~/ 7) + 1;
       return reserva.semanaDoMes == semanaAtual;
     }).length;
-    final periodo =
-        '${DateFormat('d', 'pt_BR').format(inicioSemana)} a '
-        "${DateFormat("d 'de' MMMM", 'pt_BR').format(fimSemana)}";
+    final l10n = context.l10n;
+    // Em português: "3 a 9 de agosto"; em inglês: "August 3 – August 9".
+    final formatoInicio =
+        inicioSemana.month == fimSemana.month && l10n.localeName == 'pt'
+        ? DateFormat.d(l10n.localeDatas)
+        : DateFormat.MMMMd(l10n.localeDatas);
+    final periodo = l10n.calPeriodoSemana(
+      formatoInicio.format(inicioSemana),
+      DateFormat.MMMMd(l10n.localeDatas).format(fimSemana),
+    );
     final colors = Theme.of(context).colorScheme;
 
     return LayoutBuilder(
@@ -330,7 +340,7 @@ class _ResumoDaSemana extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Resumo da semana',
+                    l10n.calResumoSemana,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                     ),
@@ -349,7 +359,7 @@ class _ResumoDaSemana extends StatelessWidget {
         final botaoAgenda = OutlinedButton.icon(
           onPressed: onVerAgenda,
           icon: const SigadIcon(SigadIcons.setaDireita, size: 15),
-          label: const Text('Ver agenda'),
+          label: Text(l10n.calVerAgenda),
           style: OutlinedButton.styleFrom(
             foregroundColor: SigadColors.brand,
             side: const BorderSide(color: SigadColors.brand),
@@ -359,22 +369,22 @@ class _ResumoDaSemana extends StatelessWidget {
           ),
         );
         final estatisticas = <_ResumoStat>[
-          const _ResumoStat(
+          _ResumoStat(
             icon: SigadIcons.eventoNota,
             value: '—',
-            label: 'Eventos agendados',
+            label: l10n.calEventosAgendados,
             tone: SigadColors.violet,
           ),
           _ResumoStat(
             icon: SigadIcons.laboratorio,
             value: '$reservasNaSemana',
-            label: 'Reservas de laboratório',
+            label: l10n.calReservasLaboratorio,
             tone: SigadColors.success,
           ),
-          const _ResumoStat(
+          _ResumoStat(
             icon: SigadIcons.grupo,
             value: '—',
-            label: 'Reunião marcada',
+            label: l10n.calReuniaoMarcada,
             tone: SigadColors.info,
           ),
         ];
@@ -483,6 +493,7 @@ class _FiltrosCalendario extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return LayoutBuilder(
       builder: (context, constraints) {
         final escalaTexto = MediaQuery.textScalerOf(context).scale(14) / 14;
@@ -500,7 +511,7 @@ class _FiltrosCalendario extends StatelessWidget {
               width: larguraFiltro,
               child: _FiltroChip(
                 icon: SigadIcons.grupo,
-                label: 'Departamento',
+                label: l10n.calDepartamento,
                 value: departamento,
                 options: const [
                   'Eletroeletrônica (DEE)',
@@ -514,7 +525,7 @@ class _FiltrosCalendario extends StatelessWidget {
               width: larguraFiltro,
               child: _FiltroChip(
                 icon: SigadIcons.etiqueta,
-                label: 'Tipo de item',
+                label: l10n.calTipoItem,
                 value: tipoItem,
                 options: const [
                   'Todos',
@@ -529,7 +540,7 @@ class _FiltrosCalendario extends StatelessWidget {
               width: larguraFiltro,
               child: _FiltroChip(
                 icon: SigadIcons.laboratorio,
-                label: 'Laboratórios',
+                label: l10n.navLaboratorios,
                 value: laboratorio,
                 options: laboratorios,
                 onChanged: onLaboratorioChanged,
@@ -559,11 +570,12 @@ class _FiltroChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final colors = Theme.of(context).colorScheme;
     return Semantics(
       button: true,
-      label: '$label: $value',
-      hint: 'Toque para alterar',
+      label: '$label: ${l10n.opcaoCalendario(value)}',
+      hint: l10n.calToqueParaAlterar,
       onTap: () => _abrirSelecao(context),
       excludeSemantics: true,
       child: InkWell(
@@ -600,7 +612,7 @@ class _FiltroChip extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      value,
+                      l10n.opcaoCalendario(value),
                       style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ),
@@ -629,7 +641,7 @@ class _FiltroChip extends StatelessWidget {
               children: options
                   .map(
                     (option) => ListTile(
-                      title: Text(option),
+                      title: Text(sheetContext.l10n.opcaoCalendario(option)),
                       trailing: option == value
                           ? const SigadIcon(
                               SigadIcons.confirmar,
@@ -699,6 +711,7 @@ class _ProximosCompromissos extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final agora = DateTime.now();
     final inicioHoje = DateTime(agora.year, agora.month, agora.day);
     final agendadas =
@@ -721,10 +734,10 @@ class _ProximosCompromissos extends StatelessWidget {
               .split('-')
               .first;
           return _Compromisso(
-            'Reserva: ${reserva.laboratorio}',
-            reserva.disciplina ?? 'Responsável: ${reserva.professor}',
+            l10n.calReservaDe(reserva.laboratorio),
+            reserva.disciplina ?? l10n.calResponsavel(reserva.professor),
             'Laboratório',
-            '${DateFormat('dd/MM/yyyy').format(item.data!)} • $horario',
+            '${DateFormat.yMd(l10n.localeDatas).format(item.data!)} • $horario',
             SigadIcons.laboratorio,
           );
         })
@@ -751,7 +764,7 @@ class _ProximosCompromissos extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Próximos compromissos',
+                        l10n.calProximosCompromissos,
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(fontWeight: FontWeight.w800),
                       ),
@@ -760,7 +773,7 @@ class _ProximosCompromissos extends StatelessWidget {
                 );
                 final acao = TextButton(
                   onPressed: onVerTodos,
-                  child: const Text('Ver todos'),
+                  child: Text(context.l10n.calVerTodos),
                 );
 
                 if (usarLayoutVertical) {
@@ -779,10 +792,10 @@ class _ProximosCompromissos extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             if (compromissos.isEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 18),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 18),
                 child: Center(
-                  child: Text('Nenhuma reserva futura encontrada.'),
+                  child: Text(context.l10n.calNenhumaReservaFutura),
                 ),
               )
             else
@@ -841,7 +854,7 @@ class _CompromissoTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              item.categoria,
+              context.l10n.opcaoCalendario(item.categoria),
               style: TextStyle(
                 color: cor,
                 fontWeight: FontWeight.w700,
@@ -913,6 +926,7 @@ class _AgendaDoDia extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final textTheme = Theme.of(context).textTheme;
     return Card(
       child: Padding(
@@ -938,16 +952,13 @@ class _AgendaDoDia extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Agenda do dia',
+                            l10n.calAgendaDoDia,
                             style: textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w800,
                             ),
                           ),
                           Text(
-                            DateFormat(
-                              "d 'de' MMMM 'de' y",
-                              'pt_BR',
-                            ).format(dia),
+                            DateFormat.yMMMMd(l10n.localeDatas).format(dia),
                             style: textTheme.bodySmall?.copyWith(
                               color: Theme.of(
                                 context,
@@ -961,7 +972,7 @@ class _AgendaDoDia extends StatelessWidget {
                 );
                 final acao = TextButton(
                   onPressed: onVerCompleta,
-                  child: const Text('Ver agenda completa'),
+                  child: Text(l10n.calVerAgendaCompleta),
                 );
 
                 if (usarLayoutVertical) {
@@ -1065,7 +1076,7 @@ class _EventoTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              evento.categoria,
+              context.l10n.opcaoCalendario(evento.categoria),
               style: TextStyle(
                 color: cor,
                 fontWeight: FontWeight.w700,
@@ -1136,9 +1147,9 @@ class _EmptyAgenda extends StatelessWidget {
             color: Theme.of(context).colorScheme.primary,
           ),
           const SizedBox(height: 10),
-          const Text(
-            'Nenhum compromisso neste dia.',
-            style: TextStyle(fontWeight: FontWeight.w700),
+          Text(
+            context.l10n.calNenhumCompromisso,
+            style: const TextStyle(fontWeight: FontWeight.w700),
           ),
         ],
       ),
@@ -1216,7 +1227,7 @@ class _OcupacaoLaboratorios extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Ocupação dos laboratórios (hoje)',
+                    context.l10n.calOcupacaoHoje,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                     ),
@@ -1226,7 +1237,7 @@ class _OcupacaoLaboratorios extends StatelessWidget {
             );
             final acao = TextButton(
               onPressed: onVerTodos,
-              child: const Text('Ver todos'),
+              child: Text(context.l10n.calVerTodos),
             );
 
             if (usarLayoutVertical) {
@@ -1247,9 +1258,9 @@ class _OcupacaoLaboratorios extends StatelessWidget {
         if (loading)
           const Center(child: CircularProgressIndicator())
         else if (nomes.isEmpty)
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 20),
-            child: Center(child: Text('Nenhuma reserva cadastrada.')),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Center(child: Text(context.l10n.calNenhumaReserva)),
           )
         else
           ...laboratorios.map(
@@ -1307,7 +1318,7 @@ class _OcupacaoLaboratorios extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      '${lab.horas} de ${lab.total} horários reservados na semana',
+                      context.l10n.calHorariosReservados(lab.horas, lab.total),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),

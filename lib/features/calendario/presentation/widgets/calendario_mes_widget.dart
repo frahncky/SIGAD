@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import '../../../../app/theme/sigad_colors.dart';
 import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
+import '../../../../l10n/l10n.dart';
+import '../calendario_l10n.dart';
 
 class CalendarioMesWidget extends StatelessWidget {
   final DateTime mesAtual;
@@ -36,6 +38,20 @@ class CalendarioMesWidget extends StatelessWidget {
     final hoje = DateTime.now();
 
     final theme = Theme.of(context);
+    final l10n = context.l10n;
+    final locale = l10n.localeDatas;
+    // 7/1/2024 foi um domingo: base para os nomes dos dias da semana.
+    final semana = [for (var i = 0; i < 7; i++) DateTime(2024, 1, 7 + i)];
+    final diasSemanaAbreviados = [
+      for (final dia in semana)
+        DateFormat.E(locale).format(dia).replaceAll('.', '').toUpperCase(),
+    ];
+    final diasSemanaCompactos = [
+      for (final dia in semana) DateFormat('EEEEE', locale).format(dia),
+    ];
+    final diasSemanaCompletos = [
+      for (final dia in semana) DateFormat.EEEE(locale).format(dia),
+    ];
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -45,25 +61,6 @@ class CalendarioMesWidget extends StatelessWidget {
         final diametroDia = larguraCelula < 34.0 ? larguraCelula : 34.0;
         final usarRotulosCompactos =
             MediaQuery.textScalerOf(context).scale(12) * 2.2 > larguraCelula;
-        const diasSemanaAbreviados = [
-          'DOM',
-          'SEG',
-          'TER',
-          'QUA',
-          'QUI',
-          'SEX',
-          'SÁB',
-        ];
-        const diasSemanaCompactos = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
-        const diasSemanaCompletos = [
-          'domingo',
-          'segunda-feira',
-          'terça-feira',
-          'quarta-feira',
-          'quinta-feira',
-          'sexta-feira',
-          'sábado',
-        ];
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,7 +68,7 @@ class CalendarioMesWidget extends StatelessWidget {
             Row(
               children: [
                 IconButton(
-                  tooltip: 'Mês anterior',
+                  tooltip: l10n.calMesAnterior,
                   icon: const SigadIcon(SigadIcons.chevronEsquerda),
                   onPressed: onDiaSelecionado == null
                       ? null
@@ -82,7 +79,7 @@ class CalendarioMesWidget extends StatelessWidget {
                 Flexible(
                   fit: FlexFit.tight,
                   child: Text(
-                    _capitalizar(DateFormat.yMMMM('pt_BR').format(mesAtual)),
+                    _capitalizar(DateFormat.yMMMM(locale).format(mesAtual)),
                     textAlign: TextAlign.center,
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w800,
@@ -90,7 +87,7 @@ class CalendarioMesWidget extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Próximo mês',
+                  tooltip: l10n.calProximoMes,
                   icon: const SigadIcon(SigadIcons.chevronDireita),
                   onPressed: onDiaSelecionado == null
                       ? null
@@ -148,13 +145,10 @@ class CalendarioMesWidget extends StatelessWidget {
                     .toList(growable: false);
                 final quantidadeEventos = pontos.length;
                 final descricaoSemantica = <String>[
-                  _capitalizar(
-                    DateFormat("EEEE, d 'de' MMMM 'de' y", 'pt_BR').format(dia),
-                  ),
-                  if (isHoje) 'hoje',
-                  if (feriado != null) 'feriado: $feriado',
-                  '$quantidadeEventos '
-                      '${quantidadeEventos == 1 ? 'evento' : 'eventos'}',
+                  _capitalizar(DateFormat.yMMMMEEEEd(locale).format(dia)),
+                  if (isHoje) l10n.calHoje,
+                  if (feriado != null) l10n.calFeriado(feriado),
+                  l10n.calEventos(quantidadeEventos),
                 ].join(', ');
 
                 return Semantics(

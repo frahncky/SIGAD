@@ -13,6 +13,9 @@ import '../controllers/docente_form_controller.dart';
 import '../../../../core/models/user_role.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
+import '../../../../l10n/l10n.dart';
+import '../../../aulas_praticas/presentation/laboratorio_l10n.dart';
+import '../carga_docente_l10n.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../../../../shared/widgets/icon_avatar.dart';
 
@@ -277,7 +280,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   }
 
   void _mostrarFeedback(String mensagem) {
-    AppFeedbackService.info(context, mensagem);
+    AppFeedbackService.info(context, context.l10n.erroDocente(mensagem));
   }
 
   void _showAdicionarDocente(BuildContext context) {
@@ -285,8 +288,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
 
     _showDocenteFormSheet(
       context: context,
-      title: 'Novo Docente',
-      confirmLabel: 'Adicionar',
+      title: context.l10n.cdNovoDocente,
+      confirmLabel: context.l10n.cdAdicionar,
       controller: controller,
       onSubmit: () {
         final erro = controller.validate();
@@ -310,7 +313,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
             'qtdHorarios': controller.horarios.length,
           },
         );
-        _mostrarFeedback('Docente adicionado com sucesso!');
+        _mostrarFeedback(context.l10n.cdDocenteAdicionado);
         return true;
       },
     );
@@ -353,7 +356,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                           ),
                         ),
                         IconButton(
-                          tooltip: 'Fechar formulário do docente',
+                          tooltip: context.l10n.cdFecharFormulario,
                           onPressed: () => Navigator.pop(context),
                           icon: const SigadIcon(SigadIcons.fechar),
                         ),
@@ -362,48 +365,54 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                     const SizedBox(height: 16),
                     TextField(
                       controller: controller.nomeController,
-                      decoration: const InputDecoration(
-                        labelText: 'Nome Completo',
-                        hintText: 'Digite o nome do docente',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.cdNomeCompleto,
+                        hintText: context.l10n.cdNomeDica,
                       ),
                     ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: controller.emailController,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        labelText: 'Email de acesso',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.cdEmailAcesso,
                         hintText: 'docente@exemplo.edu.br',
                       ),
                     ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: controller.departamentoController,
-                      decoration: const InputDecoration(
-                        labelText: 'Departamento',
-                        hintText: 'Digite o departamento',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.cdDepartamento,
+                        hintText: context.l10n.cdDepartamentoDica,
                       ),
                     ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: controller.cargaMaximaController,
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Carga Horária Máxima Semanal (horas)',
+                      decoration: InputDecoration(
+                        labelText: context.l10n.cdCargaMaxima,
                         hintText: 'Ex: 20',
                       ),
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<RegimeTrabalhoEbtt>(
                       initialValue: controller.regimeTrabalho,
-                      decoration: const InputDecoration(
-                        labelText: 'Regime EBTT',
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        labelText: context.l10n.cdRegimeEbtt,
                       ),
                       items: RegimeTrabalhoEbtt.values
                           .map(
                             (regime) => DropdownMenuItem<RegimeTrabalhoEbtt>(
                               value: regime,
-                              child: Text('${regime.label} (${regime.code})'),
+                              child: Text(
+                                context.l10n.cdRegimeOpcao(
+                                  context.l10n.regime(regime),
+                                  regime.code,
+                                ),
+                              ),
                             ),
                           )
                           .toList(growable: false),
@@ -427,14 +436,21 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Distribuição em aulas: ${DocenteFormService.calcularCargaHorariaSemanal(controller.horarios)}h/sem',
+                            context.l10n.cdDistribuicaoAulasSemana(
+                              DocenteFormService.calcularCargaHorariaSemanal(
+                                controller.horarios,
+                              ),
+                            ),
                             style: textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w700,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Regime ${controller.regimeTrabalho.code}: limite legal semanal de ${controller.regimeTrabalho.cargaSemanalLimite}h na carreira EBTT. Pesquisa, extensão e gestão continuam dependentes da normativa interna da instituição.',
+                            context.l10n.cdRegimeLimite(
+                              controller.regimeTrabalho.code,
+                              controller.regimeTrabalho.cargaSemanalLimite,
+                            ),
                             style: textTheme.bodySmall?.copyWith(
                               color: SigadColors.muted,
                             ),
@@ -444,7 +460,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Disciplinas',
+                      context.l10n.cdDisciplinas,
                       style: textTheme.labelLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -463,7 +479,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                           ),
                         ),
                         ActionChip(
-                          label: const Text('Adicionar'),
+                          label: Text(context.l10n.cdAdicionar),
                           onPressed: () => _showAdicionarDisciplina(
                             context,
                             controller,
@@ -477,14 +493,14 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Horários de Aula',
+                          context.l10n.cdHorariosAula,
                           style: textTheme.labelLarge?.copyWith(
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                         TextButton.icon(
                           icon: const SigadIcon(SigadIcons.adicionar, size: 16),
-                          label: const Text('Adicionar'),
+                          label: Text(context.l10n.cdAdicionar),
                           onPressed: () => _showAdicionarHorario(
                             context,
                             controller,
@@ -496,7 +512,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                     const SizedBox(height: 8),
                     if (controller.horarios.isEmpty)
                       Text(
-                        'Nenhum horário cadastrado',
+                        context.l10n.cdNenhumHorario,
                         style: textTheme.bodySmall?.copyWith(
                           color: SigadColors.muted,
                         ),
@@ -513,7 +529,11 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                     if (controller.horarios.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       Text(
-                        'Carga distribuída em aulas: ${DocenteFormService.calcularCargaHorariaSemanal(controller.horarios)}h/sem',
+                        context.l10n.cdCargaDistribuida(
+                          DocenteFormService.calcularCargaHorariaSemanal(
+                            controller.horarios,
+                          ),
+                        ),
                         style: textTheme.bodySmall?.copyWith(
                           color: SigadColors.ink,
                           fontWeight: FontWeight.w600,
@@ -526,7 +546,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                         Expanded(
                           child: OutlinedButton(
                             onPressed: () => Navigator.pop(context),
-                            child: const Text('Cancelar'),
+                            child: Text(context.l10n.cancelar),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -561,18 +581,18 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Adicionar Disciplina'),
+        title: Text(context.l10n.cdAdicionarDisciplina),
         content: TextField(
           controller: disciplinaController,
-          decoration: const InputDecoration(
-            labelText: 'Nome da Disciplina',
-            hintText: 'Ex: Programação I',
+          decoration: InputDecoration(
+            labelText: context.l10n.cdNomeDisciplina,
+            hintText: context.l10n.cdExemploDisciplina,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(context.l10n.cancelar),
           ),
           TextButton(
             onPressed: () {
@@ -585,7 +605,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
               setState(() => controller.addDisciplina(disciplina));
               Navigator.pop(context);
             },
-            child: const Text('Adicionar'),
+            child: Text(context.l10n.cdAdicionar),
           ),
         ],
       ),
@@ -609,7 +629,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('Adicionar Horário'),
+          title: Text(context.l10n.cdAdicionarHorario),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -617,9 +637,16 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
               children: [
                 DropdownButtonFormField<String>(
                   initialValue: diaSelecionado,
-                  decoration: const InputDecoration(labelText: 'Dia da Semana'),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.cdDiaSemana,
+                  ),
                   items: _diasSemana
-                      .map((d) => DropdownMenuItem(value: d, child: Text(d)))
+                      .map(
+                        (d) => DropdownMenuItem(
+                          value: d,
+                          child: Text(context.l10n.diaDocente(d)),
+                        ),
+                      )
                       .toList(),
                   onChanged: (v) => setDialogState(() => diaSelecionado = v!),
                 ),
@@ -629,8 +656,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                     Expanded(
                       child: TextField(
                         controller: inicioController,
-                        decoration: const InputDecoration(
-                          labelText: 'Início',
+                        decoration: InputDecoration(
+                          labelText: context.l10n.cdInicio,
                           hintText: '08:00',
                         ),
                       ),
@@ -639,8 +666,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                     Expanded(
                       child: TextField(
                         controller: fimController,
-                        decoration: const InputDecoration(
-                          labelText: 'Fim',
+                        decoration: InputDecoration(
+                          labelText: context.l10n.cdFim,
                           hintText: '09:40',
                         ),
                       ),
@@ -650,33 +677,40 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                 const SizedBox(height: 12),
                 TextField(
                   controller: disciplinaController,
-                  decoration: const InputDecoration(
-                    labelText: 'Disciplina',
-                    hintText: 'Ex: Programação I',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.cdDisciplina,
+                    hintText: context.l10n.cdExemploDisciplina,
                   ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: cargaController,
-                  decoration: const InputDecoration(
-                    labelText: 'Carga Horária',
-                    hintText: 'Ex: 2h/sem · 80h',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.cdCargaHoraria,
+                    hintText: context.l10n.cdExemploCarga,
                   ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: turmaController,
-                  decoration: const InputDecoration(
-                    labelText: 'Turma',
+                  decoration: InputDecoration(
+                    labelText: context.l10n.cdTurma,
                     hintText: 'Ex: ES-2A',
                   ),
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
                   initialValue: modalidadeSelecionada,
-                  decoration: const InputDecoration(labelText: 'Modalidade'),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.cdModalidade,
+                  ),
                   items: _modalidades
-                      .map((m) => DropdownMenuItem(value: m, child: Text(m)))
+                      .map(
+                        (m) => DropdownMenuItem(
+                          value: m,
+                          child: Text(context.l10n.modalidade(m)),
+                        ),
+                      )
                       .toList(),
                   onChanged: (v) =>
                       setDialogState(() => modalidadeSelecionada = v!),
@@ -687,7 +721,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
+              child: Text(context.l10n.cancelar),
             ),
             TextButton(
               onPressed: () {
@@ -726,7 +760,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                 );
                 Navigator.pop(context);
               },
-              child: const Text('Adicionar'),
+              child: Text(context.l10n.cdAdicionar),
             ),
           ],
         ),
@@ -739,8 +773,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
 
     _showDocenteFormSheet(
       context: context,
-      title: 'Editar Docente',
-      confirmLabel: 'Salvar',
+      title: context.l10n.cdEditarDocente,
+      confirmLabel: context.l10n.salvar,
       controller: controller,
       onSubmit: () {
         final erro = controller.validate();
@@ -764,7 +798,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
             'qtdHorarios': controller.horarios.length,
           },
         );
-        _mostrarFeedback('Docente atualizado com sucesso!');
+        _mostrarFeedback(context.l10n.cdDocenteAtualizado);
         return true;
       },
     );
@@ -774,12 +808,12 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Confirmar exclusão'),
-        content: Text('Tem certeza que deseja excluir ${docente.nome}?'),
+        title: Text(context.l10n.demConfirmarExclusao),
+        content: Text(context.l10n.cdExcluirMensagem(docente.nome)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: Text(context.l10n.cancelar),
           ),
           TextButton(
             onPressed: () {
@@ -792,10 +826,10 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                 details: {'docenteId': docente.id, 'nome': docente.nome},
               );
               Navigator.pop(context);
-              _mostrarFeedback('Docente excluído com sucesso!');
+              _mostrarFeedback(context.l10n.cdDocenteExcluido);
             },
             child: Text(
-              'Excluir',
+              context.l10n.excluir,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           ),
@@ -834,13 +868,12 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
   }
 
   List<String> _gerarSugestoesDistribuicao(List<Docente> docentes) {
+    final l10n = context.l10n;
     final altaCarga = _docentesComAltaCarga(docentes);
     final baixaCarga = _docentesComBaixaCarga(docentes);
 
     if (altaCarga.isEmpty && baixaCarga.isEmpty) {
-      return const [
-        'A distribuição atual está equilibrada. Priorize acompanhamento quinzenal e ajuste fino por disciplina.',
-      ];
+      return [l10n.cdSugestaoEquilibrada];
     }
 
     final sugestoes = <String>[];
@@ -850,9 +883,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
           .take(2)
           .map((docente) => docente.nome.split(' ').first)
           .join(', ');
-      sugestoes.add(
-        'Docentes com maior pressão: $nomes. Considere redistribuir turmas práticas e orientações para reduzir risco de sobrecarga.',
-      );
+      sugestoes.add(l10n.cdSugestaoPressao(nomes));
     }
 
     if (baixaCarga.isNotEmpty) {
@@ -860,14 +891,10 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
           .take(2)
           .map((docente) => docente.nome.split(' ').first)
           .join(', ');
-      sugestoes.add(
-        'Há capacidade ociosa com $nomes. Priorize alocação de componentes compartilhados e reforço em horários de laboratório.',
-      );
+      sugestoes.add(l10n.cdSugestaoOciosa(nomes));
     }
 
-    sugestoes.add(
-      'Programe revisão semanal conjunta entre coordenação e laboratórios para reduzir conflitos de agenda e janelas vazias.',
-    );
+    sugestoes.add(l10n.cdSugestaoRevisao);
 
     return sugestoes;
   }
@@ -947,9 +974,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       'carga_docente_apply_redistribuicao',
       details: {'qtdPropostas': propostas.length},
     );
-    _mostrarFeedback(
-      '${propostas.length} redistribuições aplicadas com sucesso.',
-    );
+    _mostrarFeedback(context.l10n.cdRedistribuicoesAplicadas(propostas.length));
   }
 
   HorarioAula? _encontrarHorarioTransferencia(
@@ -1078,8 +1103,8 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
             child: TextField(
               controller: _buscaController,
               onChanged: (value) => setState(() => _busca = value),
-              decoration: const InputDecoration(
-                hintText: 'Buscar docente por nome, e-mail ou departamento',
+              decoration: InputDecoration(
+                hintText: context.l10n.cdBuscarDocente,
                 prefixIcon: SigadIcon(SigadIcons.buscar),
               ),
             ),
@@ -1117,7 +1142,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'Nenhum docente encontrado',
+                            context.l10n.cdNenhumDocente,
                             style: textTheme.bodyLarge?.copyWith(
                               color: SigadColors.muted,
                             ),
@@ -1161,7 +1186,7 @@ class _CargaDocentePageState extends State<CargaDocentePage> {
       floatingActionButton: podeGerenciar
           ? FloatingActionButton(
               onPressed: () => _showAdicionarDocente(context),
-              tooltip: 'Adicionar docente',
+              tooltip: context.l10n.cdAdicionarDocente,
               backgroundColor: SigadColors.brand,
               child: const SigadIcon(SigadIcons.adicionar),
             )
@@ -1214,7 +1239,7 @@ class _DocenteCard extends StatelessWidget {
             children: [
               if (canManage && !somenteVisualizar)
                 PopupMenuButton<String>(
-                  tooltip: 'Mais ações do docente',
+                  tooltip: context.l10n.cdMaisAcoes,
                   onSelected: (value) {
                     switch (value) {
                       case 'editar':
@@ -1226,23 +1251,23 @@ class _DocenteCard extends StatelessWidget {
                     }
                   },
                   itemBuilder: (context) => [
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'editar',
                       child: Row(
                         children: [
                           SigadIcon(SigadIcons.editar, size: 18),
                           SizedBox(width: 8),
-                          Text('Editar'),
+                          Text(context.l10n.demEditarAcao),
                         ],
                       ),
                     ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'excluir',
                       child: Row(
                         children: [
                           SigadIcon(SigadIcons.excluir, size: 18),
                           SizedBox(width: 8),
-                          Text('Excluir'),
+                          Text(context.l10n.excluir),
                         ],
                       ),
                     ),
@@ -1264,12 +1289,18 @@ class _DocenteCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Regime EBTT: ${docente.regimeTrabalho.label} (${docente.regimeTrabalho.code})',
+            context.l10n.cdRegimeDocente(
+              context.l10n.regime(docente.regimeTrabalho),
+              docente.regimeTrabalho.code,
+            ),
             style: textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 4),
           Text(
-            'Distribuição em aulas: ${docente.cargaHoraria}h/${docente.cargaMaxima}h',
+            context.l10n.cdDistribuicaoAulas(
+              docente.cargaHoraria,
+              docente.cargaMaxima,
+            ),
             style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
           ),
           const SizedBox(height: 12),
@@ -1349,7 +1380,7 @@ class _PainelDistribuicaoInteligente extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Otimização da distribuição',
+                  context.l10n.cdOtimizacao,
                   style: textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
@@ -1358,7 +1389,7 @@ class _PainelDistribuicaoInteligente extends StatelessWidget {
               TextButton.icon(
                 onPressed: onSimularRedistribuicao,
                 icon: const SigadIcon(SigadIcons.tendencia, size: 16),
-                label: const Text('Simular'),
+                label: Text(context.l10n.cdSimular),
               ),
             ],
           ),
@@ -1377,7 +1408,7 @@ class _PainelDistribuicaoInteligente extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'de aproveitamento médio da carga horária',
+                  context.l10n.cdAproveitamentoMedio,
                   style: textTheme.bodySmall?.copyWith(
                     color: SigadColors.muted,
                   ),
@@ -1390,13 +1421,16 @@ class _PainelDistribuicaoInteligente extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
-              _KpiChip(label: 'Ocupação média', value: '$mediaPercentual%'),
               _KpiChip(
-                label: 'Alta carga (>=90%)',
+                label: context.l10n.cdOcupacaoMedia,
+                value: '$mediaPercentual%',
+              ),
+              _KpiChip(
+                label: context.l10n.cdAltaCarga,
                 value: '$docentesAltaCarga',
               ),
               _KpiChip(
-                label: 'Baixa carga (<=50%)',
+                label: context.l10n.cdBaixaCarga,
                 value: '$docentesBaixaCarga',
               ),
             ],
@@ -1444,20 +1478,20 @@ class _SimulacaoRedistribuicaoSheet extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Simulação de redistribuição',
+              context.l10n.cdSimulacao,
               style: textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Ocupação média prevista: $antes% -> $depois%',
+              context.l10n.cdOcupacaoPrevista(antes, depois),
               style: textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
             ),
             const SizedBox(height: 12),
             if (resultado.propostas.isEmpty)
               Text(
-                'Nenhuma redistribuição segura foi encontrada para o cenário atual.',
+                context.l10n.cdNenhumaRedistribuicao,
                 style: textTheme.bodyMedium,
               )
             else
@@ -1470,7 +1504,7 @@ class _SimulacaoRedistribuicaoSheet extends StatelessWidget {
                   itemBuilder: (_, index) {
                     final proposta = resultado.propostas[index];
                     return Text(
-                      '${index + 1}. ${proposta.docenteOrigemNome} -> ${proposta.docenteDestinoNome} · ${proposta.horario.disciplina ?? 'Disciplina'} · ${proposta.horario.diaSemana} ${proposta.horario.inicio}-${proposta.horario.fim} (${proposta.cargaSemanal}h/sem)',
+                      '${index + 1}. ${proposta.docenteOrigemNome} -> ${proposta.docenteDestinoNome} · ${proposta.horario.disciplina ?? context.l10n.cdDisciplina} · ${context.l10n.diaDocente(proposta.horario.diaSemana)} ${proposta.horario.inicio}-${proposta.horario.fim} (${context.l10n.cdHorasSemana(proposta.cargaSemanal)})',
                       style: textTheme.bodySmall,
                     );
                   },
@@ -1482,14 +1516,14 @@ class _SimulacaoRedistribuicaoSheet extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Fechar'),
+                    child: Text(context.l10n.fechar),
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: onAplicar,
-                    child: const Text('Aplicar sugestão'),
+                    child: Text(context.l10n.cdAplicarSugestao),
                   ),
                 ),
               ],
@@ -1561,14 +1595,14 @@ class _AccessDenied extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Acesso restrito',
+              context.l10n.cdAcessoRestrito,
               style: textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Somente docentes, coordenação, chefia e servidor administrativo podem acessar esta área.',
+              context.l10n.cdAcessoRestritoMensagem,
               textAlign: TextAlign.center,
               style: textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
             ),
@@ -1605,7 +1639,7 @@ class _AgendaDocentePage extends StatelessWidget {
         role == UserRole.coordenador || role == UserRole.chefeDepartamento;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Agenda do docente')),
+      appBar: AppBar(title: Text(context.l10n.cdAgendaDocente)),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           horizontalPadding,
@@ -1631,14 +1665,20 @@ class _AgendaDocentePage extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                'Regime EBTT: ${docente.regimeTrabalho.label} (${docente.regimeTrabalho.code})',
+                context.l10n.cdRegimeDocente(
+                  context.l10n.regime(docente.regimeTrabalho),
+                  docente.regimeTrabalho.code,
+                ),
                 style: textTheme.bodySmall?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
-                'Distribuição em aulas: ${docente.cargaHoraria}h/${docente.cargaMaxima}h',
+                context.l10n.cdDistribuicaoAulas(
+                  docente.cargaHoraria,
+                  docente.cargaMaxima,
+                ),
                 style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
               ),
               const SizedBox(height: 12),
@@ -1669,7 +1709,7 @@ class _AgendaDocentePage extends StatelessWidget {
             ],
             const SizedBox(height: 16),
             Text(
-              'Distribuição semanal',
+              context.l10n.cdDistribuicaoSemanal,
               style: textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
@@ -1690,11 +1730,10 @@ class _AgendaDocentePage extends StatelessWidget {
     BuildContext pageContext,
     _AgendaCellTapData slot,
   ) async {
-    final tituloController = TextEditingController(
-      text: 'Convite para reunião',
-    );
+    final l10n = pageContext.l10n;
+    final tituloController = TextEditingController(text: l10n.cdConviteReuniao);
     final descricaoController = TextEditingController(
-      text: 'Convite enviado via agenda do SIGAD.',
+      text: l10n.cdConviteEnviadoAgenda,
     );
     final localController = TextEditingController();
 
@@ -1716,14 +1755,14 @@ class _AgendaDocentePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Enviar convite de reunião',
+                  l10n.cdEnviarConviteReuniao,
                   style: Theme.of(
                     modalContext,
                   ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '${_formatarData(slot.data)} · ${slot.horarioFaixa} (${slot.turno.shortLabel}${slot.periodo})',
+                  '${_formatarData(slot.data)} · ${slot.horarioFaixa} (${slot.turno.curtoEm(l10n)}${slot.periodo})',
                   style: Theme.of(
                     modalContext,
                   ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
@@ -1731,26 +1770,26 @@ class _AgendaDocentePage extends StatelessWidget {
                 const SizedBox(height: 16),
                 TextField(
                   controller: tituloController,
-                  decoration: const InputDecoration(
-                    labelText: 'Título do convite',
-                    hintText: 'Ex: Reunião de alinhamento',
+                  decoration: InputDecoration(
+                    labelText: l10n.cdTituloConvite,
+                    hintText: l10n.cdTituloConviteDica,
                   ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: descricaoController,
                   maxLines: 2,
-                  decoration: const InputDecoration(
-                    labelText: 'Descrição',
-                    hintText: 'Detalhes do convite',
+                  decoration: InputDecoration(
+                    labelText: l10n.demDescricao,
+                    hintText: l10n.cdDescricaoConviteDica,
                   ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: localController,
-                  decoration: const InputDecoration(
-                    labelText: 'Local',
-                    hintText: 'Sala 12 ou Online',
+                  decoration: InputDecoration(
+                    labelText: l10n.cdLocal,
+                    hintText: l10n.cdLocalDica,
                   ),
                 ),
                 const SizedBox(height: 18),
@@ -1762,7 +1801,7 @@ class _AgendaDocentePage extends StatelessWidget {
                       if (inicio == null) {
                         AppFeedbackService.info(
                           pageContext,
-                          'Não foi possível interpretar o horário da célula.',
+                          l10n.cdHorarioInvalido,
                         );
                         return;
                       }
@@ -1773,14 +1812,14 @@ class _AgendaDocentePage extends StatelessWidget {
                       if (titulo.isEmpty) {
                         AppFeedbackService.info(
                           pageContext,
-                          'Informe o título do convite.',
+                          l10n.cdInformeTituloConvite,
                         );
                         return;
                       }
                       if (local.isEmpty) {
                         AppFeedbackService.info(
                           pageContext,
-                          'Informe o local do convite.',
+                          l10n.cdInformeLocalConvite,
                         );
                         return;
                       }
@@ -1790,7 +1829,7 @@ class _AgendaDocentePage extends StatelessWidget {
                         destinatarioUserId: destinatario,
                         titulo: titulo,
                         descricao: descricao.isEmpty
-                            ? 'Convite enviado via agenda do SIGAD.'
+                            ? l10n.cdConviteEnviadoAgenda
                             : descricao,
                         inicio: _formatarDataHora(inicio),
                         inicioDateTime: inicio,
@@ -1802,11 +1841,11 @@ class _AgendaDocentePage extends StatelessWidget {
                       Navigator.pop(modalContext);
                       AppFeedbackService.info(
                         pageContext,
-                        'Convite enviado com sucesso para a agenda do docente.',
+                        l10n.cdConviteEnviado,
                       );
                     },
                     icon: const SigadIcon(SigadIcons.enviar),
-                    label: const Text('Enviar convite'),
+                    label: Text(l10n.cdEnviarConvite),
                   ),
                 ),
               ],
@@ -1873,20 +1912,6 @@ class _MapaSemanalHorarios extends StatelessWidget {
   final Future<void> Function(_AgendaCellTapData slot)? onTapLivre;
 
   static const List<String> _diasOrdem = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'];
-  static const List<String> _meses = [
-    'Janeiro',
-    'Fevereiro',
-    'Marco',
-    'Abril',
-    'Maio',
-    'Junho',
-    'Julho',
-    'Agosto',
-    'Setembro',
-    'Outubro',
-    'Novembro',
-    'Dezembro',
-  ];
   static const double _rowHeightCompact = 82;
   static const double _rowHeightRegular = 92;
 
@@ -1897,30 +1922,35 @@ class _MapaSemanalHorarios extends StatelessWidget {
     final rowHeight = compacto ? _rowHeightCompact : _rowHeightRegular;
     final datasDaSemana = _datasDaSemanaAtual();
     final hoje = DateTime.now();
-    final mesLabel = _meses[hoje.month - 1];
-    final semanaLabel = _descricaoSemanaAtual();
-    final diaSelecionadoAbreviado = _diaSemanaAbreviado(hoje.weekday);
-    final diaSelecionadoCompleto = _diaSemanaCompleto(hoje.weekday);
+    final l10n = context.l10n;
+    final mesLabel = l10n.cdMes('${hoje.month}');
+    final semanaLabel = _descricaoSemanaAtual(l10n);
+    final diaSelecionadoAbreviado = _diaSemanaAbreviado(l10n, hoje.weekday);
+    final diaSelecionadoCompleto = _diaSemanaCompleto(l10n, hoje.weekday);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Agenda semanal',
+          l10n.cdAgendaSemanal,
           style: Theme.of(
             context,
           ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 4),
         Text(
-          '$semanaLabel de $mesLabel',
+          l10n.cdSemanaDe(semanaLabel, mesLabel),
           style: Theme.of(
             context,
           ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
         ),
         const SizedBox(height: 2),
         Text(
-          'Dia selecionado: ${hoje.day} ($diaSelecionadoAbreviado - $diaSelecionadoCompleto)',
+          l10n.cdDiaSelecionado(
+            hoje.day,
+            diaSelecionadoAbreviado,
+            diaSelecionadoCompleto,
+          ),
           style: Theme.of(
             context,
           ).textTheme.bodySmall?.copyWith(color: SigadColors.muted),
@@ -2071,57 +2101,63 @@ class _MapaSemanalHorarios extends StatelessWidget {
     );
   }
 
-  String _descricaoSemanaAtual() {
+  String _descricaoSemanaAtual(AppLocalizations l10n) {
     final hoje = DateTime.now();
     final inicioDaSemana = hoje.subtract(
       Duration(days: hoje.weekday - DateTime.monday),
     );
     final fimDaSemana = inicioDaSemana.add(const Duration(days: 4));
     if (inicioDaSemana.month == fimDaSemana.month) {
-      return '${_pad2(inicioDaSemana.day)} a ${_pad2(fimDaSemana.day)}';
+      return l10n.cdIntervalo(
+        _pad2(inicioDaSemana.day),
+        _pad2(fimDaSemana.day),
+      );
     }
-    return '${_pad2(inicioDaSemana.day)}/${_pad2(inicioDaSemana.month)} a ${_pad2(fimDaSemana.day)}/${_pad2(fimDaSemana.month)}';
+    return l10n.cdIntervalo(
+      '${_pad2(inicioDaSemana.day)}/${_pad2(inicioDaSemana.month)}',
+      '${_pad2(fimDaSemana.day)}/${_pad2(fimDaSemana.month)}',
+    );
   }
 
-  String _diaSemanaAbreviado(int weekday) {
+  String _diaSemanaAbreviado(AppLocalizations l10n, int weekday) {
     switch (weekday) {
       case DateTime.monday:
-        return 'Seg';
+        return l10n.diaSeg;
       case DateTime.tuesday:
-        return 'Ter';
+        return l10n.diaTer;
       case DateTime.wednesday:
-        return 'Qua';
+        return l10n.diaQua;
       case DateTime.thursday:
-        return 'Qui';
+        return l10n.diaQui;
       case DateTime.friday:
-        return 'Sex';
+        return l10n.diaSex;
       case DateTime.saturday:
-        return 'Sab';
+        return l10n.cdDiaSab;
       case DateTime.sunday:
-        return 'Dom';
+        return l10n.cdDiaDom;
       default:
         return '-';
     }
   }
 
-  String _diaSemanaCompleto(int weekday) {
+  String _diaSemanaCompleto(AppLocalizations l10n, int weekday) {
     switch (weekday) {
       case DateTime.monday:
-        return 'segunda-feira';
+        return l10n.diaSegunda;
       case DateTime.tuesday:
-        return 'terca-feira';
+        return l10n.diaTerca;
       case DateTime.wednesday:
-        return 'quarta-feira';
+        return l10n.diaQuarta;
       case DateTime.thursday:
-        return 'quinta-feira';
+        return l10n.diaQuinta;
       case DateTime.friday:
-        return 'sexta-feira';
+        return l10n.diaSexta;
       case DateTime.saturday:
-        return 'sabado';
+        return l10n.cdDiaSabado;
       case DateTime.sunday:
-        return 'domingo';
+        return l10n.cdDiaDomingo;
       default:
-        return 'dia invalido';
+        return '-';
     }
   }
 
@@ -2158,6 +2194,12 @@ enum _AgendaTurno {
   const _AgendaTurno(this.label);
 
   final String label;
+
+  String curtoEm(AppLocalizations l10n) => switch (this) {
+    _AgendaTurno.matutino => l10n.cdTurnoCurtoM,
+    _AgendaTurno.vespertino => l10n.cdTurnoCurtoT,
+    _AgendaTurno.noturno => l10n.cdTurnoCurtoN,
+  };
 
   String get shortLabel {
     switch (this) {
@@ -2224,7 +2266,7 @@ enum _AgendaTurno {
   }
 
   String horarioDo(int periodo) {
-    if (periodo < 1 || periodo > horarios.length) return 'Horario indefinido';
+    if (periodo < 1 || periodo > horarios.length) return '-';
     return horarios[periodo - 1];
   }
 }
@@ -2258,7 +2300,11 @@ class _TurnoAgendaDividerRow extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            turno.label,
+            switch (turno) {
+              _AgendaTurno.matutino => context.l10n.turnoMatutino,
+              _AgendaTurno.vespertino => context.l10n.turnoVespertino,
+              _AgendaTurno.noturno => context.l10n.turnoNoturno,
+            },
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.w700,
               color: turno.chipTextColor,
@@ -2309,7 +2355,10 @@ class _GradeAgendaCell extends StatelessWidget {
         ? const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5)
         : const EdgeInsets.symmetric(horizontal: 6, vertical: 2);
     final iconSize = compacto ? 12.0 : 14.0;
-    final statusLabel = livre ? 'Livre' : (compacto ? 'Aula' : 'Ocupado');
+    final l10n = context.l10n;
+    final statusLabel = livre
+        ? l10n.cdLivre
+        : (compacto ? l10n.cdAula : l10n.cdOcupado);
     final headerTextStyle = Theme.of(context).textTheme.labelSmall?.copyWith(
       color: SigadColors.brandDark,
       fontWeight: FontWeight.w700,
@@ -2368,7 +2417,9 @@ class _GradeAgendaCell extends StatelessWidget {
                       fit: BoxFit.scaleDown,
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        compacto ? '$dia ${data.day}' : '$dia · ${data.day}',
+                        compacto
+                            ? '${l10n.diaAbrev(dia)} ${data.day}'
+                            : '${l10n.diaAbrev(dia)} · ${data.day}',
                         style: headerTextStyle,
                       ),
                     ),
@@ -2381,7 +2432,7 @@ class _GradeAgendaCell extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
-                      '${turno.shortLabel}$periodo',
+                      '${turno.curtoEm(l10n)}$periodo',
                       style: chipTextStyle,
                     ),
                   ),
@@ -2486,7 +2537,7 @@ class _HorarioTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${horario.diaSemana}  ${horario.inicio} – ${horario.fim}',
+                  '${context.l10n.diaDocente(horario.diaSemana)}  ${horario.inicio} – ${horario.fim}',
                   style: textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: SigadColors.brand,

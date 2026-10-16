@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:sigad/features/notas/presentation/pages/notas_page.dart';
+import 'package:sigad/l10n/l10n.dart';
 
 Widget _buildApp() {
   return const MaterialApp(home: NotasPage());
@@ -69,5 +70,27 @@ void main() {
       find.text('Nenhuma anotação. Toque em "+" para criar.'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('anotações em inglês', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        locale: Locale('en'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: NotasPage(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('No notes. Tap "+" to create one.'), findsOneWidget);
+    expect(find.text('All notes'), findsOneWidget);
+    expect(find.text('Sort by: Newest'), findsOneWidget);
+    expect(find.text('Meetings'), findsOneWidget);
+
+    await tester.tap(find.text('New note'));
+    await tester.pumpAndSettle();
+    expect(find.text('Category'), findsOneWidget);
+    expect(find.text('General'), findsOneWidget);
   });
 }

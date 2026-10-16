@@ -11,6 +11,7 @@ import 'package:sigad/core/services/user_context_provider.dart';
 import 'package:sigad/features/mural/domain/mural_models.dart';
 import 'package:sigad/features/mural/presentation/pages/mural_page.dart';
 import 'package:sigad/features/mural/presentation/state/mural_controller.dart';
+import 'package:sigad/l10n/l10n.dart';
 import 'package:sigad/shared/widgets/welcome_hero.dart';
 
 Aviso _aviso({
@@ -219,7 +220,11 @@ void main() {
   });
 
   group('MuralPage', () {
-    Future<MuralController> pumpPage(WidgetTester tester, UserRole role) async {
+    Future<MuralController> pumpPage(
+      WidgetTester tester,
+      UserRole role, {
+      Locale? locale,
+    }) async {
       tester.view.physicalSize = const Size(390, 844);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
@@ -244,6 +249,9 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light(),
+            locale: locale ?? const Locale('pt'),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
             home: const Scaffold(body: MuralPage()),
           ),
         ),
@@ -337,6 +345,33 @@ void main() {
       await tester.tap(find.text('Todo mês').last);
       await tester.pumpAndSettle();
       expect(mural.periodicidade, PeriodicidadeFrase.mensal);
+    }, skip: !AppRuntimeConfig.allowLocalDemo);
+
+    testWidgets('gestão do mural em inglês', (tester) async {
+      final mural = await pumpPage(
+        tester,
+        UserRole.chefeDepartamento,
+        locale: const Locale('en'),
+      );
+      await mural.salvarAviso(
+        _aviso(fixado: true).copyWith(publico: {UserRole.professor}),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Notices'), findsOneWidget);
+      expect(find.text('New notice'), findsOneWidget);
+      expect(
+        find.text('Information · Live · Pinned\nProfessor'),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.text('Quotes'));
+      await tester.pumpAndSettle();
+      expect(find.text('Every week'), findsOneWidget);
+      expect(
+        find.text('Quotes (${frasesPadrao.length}) — active ones rotate'),
+        findsOneWidget,
+      );
     }, skip: !AppRuntimeConfig.allowLocalDemo);
   });
 }

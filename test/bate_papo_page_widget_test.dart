@@ -9,6 +9,7 @@ import 'package:sigad/core/models/user_role.dart';
 import 'package:sigad/core/services/chat_provider.dart';
 import 'package:sigad/core/services/user_context_provider.dart';
 import 'package:sigad/features/bate_papo/presentation/pages/bate_papo_page.dart';
+import 'package:sigad/l10n/l10n.dart';
 
 void main() {
   setUp(() {
@@ -59,5 +60,49 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(texto), findsOneWidget);
+  });
+
+  testWidgets('bate-papo em inglês', (tester) async {
+    final userContext = UserContextProvider();
+    await userContext.login(
+      User(
+        id: 'user_email_professor.demo@exemplo.edu.br',
+        name: 'Professor Demo',
+        email: 'professor.demo@exemplo.edu.br',
+        role: UserRole.professor,
+        createdAt: DateTime.now(),
+      ),
+    );
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<UserContextProvider>.value(value: userContext),
+          ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light(),
+          locale: const Locale('en'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: const Scaffold(body: BatePapoPage()),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Conversations'), findsOneWidget);
+    expect(find.byTooltip('New conversation'), findsOneWidget);
+
+    await tester.tap(find.text('Coordenação Demo').first);
+    await tester.pumpAndSettle();
+    expect(find.text('Type your message'), findsOneWidget);
+    expect(find.text('Send'), findsOneWidget);
+    expect(find.text('Program Coordinator'), findsWidgets);
+    expect(tester.takeException(), isNull);
   });
 }

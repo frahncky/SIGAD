@@ -22,6 +22,7 @@ import '../../features/redesign/presentation/pages/module_workspace_page.dart';
 import '../../features/redesign/presentation/pages/sigad_redesign_pages.dart';
 import '../../features/mural/presentation/pages/mural_page.dart';
 import '../../features/relatorios/presentation/pages/relatorios_page.dart';
+import '../../l10n/l10n.dart';
 import '../theme/sigad_icon.dart';
 import '../theme/sigad_icons.dart';
 import 'app_routes.dart';
@@ -176,12 +177,12 @@ class _NotFoundPage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'Página não encontrada',
+                context.l10n.paginaNaoEncontrada,
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 8),
-              const Text(
-                'O endereço informado não corresponde a um módulo do SIGAD.',
+              Text(
+                context.l10n.paginaNaoEncontradaMensagem,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 18),
@@ -191,7 +192,7 @@ class _NotFoundPage extends StatelessWidget {
                   AppRoutes.dashboard,
                 ),
                 icon: const SigadIcon(SigadIcons.inicio),
-                label: const Text('Voltar à visão geral'),
+                label: Text(context.l10n.voltarVisaoGeral),
               ),
             ],
           ),

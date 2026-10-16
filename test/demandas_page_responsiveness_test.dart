@@ -9,6 +9,7 @@ import 'package:sigad/core/models/user.dart';
 import 'package:sigad/core/models/user_role.dart';
 import 'package:sigad/core/services/user_context_provider.dart';
 import 'package:sigad/features/demandas/presentation/pages/demandas_page.dart';
+import 'package:sigad/l10n/l10n.dart';
 import 'package:sigad/features/demandas/data/demanda_repository.dart';
 import 'package:sigad/features/demandas/domain/demanda_models.dart';
 import 'package:sigad/features/demandas/domain/demandas_service.dart';
@@ -53,11 +54,15 @@ Widget _buildApp(
   UserContextProvider userContext, {
   ThemeData? theme,
   double textScale = 2,
+  Locale locale = const Locale('pt'),
 }) {
   return ChangeNotifierProvider<UserContextProvider>.value(
     value: userContext,
     child: MaterialApp(
       theme: theme ?? AppTheme.light(),
+      locale: locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(
           context,
@@ -76,8 +81,11 @@ Finder _textFieldWithLabel(String label) {
   );
 }
 
-Future<void> _openKeyboard(WidgetTester tester) async {
-  final titleField = _textFieldWithLabel('Título');
+Future<void> _openKeyboard(
+  WidgetTester tester, {
+  String label = 'Título',
+}) async {
+  final titleField = _textFieldWithLabel(label);
   await tester.ensureVisible(titleField);
   await tester.tap(titleField);
   await tester.showKeyboard(titleField);
@@ -88,8 +96,9 @@ Future<void> _openKeyboard(WidgetTester tester) async {
 Future<void> _expectStackedAndReachableActions(
   WidgetTester tester, {
   required String submitLabel,
+  String cancelLabel = 'Cancelar',
 }) async {
-  final cancelButton = find.widgetWithText(OutlinedButton, 'Cancelar');
+  final cancelButton = find.widgetWithText(OutlinedButton, cancelLabel);
   final submitButton = find.widgetWithText(ElevatedButton, submitLabel);
 
   expect(cancelButton, findsOneWidget);
@@ -293,5 +302,26 @@ void main() {
     expect(find.text('Demanda criada com sucesso!'), findsOneWidget);
     expect(find.text('Informação'), findsNothing);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('demandas em inglês com 320x568 e texto 200%', (tester) async {
+    _configureCompactView(tester);
+    final userContext = await _coordinatorContext();
+
+    await tester.pumpWidget(_buildApp(userContext, locale: const Locale('en')));
+    await tester.pumpAndSettle();
+    expect(find.text('Requests summary'), findsOneWidget);
+    expect(find.text('Open'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Create new request'));
+    await tester.pumpAndSettle();
+    expect(find.text('New Request'), findsOneWidget);
+    expect(find.text('Medium'), findsOneWidget);
+    await _openKeyboard(tester, label: 'Title');
+    await _expectStackedAndReachableActions(
+      tester,
+      submitLabel: 'Create',
+      cancelLabel: 'Cancel',
+    );
   });
 }
