@@ -56,3 +56,6 @@ app.*.map.json
 /backend/.venv/
 /backend/**/__pycache__/
 /backend/.pytest_cache/
+
+# A referência pública não contém segredos; os arquivos reais continuam ignorados.
+!/backend/.env.homologacao.example
