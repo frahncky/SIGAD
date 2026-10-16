@@ -122,28 +122,15 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
           'Nenhum aplicativo de e-mail está disponível.',
         );
       }
-    });
-    _saveData();
-  }
-
-  void _baixarRelatorio(Relatorio relatorio) {
-    if (!_canAccessRelatorios()) return;
-    final atualizado = RelatoriosService.registrarDownload(relatorio);
-    _atualizarRelatorio(atualizado);
-    AppFeedbackService.success(
-      context,
-      context.l10n.relBaixado(relatorio.titulo),
-    );
-  }
-
-  void _compartilharRelatorio(Relatorio relatorio) {
-    if (!_canAccessRelatorios()) return;
-    final atualizado = RelatoriosService.registrarCompartilhamento(relatorio);
-    _atualizarRelatorio(atualizado);
-    AppFeedbackService.info(
-      context,
-      context.l10n.relLinkGerado(relatorio.titulo),
-    );
+    } catch (error, stackTrace) {
+      AppEventLogger.error(
+        'relatorios_email_error',
+        error,
+        stackTrace: stackTrace,
+      );
+      if (!mounted) return;
+      AppFeedbackService.error(context, 'Não foi possível abrir o e-mail.');
+    }
   }
 
   List<Relatorio> get _relatoriosFiltrados =>
@@ -179,9 +166,10 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
           ),
           if (_usandoDadosDemonstracao) ...[
             const SizedBox(height: 12),
-            const Text(
-              'Registros demonstrativos: não são documentos institucionais '
-              'nem arquivos PDF disponíveis para download.',
+            Text(
+              Localizations.localeOf(context).languageCode == 'en'
+                  ? 'Demonstration records: these are not institutional documents or downloadable PDF files.'
+                  : 'Registros demonstrativos: não são documentos institucionais nem arquivos PDF disponíveis para download.',
             ),
           ],
           const SizedBox(height: 16),
@@ -610,7 +598,7 @@ class _RelatorioCard extends StatelessWidget {
                           children: [
                             const SigadIcon(SigadIcons.baixar, size: 18),
                             const SizedBox(width: 8),
-                            Text(context.l10n.relBaixarPdf),
+                            Text(Localizations.localeOf(context).languageCode == 'en' ? 'Copy summary' : 'Copiar resumo'),
                           ],
                         ),
                       ),
@@ -620,7 +608,7 @@ class _RelatorioCard extends StatelessWidget {
                           children: [
                             const SigadIcon(SigadIcons.compartilhar, size: 18),
                             const SizedBox(width: 8),
-                            Text(context.l10n.relCompartilhar),
+                            Text(Localizations.localeOf(context).languageCode == 'en' ? 'Send by email' : 'Enviar por e-mail'),
                           ],
                         ),
                       ),
@@ -763,7 +751,7 @@ class _RelatorioCard extends StatelessWidget {
                         onBaixar();
                       },
                       icon: const SigadIcon(SigadIcons.baixar),
-                      label: Text(context.l10n.relBaixarPdf),
+                      label: Text(Localizations.localeOf(context).languageCode == 'en' ? 'Copy summary' : 'Copiar resumo'),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -774,7 +762,7 @@ class _RelatorioCard extends StatelessWidget {
                         onCompartilhar();
                       },
                       icon: const SigadIcon(SigadIcons.compartilhar),
-                      label: Text(context.l10n.relCompartilhar),
+                      label: Text(Localizations.localeOf(context).languageCode == 'en' ? 'Send by email' : 'Enviar por e-mail'),
                     ),
                   ),
                 ],
