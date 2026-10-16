@@ -1,12 +1,12 @@
 """Auditoria transacional no PostgreSQL, sem depender de infraestrutura IFMA."""
 
 import pytest
+from conftest import SessionForTest
 from sqlalchemy import select, text
 from sqlalchemy.exc import DBAPIError
-
-from conftest import SessionForTest
-from sigad_api.models import ReservationAudit, Revision
 from test_reservations import item
+
+from sigad_api.models import ReservationAudit, Revision
 
 
 def _audit():
