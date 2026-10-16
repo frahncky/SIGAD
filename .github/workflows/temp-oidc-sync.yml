@@ -1,0 +1,36 @@
+name: Temporary OIDC dependency and formatting sync
+on:
+  push:
+    branches:
+      - agent/sigad-oidc-pkce-homologacao
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/sigad-oidc-pkce-homologacao
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.7'
+      - run: flutter pub get
+      - name: Format changed Dart files
+        run: dart format lib/core/security/oidc_sign_in_service.dart lib/features/login/presentation/pages/login_page_v2.dart test/core/oidc_sign_in_service_test.dart test/institutional_login_page_test.dart
+      - name: Run static analysis
+        run: flutter analyze
+      - name: Run tests
+        run: flutter test
+      - name: Commit lockfile and formatting
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pubspec.lock lib/core/security/oidc_sign_in_service.dart lib/features/login/presentation/pages/login_page_v2.dart test/core/oidc_sign_in_service_test.dart test/institutional_login_page_test.dart
+          if ! git diff --cached --quiet; then
+            git commit -m "test: synchronize AppAuth dependency and format new tests"
+            git push origin HEAD:agent/sigad-oidc-pkce-homologacao
+          fi
