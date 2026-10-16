@@ -63,8 +63,8 @@ class ReservationAudit(Base):
     actor_subject: Mapped[str] = mapped_column(String(255), nullable=False)
     owner_subject: Mapped[str] = mapped_column(String(255), nullable=False)
     event_type: Mapped[str] = mapped_column(String(12), nullable=False)
-    slot_before: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
-    slot_after: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    slot_before: Mapped[dict | None] = mapped_column(JSONB(none_as_null=True), nullable=True)
+    slot_after: Mapped[dict | None] = mapped_column(JSONB(none_as_null=True), nullable=True)
     recorded_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.transaction_timestamp()
     )
