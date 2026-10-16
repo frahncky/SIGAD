@@ -2,10 +2,12 @@
 
 from datetime import UTC
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from .database import get_db
+from .readiness import check_readiness
 from .reservations import list_reservations, replace_reservations
 from .schemas import MeRead, ReservationRead, ReservationWrite, RevisionRead
 from .security import Principal, get_principal, require_reservation_access, require_reservation_edit
@@ -23,6 +25,23 @@ app = FastAPI(
 def health():
     # Não revela dados do banco, do IdP ou de usuários.
     return {"status": "ok"}
+
+
+@app.get("/ready")
+def readiness(db: Session = Depends(get_db)):
+    """Readiness local: banco migrado e parâmetros OIDC presentes.
+
+    Não prova conexão com o IdP, autorização de usuários ou readiness de produção.
+    """
+    try:
+        check_readiness(db)
+    except (RuntimeError, SQLAlchemyError):
+        db.rollback()
+        raise HTTPException(
+            status_code=503,
+            detail="Serviço ainda não está pronto.",
+        ) from None
+    return {"status": "ready"}
 
 
 @app.get("/auth/me", response_model=MeRead)
