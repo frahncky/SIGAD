@@ -2,9 +2,11 @@
 
 ## Situação
 
-O aplicativo possui agora um **contrato de integração preparado no cliente**. Não há um
-servidor institucional implantado neste repositório e a integração real do SSO
-do IFMA continua dependente de autorização, cadastro do cliente OIDC e deploy.
+O aplicativo possui um **contrato de integração preparado no cliente** e
+um backend FastAPI/PostgreSQL com rotas de autenticação e agenda implementadas
+no diretório [backend](../backend/README.md). **O serviço não está implantado
+nem homologado no IFMA**. A integração real do SSO continua dependente de
+autorização, cadastro do cliente OIDC e deploy.
 Nenhum usuário deve informar sua senha institucional em formulários locais.
 
 ## Autenticação (SSO)
@@ -95,8 +97,8 @@ e restrições acima.
 
 - Cadastrar o SIGAD no IdP do IFMA; configurar redirect URI e PKCE nas
   plataformas Flutter aprovadas pela instituição.
-- Implementar e auditar `/auth/me` e autorização do backend.
-- Implementar GET/PUT com revisão atômica e restrição única no banco.
+- Homologar `/auth/me` e a autorização do backend; a implementação está no repositório.
+- Implantar GET/PUT já implementados, com revisão atômica e restrição única no banco.
 - Provisionar HTTPS real, monitoramento, backups, auditoria e políticas LGPD.
 - Testar dois dispositivos concorrentes (um deve receber 409/412),
   falhas offline e sessão expirada.

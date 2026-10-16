@@ -48,3 +48,11 @@ app.*.map.json
 
 # Kotlin compiler sessions (temporary files)
 /android/.kotlin/sessions/
+
+# Backend (não versionar credenciais ou caches)
+/backend/.env
+/backend/.env.*
+!/backend/.env.example
+/backend/.venv/
+/backend/**/__pycache__/
+/backend/.pytest_cache/
