@@ -29,6 +29,14 @@ O **SIGAD** é um aplicativo Flutter responsivo para os perfis institucionais, c
 
 O app tem identidade visual própria: as cores do logotipo e um conjunto de **ícones exclusivos** em duas camadas, com o traço na cor do tema e um destaque em laranja.
 
+## 🗄️ Backend de reservas (em preparação para implantação)
+
+O repositório inclui um **backend FastAPI + PostgreSQL** que implementa
+autenticação via tokens OIDC validados, agenda compartilhada e bloqueio
+transacional de horários concorrentes. Confira [o guia de instalação e
+testes](backend/README.md). O backend **não está implantado no IFMA**;
+o cadastro institucional, o fluxo SSO/PKCE e a homologação permanecem pendentes.
+
 ## 🧭 Funcionalidades
 
 <table>

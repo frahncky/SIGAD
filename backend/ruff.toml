@@ -1,0 +1,6 @@
+target-version = "py312"
+line-length = 100
+
+[lint]
+# FastAPI usa Depends() em parâmetros de rota por contrato do framework.
+ignore = ["B008"]
