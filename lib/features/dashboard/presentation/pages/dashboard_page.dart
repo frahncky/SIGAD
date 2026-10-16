@@ -733,8 +733,7 @@ class _CustomizableIndicatorsState extends State<_CustomizableIndicators> {
         else
           LayoutBuilder(
             builder: (context, constraints) {
-              final largeText =
-                  MediaQuery.textScalerOf(context).scale(14) > 19;
+              final largeText = MediaQuery.textScalerOf(context).scale(14) > 19;
               final colunas = constraints.maxWidth >= 640
                   ? 4
                   : constraints.maxWidth >= 320 && !largeText

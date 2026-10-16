@@ -241,9 +241,9 @@ class HomeShellPage extends StatelessWidget {
               children: [
                 Text(
                   context.l10n.notificacoes,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 8),
                 Flexible(
@@ -255,7 +255,9 @@ class HomeShellPage extends StatelessWidget {
                       }
                       if (snapshot.hasError) {
                         return const Center(
-                          child: Text('Não foi possível carregar as notificações.'),
+                          child: Text(
+                            'Não foi possível carregar as notificações.',
+                          ),
                         );
                       }
                       final notificacoes = snapshot.data ?? const [];

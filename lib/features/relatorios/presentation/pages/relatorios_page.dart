@@ -87,7 +87,11 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
         'Resumo copiado. Não foi gerado um arquivo PDF.',
       );
     } catch (error, stackTrace) {
-      AppEventLogger.error('relatorios_copy_error', error, stackTrace: stackTrace);
+      AppEventLogger.error(
+        'relatorios_copy_error',
+        error,
+        stackTrace: stackTrace,
+      );
       if (!mounted) return;
       AppFeedbackService.error(context, 'Não foi possível copiar o resumo.');
     }
@@ -117,7 +121,11 @@ class _RelatoriosPageState extends State<RelatoriosPage> {
         );
       }
     } catch (error, stackTrace) {
-      AppEventLogger.error('relatorios_email_error', error, stackTrace: stackTrace);
+      AppEventLogger.error(
+        'relatorios_email_error',
+        error,
+        stackTrace: stackTrace,
+      );
       if (!mounted) return;
       AppFeedbackService.error(context, 'Não foi possível abrir o e-mail.');
     }

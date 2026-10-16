@@ -7,18 +7,16 @@ import 'package:sigad/features/demandas/domain/demanda_models.dart';
 void main() {
   final hoje = DateTime(2026, 10, 15);
 
-  Demanda demanda({
-    String prazo = '14/10/2026',
-    String status = 'Aberto',
-  }) => Demanda(
-    id: 'd1',
-    titulo: 'Instalação elétrica',
-    descricao: 'Finalizar laboratório',
-    prioridade: 'Alta',
-    statusLabel: status,
-    proprietario: 'Coordenação',
-    prazo: prazo,
-  );
+  Demanda demanda({String prazo = '14/10/2026', String status = 'Aberto'}) =>
+      Demanda(
+        id: 'd1',
+        titulo: 'Instalação elétrica',
+        descricao: 'Finalizar laboratório',
+        prioridade: 'Alta',
+        statusLabel: status,
+        proprietario: 'Coordenação',
+        prazo: prazo,
+      );
 
   Atividade atividade({
     String data = '15/10/2026',
@@ -47,10 +45,7 @@ void main() {
       demanda(prazo: '30/10/2026'),
       demanda(prazo: '32/10/2026'),
     ];
-    for (final role in [
-      UserRole.coordenador,
-      UserRole.chefeDepartamento,
-    ]) {
+    for (final role in [UserRole.coordenador, UserRole.chefeDepartamento]) {
       final notificacoes = NotificacoesService.porRole(
         role,
         demandas: itens,

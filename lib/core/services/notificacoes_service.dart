@@ -74,9 +74,7 @@ abstract final class NotificacoesService {
                 : dias == 0
                 ? 'Demanda vence hoje'
                 : 'Demanda vence em $dias dia${dias == 1 ? '' : 's'}',
-            icone: dias < 0
-                ? SigadIcons.demandaAtrasada
-                : SigadIcons.demanda,
+            icone: dias < 0 ? SigadIcons.demandaAtrasada : SigadIcons.demanda,
           ),
         );
       }
