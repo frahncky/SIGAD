@@ -142,6 +142,17 @@ class _LoginPageState extends State<LoginPage> {
           ),
           const SizedBox(height: 14),
         ],
+        if (AppRuntimeConfig.dataSourceMode == DataSourceMode.remote)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Text(
+              'A entrada institucional requer a integração oficial com o '
+              'provedor de identidade do IFMA (SSO/OIDC). O SIGAD não '
+              'solicita nem armazena senhas institucionais nesta tela. '
+              'O acesso só será habilitado após essa configuração.',
+            ),
+          )
+        else ...[
         AutofillGroup(
           child: Column(
             children: [
@@ -211,6 +222,7 @@ class _LoginPageState extends State<LoginPage> {
             label: Text(context.l10n.entrar),
           ),
         ),
+        ],
         if (AppRuntimeConfig.allowLocalDemo) ...[
           const SizedBox(height: 8),
           SizedBox(
