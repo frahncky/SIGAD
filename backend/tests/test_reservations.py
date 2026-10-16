@@ -75,7 +75,9 @@ def test_duplicate_slot_rejected_without_side_effects(client):
 
 def test_invalid_slot_and_unprovisioned_or_offline_lab(client):
     invalid = item()
-    invalid["diaSemana"] = "Sex"  # 05/01/2026 é segunda-feira.
+    # Fevereiro/2026 tem somente quatro blocos de sete dias.
+    invalid["mes"] = 2
+    invalid["semanaDoMes"] = 5
     assert (
         client.put(
             "/laboratorios/reservas",
