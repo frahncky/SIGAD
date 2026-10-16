@@ -598,7 +598,12 @@ class _RelatorioCard extends StatelessWidget {
                           children: [
                             const SigadIcon(SigadIcons.baixar, size: 18),
                             const SizedBox(width: 8),
-                            Text(Localizations.localeOf(context).languageCode == 'en' ? 'Copy summary' : 'Copiar resumo'),
+                            Text(
+                              Localizations.localeOf(context).languageCode ==
+                                      'en'
+                                  ? 'Copy summary'
+                                  : 'Copiar resumo',
+                            ),
                           ],
                         ),
                       ),
@@ -608,7 +613,12 @@ class _RelatorioCard extends StatelessWidget {
                           children: [
                             const SigadIcon(SigadIcons.compartilhar, size: 18),
                             const SizedBox(width: 8),
-                            Text(Localizations.localeOf(context).languageCode == 'en' ? 'Send by email' : 'Enviar por e-mail'),
+                            Text(
+                              Localizations.localeOf(context).languageCode ==
+                                      'en'
+                                  ? 'Send by email'
+                                  : 'Enviar por e-mail',
+                            ),
                           ],
                         ),
                       ),
@@ -743,7 +753,11 @@ class _RelatorioCard extends StatelessWidget {
                         onBaixar();
                       },
                       icon: const SigadIcon(SigadIcons.baixar),
-                      label: Text(Localizations.localeOf(context).languageCode == 'en' ? 'Copy summary' : 'Copiar resumo'),
+                      label: Text(
+                        Localizations.localeOf(context).languageCode == 'en'
+                            ? 'Copy summary'
+                            : 'Copiar resumo',
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -754,7 +768,11 @@ class _RelatorioCard extends StatelessWidget {
                         onCompartilhar();
                       },
                       icon: const SigadIcon(SigadIcons.compartilhar),
-                      label: Text(Localizations.localeOf(context).languageCode == 'en' ? 'Send by email' : 'Enviar por e-mail'),
+                      label: Text(
+                        Localizations.localeOf(context).languageCode == 'en'
+                            ? 'Send by email'
+                            : 'Enviar por e-mail',
+                      ),
                     ),
                   ),
                 ],
