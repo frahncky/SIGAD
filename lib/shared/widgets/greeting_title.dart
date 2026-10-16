@@ -4,8 +4,8 @@ import '../../core/services/greeting_name_provider.dart';
 import '../../core/services/user_context_provider.dart';
 import '../../l10n/l10n.dart';
 
-String greetingText(BuildContext context) {
-  final hour = DateTime.now().hour;
+String greetingText(BuildContext context, {DateTime? now}) {
+  final hour = (now ?? DateTime.now()).hour;
   final greeting = hour >= 5 && hour < 12
       ? context.l10n.bomDia
       : hour >= 12 && hour < 18
