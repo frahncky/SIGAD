@@ -13,6 +13,7 @@ import 'package:sigad/core/security/institutional_auth_gateway.dart';
 import 'package:sigad/core/security/oidc_sign_in_service.dart';
 import 'package:sigad/core/services/user_context_provider.dart';
 import 'package:sigad/features/login/presentation/pages/login_page.dart';
+import 'package:sigad/l10n/l10n.dart';
 
 class _FakeSignIn implements InstitutionalSignInService {
   _FakeSignIn({this.ready = true, this.cancel = false, this.fail = false});
@@ -68,6 +69,9 @@ Future<void> _pumpRemote(
       value: provider,
       child: MaterialApp(
         theme: AppTheme.light(),
+        locale: const Locale('pt'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         onGenerateInitialRoutes: (_) => <Route<dynamic>>[
           MaterialPageRoute<void>(
             settings: const RouteSettings(name: AppRoutes.login),
