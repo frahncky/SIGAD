@@ -45,7 +45,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _institutionalSignInService = widget.institutionalSignInService ??
+    _institutionalSignInService =
+        widget.institutionalSignInService ??
         AppAuthInstitutionalSignInService();
   }
 
@@ -169,17 +170,17 @@ class _LoginPageState extends State<LoginPage> {
             child: Text(
               _institutionalSignInService.isReady
                   ? (Localizations.localeOf(context).languageCode == 'en'
-                      ? 'Sign in securely through the institutional identity provider. '
-                          'SIGAD never collects your institutional password.'
-                      : 'Entre com segurança pelo provedor de identidade institucional. '
-                          'O SIGAD não coleta sua senha institucional.')
+                        ? 'Sign in securely through the institutional identity provider. '
+                              'SIGAD never collects your institutional password.'
+                        : 'Entre com segurança pelo provedor de identidade institucional. '
+                              'O SIGAD não coleta sua senha institucional.')
                   : (Localizations.localeOf(context).languageCode == 'en'
-                      ? 'Institutional access is not configured on this device. '
-                          'The IT department must register the OIDC client, '
-                          'callback and API before this option is enabled.'
-                      : 'O acesso institucional ainda não está configurado neste dispositivo. '
-                          'A TI precisa cadastrar o cliente OIDC, '
-                          'o retorno do login e a API para habilitá-lo.'),
+                        ? 'Institutional access is not configured on this device. '
+                              'The IT department must register the OIDC client, '
+                              'callback and API before this option is enabled.'
+                        : 'O acesso institucional ainda não está configurado neste dispositivo. '
+                              'A TI precisa cadastrar o cliente OIDC, '
+                              'o retorno do login e a API para habilitá-lo.'),
             ),
           ),
           SizedBox(
@@ -202,8 +203,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-        ]
-        else ...[
+        ] else ...[
           AutofillGroup(
             child: Column(
               children: [
@@ -347,7 +347,7 @@ class _LoginPageState extends State<LoginPage> {
           Localizations.localeOf(context).languageCode == 'en'
               ? 'Institutional sign-in could not be completed. Check your access or contact IT.'
               : 'Não foi possível concluir o acesso institucional. '
-                  'Verifique sua autorização ou contate a TI.',
+                    'Verifique sua autorização ou contate a TI.',
         );
       }
     } finally {

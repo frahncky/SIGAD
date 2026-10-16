@@ -74,9 +74,8 @@ Future<void> _pumpRemote(
             dataSourceMode: DataSourceMode.remote,
             institutionalSignInService: service,
           ),
-          AppRoutes.dashboard: (_) => const Scaffold(
-            body: Text('Área institucional autenticada'),
-          ),
+          AppRoutes.dashboard: (_) =>
+              const Scaffold(body: Text('Área institucional autenticada')),
         },
       ),
     ),

@@ -21,10 +21,13 @@ void main() {
     );
   });
 
-  test('parâmetros públicos de cliente e callback exato habilitam configuração', () {
-    expect(valid.isConfigured, isTrue);
-    expect(valid.scopes, ['openid', 'profile', 'email', 'sigad-api']);
-  });
+  test(
+    'parâmetros públicos de cliente e callback exato habilitam configuração',
+    () {
+      expect(valid.isConfigured, isTrue);
+      expect(valid.scopes, ['openid', 'profile', 'email', 'sigad-api']);
+    },
+  );
 
   test('bloqueia URL insegura, callback não cadastrado e escopo inválido', () {
     expect(
