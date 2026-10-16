@@ -129,16 +129,22 @@ def replace_reservations(db: Session, principal: Principal, payload: Reservation
                         status_code=409, detail="Laboratório indisponível ou não cadastrado."
                     )
 
-            # DELETE+UPDATE+INSERT preservam as chaves únicas até o commit.
+            # Remove previamente os slots alterados: permite permutar
+            # horários entre duas reservas na mesma transação, sem falso
+            # conflito causado pela ordem dos UPDATEs no índice UNIQUE.
             for row in removed:
                 db.delete(row)
+            for item in modified:
+                if item.id in old:
+                    db.delete(old[item.id])
             db.flush()
             for item in modified:
-                row = old.get(item.id)
-                if row is None:
-                    row = Reservation(id=item.id, owner_subject=principal.subject)
-                    db.add(row)
+                owner = (
+                    old[item.id].owner_subject if item.id in old else principal.subject
+                )
+                row = Reservation(id=item.id, owner_subject=owner)
                 _assign(row, item)
+                db.add(row)
             db.flush()
             version.value += 1
             return {"revision": f"rev-{version.value}"}
