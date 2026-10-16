@@ -18,9 +18,8 @@ void _setScreen(WidgetTester tester, Size size) {
   addTearDown(tester.view.resetDevicePixelRatio);
 }
 
-Finder _tile(String label) => find
-    .ancestor(of: find.text(label), matching: find.byType(InkWell))
-    .first;
+Finder _tile(String label) =>
+    find.ancestor(of: find.text(label), matching: find.byType(InkWell)).first;
 
 Future<void> _pumpOverview(
   WidgetTester tester, {
@@ -32,9 +31,9 @@ Future<void> _pumpOverview(
     MaterialApp(
       theme: AppTheme.light(),
       builder: (context, child) => MediaQuery(
-        data: MediaQuery.of(context).copyWith(
-          textScaler: TextScaler.linear(scale),
-        ),
+        data: MediaQuery.of(
+          context,
+        ).copyWith(textScaler: TextScaler.linear(scale)),
         child: child!,
       ),
       home: const Scaffold(body: SigadDashboardPage()),
@@ -63,9 +62,7 @@ Future<void> _pumpMais(WidgetTester tester, {required Size size}) async {
   await tester.pumpWidget(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider<UserContextProvider>.value(
-          value: userContext,
-        ),
+        ChangeNotifierProvider<UserContextProvider>.value(value: userContext),
         ChangeNotifierProvider<MuralController>.value(value: mural),
       ],
       child: MaterialApp(
@@ -98,14 +95,8 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('visão geral reduz colunas com fonte ampliada', (
-    tester,
-  ) async {
-    await _pumpOverview(
-      tester,
-      size: const Size(320, 568),
-      scale: 2,
-    );
+  testWidgets('visão geral reduz colunas com fonte ampliada', (tester) async {
+    await _pumpOverview(tester, size: const Size(320, 568), scale: 2);
 
     final a = tester.getTopLeft(_tile('Carga docente'));
     final b = tester.getTopLeft(_tile('Laboratórios'));

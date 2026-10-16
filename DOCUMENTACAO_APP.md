@@ -94,7 +94,8 @@ Referencia complementar:
 
 ### Relatorios
 - listagem e filtro
-- acoes de download/compartilhamento (registro local de acao)
+- copiar o resumo de um registro e abrir rascunho de e-mail no aplicativo configurado
+- a listagem de exemplo é identificada como demonstração; não há PDF real nem download de documentos
 
 ### Configuracoes
 - preferencias de conta

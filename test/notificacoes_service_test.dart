@@ -1,60 +1,93 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sigad/core/models/user_role.dart';
 import 'package:sigad/core/services/notificacoes_service.dart';
+import 'package:sigad/features/atividades/domain/atividade_models.dart';
+import 'package:sigad/features/demandas/domain/demanda_models.dart';
 
 void main() {
-  group('NotificacoesService.porRole', () {
-    test('null retorna lista vazia', () {
-      expect(NotificacoesService.porRole(null), isEmpty);
-    });
+  final hoje = DateTime(2026, 10, 15);
 
-    test('professor retorna notificações não vazias', () {
-      final lista = NotificacoesService.porRole(UserRole.professor);
-      expect(lista, isNotEmpty);
-    });
-
-    test('coordenador retorna notificações não vazias', () {
-      final lista = NotificacoesService.porRole(UserRole.coordenador);
-      expect(lista, isNotEmpty);
-    });
-
-    test('servidorAdministrativo retorna notificações não vazias', () {
-      final lista = NotificacoesService.porRole(
-        UserRole.servidorAdministrativo,
+  Demanda demanda({String prazo = '14/10/2026', String status = 'Aberto'}) =>
+      Demanda(
+        id: 'd1',
+        titulo: 'Instalação elétrica',
+        descricao: 'Finalizar laboratório',
+        prioridade: 'Alta',
+        statusLabel: status,
+        proprietario: 'Coordenação',
+        prazo: prazo,
       );
-      expect(lista, isNotEmpty);
-    });
 
-    test('chefeDepartamento retorna mais notificações que outros roles', () {
-      final chefeCount = NotificacoesService.porRole(
-        UserRole.chefeDepartamento,
-      ).length;
-      final profCount = NotificacoesService.porRole(UserRole.professor).length;
-      final coordCount = NotificacoesService.porRole(
-        UserRole.coordenador,
-      ).length;
-      expect(chefeCount, greaterThanOrEqualTo(profCount));
-      expect(chefeCount, greaterThanOrEqualTo(coordCount));
-    });
+  Atividade atividade({
+    String data = '15/10/2026',
+    String responsavel = 'Maria',
+    String status = 'Pendente',
+  }) => Atividade(
+    id: 'a1',
+    titulo: 'Entregar projeto',
+    descricao: 'Trabalho acadêmico',
+    data: data,
+    responsavel: responsavel,
+    status: status,
+  );
 
-    test('todos os itens têm titulo, subtitulo e icone não vazios', () {
-      for (final role in UserRole.values) {
-        for (final notif in NotificacoesService.porRole(role)) {
-          expect(notif.titulo, isNotEmpty, reason: 'titulo vazio em $role');
-          expect(
-            notif.subtitulo,
-            isNotEmpty,
-            reason: 'subtitulo vazio em $role',
-          );
-          expect(notif.icone, isNotNull, reason: 'icone nulo em $role');
-        }
-      }
-    });
+  test('sem registros não há alertas inventados para nenhum perfil', () {
+    for (final role in UserRole.values) {
+      expect(NotificacoesService.porRole(role, agora: hoje), isEmpty);
+    }
+    expect(NotificacoesService.porRole(null, agora: hoje), isEmpty);
+  });
 
-    test('listas de roles distintos são independentes', () {
-      final prof = NotificacoesService.porRole(UserRole.professor);
-      final coord = NotificacoesService.porRole(UserRole.coordenador);
-      expect(prof.first.titulo, isNot(equals(coord.first.titulo)));
-    });
+  test('gestores recebem demandas vencidas, sem itens concluídos', () {
+    final itens = [
+      demanda(),
+      demanda(status: 'Concluído'),
+      demanda(prazo: '30/10/2026'),
+      demanda(prazo: '32/10/2026'),
+    ];
+    for (final role in [UserRole.coordenador, UserRole.chefeDepartamento]) {
+      final notificacoes = NotificacoesService.porRole(
+        role,
+        demandas: itens,
+        agora: hoje,
+      );
+      expect(notificacoes, hasLength(1));
+      expect(notificacoes.single.subtitulo, contains('atrasada'));
+    }
+  });
+
+  test('professor não recebe demandas institucionais', () {
+    final notificacoes = NotificacoesService.porRole(
+      UserRole.professor,
+      demandas: [demanda()],
+      agora: hoje,
+    );
+    expect(notificacoes, isEmpty);
+  });
+
+  test('atividades são filtradas por responsável sem vazar dados', () {
+    final notificacoes = NotificacoesService.porRole(
+      UserRole.professor,
+      userName: 'MARIA',
+      atividades: [
+        atividade(),
+        atividade(responsavel: 'João'),
+        atividade(status: 'Concluída'),
+        atividade(data: '30/10/2026'),
+      ],
+      agora: hoje,
+    );
+    expect(notificacoes, hasLength(1));
+    expect(notificacoes.single.titulo, 'Entregar projeto');
+    expect(notificacoes.single.subtitulo, contains('hoje'));
+  });
+
+  test('somente o usuário com nome definido recebe alertas pessoais', () {
+    final notificacoes = NotificacoesService.porRole(
+      UserRole.servidorAdministrativo,
+      atividades: [atividade()],
+      agora: hoje,
+    );
+    expect(notificacoes, isEmpty);
   });
 }

@@ -81,5 +81,4 @@ void main() {
     expect(texto.style?.fontWeight, FontWeight.w600);
     expect(tester.takeException(), isNull);
   });
-
 }

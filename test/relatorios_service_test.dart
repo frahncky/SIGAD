@@ -40,26 +40,23 @@ void main() {
       expect(filtrados.first.id, '1');
     });
 
-    test('incrementa contadores de ação', () {
+    test('gera resumo compartilhável com os dados do registro', () {
       const relatorio = Relatorio(
-        id: '1',
-        titulo: 'X',
-        descricao: 'Y',
-        tipo: 'Mensal',
-        data: 'Mar/2026',
+        id: 'REL-42',
+        titulo: 'Uso dos laboratórios',
+        descricao: 'Ocupação semestral',
+        tipo: 'Infraestrutura',
+        data: '15/10/2026',
         autor: 'Coordenação',
         status: 'Publicado',
-        downloads: 2,
-        compartilhamentos: 3,
       );
 
-      final baixado = RelatoriosService.registrarDownload(relatorio);
-      final compartilhado = RelatoriosService.registrarCompartilhamento(
-        relatorio,
-      );
-
-      expect(baixado.downloads, 3);
-      expect(compartilhado.compartilhamentos, 4);
+      final texto = RelatoriosService.resumoCompartilhavel(relatorio);
+      expect(texto, contains('REL-42'));
+      expect(texto, contains('Uso dos laboratórios'));
+      expect(texto, contains('Ocupação semestral'));
+      expect(texto, contains('15/10/2026'));
+      expect(texto, isNot(contains('PDF baixado')));
     });
   });
 }
