@@ -1,5 +1,5 @@
 """Modelos persistidos; owner_subject é sempre definido pelo servidor."""
-from sqlalchemy import Boolean, CheckConstraint, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import Boolean, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .database import Base
