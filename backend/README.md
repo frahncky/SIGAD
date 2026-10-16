@@ -32,6 +32,7 @@ Python 3.12+ e PostgreSQL 17. Nunca usar dados reais sem homologação.
    ```sh
    docker compose exec -T db psql -U sigad -d sigad -v ON_ERROR_STOP=1 < migrations/001_initial.sql
    docker compose exec -T db psql -U sigad -d sigad -v ON_ERROR_STOP=1 < migrations/002_reservation_audit.sql
+   # Na homologação, provisionar roles e aplicar 003 e 004 separadamente como TI.
    ```
 
 5. Provisionar manualmente membros e laboratórios em banco de **teste**,
@@ -226,6 +227,45 @@ conta **somente leitura** em outro banco efêmero, verificando que
 revisão, agenda e auditoria são preservadas. **Isso não é backup de dados
 reais nem teste do ambiente institucional.**
 
+## Limitação compartilhada de escrita (migração 004)
+
+A migração incremental `004_write_rate_limits.sql` cria contadores de
+escrita por `sub` **autenticado** e janela fixa de 60 segundos, sincronizados
+pela hora do próprio PostgreSQL. Deve ser aplicada **após 003**, com
+`-v app_role=...` e `-v backup_role=...` nos papéis existentes, antes de
+reiniciar a API. O endpoint `/ready` bloqueia implantação sem essa tabela.
+
+```sh
+# Exemplo de parâmetros, somente com identidades criadas pela TI:
+psql -X -v ON_ERROR_STOP=1 -v app_role=PAPEL_DA_API \
+  -v backup_role=PAPEL_DE_BACKUP \
+  -f migrations/004_write_rate_limits.sql
+```
+
+- O endpoint **PUT `/laboratorios/reservas`** permite até **30 tentativas
+  por usuário a cada minuto**. A próxima recebe HTTP `429` com
+  `Retry-After: 60`. Tentativas sem alterações ou com conflito consomem
+  orçamento para dificultar abuso. As reservas só são gravadas se passarem
+  pelo controle, e a agenda permanece intacta após `429`.
+- O GET da agenda não está sujeito a esse limite; continua a exigir
+  autenticação e perfil autorizado. **Requisições anônimas**, tokens
+  inválidos, ataques volumétricos, brute force no IdP, outros endpoints
+  e tamanho do corpo HTTP ainda exigem controles **no proxy HTTPS e no IdP
+  institucional**, a cargo da TI.
+- A operação `INSERT .. ON CONFLICT DO UPDATE .. WHERE` no banco
+  contabiliza chamadas de diferentes instâncias de API **atomicamente**
+  por `sub`, sem depender de IP, relógio do celular ou de memória local.
+  Excesso é contabilizado em uma transação separada: conflitos posteriores
+  não restauram a cota. Na falta de banco, o controle não autoriza
+  silenciosamente a operação.
+- Os contadores incluem identificadores `sub` pseudonimizados e requerem
+  política LGPD. O script `ops/prune_write_rate_limits.sql` descarta
+  registros anteriores às últimas **24 horas**, e deve ser executado
+  periodicamente por **operador SQL autorizado**, preferencialmente
+  a cada hora, após aprovação da TI. A conta da API **não** pode excluir
+  os contadores. **Sem agendamento institucional, o descarte automático
+  não ocorre**. Evitar armazenar esses dados em logs de aplicação.
+
 ## Regras de concorrência
 
 A linha `sigad_reservation_revision(id=1)` é bloqueada antes de comparar
@@ -259,9 +299,9 @@ precisam ser providos pela TI antes de acesso de outros dispositivos**.
    com `sslmode=verify-full` e uma CA confiável via `sslrootcert`.
    Se a CA for privada, provisioná-la no container com volume de leitura
    e controle de acesso aprovado pela TI; não copie chaves para o Git.
-3. Aplicar `migrations/001_initial.sql`, `002_reservation_audit.sql` e
-   `003_operational_roles.sql` (nessa ordem; a última com as variáveis de
-   papéis criados pela TI), com backup anterior. O Compose **não executa
+3. Aplicar `migrations/001_initial.sql`, `002_reservation_audit.sql`,
+   `003_operational_roles.sql` e `004_write_rate_limits.sql` (nessa ordem;
+   as duas últimas exigem as variáveis de papéis criados pela TI), com backup anterior. O Compose **não executa
    migrações automaticamente**.
 4. No host de homologação autorizado, usar:
 
@@ -308,8 +348,9 @@ com um PostgreSQL efêmero.
 - Confirmação oficial das permissões propostas e provisionamento de membros.
 - Cadastro verificado dos laboratórios, manutenção e políticas de reserva.
 - Implantar as contas com privilégios mínimos e praticar backup/restauração
-  de verdade na infraestrutura autorizada; rate limiting, observabilidade,
-  retenção e revisão LGPD ainda dependem da TI.
+  de verdade na infraestrutura autorizada; aplicar a migração 004 e agendar
+  limpeza dos contadores; controles de borda, observabilidade, retenção e
+  revisão LGPD ainda dependem da TI.
 - Testes de homologação entre aparelhos em infraestrutura institucional.
 
 Não afirmar que reservas entre dispositivos estejam ativas até implantação,

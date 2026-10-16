@@ -47,7 +47,8 @@ No ambiente autorizado:
 
 1. Aplicar as migrações `backend/migrations/001_initial.sql` **e**
    `backend/migrations/002_reservation_audit.sql` e
-   `backend/migrations/003_operational_roles.sql`, em ordem, sob procedimento
+   `backend/migrations/003_operational_roles.sql` e
+   `backend/migrations/004_write_rate_limits.sql`, em ordem, sob procedimento
    institucional controlado e backup.
 2. Fornecer `SIGAD_DATABASE_URL`, `SIGAD_OIDC_ISSUER`,
    `SIGAD_OIDC_AUDIENCE` e `SIGAD_OIDC_JWKS_URL` por gerenciador de
@@ -56,7 +57,7 @@ No ambiente autorizado:
    `sigad_members` e `sigad_laboratories`.
 4. Publicar a API **atrás de HTTPS** e monitorar `/ready` para retirar a
    instância do balanceador quando a configuração local ou banco falhar.
-5. Configurar backup/restauração, auditoria, limitação de requisições,
+5. Configurar backup/restauração, auditoria, limitação na borda/IdP,
    retenção de dados e observabilidade sem conteúdo sensível.
    A auditoria de reservas é somente inclusão pela API; os direitos SQL
    da conta operacional e a retenção precisam ser validados pela TI.
@@ -156,3 +157,22 @@ isolado, validando também a trilha de auditoria e documentando RPO/RTO,
 retenção, chaves, custódia e revogação de acesso. O CI usa somente registros
 fictícios para comprovar os privilégios SQL e o fluxo lógico de recuperação.
 **Nenhum backup ou restauração no IFMA foi realizado.**
+
+## 8. Proteção de tentativas de reserva
+
+A API aplica limite de **30 tentativas de PUT por usuário autenticado em
+janelas de 60 segundos**, usando o PostgreSQL compartilhado. O excesso
+recebe **429 e Retry-After**; o GET permanece disponível para usuários
+com permissão. Os testes devem confirmar que instâncias simultâneas não
+excedem o limite e que rejeições não alteram a agenda nem a auditoria.
+
+A migração `004_write_rate_limits.sql` deve seguir a 003, com papéis SQL
+aprovados. O banco guarda `sub` pseudonimizado e bucket do minuto: a TI
+deve aprovar a retenção de 24h e programar a limpeza regular usando
+`backend/ops/prune_write_rate_limits.sql`. Não há limpeza automática
+sem o agendamento pelo operador.
+
+**Não protege endpoints públicos, tentativas no IdP nem tráfego volumétrico**;
+rate limiting adicional por conexão/IP, limite de corpo, TLS e observabilidade
+são responsabilidade do gateway institucional. Nenhuma implantação real foi
+realizada no IFMA.
