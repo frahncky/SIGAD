@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 
+import '../network/api_config.dart';
+
 /// Parâmetros públicos do cliente OIDC, provisionados pela TI institucional.
 ///
 /// Nenhuma configuração aqui é uma credencial. A URL de retorno precisa
@@ -79,9 +81,20 @@ class AppAuthInstitutionalSignInService implements InstitutionalSignInService {
   final OidcClientConfig config;
   final FlutterAppAuth _appAuth;
 
+  bool get _backendConfigured {
+    final base = Uri.tryParse(ApiConfig.baseUrl);
+    return base != null &&
+        base.scheme == 'https' &&
+        base.host.isNotEmpty &&
+        base.userInfo.isEmpty &&
+        !base.host.endsWith('.local') &&
+        base.host != 'localhost';
+  }
+
   @override
   bool get isReady =>
       config.isConfigured &&
+      _backendConfigured &&
       !kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.android ||
           defaultTargetPlatform == TargetPlatform.iOS);
