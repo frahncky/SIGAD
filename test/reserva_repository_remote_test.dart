@@ -115,6 +115,29 @@ void main() {
     expect(calls, 2);
   });
 
+  test('429 informa limite de tentativas e não repete PUT automaticamente', () async {
+    var gravacoes = 0;
+    final repo = buildRepo(
+      MockClient((req) async {
+        if (req.method == 'GET') {
+          return http.Response(jsonEncode({'revision': 'v1', 'items': []}), 200);
+        }
+        gravacoes++;
+        return http.Response(
+          jsonEncode({'detail': 'Too many requests'}),
+          429,
+          headers: {'retry-after': '60'},
+        );
+      }),
+    );
+    await repo.loadReservas();
+    await expectLater(
+      repo.saveReservas([_reserva]),
+      throwsA(isA<ReservaLimiteException>()),
+    );
+    expect(gravacoes, 1);
+  });
+
   test('falha do servidor não é tratada como sucesso local', () async {
     final repo = buildRepo(
       MockClient(
