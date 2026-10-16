@@ -46,27 +46,26 @@ class ReservaRepository {
     if (isShared) {
       _ensureTrustedRemote();
       final response = await _remoteClient.send(
-        ApiRequest(
-          path: '/laboratorios/reservas',
-          headers: _authHeaders(),
-        ),
+        ApiRequest(path: '/laboratorios/reservas', headers: _authHeaders()),
       );
       final body = _requiredMap(response.body);
       final revision = body['revision'];
       final items = body['items'];
-      if (revision is! String ||
-          revision.trim().isEmpty ||
-          items is! List) {
-        throw const FormatException('Resposta inválida da agenda institucional.');
+      if (revision is! String || revision.trim().isEmpty || items is! List) {
+        throw const FormatException(
+          'Resposta inválida da agenda institucional.',
+        );
       }
       // Parse completo antes de atualizar a revisão. Não aceitar agenda
       // parcialmente decodificada e arriscar apagar dados de outros usuários.
-      final reservas = items.map((item) {
-        if (item is! Map || !item.containsKey('ano')) {
-          throw const FormatException('Reserva remota inválida.');
-        }
-        return _reservaFromJson(Map<String, dynamic>.from(item));
-      }).toList(growable: false);
+      final reservas = items
+          .map((item) {
+            if (item is! Map || !item.containsKey('ano')) {
+              throw const FormatException('Reserva remota inválida.');
+            }
+            return _reservaFromJson(Map<String, dynamic>.from(item));
+          })
+          .toList(growable: false);
       _revision = revision;
       return reservas;
     }
@@ -136,7 +135,8 @@ class ReservaRepository {
   void _assertUniqueSlots(List<ReservaLaboratorio> reservas) {
     final occupied = <String>{};
     for (final r in reservas) {
-      final slot = '${r.laboratorio}| ${r.ano}|${r.mes}|${r.semanaDoMes}|'
+      final slot =
+          '${r.laboratorio}| ${r.ano}|${r.mes}|${r.semanaDoMes}|'
           '${r.diaSemana}|${r.turno.name}|${r.periodo}';
       if (!occupied.add(slot)) {
         throw const ReservaConflitoException();
@@ -146,7 +146,9 @@ class ReservaRepository {
 
   void _ensureTrustedRemote() {
     final uri = Uri.tryParse(_apiBaseUrl);
-    if (uri == null || uri.scheme != 'https' || uri.host.isEmpty ||
+    if (uri == null ||
+        uri.scheme != 'https' ||
+        uri.host.isEmpty ||
         uri.host.endsWith('.local')) {
       throw StateError('Configure uma API institucional HTTPS válida.');
     }
@@ -155,7 +157,9 @@ class ReservaRepository {
   Map<String, String> _authHeaders() {
     final token = _tokenProvider?.call()?.trim();
     if (token == null || token.isEmpty) {
-      throw StateError('Entre com sua conta institucional para acessar reservas.');
+      throw StateError(
+        'Entre com sua conta institucional para acessar reservas.',
+      );
     }
     return {'Authorization': 'Bearer $token'};
   }

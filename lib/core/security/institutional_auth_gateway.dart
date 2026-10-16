@@ -10,10 +10,7 @@ import '../network/http_package_client.dart';
 /// Identidade validada pelo backend institucional (não pelo perfil escolhido
 /// no cliente). O token de acesso deve vir de um fluxo OIDC/PKCE autorizado.
 class InstitutionalIdentity {
-  const InstitutionalIdentity({
-    required this.user,
-    required this.expiresAt,
-  });
+  const InstitutionalIdentity({required this.user, required this.expiresAt});
 
   final User user;
   final DateTime expiresAt;
@@ -33,7 +30,9 @@ class InstitutionalAuthGateway {
 
   Future<InstitutionalIdentity> verifyAccessToken(String accessToken) async {
     final uri = Uri.tryParse(baseUrl);
-    if (uri == null || uri.scheme != 'https' || uri.host.isEmpty ||
+    if (uri == null ||
+        uri.scheme != 'https' ||
+        uri.host.isEmpty ||
         uri.host.endsWith('.local')) {
       throw StateError('API institucional HTTPS não configurada.');
     }
@@ -57,10 +56,14 @@ class InstitutionalAuthGateway {
     final email = claims['email'];
     final roleRaw = claims['role'];
     final expiresAtRaw = claims['expiresAt'];
-    if (id is! String || id.trim().isEmpty ||
-        name is! String || name.trim().isEmpty ||
-        email is! String || email.trim().isEmpty ||
-        roleRaw is! String || expiresAtRaw is! String) {
+    if (id is! String ||
+        id.trim().isEmpty ||
+        name is! String ||
+        name.trim().isEmpty ||
+        email is! String ||
+        email.trim().isEmpty ||
+        roleRaw is! String ||
+        expiresAtRaw is! String) {
       throw const FormatException('Identidade institucional incompleta.');
     }
     final expiresAt = DateTime.tryParse(expiresAtRaw)?.toUtc();

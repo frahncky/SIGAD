@@ -23,17 +23,28 @@ const _reserva = ReservaLaboratorio(
 );
 
 Map<String, dynamic> get _json => {
-  'id': 'R1', 'professor': 'Ana', 'laboratorio': 'Laboratório 8',
-  'ano': 2026, 'mes': 10, 'semanaDoMes': 3, 'diaSemana': 'Qui',
-  'turno': 'matutino', 'periodo': 1, 'grupoId': 'R1',
+  'id': 'R1',
+  'professor': 'Ana',
+  'laboratorio': 'Laboratório 8',
+  'ano': 2026,
+  'mes': 10,
+  'semanaDoMes': 3,
+  'diaSemana': 'Qui',
+  'turno': 'matutino',
+  'periodo': 1,
+  'grupoId': 'R1',
 };
 
-ReservaRepository buildRepo(MockClient client, {String? Function()? tokenProvider}) {
+ReservaRepository buildRepo(
+  MockClient client, {
+  String? Function()? tokenProvider,
+}) {
   return ReservaRepository(
     dataSourceMode: DataSourceMode.remote,
     apiBaseUrl: 'https://sigad.ifma.edu.br',
     remoteClient: HttpPackageClient(
-      httpClient: client, baseUrl: 'https://sigad.ifma.edu.br',
+      httpClient: client,
+      baseUrl: 'https://sigad.ifma.edu.br',
     ),
     tokenProvider: tokenProvider ?? () => 'token-validado-pelo-servidor',
   );
@@ -48,9 +59,18 @@ void main() {
     final client = MockClient((req) async {
       calls++;
       expect(req.url.path, '/laboratorios/reservas');
-      expect(req.headers['authorization'], 'Bearer token-validado-pelo-servidor');
+      expect(
+        req.headers['authorization'],
+        'Bearer token-validado-pelo-servidor',
+      );
       if (req.method == 'GET') {
-        return http.Response(jsonEncode({'revision': 'v1', 'items': [_json]}), 200);
+        return http.Response(
+          jsonEncode({
+            'revision': 'v1',
+            'items': [_json],
+          }),
+          200,
+        );
       }
       expect(req.method, 'PUT');
       final body = jsonDecode(req.body) as Map<String, dynamic>;
@@ -74,42 +94,63 @@ void main() {
 
   test('409 exige recarga e não escreve cache local', () async {
     var calls = 0;
-    final repo = buildRepo(MockClient((req) async {
-      calls++;
-      if (req.method == 'GET') {
-        return http.Response(jsonEncode({'revision':'v1','items':[]}),200);
-      }
-      return http.Response(jsonEncode({'error':'conflict'}),409);
-    }));
+    final repo = buildRepo(
+      MockClient((req) async {
+        calls++;
+        if (req.method == 'GET') {
+          return http.Response(
+            jsonEncode({'revision': 'v1', 'items': []}),
+            200,
+          );
+        }
+        return http.Response(jsonEncode({'error': 'conflict'}), 409);
+      }),
+    );
     await repo.loadReservas();
     await expectLater(
-      repo.saveReservas([_reserva]), throwsA(isA<ReservaConflitoException>()),
+      repo.saveReservas([_reserva]),
+      throwsA(isA<ReservaConflitoException>()),
     );
     await expectLater(repo.saveReservas([_reserva]), throwsStateError);
     expect(calls, 2);
   });
 
   test('falha do servidor não é tratada como sucesso local', () async {
-    final repo = buildRepo(MockClient((req) async => http.Response(
-      req.method == 'GET' ? jsonEncode({'revision':'v1','items':[]}) : '{}',
-      req.method == 'GET' ? 200 : 503,
-    )));
+    final repo = buildRepo(
+      MockClient(
+        (req) async => http.Response(
+          req.method == 'GET'
+              ? jsonEncode({'revision': 'v1', 'items': []})
+              : '{}',
+          req.method == 'GET' ? 200 : 503,
+        ),
+      ),
+    );
     await repo.loadReservas();
     await expectLater(repo.saveReservas([_reserva]), throwsA(isA<ApiError>()));
   });
 
-  test('bloqueia token ausente, API placeholder e respostas incompletas', () async {
-    final client = MockClient((_) async => http.Response('{}', 200));
-    await expectLater(buildRepo(client, tokenProvider: () => null).loadReservas(),
-      throwsStateError);
-    final insecure = ReservaRepository(
-      dataSourceMode: DataSourceMode.remote,
-      remoteClient: HttpPackageClient(
-        httpClient: client, baseUrl: 'https://api.sigad.local',
-      ),
-      tokenProvider: () => 'token',
-    );
-    await expectLater(insecure.loadReservas(), throwsStateError);
-    await expectLater(buildRepo(client).loadReservas(), throwsFormatException);
-  });
+  test(
+    'bloqueia token ausente, API placeholder e respostas incompletas',
+    () async {
+      final client = MockClient((_) async => http.Response('{}', 200));
+      await expectLater(
+        buildRepo(client, tokenProvider: () => null).loadReservas(),
+        throwsStateError,
+      );
+      final insecure = ReservaRepository(
+        dataSourceMode: DataSourceMode.remote,
+        remoteClient: HttpPackageClient(
+          httpClient: client,
+          baseUrl: 'https://api.sigad.local',
+        ),
+        tokenProvider: () => 'token',
+      );
+      await expectLater(insecure.loadReservas(), throwsStateError);
+      await expectLater(
+        buildRepo(client).loadReservas(),
+        throwsFormatException,
+      );
+    },
+  );
 }

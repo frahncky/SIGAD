@@ -153,75 +153,77 @@ class _LoginPageState extends State<LoginPage> {
             ),
           )
         else ...[
-        AutofillGroup(
-          child: Column(
-            children: [
-              TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
-                autofillHints: const [
-                  AutofillHints.username,
-                  AutofillHints.email,
-                ],
-                autocorrect: false,
-                decoration: InputDecoration(
-                  labelText: context.l10n.emailInstitucional,
-                  hintText: 'nome@exemplo.edu.br',
-                  prefixIcon: const SigadIcon(SigadIcons.arroba),
+          AutofillGroup(
+            child: Column(
+              children: [
+                TextField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  autofillHints: const [
+                    AutofillHints.username,
+                    AutofillHints.email,
+                  ],
+                  autocorrect: false,
+                  decoration: InputDecoration(
+                    labelText: context.l10n.emailInstitucional,
+                    hintText: 'nome@exemplo.edu.br',
+                    prefixIcon: const SigadIcon(SigadIcons.arroba),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _passwordController,
-                obscureText: _obscurePassword,
-                textInputAction: TextInputAction.done,
-                autofillHints: const [AutofillHints.password],
-                onSubmitted: (_) {
-                  if (!_isLoading) _handleLogin();
-                },
-                decoration: InputDecoration(
-                  labelText: context.l10n.senha,
-                  prefixIcon: const SigadIcon(SigadIcons.cadeado),
-                  suffixIcon: IconButton(
-                    tooltip: _obscurePassword
-                        ? context.l10n.mostrarSenha
-                        : context.l10n.ocultarSenha,
-                    onPressed: () =>
-                        setState(() => _obscurePassword = !_obscurePassword),
-                    icon: SigadIcon(
-                      _obscurePassword ? SigadIcons.visivel : SigadIcons.oculto,
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
+                  textInputAction: TextInputAction.done,
+                  autofillHints: const [AutofillHints.password],
+                  onSubmitted: (_) {
+                    if (!_isLoading) _handleLogin();
+                  },
+                  decoration: InputDecoration(
+                    labelText: context.l10n.senha,
+                    prefixIcon: const SigadIcon(SigadIcons.cadeado),
+                    suffixIcon: IconButton(
+                      tooltip: _obscurePassword
+                          ? context.l10n.mostrarSenha
+                          : context.l10n.ocultarSenha,
+                      onPressed: () =>
+                          setState(() => _obscurePassword = !_obscurePassword),
+                      icon: SigadIcon(
+                        _obscurePassword
+                            ? SigadIcons.visivel
+                            : SigadIcons.oculto,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
-        Align(
-          alignment: Alignment.centerRight,
-          child: TextButton(
-            onPressed: () => AppFeedbackService.info(
-              context,
-              context.l10n.recuperacaoSenhaAviso,
+              ],
             ),
-            child: Text(context.l10n.esqueciSenha),
           ),
-        ),
-        SizedBox(
-          width: double.infinity,
-          child: FilledButton.icon(
-            onPressed: _isLoading ? null : _handleLogin,
-            icon: _isLoading
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const SigadIcon(SigadIcons.entrar),
-            label: Text(context.l10n.entrar),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: () => AppFeedbackService.info(
+                context,
+                context.l10n.recuperacaoSenhaAviso,
+              ),
+              child: Text(context.l10n.esqueciSenha),
+            ),
           ),
-        ),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: _isLoading ? null : _handleLogin,
+              icon: _isLoading
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const SigadIcon(SigadIcons.entrar),
+              label: Text(context.l10n.entrar),
+            ),
+          ),
         ],
         if (AppRuntimeConfig.allowLocalDemo) ...[
           const SizedBox(height: 8),

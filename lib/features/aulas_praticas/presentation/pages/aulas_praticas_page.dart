@@ -128,11 +128,17 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
       );
       return false;
     } catch (error, stackTrace) {
-      AppEventLogger.error('reservas_save_error', error, stackTrace: stackTrace);
-      _showError(_reservaRepository.isShared
-          ? 'Não foi possível confirmar no servidor. Nenhuma reserva foi '
-            'confirmada; verifique sua conexão ou acesso institucional.'
-          : _l10n.erroSalvar);
+      AppEventLogger.error(
+        'reservas_save_error',
+        error,
+        stackTrace: stackTrace,
+      );
+      _showError(
+        _reservaRepository.isShared
+            ? 'Não foi possível confirmar no servidor. Nenhuma reserva foi '
+                  'confirmada; verifique sua conexão ou acesso institucional.'
+            : _l10n.erroSalvar,
+      );
       return false;
     }
   }

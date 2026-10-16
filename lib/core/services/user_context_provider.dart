@@ -15,7 +15,8 @@ class UserContextProvider extends ChangeNotifier {
     DataSourceMode? dataSourceMode,
     DateTime Function()? now,
   }) : _sessionRepository = sessionRepository ?? AuthSessionRepository(),
-       _institutionalGateway = institutionalGateway ?? InstitutionalAuthGateway(),
+       _institutionalGateway =
+           institutionalGateway ?? InstitutionalAuthGateway(),
        _dataSourceMode = dataSourceMode ?? AppRuntimeConfig.dataSourceMode,
        _now = now ?? DateTime.now;
 
@@ -32,10 +33,10 @@ class UserContextProvider extends ChangeNotifier {
 
   User? get currentUser => isAuthenticated ? _currentUser : null;
   UserRole? get userRole => currentUser?.role;
+
   /// Apenas sessões verificadas pelo backend oferecem token para chamadas API.
-  String? get sessionToken => isAuthenticated && _institutionalSession
-      ? _sessionToken
-      : null;
+  String? get sessionToken =>
+      isAuthenticated && _institutionalSession ? _sessionToken : null;
   DateTime? get sessionExpiresAt => _sessionExpiresAt;
   bool get isSessionRestored => _sessionRestored;
   bool get requiresReauthentication =>
@@ -45,9 +46,9 @@ class UserContextProvider extends ChangeNotifier {
       _currentUser != null &&
       !requiresReauthentication &&
       ((_institutionalSession && _dataSourceMode == DataSourceMode.remote) ||
-       (!_institutionalSession &&
-           _dataSourceMode == DataSourceMode.local &&
-           AppRuntimeConfig.allowLocalDemo));
+          (!_institutionalSession &&
+              _dataSourceMode == DataSourceMode.local &&
+              AppRuntimeConfig.allowLocalDemo));
 
   /// Abre somente a demonstração local. Não autentica credenciais remotas.
   Future<void> login(User user, {String? sessionToken}) async {
@@ -163,7 +164,9 @@ class UserContextProvider extends ChangeNotifier {
       if (!isAuthenticated || _sessionToken == null) {
         throw StateError('É necessário entrar novamente.');
       }
-      final identity = await _institutionalGateway.verifyAccessToken(_sessionToken!);
+      final identity = await _institutionalGateway.verifyAccessToken(
+        _sessionToken!,
+      );
       _currentUser = identity.user;
       _sessionExpiresAt = identity.expiresAt;
       _scheduleExpiry();
