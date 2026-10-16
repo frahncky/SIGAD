@@ -21,7 +21,8 @@ void main() {
             child: SingleChildScrollView(
               child: ReservaSyncNotice(
                 title: 'Agenda desatualizada',
-                message: 'Outra pessoa modificou os horários. Confira antes de salvar.',
+                message:
+                    'Outra pessoa modificou os horários. Confira antes de salvar.',
                 actionLabel: 'Atualizar agenda',
                 onRefresh: () => atualizacoes++,
               ),

@@ -121,17 +121,25 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   String _detalheAviso(_AvisoReserva aviso) {
     if (_emIngles) {
       return switch (aviso) {
-        _AvisoReserva.conflito => 'Another user changed the schedule. Review the current slots before saving again.',
-        _AvisoReserva.limite => 'Wait about one minute before saving again. Your changes were not confirmed.',
-        _AvisoReserva.conexao => 'The server did not confirm your changes. Check the connection and refresh the schedule.',
-        _AvisoReserva.acesso => 'Your session may have expired. Sign in again before changing reservations.',
+        _AvisoReserva.conflito =>
+          'Another user changed the schedule. Review the current slots before saving again.',
+        _AvisoReserva.limite =>
+          'Wait about one minute before saving again. Your changes were not confirmed.',
+        _AvisoReserva.conexao =>
+          'The server did not confirm your changes. Check the connection and refresh the schedule.',
+        _AvisoReserva.acesso =>
+          'Your session may have expired. Sign in again before changing reservations.',
       };
     }
     return switch (aviso) {
-      _AvisoReserva.conflito => 'Outro usuário modificou os horários. Revise a agenda antes de salvar novamente.',
-      _AvisoReserva.limite => 'Aguarde cerca de um minuto antes de salvar novamente. A alteração não foi confirmada.',
-      _AvisoReserva.conexao => 'O servidor não confirmou a operação. Verifique a conexão e atualize a agenda.',
-      _AvisoReserva.acesso => 'Sua sessão pode ter expirado. Entre novamente antes de alterar reservas.',
+      _AvisoReserva.conflito =>
+        'Outro usuário modificou os horários. Revise a agenda antes de salvar novamente.',
+      _AvisoReserva.limite =>
+        'Aguarde cerca de um minuto antes de salvar novamente. A alteração não foi confirmada.',
+      _AvisoReserva.conexao =>
+        'O servidor não confirmou a operação. Verifique a conexão e atualize a agenda.',
+      _AvisoReserva.acesso =>
+        'Sua sessão pode ter expirado. Entre novamente antes de alterar reservas.',
     };
   }
 
@@ -1853,8 +1861,10 @@ class _CelulaHorario extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final partes = horario.split('-');
-    final style = Theme.of(context).textTheme.labelMedium
-        ?.copyWith(color: SigadColors.ink, fontWeight: FontWeight.w700);
+    final style = Theme.of(context).textTheme.labelMedium?.copyWith(
+      color: SigadColors.ink,
+      fontWeight: FontWeight.w700,
+    );
     return Container(
       alignment: Alignment.center,
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
@@ -2264,15 +2274,17 @@ class _AccessDenied extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               context.l10n.labAcessoRestrito,
-              style: Theme.of(context).textTheme.headlineSmall
-                  ?.copyWith(fontWeight: FontWeight.w700),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 8),
             Text(
               context.l10n.labAcessoRestritoMsg,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium
-                  ?.copyWith(color: SigadColors.muted),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: SigadColors.muted),
             ),
           ],
         ),
@@ -2568,8 +2580,9 @@ class _AvisoSituacao extends StatelessWidget {
             Expanded(
               child: Text(
                 texto,
-                style: Theme.of(context).textTheme.bodyMedium
-                    ?.copyWith(color: SigadColors.ink),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: SigadColors.ink),
               ),
             ),
           ],
