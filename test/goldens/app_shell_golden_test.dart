@@ -107,6 +107,7 @@ void main() {
         ],
         child: HomeShellPage(
           currentRoute: AppRoutes.dashboard,
+          greetingNow: DateTime(2026, 1, 1, 21),
           child: DashboardPage(agora: DateTime(2026, 1, 1, 9)),
         ),
       ),

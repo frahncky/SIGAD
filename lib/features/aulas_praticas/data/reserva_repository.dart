@@ -17,6 +17,16 @@ class ReservaConflitoException implements Exception {
   String toString() => 'A agenda foi alterada por outro usuário.';
 }
 
+/// API 429: o servidor recebeu requisições demais; não repetir PUT
+/// automaticamente porque outra falha anterior pode ter sido persistida.
+class ReservaLimiteException implements Exception {
+  const ReservaLimiteException();
+
+  @override
+  String toString() =>
+      'Muitas tentativas. Aguarde um minuto para salvar novamente.';
+}
+
 class ReservaRepository {
   ReservaRepository({
     this.storageKey = 'sigad_reservas',
@@ -121,6 +131,9 @@ class ReservaRepository {
         if (error.statusCode == 409 || error.statusCode == 412) {
           _revision = null;
           throw const ReservaConflitoException();
+        }
+        if (error.statusCode == 429) {
+          throw const ReservaLimiteException();
         }
         rethrow; // Sem fallback local ao salvar uma agenda compartilhada.
       }

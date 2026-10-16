@@ -14,15 +14,18 @@ import '../../domain/reserva_models.dart';
 import '../../domain/reserva_service.dart';
 import '../../../carga_docente/data/docente_repository.dart';
 import '../../../carga_docente/domain/docente_models.dart';
+import '../../../../core/network/api_error.dart';
 import '../../../../core/security/authorization_policy.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../../../../shared/widgets/horizontal_scroll_hint.dart';
 import '../../../../shared/widgets/icon_avatar.dart';
+import '../../../../shared/widgets/page_status_view.dart';
 import '../../../../l10n/l10n.dart';
 import '../laboratorio_l10n.dart';
 import '../widgets/dialog_disciplina_semanas_reserva.dart';
+import '../widgets/reserva_sync_notice.dart';
 import 'laboratorios_catalogo_page.dart';
 
 class _ResultadoReserva {
@@ -33,6 +36,8 @@ class _ResultadoReserva {
 }
 
 enum _AcaoReserva { editar, excluir }
+
+enum _AvisoReserva { conflito, limite, conexao, acesso }
 
 String _horarioLegivel(String horario) => horario.replaceAll('-', '–');
 
@@ -63,6 +68,10 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   List<Laboratorio> _catalogo = const [];
 
   bool _carregando = true;
+  bool _atualizando = false;
+  bool _salvando = false;
+  bool _agendaCarregada = false;
+  _AvisoReserva? _avisoReserva;
   String? _laboratorioSelecionado;
   late DateTime _segunda;
 
@@ -87,7 +96,57 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     _loadData();
   }
 
-  Future<void> _loadData() async {
+  bool get _emIngles => _l10n.localeName.startsWith('en');
+
+  String get _atualizarAgendaLabel =>
+      _emIngles ? 'Refresh agenda' : 'Atualizar agenda';
+
+  String _tituloAviso(_AvisoReserva aviso) {
+    if (_emIngles) {
+      return switch (aviso) {
+        _AvisoReserva.conflito => 'The schedule has changed',
+        _AvisoReserva.limite => 'Too many save attempts',
+        _AvisoReserva.conexao => 'Schedule unavailable',
+        _AvisoReserva.acesso => 'Institutional access required',
+      };
+    }
+    return switch (aviso) {
+      _AvisoReserva.conflito => 'A agenda foi alterada',
+      _AvisoReserva.limite => 'Muitas tentativas de gravação',
+      _AvisoReserva.conexao => 'Não foi possível conectar',
+      _AvisoReserva.acesso => 'Acesso institucional necessário',
+    };
+  }
+
+  String _detalheAviso(_AvisoReserva aviso) {
+    if (_emIngles) {
+      return switch (aviso) {
+        _AvisoReserva.conflito =>
+          'Another user changed the schedule. Review the current slots before saving again.',
+        _AvisoReserva.limite =>
+          'Wait about one minute before saving again. Your changes were not confirmed.',
+        _AvisoReserva.conexao =>
+          'The server did not confirm your changes. Check the connection and refresh the schedule.',
+        _AvisoReserva.acesso =>
+          'Your session may have expired. Sign in again before changing reservations.',
+      };
+    }
+    return switch (aviso) {
+      _AvisoReserva.conflito =>
+        'Outro usuário modificou os horários. Revise a agenda antes de salvar novamente.',
+      _AvisoReserva.limite =>
+        'Aguarde cerca de um minuto antes de salvar novamente. A alteração não foi confirmada.',
+      _AvisoReserva.conexao =>
+        'O servidor não confirmou a operação. Verifique a conexão e atualize a agenda.',
+      _AvisoReserva.acesso =>
+        'Sua sessão pode ter expirado. Entre novamente antes de alterar reservas.',
+    };
+  }
+
+  Future<void> _loadData({bool preservarAviso = false}) async {
+    if (_atualizando) return;
+    _atualizando = true;
+    if (mounted) setState(() => _carregando = true);
     try {
       final catalogoFuture = _laboratorioRepository.load();
       final list = await _reservaRepository.loadReservas();
@@ -104,6 +163,8 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         _docentes
           ..clear()
           ..addAll(docentes);
+        _agendaCarregada = true;
+        if (!preservarAviso) _avisoReserva = null;
       });
     } catch (error, stackTrace) {
       AppEventLogger.error(
@@ -111,8 +172,14 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         error,
         stackTrace: stackTrace,
       );
-      _showError(_l10n.labErroCarregar);
+      if (mounted) {
+        setState(() {
+          _agendaCarregada = false;
+          _avisoReserva = _AvisoReserva.conexao;
+        });
+      }
     } finally {
+      _atualizando = false;
       if (mounted) setState(() => _carregando = false);
     }
   }
@@ -120,12 +187,13 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   Future<bool> _saveData() async {
     try {
       await _reservaRepository.saveReservas(_reservas);
+      if (mounted) setState(() => _avisoReserva = null);
       return true;
     } on ReservaConflitoException {
-      _showError(
-        'Outro usuário alterou a agenda. Os horários serão recarregados; '
-        'revise a disponibilidade antes de tentar novamente.',
-      );
+      if (mounted) setState(() => _avisoReserva = _AvisoReserva.conflito);
+      return false;
+    } on ReservaLimiteException {
+      if (mounted) setState(() => _avisoReserva = _AvisoReserva.limite);
       return false;
     } catch (error, stackTrace) {
       AppEventLogger.error(
@@ -133,48 +201,43 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
         error,
         stackTrace: stackTrace,
       );
-      _showError(
-        _reservaRepository.isShared
-            ? 'Não foi possível confirmar no servidor. Nenhuma reserva foi '
-                  'confirmada; verifique sua conexão ou acesso institucional.'
-            : _l10n.erroSalvar,
-      );
+      if (_reservaRepository.isShared) {
+        final aviso =
+            error is ApiError &&
+                (error.statusCode == 401 || error.statusCode == 403)
+            ? _AvisoReserva.acesso
+            : _AvisoReserva.conexao;
+        if (mounted) setState(() => _avisoReserva = aviso);
+      } else {
+        _showError(_l10n.erroSalvar);
+      }
       return false;
     }
   }
 
-  /// Grava e, se falhar, volta as reservas para [antes].
+  /// Reverte a edição provisória e consulta o servidor antes de liberar
+  /// novas edições. Nunca reenvia automaticamente um PUT de resultado incerto.
   Future<bool> _salvarOuDesfazer(List<ReservaLaboratorio> antes) async {
-    final salvo = await _saveData();
-    if (!mounted) return false;
-    if (!salvo) {
-      setState(() {
-        _reservas
-          ..clear()
-          ..addAll(antes);
-      });
-      // Em modo compartilhado uma falha pode significar revisão obsoleta.
-      // Recarregar o estado oficial antes de qualquer nova edição.
-      if (_reservaRepository.isShared) {
-        try {
-          final atuais = await _reservaRepository.loadReservas();
-          if (mounted) {
-            setState(() {
-              _reservas
-                ..clear()
-                ..addAll(atuais);
-            });
-          }
-        } catch (error, stackTrace) {
-          AppEventLogger.error(
-            'reservas_reload_error',
-            error,
-            stackTrace: stackTrace,
-          );
+    if (_salvando) return false;
+    setState(() => _salvando = true);
+    try {
+      final salvo = await _saveData();
+      if (!mounted) return false;
+      if (!salvo) {
+        setState(() {
+          _reservas
+            ..clear()
+            ..addAll(antes);
+          if (_reservaRepository.isShared) _agendaCarregada = false;
+        });
+        if (_reservaRepository.isShared) {
+          await _loadData(preservarAviso: true);
         }
       }
+      return salvo;
+    } finally {
+      if (mounted) setState(() => _salvando = false);
     }
-    return salvo;
   }
 
   List<DateTime> get _diasDaSemana => [
@@ -427,79 +490,121 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _FiltroLabRow(
-                        key: ValueKey(
-                          '${_laboratorios.join('|')}#$_laboratorioSelecionadoValido',
-                        ),
-                        laboratorioSelecionado: _laboratorioSelecionadoValido,
-                        laboratorios: _laboratorios,
-                        onChanged: (value) =>
-                            setState(() => _laboratorioSelecionado = value),
-                      ),
-                      if (_laboratorioAtual case final laboratorio?
-                          when laboratorio.status != StatusLaboratorio.operando)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 12),
-                          child: _AvisoSituacao(laboratorio: laboratorio),
-                        ),
-                      const SizedBox(height: 12),
-                      _SemanaNavegador(
-                        segunda: _segunda,
-                        onAnterior: () => _mudarSemana(-1),
-                        onProxima: () => _mudarSemana(1),
-                        onHoje: _irParaHoje,
-                        onEscolherData: _escolherData,
-                      ),
-                      const SizedBox(height: 16),
-                      if (_carregando)
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 48),
-                          child: Center(child: CircularProgressIndicator()),
+                      if (!_agendaCarregada && _carregando)
+                        PageStatusView.loading(
+                          title: _emIngles
+                              ? 'Loading institutional schedule...'
+                              : 'Carregando agenda institucional...',
                         )
-                      else
-                        _AgendaSemanal(
-                          dias: _diasDaSemana,
-                          laboratorio: _laboratorioSelecionadoValido,
-                          reservas: _reservas,
-                          usuarioAtual: userContext.currentUser?.name,
-                          podeEditar: podeEditar,
-                          onTapCelula: (data, turno, periodo, reservaAtual) =>
-                              _onTapCelula(
-                                data: data,
-                                turno: turno,
-                                periodo: periodo,
-                                reservaAtual: reservaAtual,
-                              ),
-                        ),
-                      if (podeVerOtimizacao && !_carregando) ...[
-                        const SizedBox(height: 20),
-                        Card(
-                          margin: EdgeInsets.zero,
-                          clipBehavior: Clip.antiAlias,
-                          child: ExpansionTile(
-                            leading: const SigadIcon(SigadIcons.analise),
-                            title: Text(_l10n.labSugestoes),
-                            subtitle: Text(_l10n.labSugestoesSub),
-                            childrenPadding: const EdgeInsets.fromLTRB(
-                              12,
-                              0,
-                              12,
-                              12,
-                            ),
-                            children: [
-                              _PainelOtimizacaoLaboratorio(
-                                indicadores: _indicadoresOcupacao,
-                                sugestoes: _sugestoesReserva,
-                                recomendacoesCruzadas: _recomendacoesCruzadas,
-                                laboratorioSelecionado:
-                                    _laboratorioSelecionadoValido,
-                                onAplicarSugestao: podeEditar
-                                    ? _reservarSugestaoAutomatica
-                                    : null,
-                              ),
-                            ],
+                      else if (!_agendaCarregada)
+                        PageStatusView.error(
+                          title: _l10n.labErroCarregar,
+                          subtitle: _emIngles
+                              ? 'The schedule was not loaded. No availability can be confirmed.'
+                              : 'A agenda não foi carregada. Não é possível confirmar horários livres.',
+                          actionLabel: _atualizarAgendaLabel,
+                          onAction: () => _loadData(),
+                        )
+                      else ...[
+                        if (_avisoReserva case final aviso?) ...[
+                          ReservaSyncNotice(
+                            title: _tituloAviso(aviso),
+                            message: _detalheAviso(aviso),
+                            actionLabel: _atualizarAgendaLabel,
+                            onRefresh: () => _loadData(),
+                            refreshing: _atualizando,
                           ),
+                          const SizedBox(height: 12),
+                        ] else if (_reservaRepository.isShared)
+                          Align(
+                            alignment: AlignmentDirectional.centerEnd,
+                            child: TextButton.icon(
+                              onPressed: _atualizando || _salvando
+                                  ? null
+                                  : () => _loadData(),
+                              icon: const SigadIcon(
+                                SigadIcons.atualizar,
+                                size: 18,
+                              ),
+                              label: Text(_atualizarAgendaLabel),
+                            ),
+                          ),
+                        _FiltroLabRow(
+                          key: ValueKey(
+                            '${_laboratorios.join('|')}#$_laboratorioSelecionadoValido',
+                          ),
+                          laboratorioSelecionado: _laboratorioSelecionadoValido,
+                          laboratorios: _laboratorios,
+                          onChanged: (value) =>
+                              setState(() => _laboratorioSelecionado = value),
                         ),
+                        if (_laboratorioAtual case final laboratorio?
+                            when laboratorio.status !=
+                                StatusLaboratorio.operando)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: _AvisoSituacao(laboratorio: laboratorio),
+                          ),
+                        const SizedBox(height: 12),
+                        _SemanaNavegador(
+                          segunda: _segunda,
+                          onAnterior: () => _mudarSemana(-1),
+                          onProxima: () => _mudarSemana(1),
+                          onHoje: _irParaHoje,
+                          onEscolherData: _escolherData,
+                        ),
+                        const SizedBox(height: 16),
+                        if (_carregando)
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 48),
+                            child: Center(child: CircularProgressIndicator()),
+                          )
+                        else
+                          _AgendaSemanal(
+                            dias: _diasDaSemana,
+                            laboratorio: _laboratorioSelecionadoValido,
+                            reservas: _reservas,
+                            usuarioAtual: userContext.currentUser?.name,
+                            podeEditar:
+                                podeEditar && !_salvando && !_atualizando,
+                            onTapCelula: (data, turno, periodo, reservaAtual) =>
+                                _onTapCelula(
+                                  data: data,
+                                  turno: turno,
+                                  periodo: periodo,
+                                  reservaAtual: reservaAtual,
+                                ),
+                          ),
+                        if (podeVerOtimizacao && !_carregando) ...[
+                          const SizedBox(height: 20),
+                          Card(
+                            margin: EdgeInsets.zero,
+                            clipBehavior: Clip.antiAlias,
+                            child: ExpansionTile(
+                              leading: const SigadIcon(SigadIcons.analise),
+                              title: Text(_l10n.labSugestoes),
+                              subtitle: Text(_l10n.labSugestoesSub),
+                              childrenPadding: const EdgeInsets.fromLTRB(
+                                12,
+                                0,
+                                12,
+                                12,
+                              ),
+                              children: [
+                                _PainelOtimizacaoLaboratorio(
+                                  indicadores: _indicadoresOcupacao,
+                                  sugestoes: _sugestoesReserva,
+                                  recomendacoesCruzadas: _recomendacoesCruzadas,
+                                  laboratorioSelecionado:
+                                      _laboratorioSelecionadoValido,
+                                  onAplicarSugestao: podeEditar
+                                      ? _reservarSugestaoAutomatica
+                                      : null,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ],
                     ],
                   ),
@@ -518,6 +623,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     required int periodo,
     required ReservaLaboratorio? reservaAtual,
   }) async {
+    if (_salvando || _atualizando || !_agendaCarregada) return;
     try {
       final userContext = context.read<UserContextProvider>();
       final user = userContext.currentUser;

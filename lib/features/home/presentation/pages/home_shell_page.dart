@@ -18,10 +18,15 @@ class HomeShellPage extends StatelessWidget {
     super.key,
     required this.currentRoute,
     required this.child,
+    this.greetingNow,
   });
 
   final String currentRoute;
   final Widget child;
+
+  /// Relógio opcional para capturas visuais determinísticas.
+  /// Em uso real a saudação continua acompanhando a hora do aparelho.
+  final DateTime? greetingNow;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +37,9 @@ class HomeShellPage extends StatelessWidget {
         final userContext = context.watch<UserContextProvider>();
         final userRole = userContext.userRole;
         final isDashboard = currentRoute == AppRoutes.dashboard;
-        final greeting = isDashboard ? greetingText(context) : null;
+        final greeting = isDashboard
+            ? greetingText(context, now: greetingNow)
+            : null;
         // unreadChatCount removido pois não é mais utilizado
         final availableItems = userRole == null
             ? kNavigationItems
