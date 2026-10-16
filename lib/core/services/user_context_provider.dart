@@ -45,11 +45,14 @@ class UserContextProvider extends ChangeNotifier {
       _currentUser != null &&
       !requiresReauthentication &&
       ((_institutionalSession && _dataSourceMode == DataSourceMode.remote) ||
-       (!_institutionalSession && AppRuntimeConfig.allowLocalDemo));
+       (!_institutionalSession &&
+           _dataSourceMode == DataSourceMode.local &&
+           AppRuntimeConfig.allowLocalDemo));
 
   /// Abre somente a demonstração local. Não autentica credenciais remotas.
   Future<void> login(User user, {String? sessionToken}) async {
-    if (!AppRuntimeConfig.allowLocalDemo) {
+    if (_dataSourceMode != DataSourceMode.local ||
+        !AppRuntimeConfig.allowLocalDemo) {
       throw StateError('Autenticação institucional não integrada.');
     }
     final expiry = _now().add(const Duration(hours: 8));
