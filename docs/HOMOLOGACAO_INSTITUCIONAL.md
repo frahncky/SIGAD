@@ -113,3 +113,25 @@ login em iPhone real. Somente o provedor oficial pode autorizar a entrada.
 API do balanceador sem apagar o banco e restaurar apenas por plano
 institucional aprovado; nunca substituir a agenda compartilhada por
 dados locais silenciosamente.
+
+## 6. Pacote técnico de homologação preparado
+
+O diretório `backend` oferece duas configurações separadas:
+
+- `compose.yaml`: desenvolvimento local com PostgreSQL de exemplo
+  isolado, nunca para produção.
+- `compose.homologacao.yaml`: API em loopback, sem banco embutido,
+  exigindo arquivo externo de configuração e PostgreSQL autorizado com
+  `sslmode=verify-full`. Reprova configuração incompleta **antes**
+  de iniciar o servidor.
+
+O procedimento detalhado e as restrições de segurança estão em
+[`backend/README.md`](../backend/README.md). O arquivo
+`backend/.env.homologacao.example` é exclusivamente um modelo, não
+contém credenciais reais e não passa na pré-validação.
+
+Antes de liberar testes reais, a TI deve confirmar a implantação e executar
+os critérios da seção 4. Esses itens **não foram executados em infraestrutura
+do IFMA** e não devem ser marcados como concluídos somente pela aprovação
+do GitHub Actions.
+
