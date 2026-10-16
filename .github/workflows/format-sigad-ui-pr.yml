@@ -1,0 +1,46 @@
+name: Format SIGAD UI PR (temporary)
+
+on:
+  push:
+    branches:
+      - agent/sigad-ui-reserva-sync
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.5'
+          channel: stable
+      - name: Resolve Flutter dependencies before formatting
+        run: flutter pub get
+      - name: Format only modified UI Dart files
+        run: |
+          dart format \
+            lib/features/aulas_praticas/data/reserva_repository.dart \
+            lib/features/aulas_praticas/presentation/pages/aulas_praticas_page.dart \
+            lib/features/aulas_praticas/presentation/widgets/reserva_sync_notice.dart \
+            test/reserva_repository_remote_test.dart \
+            test/reserva_sync_notice_test.dart
+      - name: Commit formatting if needed
+        run: |
+          git add \
+            lib/features/aulas_praticas/data/reserva_repository.dart \
+            lib/features/aulas_praticas/presentation/pages/aulas_praticas_page.dart \
+            lib/features/aulas_praticas/presentation/widgets/reserva_sync_notice.dart \
+            test/reserva_repository_remote_test.dart \
+            test/reserva_sync_notice_test.dart
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "style(flutter): aplicar dart format na interface de reservas"
+            git push origin HEAD:${GITHUB_REF_NAME}
+          fi
