@@ -5,3 +5,7 @@ __pycache__/
 .pytest_cache/
 .venv/
 *.pyc
+
+# Nunca copiar arquivos de homologacao com credenciais para a imagem.
+.env.homologacao
+.env.homologacao.*
