@@ -1,0 +1,51 @@
+name: Backend PostgreSQL CI
+on:
+  pull_request:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: sigad_test
+          POSTGRES_PASSWORD: sigad_test
+          POSTGRES_DB: sigad_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U sigad_test -d sigad_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      SIGAD_DATABASE_URL: postgresql+psycopg://sigad_test:sigad_test@127.0.0.1:5432/sigad_test
+      PGPASSWORD: sigad_test
+      SIGAD_OIDC_ISSUER: https://idp.example.org
+      SIGAD_OIDC_AUDIENCE: sigad-api
+      SIGAD_OIDC_JWKS_URL: https://idp.example.org/jwks
+      PYTHONPATH: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r backend/requirements-dev.txt
+      - name: Static code review
+        run: ruff check backend/sigad_api backend/tests
+      - name: Apply schema migration
+        run: psql -h 127.0.0.1 -U sigad_test -d sigad_test -v ON_ERROR_STOP=1 -f backend/migrations/001_initial.sql
+      - name: PostgreSQL integration tests
+        run: pytest -q backend/tests
