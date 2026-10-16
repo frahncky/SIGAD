@@ -96,20 +96,6 @@ abstract final class RelatoriosService {
     'Situação: ${relatorio.status}',
   ].join('\\n');
 
-  static Relatorio registrarDownload(Relatorio relatorio) {
-    return relatorio.copyWith(
-      downloads: relatorio.downloads + 1,
-      ultimaAcao: 'PDF baixado agora',
-    );
-  }
-
-  static Relatorio registrarCompartilhamento(Relatorio relatorio) {
-    return relatorio.copyWith(
-      compartilhamentos: relatorio.compartilhamentos + 1,
-      ultimaAcao: 'Compartilhado agora',
-    );
-  }
-
   static Color statusColor(String status) {
     switch (status) {
       case 'Publicado':
