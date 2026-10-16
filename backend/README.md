@@ -31,6 +31,7 @@ Python 3.12+ e PostgreSQL 17. Nunca usar dados reais sem homologação.
 
    ```sh
    docker compose exec -T db psql -U sigad -d sigad -v ON_ERROR_STOP=1 < migrations/001_initial.sql
+   docker compose exec -T db psql -U sigad -d sigad -v ON_ERROR_STOP=1 < migrations/002_reservation_audit.sql
    ```
 
 5. Provisionar manualmente membros e laboratórios em banco de **teste**,
@@ -84,6 +85,37 @@ gerados para testes não representam autenticação de usuários reais.
 
 Consulte o [plano de homologação](../docs/HOMOLOGACAO_INSTITUCIONAL.md)
 para requisitos, critérios de aceite e rollback.
+
+## Auditoria de reservas (migração 002)
+
+Depois de aplicar `001_initial.sql`, executar obrigatoriamente
+`002_reservation_audit.sql` **na ordem**. A migração acrescenta uma tabela
+de eventos; não elimina reservas já cadastradas. A rota `/ready` exige
+a nova tabela para impedir novas gravações com esquema desatualizado.
+
+Cada criação, alteração ou exclusão gera um evento `CREATED`, `UPDATED`
+ou `REMOVED` com horário do servidor, revisão, identificador da reserva,
+`sub` institucional do responsável e do operador, e horário/laboratório
+antes/depois. **Não** são duplicados nomes, e-mails, disciplinas, senhas
+nem tokens no histórico. Tentativas inválidas, operações negadas,
+revisões obsoletas e PUT sem mudanças **não** geram eventos.
+
+Os eventos são inseridos na **mesma transação SQL** das reservas: um
+conflito ou falha de persistência desfaz igualmente agenda e auditoria.
+Um trigger rejeita `UPDATE` e `DELETE` dos eventos. Esse controle
+não substitui auditoria externa ou backup imutável: o proprietário do
+banco ou um superusuário consegue alterar triggers ou truncar a tabela.
+A TI deve usar conta de migração separada da conta da API e restringir
+na conta da API o acesso à auditoria a `INSERT` (e à sequência IDENTITY
+conforme os privilégios SQL exigidos pelo ambiente). Consultas de
+auditoria devem ficar restritas a operadores institucionais autorizados,
+fora da API pública; não existe rota de auditoria acessível a usuários.
+
+Os identificadores `sub` do IdP constituem dados pessoais
+pseudonimizados e requerem prazo de retenção, controle de acesso e
+procedimento de exclusão/restrição definidos formalmente pela TI/LGPD.
+Não executar `TRUNCATE` no banco institucional; ele é usado
+**somente** nos testes PostgreSQL efêmeros do GitHub Actions.
 
 ## Regras de concorrência
 
@@ -148,7 +180,7 @@ limiting, políticas LGPD, auditoria e planos de backup e rollback da TI.
 
 ```sh
 pip install -r backend/requirements-dev.txt
-# Criar banco EXCLUSIVO sigad_test; aplicar backend/migrations/001_initial.sql
+# Criar banco EXCLUSIVO sigad_test; aplicar 001_initial.sql e 002_reservation_audit.sql
 export PYTHONPATH=backend
 export SIGAD_DATABASE_URL='postgresql+psycopg://sigad_test:sigad_test@127.0.0.1:5432/sigad_test'
 ruff check backend/sigad_api backend/tests
