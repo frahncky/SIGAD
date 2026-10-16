@@ -47,5 +47,15 @@ jobs:
         run: ruff check backend/sigad_api backend/tests
       - name: Apply schema migration
         run: psql -h 127.0.0.1 -U sigad_test -d sigad_test -v ON_ERROR_STOP=1 -f backend/migrations/001_initial.sql
+      - name: Validate homologation Compose syntax (do not launch)
+        env:
+          SIGAD_HOMOLOGACAO_ENV_FILE: ${{ github.workspace }}/backend/.env.homologacao.example
+        run: docker compose -f backend/compose.homologacao.yaml config --quiet
+      - name: Verify missing real configuration blocks startup
+        run: |
+          if python -m sigad_api.deployment_preflight; then
+            echo "ERROR: Homologation accepted CI placeholders"
+            exit 1
+          fi
       - name: PostgreSQL integration tests
         run: pytest -q backend/tests

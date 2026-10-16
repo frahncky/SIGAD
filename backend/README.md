@@ -100,6 +100,50 @@ turno e período. O conjunto de alterações é atômico.
 O Flutter não deve tentar reexecutar automaticamente um PUT após timeout:
 primeiro deve obter a agenda atual e exibir eventual conflito.
 
+## Ambiente de homologação: fail-closed
+
+Além do Compose **local de desenvolvimento**, há agora
+[`compose.homologacao.yaml`](compose.homologacao.yaml), que **não provisiona um
+banco novo**: usa PostgreSQL externo autorizado, publica a API exclusivamente
+em `127.0.0.1:8000`, executa com usuário não privilegiado, filesystem
+somente leitura, capacidades Linux removidas e healthcheck em `/ready`.
+Não disponibiliza HTTPS por conta própria: **proxy HTTPS e rede privada
+precisam ser providos pela TI antes de acesso de outros dispositivos**.
+
+1. Solicitar à TI a infraestrutura e os parâmetros **reais**; preencher
+   um arquivo de configuração em local seguro **fora do repositório**, usando
+   `.env.homologacao.example` só como referência, sem versionar senhas.
+2. Manter o arquivo acessível apenas aos operadores (por exemplo,
+   `chmod 600`). Garantir que `SIGAD_DATABASE_URL` use TLS PostgreSQL
+   com `sslmode=verify-full` e uma CA confiável via `sslrootcert`.
+   Se a CA for privada, provisioná-la no container com volume de leitura
+   e controle de acesso aprovado pela TI; não copie chaves para o Git.
+3. Aplicar `migrations/001_initial.sql` no banco autorizado via processo
+   de mudança institucional, com backup anterior. O Compose **não executa
+   migrações automaticamente**.
+4. No host de homologação autorizado, usar:
+
+   ```sh
+   cd backend
+   export SIGAD_HOMOLOGACAO_ENV_FILE=/CAMINHO_SEGURO/variaveis-homologacao.env
+   docker compose -f compose.homologacao.yaml config --quiet
+   docker compose -f compose.homologacao.yaml up -d --build
+   curl --fail-with-body http://127.0.0.1:8000/health
+   curl --fail-with-body http://127.0.0.1:8000/ready
+   ```
+
+A inicialização executa `python -m sigad_api.deployment_preflight` e **falha
+sem iniciar** se ambiente, URLs HTTPS, banco PostgreSQL com autenticação,
+TLS `verify-full` ou parâmetros OIDC necessários estiverem ausentes,
+inseguros ou apontarem para domínios de exemplo. Logs do preflight contêm
+somente nomes de variáveis e motivos genéricos, nunca seus valores. O
+`/ready` valida a estrutura do banco, mas **não valida o servidor do IdP
+nem substitui os testes reais de SSO**.
+
+Não utilizar esta configuração diretamente na internet, em produção ou com
+usuários reais antes das autorizações, proxy HTTPS, monitoramento, rate
+limiting, políticas LGPD, auditoria e planos de backup e rollback da TI.
+
 ## Testar contra PostgreSQL isolado
 
 ```sh

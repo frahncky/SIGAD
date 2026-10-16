@@ -1,0 +1,43 @@
+# Uso SOMENTE em homologação autorizada, atrás de proxy HTTPS configurado pela TI.
+# Não cria banco, usuários, certificados nem exposição pública por padrão.
+# O operador deve aplicar a migração manualmente e passar SIGAD_HOMOLOGACAO_ENV_FILE.
+services:
+  api:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - path: ${SIGAD_HOMOLOGACAO_ENV_FILE:?Informe o caminho para as variaveis aprovadas fora do Git}
+        required: true
+    ports:
+      - "127.0.0.1:8000:8000"
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=32m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 128
+    mem_limit: 512m
+    command:
+      - sh
+      - -c
+      - >-
+        python -m sigad_api.deployment_preflight
+        && exec uvicorn sigad_api.main:app
+        --host 0.0.0.0 --port 8000
+        --proxy-headers --forwarded-allow-ips 127.0.0.1
+        --no-access-log
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >-
+          import urllib.request;
+          response=urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=5);
+          assert response.status == 200
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
