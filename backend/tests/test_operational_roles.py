@@ -8,10 +8,10 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.engine import make_url
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm import Session
+from test_reservations import item
 
 from sigad_api.reservations import replace_reservations
 from sigad_api.schemas import ReservationWrite
-from test_reservations import item
 
 
 @pytest.fixture
@@ -55,9 +55,8 @@ def test_runtime_role_can_create_and_audit_without_reading_sensitive_log(app_ses
         assert app_session.execute(
             text("SELECT count(id) FROM sigad_reservation_audit")
         ).scalar_one() == 1
-    with pytest.raises(DBAPIError):
-        with app_session.begin():
-            app_session.execute(text("SELECT actor_subject FROM sigad_reservation_audit"))
+    with pytest.raises(DBAPIError), app_session.begin():
+        app_session.execute(text("SELECT actor_subject FROM sigad_reservation_audit"))
     app_session.rollback()
 
 
@@ -74,9 +73,8 @@ def test_runtime_role_can_create_and_audit_without_reading_sensitive_log(app_ses
     ],
 )
 def test_runtime_role_cannot_manage_history_members_or_schema(app_session, statement):
-    with pytest.raises(DBAPIError):
-        with app_session.begin():
-            app_session.execute(text(statement))
+    with pytest.raises(DBAPIError), app_session.begin():
+        app_session.execute(text(statement))
     app_session.rollback()
 
 
@@ -90,9 +88,8 @@ def test_backup_role_reads_all_data_but_cannot_mutate(backup_session):
             "sigad_reservation_audit",
         ):
             backup_session.execute(text(f"SELECT count(*) FROM {table}")).scalar_one()
-    with pytest.raises(DBAPIError):
-        with backup_session.begin():
-            backup_session.execute(text("UPDATE sigad_laboratories SET operational = false"))
+    with pytest.raises(DBAPIError), backup_session.begin():
+        backup_session.execute(text("UPDATE sigad_laboratories SET operational = false"))
     backup_session.rollback()
 
 
