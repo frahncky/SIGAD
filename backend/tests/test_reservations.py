@@ -73,6 +73,31 @@ def test_duplicate_slot_rejected_without_side_effects(client):
     }
 
 
+def test_swapping_two_existing_slots_is_atomic(client):
+    first = item("a", periodo=1)
+    second = item("b", periodo=2)
+    response = client.put(
+        "/laboratorios/reservas",
+        json={"expectedRevision": "rev-0", "items": [first, second]},
+    )
+    assert response.status_code == 200, response.text
+
+    swapped = client.put(
+        "/laboratorios/reservas",
+        json={
+            "expectedRevision": "rev-1",
+            "items": [{**first, "periodo": 2}, {**second, "periodo": 1}],
+        },
+    )
+    assert swapped.status_code == 200, swapped.text
+    saved = client.get("/laboratorios/reservas").json()
+    assert saved["revision"] == "rev-2"
+    assert {(r["id"], r["periodo"]) for r in saved["items"]} == {
+        ("a", 2),
+        ("b", 1),
+    }
+
+
 def test_invalid_slot_and_unprovisioned_or_offline_lab(client):
     invalid = item()
     # Fevereiro/2026 tem somente quatro blocos de sete dias.
