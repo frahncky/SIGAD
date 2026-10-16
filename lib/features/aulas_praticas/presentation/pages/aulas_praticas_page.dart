@@ -55,7 +55,7 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     'Lab. de Automação',
   ];
 
-  final ReservaRepository _reservaRepository = ReservaRepository();
+  late final ReservaRepository _reservaRepository;
   final LaboratorioRepository _laboratorioRepository = LaboratorioRepository();
   final DocenteRepository _docenteRepository = DocenteRepository();
   final List<ReservaLaboratorio> _reservas = [];
@@ -78,6 +78,9 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   @override
   void initState() {
     super.initState();
+    _reservaRepository = ReservaRepository(
+      tokenProvider: () => context.read<UserContextProvider>().sessionToken,
+    );
     _segunda = ReservaService.segundaDaSemana(
       widget.dataInicial ?? DateTime.now(),
     );
@@ -118,8 +121,18 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
     try {
       await _reservaRepository.saveReservas(_reservas);
       return true;
-    } catch (e) {
-      _showError(_l10n.erroSalvar);
+    } on ReservaConflitoException {
+      _showError(
+        'Outro usuário alterou a agenda. Os horários serão recarregados; '
+        'revise a disponibilidade antes de tentar novamente.',
+      );
+      return false;
+    } catch (error, stackTrace) {
+      AppEventLogger.error('reservas_save_error', error, stackTrace: stackTrace);
+      _showError(_reservaRepository.isShared
+          ? 'Não foi possível confirmar no servidor. Nenhuma reserva foi '
+            'confirmada; verifique sua conexão ou acesso institucional.'
+          : _l10n.erroSalvar);
       return false;
     }
   }
@@ -127,12 +140,33 @@ class _AulasPraticasPageState extends State<AulasPraticasPage> {
   /// Grava e, se falhar, volta as reservas para [antes].
   Future<bool> _salvarOuDesfazer(List<ReservaLaboratorio> antes) async {
     final salvo = await _saveData();
-    if (!salvo && mounted) {
+    if (!mounted) return false;
+    if (!salvo) {
       setState(() {
         _reservas
           ..clear()
           ..addAll(antes);
       });
+      // Em modo compartilhado uma falha pode significar revisão obsoleta.
+      // Recarregar o estado oficial antes de qualquer nova edição.
+      if (_reservaRepository.isShared) {
+        try {
+          final atuais = await _reservaRepository.loadReservas();
+          if (mounted) {
+            setState(() {
+              _reservas
+                ..clear()
+                ..addAll(atuais);
+            });
+          }
+        } catch (error, stackTrace) {
+          AppEventLogger.error(
+            'reservas_reload_error',
+            error,
+            stackTrace: stackTrace,
+          );
+        }
+      }
     }
     return salvo;
   }
