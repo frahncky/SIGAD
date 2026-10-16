@@ -101,15 +101,15 @@ class AppAuthInstitutionalSignInService implements InstitutionalSignInService {
           // Não usar clientSecret no app móvel (cliente público com PKCE).
         ),
       );
-      final token = result?.accessToken?.trim();
+      final token = result.accessToken?.trim();
       if (token == null || token.isEmpty) {
         throw StateError('O provedor não retornou token de acesso.');
       }
-      final type = result?.tokenType;
+      final type = result.tokenType;
       if (type != null && type.toLowerCase() != 'bearer') {
         throw StateError('O provedor retornou um tipo de token não suportado.');
       }
-      final expiration = result?.accessTokenExpirationDateTime;
+      final expiration = result.accessTokenExpirationDateTime;
       if (expiration != null && !expiration.isAfter(DateTime.now())) {
         throw StateError('O provedor retornou credencial expirada.');
       }
