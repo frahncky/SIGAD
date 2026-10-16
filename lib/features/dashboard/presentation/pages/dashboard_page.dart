@@ -26,7 +26,9 @@ import '../../../../shared/widgets/welcome_hero.dart';
 import '../../../../l10n/l10n.dart';
 
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
+  const DashboardPage({super.key, this.agora});
+
+  final DateTime? agora;
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();
@@ -101,6 +103,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       WelcomeHero(
+                        agora: widget.agora,
                         avisos: [
                           for (final aviso in avisos)
                             WelcomeHeroItem(
