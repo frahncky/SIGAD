@@ -68,15 +68,23 @@ Future<void> _pumpRemote(
       value: provider,
       child: MaterialApp(
         theme: AppTheme.light(),
-        initialRoute: '/sign-in',
-        routes: {
-          '/sign-in': (_) => LoginPage(
-            dataSourceMode: DataSourceMode.remote,
-            institutionalSignInService: service,
+        onGenerateInitialRoutes: (_) => <Route<dynamic>>[
+          MaterialPageRoute<void>(
+            settings: const RouteSettings(name: AppRoutes.login),
+            builder: (_) => LoginPage(
+              dataSourceMode: DataSourceMode.remote,
+              institutionalSignInService: service,
+            ),
           ),
-          AppRoutes.dashboard: (_) =>
-              const Scaffold(body: Text('Área institucional autenticada')),
-        },
+        ],
+        onGenerateRoute: (settings) => settings.name == AppRoutes.dashboard
+            ? MaterialPageRoute<void>(
+                settings: settings,
+                builder: (_) => const Scaffold(
+                  body: Text('Área institucional autenticada'),
+                ),
+              )
+            : null,
       ),
     ),
   );
