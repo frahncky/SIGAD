@@ -1,0 +1,32 @@
+name: Temporary validate institutional integration
+on:
+  push:
+    branches:
+      - agent/sigad-reservas-compartilhadas-auth
+permissions:
+  contents: write
+jobs:
+  validate:
+    if: ${{ !contains(github.event.head_commit.message, 'style: normalize institutional integration') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/sigad-reservas-compartilhadas-auth
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.7'
+      - run: flutter pub get
+      - run: dart format .
+      - run: flutter analyze
+      - run: flutter test
+      - name: Commit standard formatting
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -u
+          if ! git diff --cached --quiet; then
+            git commit -m "style: normalize institutional integration"
+            git push origin HEAD:agent/sigad-reservas-compartilhadas-auth
+          fi
