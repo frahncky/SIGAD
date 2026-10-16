@@ -94,7 +94,7 @@ abstract final class RelatoriosService {
     'Autor: ${relatorio.autor}',
     'Data: ${relatorio.data}',
     'Situação: ${relatorio.status}',
-  ].join('\\n');
+  ].join('\n');
 
   static Color statusColor(String status) {
     switch (status) {
