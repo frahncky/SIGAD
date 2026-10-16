@@ -9,12 +9,21 @@ import '../../../../app/theme/sigad_icons.dart';
 import '../../../../core/config/app_runtime_config.dart';
 import '../../../../core/models/user.dart';
 import '../../../../core/models/user_role.dart';
+import '../../../../core/security/oidc_sign_in_service.dart';
 import '../../../../core/services/app_event_logger.dart';
 import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/user_context_provider.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({
+    super.key,
+    this.institutionalSignInService,
+    this.dataSourceMode,
+  });
+
+  /// Permite testar o fluxo remoto sem abrir um navegador externo.
+  final InstitutionalSignInService? institutionalSignInService;
+  final DataSourceMode? dataSourceMode;
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -27,6 +36,18 @@ class _LoginPageState extends State<LoginPage> {
   UserRole _selectedRole = UserRole.professor;
   bool _isLoading = false;
   bool _obscurePassword = true;
+  late final InstitutionalSignInService _institutionalSignInService;
+
+  bool get _isRemote =>
+      (widget.dataSourceMode ?? AppRuntimeConfig.dataSourceMode) ==
+      DataSourceMode.remote;
+
+  @override
+  void initState() {
+    super.initState();
+    _institutionalSignInService = widget.institutionalSignInService ??
+        AppAuthInstitutionalSignInService();
+  }
 
   @override
   void dispose() {
@@ -142,16 +163,46 @@ class _LoginPageState extends State<LoginPage> {
           ),
           const SizedBox(height: 14),
         ],
-        if (AppRuntimeConfig.dataSourceMode == DataSourceMode.remote)
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 12),
+        if (_isRemote) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
             child: Text(
-              'A entrada institucional requer a integração oficial com o '
-              'provedor de identidade do IFMA (SSO/OIDC). O SIGAD não '
-              'solicita nem armazena senhas institucionais nesta tela. '
-              'O acesso só será habilitado após essa configuração.',
+              _institutionalSignInService.isReady
+                  ? (Localizations.localeOf(context).languageCode == 'en'
+                      ? 'Sign in securely through the institutional identity provider. '
+                          'SIGAD never collects your institutional password.'
+                      : 'Entre com segurança pelo provedor de identidade institucional. '
+                          'O SIGAD não coleta sua senha institucional.')
+                  : (Localizations.localeOf(context).languageCode == 'en'
+                      ? 'Institutional access is not configured on this device. '
+                          'The IT department must register the OIDC client, '
+                          'callback and API before this option is enabled.'
+                      : 'O acesso institucional ainda não está configurado neste dispositivo. '
+                          'A TI precisa cadastrar o cliente OIDC, '
+                          'o retorno do login e a API para habilitá-lo.'),
             ),
-          )
+          ),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: _isLoading || !_institutionalSignInService.isReady
+                  ? null
+                  : _handleInstitutionalLogin,
+              icon: _isLoading
+                  ? const SizedBox(
+                      height: 18,
+                      width: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const SigadIcon(SigadIcons.entrar),
+              label: Text(
+                Localizations.localeOf(context).languageCode == 'en'
+                    ? 'Institutional sign-in'
+                    : 'Entrar com conta institucional',
+              ),
+            ),
+          ),
+        ]
         else ...[
           AutofillGroup(
             child: Column(
@@ -274,6 +325,34 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     _showError(context.l10n.autenticacaoIndisponivel);
+  }
+
+  Future<void> _handleInstitutionalLogin() async {
+    if (_isLoading || !_isRemote || !_institutionalSignInService.isReady) {
+      return;
+    }
+    setState(() => _isLoading = true);
+    try {
+      final accessToken = await _institutionalSignInService.signIn();
+      if (!mounted) return;
+      // Apenas /auth/me no backend concede sessão e perfil.
+      await context.read<UserContextProvider>().loginInstitutional(accessToken);
+      if (!mounted) return;
+      await Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
+    } on InstitutionalSignInCancelled {
+      // Cancelar o navegador não é uma falha de segurança.
+    } catch (_) {
+      if (mounted) {
+        _showError(
+          Localizations.localeOf(context).languageCode == 'en'
+              ? 'Institutional sign-in could not be completed. Check your access or contact IT.'
+              : 'Não foi possível concluir o acesso institucional. '
+                  'Verifique sua autorização ou contate a TI.',
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   Future<void> _handleDemoLogin() async {
