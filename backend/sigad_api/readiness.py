@@ -14,6 +14,7 @@ _TABLES = (
     "sigad_laboratories",
     "sigad_reservation_revision",
     "sigad_reservations",
+    "sigad_reservation_audit",
 )
 
 

@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from .models import Laboratory, Reservation, Revision
+from .models import Laboratory, Reservation, ReservationAudit, Revision
 from .schemas import ReservationIn, ReservationWrite
 from .security import Principal
 
@@ -49,6 +49,19 @@ def _slot(item: ReservationIn) -> tuple:
         item.turno,
         item.periodo,
     )
+
+
+def _audit_slot(item: ReservationIn) -> dict:
+    """Snapshot mínimo: sem nome de docente, disciplina, email ou token."""
+    return {
+        "laboratorio": item.laboratorio,
+        "ano": item.ano,
+        "mes": item.mes,
+        "semanaDoMes": item.semanaDoMes,
+        "diaSemana": item.diaSemana,
+        "turno": item.turno,
+        "periodo": item.periodo,
+    }
 
 
 def _check_uniqueness(items: list[ReservationIn]) -> None:
@@ -147,6 +160,41 @@ def replace_reservations(db: Session, principal: Principal, payload: Reservation
                 db.add(row)
             db.flush()
             version.value += 1
+
+            # A agenda e a trilha de auditoria são um único commit atômico.
+            # Só registrar operações autorizadas e realmente realizadas.
+            for item in modified:
+                previous = old.get(item.id)
+                db.add(
+                    ReservationAudit(
+                        revision=version.value,
+                        reservation_id=item.id,
+                        actor_subject=principal.subject,
+                        owner_subject=(
+                            previous.owner_subject if previous is not None
+                            else principal.subject
+                        ),
+                        event_type="UPDATED" if previous is not None else "CREATED",
+                        slot_before=(
+                            _audit_slot(_to_schema(previous))
+                            if previous is not None else None
+                        ),
+                        slot_after=_audit_slot(item),
+                    )
+                )
+            for row in removed:
+                db.add(
+                    ReservationAudit(
+                        revision=version.value,
+                        reservation_id=row.id,
+                        actor_subject=principal.subject,
+                        owner_subject=row.owner_subject,
+                        event_type="REMOVED",
+                        slot_before=_audit_slot(_to_schema(row)),
+                        slot_after=None,
+                    )
+                )
+            db.flush()
             return {"revision": f"rev-{version.value}"}
     except IntegrityError:
         db.rollback()

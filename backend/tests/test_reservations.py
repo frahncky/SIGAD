@@ -7,7 +7,7 @@ from conftest import SessionForTest, identity
 from fastapi import HTTPException
 from sqlalchemy import select
 
-from sigad_api.models import Reservation, Revision
+from sigad_api.models import Reservation, ReservationAudit, Revision
 from sigad_api.reservations import replace_reservations
 from sigad_api.schemas import ReservationWrite
 
@@ -210,3 +210,8 @@ def test_atomic_concurrent_clients_same_revision_one_wins():
     with SessionForTest() as session:
         assert session.scalar(select(Revision.value).where(Revision.id == 1)) == 1
         assert len(session.scalars(select(Reservation)).all()) == 1
+        # A transação que perdeu a corrida não deixa vestígios no histórico.
+        records = session.scalars(select(ReservationAudit)).all()
+        assert len(records) == 1
+        assert records[0].revision == 1
+        assert records[0].event_type == "CREATED"
