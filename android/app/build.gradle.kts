@@ -24,7 +24,10 @@ android {
         applicationId = "com.example.sigad"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        // AppAuth 12 exige Android API >= 24.
+        minSdk = 24
+        // Deve corresponder a SIGAD_OIDC_REDIRECT_URI e à configuração no IdP.
+        manifestPlaceholders.putAll(mapOf("appAuthRedirectScheme" to "sigad-auth"))
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
