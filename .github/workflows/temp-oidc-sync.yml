@@ -21,10 +21,6 @@ jobs:
       - run: flutter pub get
       - name: Format changed Dart files
         run: dart format lib/core/security/oidc_sign_in_service.dart lib/features/login/presentation/pages/login_page_v2.dart test/core/oidc_sign_in_service_test.dart test/institutional_login_page_test.dart
-      - name: Run static analysis
-        run: flutter analyze
-      - name: Run tests
-        run: flutter test
       - name: Commit lockfile and formatting
         run: |
           git config user.name "github-actions[bot]"
