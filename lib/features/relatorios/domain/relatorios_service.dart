@@ -84,6 +84,18 @@ abstract final class RelatoriosService {
         .toList(growable: false);
   }
 
+  /// Texto baseado somente no registro selecionado; não afirma existir PDF.
+  static String resumoCompartilhavel(Relatorio relatorio) => [
+    'SIGAD — Resumo do relatório',
+    'Identificador: ${relatorio.id}',
+    'Título: ${relatorio.titulo}',
+    'Tipo: ${relatorio.tipo}',
+    'Descrição: ${relatorio.descricao}',
+    'Autor: ${relatorio.autor}',
+    'Data: ${relatorio.data}',
+    'Situação: ${relatorio.status}',
+  ].join('\\n');
+
   static Relatorio registrarDownload(Relatorio relatorio) {
     return relatorio.copyWith(
       downloads: relatorio.downloads + 1,
