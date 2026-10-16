@@ -45,7 +45,8 @@ a implantação esteja aprovada.**
 
 No ambiente autorizado:
 
-1. Aplicar a migração `backend/migrations/001_initial.sql` sob procedimento
+1. Aplicar as migrações `backend/migrations/001_initial.sql` **e**
+   `backend/migrations/002_reservation_audit.sql`, em ordem, sob procedimento
    institucional controlado e backup.
 2. Fornecer `SIGAD_DATABASE_URL`, `SIGAD_OIDC_ISSUER`,
    `SIGAD_OIDC_AUDIENCE` e `SIGAD_OIDC_JWKS_URL` por gerenciador de
@@ -56,6 +57,8 @@ No ambiente autorizado:
    instância do balanceador quando a configuração local ou banco falhar.
 5. Configurar backup/restauração, auditoria, limitação de requisições,
    retenção de dados e observabilidade sem conteúdo sensível.
+   A auditoria de reservas é somente inclusão pela API; os direitos SQL
+   da conta operacional e a retenção precisam ser validados pela TI.
 
 ## 3. Aplicativo
 
@@ -96,6 +99,9 @@ login em iPhone real. Somente o provedor oficial pode autorizar a entrada.
    de sessão com TI.
 7. Validar Android real, iPhone real, acessibilidade e condições offline,
    além de backup/restauração e auditoria dos dados.
+   Conferir no PostgreSQL que os eventos de criação/alteração/exclusão
+   incluem o sujeito autenticado, sem armazenar nomes, e-mails,
+   disciplinas ou credenciais; conflitos não podem gerar eventos.
 
 ## 5. Checklist de liberação
 
