@@ -9,6 +9,13 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get notaTexto => 'Note';
+
+  @override
+  String get notaErroCarregar =>
+      'Could not read saved notes. Editing is disabled to preserve your data.';
+
+  @override
   String get cancelar => 'Cancel';
 
   @override

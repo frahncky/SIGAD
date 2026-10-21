@@ -16,11 +16,18 @@ class LocalStorageService {
   }
 
   /// Carrega uma lista de mapas de JSON.  Retorna lista vazia se não existir.
-  static Future<List<Map<String, dynamic>>> loadList(String key) async {
+  /// Em modo [strict], rejeita elementos inválidos em vez de descartá-los.
+  static Future<List<Map<String, dynamic>>> loadList(
+    String key, {
+    bool strict = false,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(key);
     if (raw == null) return [];
     final decoded = jsonDecode(raw) as List<dynamic>;
+    if (strict && decoded.any((item) => item is! Map<String, dynamic>)) {
+      throw const FormatException('Invalid local records');
+    }
     return decoded
         .whereType<Map>()
         .map((item) => Map<String, dynamic>.from(item))

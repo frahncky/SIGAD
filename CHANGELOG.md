@@ -2,6 +2,14 @@
 
 Todas as mudanças relevantes neste repositório serão documentadas neste arquivo.
 
+## [Não publicado]
+
+### Corrigido
+- Release Android exige identificador institucional e assinatura própria, sem fallback debug. Workflow valida configuração e compila antes de enviar commit e tag; distribuição permanece pendente de homologação.
+- Anotações atualizam a lista somente após confirmar a gravação local. Falhas preservam os dados anteriores e o rascunho do formulário, com opção de tentar novamente.
+- Operações de anotações são bloqueadas durante a gravação e após falha de carregamento, evitando sobrescrever dados não carregados. A leitura estrita é aplicada somente às anotações.
+- Cabeçalhos, filtros, formulário e rodapé das anotações acomodam telas pequenas e fontes ampliadas, com testes de regressão para persistência e responsividade.
+
 ## [v1.3.0] - 2026-07-10
 
 ### Adicionado

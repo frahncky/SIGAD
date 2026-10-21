@@ -9,6 +9,13 @@ class AppLocalizationsPt extends AppLocalizations {
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
+  String get notaTexto => 'Anotação';
+
+  @override
+  String get notaErroCarregar =>
+      'Não foi possível ler as anotações salvas. A edição está bloqueada para preservar os dados.';
+
+  @override
   String get cancelar => 'Cancelar';
 
   @override

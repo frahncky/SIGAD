@@ -1,4 +1,6 @@
 {
+  "notaTexto": "Note",
+  "notaErroCarregar": "Could not read saved notes. Editing is disabled to preserve your data.",
   "@@locale": "en",
   "cancelar": "Cancel",
   "nomeSaudacao": "Greeting name",

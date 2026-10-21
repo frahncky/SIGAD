@@ -1,4 +1,6 @@
 {
+  "notaTexto": "Anotação",
+  "notaErroCarregar": "Não foi possível ler as anotações salvas. A edição está bloqueada para preservar os dados.",
   "@@locale": "pt",
   "cancelar": "Cancelar",
   "nomeSaudacao": "Nome na saudação",

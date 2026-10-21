@@ -98,6 +98,18 @@ abstract class AppLocalizations {
     Locale('pt'),
   ];
 
+  /// No description provided for @notaTexto.
+  ///
+  /// In pt, this message translates to:
+  /// **'Anotação'**
+  String get notaTexto;
+
+  /// No description provided for @notaErroCarregar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível ler as anotações salvas. A edição está bloqueada para preservar os dados.'**
+  String get notaErroCarregar;
+
   /// No description provided for @cancelar.
   ///
   /// In pt, this message translates to:
