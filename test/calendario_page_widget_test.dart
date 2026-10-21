@@ -254,8 +254,11 @@ void main() {
         ).format(data);
         final dataCapitalizada =
             dataFormatada[0].toUpperCase() + dataFormatada.substring(1);
+        // A contagem no rótulo inclui marcadores fixos do mês (ex.: dia 22),
+        // então o dia é localizado só pela data; as 18 reservas são
+        // conferidas pela lista da agenda completa.
         final dia = find.bySemanticsLabel(
-          RegExp('^${RegExp.escape(dataCapitalizada)}.*18 eventos'),
+          RegExp('^${RegExp.escape(dataCapitalizada)},'),
         );
         expect(dia, findsOneWidget);
         await tester.tap(dia);

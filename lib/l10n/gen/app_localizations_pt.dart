@@ -1576,6 +1576,26 @@ class AppLocalizationsPt extends AppLocalizations {
   String get notaFixar => 'Fixar anotação';
 
   @override
+  String get notaTexto => 'Anotação';
+
+  @override
+  String get notaErroCarregar =>
+      'Não foi possível ler as anotações salvas. A edição está bloqueada para preservar os dados.';
+
+  @override
+  String get notaDescartarInvalidas => 'Descartar registros inválidos';
+
+  @override
+  String get notaDescartarInvalidasMensagem =>
+      'Os registros que não puderem ser lidos serão removidos deste dispositivo. As anotações válidas serão mantidas. Esta ação não pode ser desfeita.';
+
+  @override
+  String get notaDescartar => 'Descartar';
+
+  @override
+  String get notaSalvando => 'Salvando anotações';
+
+  @override
   String notaDataHora(String dia, String mes, String hora) {
     return '$dia/$mes às $hora';
   }

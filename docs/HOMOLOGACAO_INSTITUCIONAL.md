@@ -21,9 +21,11 @@ Antes de qualquer acesso real, a TI/segurança institucional deve:
 - Validar base legal, minimização dos dados e políticas LGPD.
 - Definir responsáveis por operação, incidentes, auditoria e desativação.
 
-**Bloqueadores de distribuição:** o identificador Android é provisório
-(`com.example.sigad`), há configuração de assinatura debug em release,
-a URL real da API/IdP é desconhecida e o logout federado/renovação de sessão
+**Bloqueadores de distribuição:** o identificador Android institucional e a
+assinatura oficial estão pendentes. `com.example.sigad` permanece apenas como
+fallback de desenvolvimento; o release exige configuração própria e não usa
+assinatura debug (ver [preparação Android](ANDROID_RELEASE.md)).
+A URL real da API/IdP é desconhecida e o logout federado/renovação de sessão
 ainda exigem validação. Nenhum desses bloqueadores é resolvido por um
 `flutter build apk` bem-sucedido.
 

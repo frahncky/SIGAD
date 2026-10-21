@@ -119,8 +119,13 @@ class Nota {
 class _NotasPageState extends State<NotasPage> {
   static const _storageKey = 'sigad_notas';
   final List<Nota> _notas = [];
+  final _buscaController = TextEditingController();
   bool _isLoading = true;
   bool _dialogOpen = false;
+  bool _isSaving = false;
+  bool _loadFailed = false;
+
+  bool get _canChange => !_isLoading && !_loadFailed && !_isSaving;
   String _busca = '';
   String _categoriaFiltro = 'Todas';
   bool _maisRecentesPrimeiro = true;
@@ -129,6 +134,12 @@ class _NotasPageState extends State<NotasPage> {
   void initState() {
     super.initState();
     _carregarNotas();
+  }
+
+  @override
+  void dispose() {
+    _buscaController.dispose();
+    super.dispose();
   }
 
   List<Nota> get _notasOrdenadas {
@@ -158,10 +169,20 @@ class _NotasPageState extends State<NotasPage> {
       _notasOrdenadas.where((nota) => nota.fixada).toList(growable: false);
 
   Future<void> _carregarNotas() async {
+    setState(() {
+      _isLoading = true;
+      _loadFailed = false;
+    });
     try {
-      final data = await LocalStorageService.loadList(_storageKey);
-      final notas = data.map(Nota.fromMap).whereType<Nota>().toList()
-        ..sort((a, b) => b.data.compareTo(a.data));
+      final data = await LocalStorageService.loadList(
+        _storageKey,
+        strict: true,
+      );
+      final notas = data.map((map) {
+        final nota = Nota.fromMap(map);
+        if (nota == null) throw const FormatException('Invalid note');
+        return nota;
+      }).toList()..sort((a, b) => b.data.compareTo(a.data));
       if (!mounted) return;
       setState(() {
         _notas
@@ -170,111 +191,230 @@ class _NotasPageState extends State<NotasPage> {
         _isLoading = false;
       });
     } catch (_) {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _loadFailed = true;
+        });
+      }
     }
   }
 
-  Future<void> _salvarNotas() => LocalStorageService.saveList(
-    _storageKey,
-    _notas.map((nota) => nota.toMap()).toList(growable: false),
-  );
+  /// Descarta, após confirmação, os registros que impedem a carga estrita,
+  /// mantendo as anotações que ainda podem ser lidas.
+  Future<void> _descartarInvalidas() async {
+    if (_isLoading || !_loadFailed || _dialogOpen) return;
+    _marcarDialogoAberto();
+    final confirmar = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        scrollable: true,
+        title: Text(context.l10n.notaDescartarInvalidas),
+        content: Text(context.l10n.notaDescartarInvalidasMensagem),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(context.l10n.cancelar),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(context.l10n.notaDescartar),
+          ),
+        ],
+      ),
+    );
+    if (!mounted) return;
+    setState(() => _dialogOpen = false);
+    if (confirmar != true) return;
+    setState(() => _isLoading = true);
+    final validas = <Nota>[];
+    try {
+      try {
+        for (final map in await LocalStorageService.loadList(_storageKey)) {
+          try {
+            final nota = Nota.fromMap(map);
+            if (nota != null) validas.add(nota);
+          } on TypeError {
+            // Registro com campo de tipo inesperado: descartado.
+          }
+        }
+      } on FormatException {
+        // JSON ilegível: não há registro recuperável.
+      } on TypeError {
+        // Conteúdo não é uma lista: não há registro recuperável.
+      }
+      // Qualquer outra falha (ex.: leitura indisponível) interrompe o
+      // descarte sem gravar, para não apagar dados que ainda existem.
+      await LocalStorageService.saveList(
+        _storageKey,
+        validas.map((nota) => nota.toMap()).toList(growable: false),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.erroSalvar)));
+      return;
+    }
+    await _carregarNotas();
+  }
+
+  Future<bool> _salvarNotas(
+    List<Nota> candidatas, {
+    bool showFeedback = true,
+  }) async {
+    if (!_canChange) return false;
+    setState(() => _isSaving = true);
+    try {
+      await LocalStorageService.saveList(
+        _storageKey,
+        candidatas.map((nota) => nota.toMap()).toList(growable: false),
+      );
+      if (!mounted) return false;
+      setState(() {
+        _notas
+          ..clear()
+          ..addAll(candidatas);
+      });
+      return true;
+    } catch (_) {
+      if (mounted && showFeedback && !_dialogOpen) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.erroSalvar)));
+      }
+      return false;
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
 
   Future<void> _criarOuEditarNota({Nota? nota}) async {
-    setState(() => _dialogOpen = true);
+    if (!_canChange || _dialogOpen) return;
+    _marcarDialogoAberto();
     var textoEditado = nota?.texto ?? '';
-    var categoriaEditada = nota?.categoria ?? 'Geral';
-    final resultado = await showDialog<_NotaFormResult>(
+    var categoria = nota?.categoria ?? 'Geral';
+    var saving = false;
+    var failed = false;
+    await showDialog<void>(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: Text(
-            nota == null ? context.l10n.notaNova : context.l10n.notaEditar,
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextField(
-                controller: TextEditingController(text: textoEditado),
-                onChanged: (value) => textoEditado = value,
-                minLines: 5,
-                maxLines: 10,
-                autofocus: true,
-                decoration: InputDecoration(hintText: context.l10n.notaDica),
-              ),
-              const SizedBox(height: 14),
-              DropdownButtonFormField<String>(
-                initialValue: categoriaEditada,
-                decoration: InputDecoration(
-                  labelText: context.l10n.notaCategoria,
+      barrierDismissible: false,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, update) => PopScope(
+          canPop: !saving,
+          child: AlertDialog(
+            scrollable: true,
+            title: Text(
+              nota == null ? context.l10n.notaNova : context.l10n.notaEditar,
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  initialValue: textoEditado,
+                  onChanged: (value) => textoEditado = value,
+                  enabled: !saving,
+                  minLines: 3,
+                  maxLines: 10,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    labelText: context.l10n.notaTexto,
+                    hintText: context.l10n.notaDica,
+                  ),
                 ),
-                items: kCategoriasAnotacao
-                    .map(
-                      (item) => DropdownMenuItem(
-                        value: item,
-                        child: Text(context.l10n.categoriaNota(item)),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    setDialogState(() => categoriaEditada = value);
-                  }
-                },
+                const SizedBox(height: 14),
+                DropdownButtonFormField<String>(
+                  initialValue: categoria,
+                  isExpanded: true,
+                  decoration: InputDecoration(
+                    labelText: context.l10n.notaCategoria,
+                  ),
+                  items: kCategoriasAnotacao
+                      .map(
+                        (item) => DropdownMenuItem(
+                          value: item,
+                          child: Text(context.l10n.categoriaNota(item)),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: saving
+                      ? null
+                      : (value) {
+                          if (value != null) update(() => categoria = value);
+                        },
+                ),
+                if (failed)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: Semantics(
+                      liveRegion: true,
+                      child: Text(context.l10n.erroSalvar),
+                    ),
+                  ),
+                if (saving) const LinearProgressIndicator(),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: saving ? null : () => Navigator.pop(dialogContext),
+                child: Text(context.l10n.cancelar),
+              ),
+              ElevatedButton(
+                onPressed: saving
+                    ? null
+                    : () async {
+                        final texto = textoEditado.trim();
+                        if (texto.isEmpty) return;
+                        update(() {
+                          saving = true;
+                          failed = false;
+                        });
+                        final agora = DateTime.now();
+                        final candidatas = List<Nota>.of(_notas);
+                        if (nota == null) {
+                          candidatas.insert(
+                            0,
+                            Nota(
+                              id: 'nota_${agora.microsecondsSinceEpoch}',
+                              texto: texto,
+                              data: agora,
+                              categoria: categoria,
+                            ),
+                          );
+                        } else {
+                          final index = candidatas.indexWhere(
+                            (item) => item.id == nota.id,
+                          );
+                          if (index >= 0) {
+                            candidatas[index] = nota.copyWith(
+                              texto: texto,
+                              data: agora,
+                              categoria: categoria,
+                            );
+                          }
+                        }
+                        final saved = await _salvarNotas(candidatas);
+                        if (!context.mounted) return;
+                        update(() {
+                          saving = false;
+                          failed = !saved;
+                        });
+                        if (saved) Navigator.pop(dialogContext);
+                      },
+                child: Text(context.l10n.salvar),
               ),
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(context.l10n.cancelar),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                final texto = textoEditado.trim();
-                if (texto.isNotEmpty) {
-                  Navigator.pop(
-                    context,
-                    _NotaFormResult(texto: texto, categoria: categoriaEditada),
-                  );
-                }
-              },
-              child: Text(context.l10n.salvar),
-            ),
-          ],
         ),
       ),
     );
-
     if (mounted) setState(() => _dialogOpen = false);
-    if (!mounted || resultado == null) return;
-    final agora = DateTime.now();
-    setState(() {
-      if (nota == null) {
-        _notas.insert(
-          0,
-          Nota(
-            id: 'nota_${agora.microsecondsSinceEpoch}',
-            texto: resultado.texto,
-            data: agora,
-            categoria: resultado.categoria,
-          ),
-        );
-      } else {
-        final index = _notas.indexWhere((item) => item.id == nota.id);
-        if (index >= 0) {
-          _notas[index] = nota.copyWith(
-            texto: resultado.texto,
-            data: agora,
-            categoria: resultado.categoria,
-          );
-        }
-      }
-    });
-    await _salvarNotas();
   }
 
   Future<void> _excluirNota(Nota nota) async {
+    if (!_canChange || _dialogOpen) return;
+    _marcarDialogoAberto();
     final confirmar = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -292,72 +432,113 @@ class _NotasPageState extends State<NotasPage> {
         ],
       ),
     );
-    if (!mounted || confirmar != true) return;
-    setState(() => _notas.removeWhere((item) => item.id == nota.id));
-    await _salvarNotas();
+    if (!mounted) return;
+    setState(() => _dialogOpen = false);
+    if (confirmar != true || !_canChange) return;
+    await _salvarNotas(_notas.where((item) => item.id != nota.id).toList());
   }
 
-  Future<void> _alternarFixada(Nota nota) async {
-    setState(() {
-      final index = _notas.indexWhere((item) => item.id == nota.id);
-      if (index >= 0) {
-        _notas[index] = nota.copyWith(fixada: !nota.fixada);
-      }
-    });
-    await _salvarNotas();
+  Future<bool> _alternarFixada(Nota nota, {bool showFeedback = true}) async {
+    if (!_canChange || _dialogOpen) return false;
+    return _salvarNotas(
+      _notas
+          .map(
+            (item) =>
+                item.id == nota.id ? item.copyWith(fixada: !item.fixada) : item,
+          )
+          .toList(),
+      showFeedback: showFeedback,
+    );
+  }
+
+  /// Tira o foco da busca antes de abrir um diálogo, para que o teclado não
+  /// reabra quando o diálogo fechar.
+  void _marcarDialogoAberto() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() => _dialogOpen = true);
   }
 
   void _gerenciarFixadas() {
+    if (!_canChange) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    var failed = false;
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
+      isScrollControlled: true,
       builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) => Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                context.l10n.notaGerenciarFixadas,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 8),
-              if (_notas.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  child: Text(context.l10n.notaNenhumaCriada),
-                )
-              else
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 360),
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: _notas
-                        .map(
-                          (nota) => SwitchListTile(
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(
-                              nota.texto,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            subtitle: Text(
-                              context.l10n.categoriaNota(nota.categoria),
-                            ),
-                            value: nota.fixada,
-                            onChanged: (_) async {
-                              await _alternarFixada(nota);
-                              setModalState(() {});
-                            },
-                          ),
-                        )
-                        .toList(),
+        builder: (context, setModalState) => SafeArea(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(context).height * 0.8,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    context.l10n.notaGerenciarFixadas,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
-                ),
-            ],
+                  const SizedBox(height: 8),
+                  if (failed)
+                    Semantics(
+                      liveRegion: true,
+                      child: Text(
+                        context.l10n.erroSalvar,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
+                    ),
+                  if (_notas.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Text(context.l10n.notaNenhumaCriada),
+                    )
+                  else
+                    Flexible(
+                      child: ListView(
+                        shrinkWrap: true,
+                        children: _notas
+                            .map(
+                              (nota) => SwitchListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: Text(
+                                  nota.texto,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                subtitle: Text(
+                                  context.l10n.categoriaNota(nota.categoria),
+                                ),
+                                value: nota.fixada,
+                                onChanged: !_canChange
+                                    ? null
+                                    : (_) async {
+                                        if (!_canChange) return;
+                                        final operation = _alternarFixada(
+                                          nota,
+                                          showFeedback: false,
+                                        );
+                                        setModalState(() => failed = false);
+                                        final saved = await operation;
+                                        if (context.mounted) {
+                                          setModalState(() => failed = !saved);
+                                        }
+                                      },
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -372,19 +553,43 @@ class _NotasPageState extends State<NotasPage> {
     final fixadas = _notasFixadas;
     final l10n = context.l10n;
     final chips = ['Todas', 'Reuniões', 'Laboratórios', 'Planejamento', 'Mais'];
+    final canCreate = _canChange && !_dialogOpen;
+    // Em altura reduzida (paisagem), o FAB compacto cobre menos conteúdo.
+    final compactHeight = MediaQuery.sizeOf(context).height < 400;
+    // Com fonte ampliada, o rótulo do FAB estendido não cabe em retrato.
+    final compactFab =
+        compactHeight || MediaQuery.textScalerOf(context).scale(14) / 14 > 1.2;
 
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         tooltip: l10n.notaNova,
-        onPressed: () => _criarOuEditarNota(),
+        onPressed: canCreate ? () => _criarOuEditarNota() : null,
+        isExtended: !compactFab,
+        backgroundColor: canCreate ? null : colors.surfaceContainerHighest,
+        foregroundColor: canCreate
+            ? null
+            : colors.onSurface.withValues(alpha: 0.38),
+        elevation: canCreate ? null : 0,
         icon: const SigadIcon(SigadIcons.adicionar),
         label: Text(l10n.notaNova),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 96),
         children: [
-          if (!_dialogOpen)
+          SizedBox(
+            height: 4,
+            child: _isSaving
+                ? LinearProgressIndicator(semanticsLabel: l10n.notaSalvando)
+                : null,
+          ),
+          if (_loadFailed)
+            _LoadError(
+              onRetry: _carregarNotas,
+              onDiscard: _dialogOpen ? null : _descartarInvalidas,
+            )
+          else ...[
             TextField(
+              controller: _buscaController,
               onChanged: (value) => setState(() => _busca = value),
               decoration: InputDecoration(
                 hintText: l10n.notaBuscar,
@@ -394,153 +599,184 @@ class _NotasPageState extends State<NotasPage> {
                 fillColor: colors.surface,
               ),
             ),
-          const SizedBox(height: 14),
-          SizedBox(
-            height: 40,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: chips.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 8),
-              itemBuilder: (context, index) {
-                final chip = chips[index];
-                final selected = chip == 'Mais'
-                    ? !chips.take(4).contains(_categoriaFiltro) &&
-                          _categoriaFiltro != 'Todas'
-                    : _categoriaFiltro == chip;
-                final tone = sigadToneForIndex(index);
-                return ChoiceChip(
-                  label: Text(l10n.categoriaNota(chip)),
-                  selected: selected,
-                  selectedColor: tone,
-                  labelStyle: TextStyle(
-                    color: selected ? Colors.white : colors.onSurface,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  onSelected: (_) {
-                    if (chip == 'Mais') {
-                      _abrirMaisCategorias();
-                    } else {
-                      setState(() => _categoriaFiltro = chip);
-                    }
-                  },
-                );
-              },
+            const SizedBox(height: 14),
+            SizedBox(
+              height: 48 * MediaQuery.textScalerOf(context).scale(14) / 14,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: chips.length,
+                separatorBuilder: (_, _) => const SizedBox(width: 8),
+                itemBuilder: (context, index) {
+                  final chip = chips[index];
+                  final selected = chip == 'Mais'
+                      ? !chips.take(4).contains(_categoriaFiltro) &&
+                            _categoriaFiltro != 'Todas'
+                      : _categoriaFiltro == chip;
+                  final tone = sigadToneForIndex(index);
+                  return ChoiceChip(
+                    label: Text(l10n.categoriaNota(chip)),
+                    selected: selected,
+                    selectedColor: tone,
+                    labelStyle: TextStyle(
+                      color: selected ? Colors.white : colors.onSurface,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    onSelected: (_) {
+                      if (chip == 'Mais') {
+                        _abrirMaisCategorias();
+                      } else {
+                        setState(() => _categoriaFiltro = chip);
+                      }
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
-          if (fixadas.isNotEmpty) ...[
-            Row(
-              children: [
-                const SigadIcon(SigadIcons.fixar, color: SigadColors.brand),
-                const SizedBox(width: 8),
-                Text(
-                  l10n.notaFixadas,
-                  style: textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
+            const SizedBox(height: 20),
+            if (fixadas.isNotEmpty) ...[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const SigadIcon(
+                        SigadIcons.fixar,
+                        color: SigadColors.brand,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          l10n.notaFixadas,
+                          style: textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    // Reserva a faixa do FAB compacto em telas baixas.
+                    padding: EdgeInsets.only(right: compactFab ? 64 : 0),
+                    child: TextButton(
+                      onPressed: _canChange ? _gerenciarFixadas : null,
+                      child: Text(context.l10n.notaGerenciarFixadas),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              ...fixadas.map(
+                (nota) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _NoteCard(
+                    enabled: _canChange && !_dialogOpen,
+                    nota: nota,
+                    destacada: true,
+                    onEdit: () => _criarOuEditarNota(nota: nota),
+                    onDelete: () => _excluirNota(nota),
+                    onTogglePin: () => _alternarFixada(nota),
                   ),
                 ),
-                const Spacer(),
-                TextButton(
-                  onPressed: _gerenciarFixadas,
-                  child: Text(context.l10n.notaGerenciarFixadas),
+              ),
+              const SizedBox(height: 12),
+            ],
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const SigadIcon(
+                      SigadIcons.editarNota,
+                      color: SigadColors.brand,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        l10n.notaTodasAnotacoes,
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                PopupMenuButton<bool>(
+                  initialValue: _maisRecentesPrimeiro,
+                  onSelected: (value) =>
+                      setState(() => _maisRecentesPrimeiro = value),
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: true,
+                      child: Text(l10n.notaMaisRecentes),
+                    ),
+                    PopupMenuItem(
+                      value: false,
+                      child: Text(l10n.notaMaisAntigas),
+                    ),
+                  ],
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 48),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            l10n.notaOrdenarPor(
+                              _maisRecentesPrimeiro
+                                  ? l10n.notaMaisRecentes
+                                  : l10n.notaMaisAntigas,
+                            ),
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colors.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                        const SigadIcon(SigadIcons.chevronBaixo, size: 18),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            ...fixadas.map(
-              (nota) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _NoteCard(
-                  nota: nota,
-                  destacada: true,
-                  onEdit: () => _criarOuEditarNota(nota: nota),
-                  onDelete: () => _excluirNota(nota),
-                  onTogglePin: () => _alternarFixada(nota),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-          ],
-          Row(
-            children: [
-              const SigadIcon(SigadIcons.editarNota, color: SigadColors.brand),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  l10n.notaTodasAnotacoes,
-                  style: textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-              PopupMenuButton<bool>(
-                initialValue: _maisRecentesPrimeiro,
-                onSelected: (value) =>
-                    setState(() => _maisRecentesPrimeiro = value),
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: true,
-                    child: Text(l10n.notaMaisRecentes),
-                  ),
-                  PopupMenuItem(
-                    value: false,
-                    child: Text(l10n.notaMaisAntigas),
-                  ),
-                ],
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+            if (_isLoading)
+              const SizedBox(
+                height: 280,
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else if (_notas.isEmpty)
+              _EmptyNotes(
+                onCreate: canCreate ? () => _criarOuEditarNota() : null,
+              )
+            else if (notas.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 56),
+                child: Column(
                   children: [
-                    Text(
-                      l10n.notaOrdenarPor(
-                        _maisRecentesPrimeiro
-                            ? l10n.notaMaisRecentes
-                            : l10n.notaMaisAntigas,
-                      ),
-                      style: textTheme.bodySmall?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
+                    SigadIcon(
+                      SigadIcons.buscarVazio,
+                      size: 48,
+                      color: colors.outline,
                     ),
-                    const SigadIcon(SigadIcons.chevronBaixo, size: 18),
+                    const SizedBox(height: 12),
+                    Text(l10n.notaNenhumaEncontrada),
                   ],
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          if (_isLoading)
-            const SizedBox(
-              height: 280,
-              child: Center(child: CircularProgressIndicator()),
-            )
-          else if (_notas.isEmpty)
-            _EmptyNotes(onCreate: () => _criarOuEditarNota())
-          else if (notas.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 56),
-              child: Column(
-                children: [
-                  SigadIcon(
-                    SigadIcons.buscarVazio,
-                    size: 48,
-                    color: colors.outline,
+              )
+            else
+              ...notas.map(
+                (nota) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _NoteCard(
+                    enabled: _canChange && !_dialogOpen,
+                    nota: nota,
+                    onEdit: () => _criarOuEditarNota(nota: nota),
+                    onDelete: () => _excluirNota(nota),
+                    onTogglePin: () => _alternarFixada(nota),
                   ),
-                  const SizedBox(height: 12),
-                  Text(l10n.notaNenhumaEncontrada),
-                ],
-              ),
-            )
-          else
-            ...notas.map(
-              (nota) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _NoteCard(
-                  nota: nota,
-                  onEdit: () => _criarOuEditarNota(nota: nota),
-                  onDelete: () => _excluirNota(nota),
-                  onTogglePin: () => _alternarFixada(nota),
                 ),
               ),
-            ),
+          ],
         ],
       ),
     );
@@ -580,17 +816,55 @@ class _NotasPageState extends State<NotasPage> {
   }
 }
 
-class _NotaFormResult {
-  const _NotaFormResult({required this.texto, required this.categoria});
+class _LoadError extends StatelessWidget {
+  const _LoadError({required this.onRetry, required this.onDiscard});
 
-  final String texto;
-  final String categoria;
+  final VoidCallback onRetry;
+  final VoidCallback? onDiscard;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 32),
+      child: Column(
+        children: [
+          SigadIcon(SigadIcons.aviso, size: 48, color: colors.error),
+          const SizedBox(height: 12),
+          Semantics(
+            liveRegion: true,
+            child: Text(
+              context.l10n.notaErroCarregar,
+              style: Theme.of(context).textTheme.bodyLarge,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              FilledButton(
+                onPressed: onRetry,
+                child: Text(context.l10n.tentarNovamente),
+              ),
+              OutlinedButton(
+                onPressed: onDiscard,
+                child: Text(context.l10n.notaDescartarInvalidas),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _EmptyNotes extends StatelessWidget {
   const _EmptyNotes({required this.onCreate});
 
-  final VoidCallback onCreate;
+  final VoidCallback? onCreate;
 
   @override
   Widget build(BuildContext context) {
@@ -643,6 +917,7 @@ class _NoteCard extends StatelessWidget {
     required this.onDelete,
     required this.onTogglePin,
     this.destacada = false,
+    this.enabled = true,
   });
 
   final Nota nota;
@@ -650,6 +925,7 @@ class _NoteCard extends StatelessWidget {
   final VoidCallback onDelete;
   final VoidCallback onTogglePin;
   final bool destacada;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -711,7 +987,7 @@ class _NoteCard extends StatelessWidget {
                   tooltip: nota.fixada
                       ? context.l10n.notaDesafixar
                       : context.l10n.notaFixar,
-                  onPressed: onTogglePin,
+                  onPressed: enabled ? onTogglePin : null,
                   icon: SigadIcon(
                     nota.fixada
                         ? SigadIcons.marcadorPreenchido
@@ -724,7 +1000,9 @@ class _NoteCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Row(
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 6,
               children: [
                 SigadIcon(
                   SigadIcons.relogio,
@@ -738,15 +1016,14 @@ class _NoteCard extends StatelessWidget {
                     color: colors.onSurfaceVariant,
                   ),
                 ),
-                const Spacer(),
                 IconButton(
                   tooltip: context.l10n.notaEditar,
-                  onPressed: onEdit,
+                  onPressed: enabled ? onEdit : null,
                   icon: const SigadIcon(SigadIcons.editar),
                 ),
                 IconButton(
                   tooltip: context.l10n.notaExcluir,
-                  onPressed: onDelete,
+                  onPressed: enabled ? onDelete : null,
                   icon: SigadIcon(SigadIcons.excluir, color: colors.error),
                 ),
               ],

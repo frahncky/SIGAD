@@ -12,19 +12,19 @@ flutter test
 ### Dev
 
 ```bash
-flutter run --flavor dev --dart-define=SIGAD_FLAVOR=dev --dart-define=SIGAD_DATA_SOURCE=local
+flutter run --dart-define=SIGAD_FLAVOR=dev --dart-define=SIGAD_DATA_SOURCE=local
 ```
 
 ### Staging
 
 ```bash
-flutter run --flavor staging --dart-define=SIGAD_FLAVOR=staging --dart-define=SIGAD_DATA_SOURCE=remote
+flutter run --dart-define=SIGAD_FLAVOR=staging --dart-define=SIGAD_DATA_SOURCE=remote
 ```
 
 ### Prod
 
 ```bash
-flutter run --flavor prod --dart-define=SIGAD_FLAVOR=prod --dart-define=SIGAD_DATA_SOURCE=remote
+flutter run --dart-define=SIGAD_FLAVOR=prod --dart-define=SIGAD_DATA_SOURCE=remote
 ```
 
 ## 3) Observabilidade
@@ -44,16 +44,23 @@ Opcional para troubleshooting local:
 
 ## 4) Build para distribuicao
 
+`SIGAD_FLAVOR` controla opções do aplicativo; não há `productFlavors` nativos.
+O applicationId institucional está **pendente**. Antes de compilar release,
+fornecer o identificador aprovado e a assinatura conforme
+[ANDROID_RELEASE.md](docs/ANDROID_RELEASE.md). A configuração incompleta
+bloqueia release, sem recorrer à chave debug. Não incluir senhas ou chaves no Git.
+Login e backend também dependem da [homologação institucional](docs/HOMOLOGACAO_INSTITUCIONAL.md).
+
 ### Android (AAB)
 
 ```bash
-flutter build appbundle --flavor prod --dart-define=SIGAD_FLAVOR=prod
+flutter build appbundle --release --dart-define=SIGAD_FLAVOR=prod --dart-define=SIGAD_DATA_SOURCE=remote
 ```
 
 ### Android (APK)
 
 ```bash
-flutter build apk --flavor prod --dart-define=SIGAD_FLAVOR=prod
+flutter build apk --release --dart-define=SIGAD_FLAVOR=prod --dart-define=SIGAD_DATA_SOURCE=remote
 ```
 
 ## 5) Checklist de publicacao
@@ -77,9 +84,17 @@ Entradas:
 
 O workflow executa:
 
-1. quality gate (format, analyze, test)
-2. bump de versao no `pubspec.yaml`
-3. preparacao de secao no `CHANGELOG.md`
-4. commit e tag `vX.Y.Z`
-5. build AAB
-6. criacao de GitHub Release com artefato
+1. validação de versão, identificador e segredos de assinatura;
+2. quality gate (format, analyze, test);
+3. bump de versão e preparação do changelog no checkout;
+4. build AAB e upload do artefato;
+5. commit, push e tag `vX.Y.Z`, somente após build bem-sucedido;
+6. criação de GitHub Release com artefato e limpeza da chave temporária.
+
+Configuração do repositório: variável `SIGAD_ANDROID_APPLICATION_ID`; secrets
+`SIGAD_ANDROID_KEYSTORE_BASE64`, `SIGAD_ANDROID_KEYSTORE_PASSWORD`,
+`SIGAD_ANDROID_KEY_ALIAS` e `SIGAD_ANDROID_KEY_PASSWORD`.
+O arquivo de assinatura é reconstruído somente no diretório temporário do runner.
+Nenhuma configuração ou execução remota foi realizada durante esta preparação.
+O acionamento manual desse workflow publica alterações e artefatos e exige
+autorização institucional para distribuição.

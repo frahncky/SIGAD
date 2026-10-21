@@ -108,9 +108,10 @@ flutter run --dart-define=SIGAD_FLAVOR=dev
 flutter run --dart-define=SIGAD_FLAVOR=staging
 ```
 
-**Não publicar** a versão Android release atual: o identificador do
-aplicativo é provisório e a assinatura release ainda usa a chave debug.
-Esses bloqueadores exigem configuração institucional antes da distribuição.
+**Distribuição Android pendente:** o identificador institucional e a chave de
+assinatura ainda precisam ser fornecidos. O release bloqueia configuração
+ausente e não utiliza a assinatura debug. Consulte a
+[preparação de release Android](docs/ANDROID_RELEASE.md).
 
 </details>
 
