@@ -98,18 +98,6 @@ abstract class AppLocalizations {
     Locale('pt'),
   ];
 
-  /// No description provided for @notaTexto.
-  ///
-  /// In pt, this message translates to:
-  /// **'Anotação'**
-  String get notaTexto;
-
-  /// No description provided for @notaErroCarregar.
-  ///
-  /// In pt, this message translates to:
-  /// **'Não foi possível ler as anotações salvas. A edição está bloqueada para preservar os dados.'**
-  String get notaErroCarregar;
-
   /// No description provided for @cancelar.
   ///
   /// In pt, this message translates to:
@@ -2748,6 +2736,42 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Fixar anotação'**
   String get notaFixar;
+
+  /// No description provided for @notaTexto.
+  ///
+  /// In pt, this message translates to:
+  /// **'Anotação'**
+  String get notaTexto;
+
+  /// No description provided for @notaErroCarregar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível ler as anotações salvas. A edição está bloqueada para preservar os dados.'**
+  String get notaErroCarregar;
+
+  /// No description provided for @notaDescartarInvalidas.
+  ///
+  /// In pt, this message translates to:
+  /// **'Descartar registros inválidos'**
+  String get notaDescartarInvalidas;
+
+  /// No description provided for @notaDescartarInvalidasMensagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'Os registros que não puderem ser lidos serão removidos deste dispositivo. As anotações válidas serão mantidas. Esta ação não pode ser desfeita.'**
+  String get notaDescartarInvalidasMensagem;
+
+  /// No description provided for @notaDescartar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Descartar'**
+  String get notaDescartar;
+
+  /// No description provided for @notaSalvando.
+  ///
+  /// In pt, this message translates to:
+  /// **'Salvando anotações'**
+  String get notaSalvando;
 
   /// No description provided for @notaDataHora.
   ///

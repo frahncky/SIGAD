@@ -9,13 +9,6 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get notaTexto => 'Note';
-
-  @override
-  String get notaErroCarregar =>
-      'Could not read saved notes. Editing is disabled to preserve your data.';
-
-  @override
   String get cancelar => 'Cancel';
 
   @override
@@ -1571,6 +1564,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notaFixar => 'Pin note';
+
+  @override
+  String get notaTexto => 'Note';
+
+  @override
+  String get notaErroCarregar =>
+      'Could not read saved notes. Editing is disabled to preserve your data.';
+
+  @override
+  String get notaDescartarInvalidas => 'Discard invalid records';
+
+  @override
+  String get notaDescartarInvalidasMensagem =>
+      'Records that cannot be read will be removed from this device. Valid notes will be kept. This action cannot be undone.';
+
+  @override
+  String get notaDescartar => 'Discard';
+
+  @override
+  String get notaSalvando => 'Saving notes';
 
   @override
   String notaDataHora(String dia, String mes, String hora) {

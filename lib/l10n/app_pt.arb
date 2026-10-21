@@ -1,6 +1,4 @@
 {
-  "notaTexto": "Anotação",
-  "notaErroCarregar": "Não foi possível ler as anotações salvas. A edição está bloqueada para preservar os dados.",
   "@@locale": "pt",
   "cancelar": "Cancelar",
   "nomeSaudacao": "Nome na saudação",
@@ -892,6 +890,12 @@
   "notaCriarPrimeira": "Criar primeira anotação",
   "notaDesafixar": "Desafixar",
   "notaFixar": "Fixar anotação",
+  "notaTexto": "Anotação",
+  "notaErroCarregar": "Não foi possível ler as anotações salvas. A edição está bloqueada para preservar os dados.",
+  "notaDescartarInvalidas": "Descartar registros inválidos",
+  "notaDescartarInvalidasMensagem": "Os registros que não puderem ser lidos serão removidos deste dispositivo. As anotações válidas serão mantidas. Esta ação não pode ser desfeita.",
+  "notaDescartar": "Descartar",
+  "notaSalvando": "Salvando anotações",
   "notaDataHora": "{dia}/{mes} às {hora}",
   "@notaDataHora": {
     "placeholders": {

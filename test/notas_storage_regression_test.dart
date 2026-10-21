@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sigad/core/services/local_storage_service.dart';
 import 'package:sigad/features/notas/presentation/pages/notas_page.dart';
 
 void main() {
@@ -161,7 +162,104 @@ void main() {
     },
   );
 
-  for (final invalid in ['{', '[42]', '[{"texto":"","data":"2026-10-16"}]']) {
+  testWidgets('cancelar exclusão preserva busca visível e aplicada', (
+    tester,
+  ) async {
+    raw = jsonEncode([
+      for (final texto in ['numero 1', 'numero 2'])
+        {'id': texto, 'texto': texto, 'data': '2026-10-16T12:00:00'},
+    ]);
+    await mount(tester);
+    await tester.enterText(find.byType(TextField), 'numero 1');
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Excluir anotação'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(TextButton, 'Cancelar'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      'numero 1',
+    );
+    expect(find.text('numero 2'), findsNothing);
+  });
+
+  testWidgets('falha ao fixar pelo sheet aparece dentro do sheet', (
+    tester,
+  ) async {
+    raw = original.replaceFirst('"fixada":false', '"fixada":true');
+    await mount(tester);
+    await tester.tap(find.text('Gerenciar fixadas'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(SwitchListTile));
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(
+        of: find.byType(BottomSheet),
+        matching: find.text('Não foi possível salvar. Tente novamente.'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.byType(SnackBar), findsNothing);
+  });
+
+  for (final (invalid, kept) in [
+    ('{}', 0),
+    ('{', 0),
+    ('[42, ${original.substring(1, original.length - 1)}]', 1),
+  ]) {
+    testWidgets('descartar inválidos em $invalid mantém $kept válidas', (
+      tester,
+    ) async {
+      raw = invalid;
+      fail = false;
+      await mount(tester);
+      await tester.tap(find.text('Descartar registros inválidos'));
+      await tester.pumpAndSettle();
+      expect(writes, 0);
+      await tester.tap(find.widgetWithText(TextButton, 'Descartar'));
+      await tester.pumpAndSettle();
+      expect(writes, 1);
+      expect((jsonDecode(raw) as List).length, kept);
+      expect(find.text('Tentar novamente'), findsNothing);
+      expect(
+        find.text('Anotação original'),
+        kept == 1 ? findsOneWidget : findsNothing,
+      );
+    });
+  }
+
+  testWidgets('cancelar descarte não grava', (tester) async {
+    raw = '[42]';
+    await mount(tester);
+    await tester.tap(find.text('Descartar registros inválidos'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(TextButton, 'Cancelar'));
+    await tester.pumpAndSettle();
+    expect(writes, 0);
+    expect(raw, '[42]');
+    expect(find.text('Tentar novamente'), findsOneWidget);
+  });
+
+  test(
+    'loadList strict rejeita elementos não-mapa; padrão os descarta',
+    () async {
+      raw = '[42, {"a": 1}]';
+      expect(
+        LocalStorageService.loadList('sigad_notas', strict: true),
+        throwsFormatException,
+      );
+      expect(await LocalStorageService.loadList('sigad_notas'), [
+        {'a': 1},
+      ]);
+    },
+  );
+
+  for (final invalid in [
+    '{',
+    '{}',
+    '[42]',
+    '[{"texto":"","data":"2026-10-16"}]',
+  ]) {
     testWidgets(
       'carga inválida $invalid bloqueia escrita e permite recuperar',
       (tester) async {

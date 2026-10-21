@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -59,7 +61,62 @@ void main() {
           expect(find.byType(AlertDialog), findsNothing);
           expect(tester.takeException(), isNull, reason: 'salvar com teclado');
         });
+
+        testWidgets(
+          'fixadas e erro de carga ${size.width}x${size.height} fonte $scale',
+          (tester) async {
+            SharedPreferences.setMockInitialValues({
+              'sigad_notas': jsonEncode([
+                for (var i = 0; i < 8; i++)
+                  {
+                    'id': 'n$i',
+                    'texto':
+                        'Anotação $i com texto longo para testar quebra '
+                        'e reticências no card e na lista de fixadas.',
+                    'data': '2026-10-${10 + i}T08:00:00',
+                    'categoria': kCategoriasAnotacao[i % 6],
+                    'fixada': i < 3,
+                  },
+              ]),
+            });
+            tester.view.devicePixelRatio = 1;
+            tester.view.physicalSize = size;
+            addTearDown(tester.view.resetPhysicalSize);
+            addTearDown(tester.view.resetDevicePixelRatio);
+            await tester.pumpWidget(app(scale));
+            await tester.pumpAndSettle();
+            expect(tester.takeException(), isNull, reason: 'lista com notas');
+            final manage = find.text('Gerenciar fixadas');
+            await tester.ensureVisible(manage);
+            await tester.pumpAndSettle();
+            await tester.tap(manage);
+            await tester.pumpAndSettle();
+            expect(find.byType(SwitchListTile), findsWidgets);
+            expect(tester.takeException(), isNull, reason: 'sheet fixadas');
+            Navigator.of(
+              tester.element(find.byType(SwitchListTile).first),
+            ).pop();
+            await tester.pumpAndSettle();
+
+            SharedPreferences.setMockInitialValues({'sigad_notas': '{'});
+            await tester.pumpWidget(const SizedBox());
+            await tester.pumpWidget(app(scale));
+            await tester.pumpAndSettle();
+            expect(find.text('Tentar novamente'), findsOneWidget);
+            expect(find.text('Descartar registros inválidos'), findsOneWidget);
+            expect(find.text('Todas as anotações'), findsNothing);
+            expect(tester.takeException(), isNull, reason: 'erro de carga');
+          },
+        );
       }
     }
   }
 }
+
+Widget app(double scale) => MaterialApp(
+  builder: (context, child) => MediaQuery(
+    data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)),
+    child: child!,
+  ),
+  home: const NotasPage(),
+);
