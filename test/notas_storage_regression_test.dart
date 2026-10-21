@@ -15,6 +15,7 @@ void main() {
   late int writes;
   late bool fail;
   late bool throwOnWrite;
+  late bool throwOnRead;
   Completer<bool>? pending;
   final original = jsonEncode([
     {
@@ -32,11 +33,15 @@ void main() {
     writes = 0;
     fail = true;
     throwOnWrite = false;
+    throwOnRead = false;
     pending = null;
     binding.defaultBinaryMessenger.setMockMethodCallHandler(channel, (
       call,
     ) async {
-      if (call.method.startsWith('getAll')) return {'flutter.sigad_notas': raw};
+      if (call.method.startsWith('getAll')) {
+        if (throwOnRead) throw PlatformException(code: 'storage_unavailable');
+        return {'flutter.sigad_notas': raw};
+      }
       if (call.method == 'setString') {
         writes++;
         if (throwOnWrite) throw PlatformException(code: 'storage_unavailable');
@@ -227,6 +232,42 @@ void main() {
       );
     });
   }
+
+  testWidgets('falha de leitura no descarte não apaga dados', (tester) async {
+    throwOnRead = true;
+    fail = false;
+    await mount(tester);
+    await tester.tap(find.text('Descartar registros inválidos'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(TextButton, 'Descartar'));
+    await tester.pumpAndSettle();
+    expect(writes, 0);
+    expect(raw, original);
+    expect(find.text('Tentar novamente'), findsOneWidget);
+    expect(
+      find.text('Não foi possível salvar. Tente novamente.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('fechar diálogo não devolve foco nem teclado à busca', (
+    tester,
+  ) async {
+    fail = false;
+    await mount(tester);
+    await tester.tap(find.byType(TextField));
+    await tester.pump();
+    expect(tester.testTextInput.isVisible, isTrue);
+    await tester.tap(find.byTooltip('Excluir anotação'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(TextButton, 'Cancelar'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus,
+      isFalse,
+    );
+    expect(tester.testTextInput.isVisible, isFalse);
+  });
 
   testWidgets('cancelar descarte não grava', (tester) async {
     raw = '[42]';

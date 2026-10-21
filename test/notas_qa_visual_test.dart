@@ -86,6 +86,12 @@ void main() {
             await tester.pumpWidget(app(scale));
             await tester.pumpAndSettle();
             expect(tester.takeException(), isNull, reason: 'lista com notas');
+            final fab = tester.getRect(find.byType(FloatingActionButton));
+            expect(
+              (Offset.zero & size).intersect(fab),
+              fab,
+              reason: 'FAB inteiro na tela',
+            );
             final manage = find.text('Gerenciar fixadas');
             await tester.ensureVisible(manage);
             await tester.pumpAndSettle();

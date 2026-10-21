@@ -204,7 +204,7 @@ class _NotasPageState extends State<NotasPage> {
   /// mantendo as anotações que ainda podem ser lidas.
   Future<void> _descartarInvalidas() async {
     if (_isLoading || !_loadFailed || _dialogOpen) return;
-    setState(() => _dialogOpen = true);
+    _marcarDialogoAberto();
     final confirmar = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -229,16 +229,22 @@ class _NotasPageState extends State<NotasPage> {
     setState(() => _isLoading = true);
     final validas = <Nota>[];
     try {
-      for (final map in await LocalStorageService.loadList(_storageKey)) {
-        try {
-          final nota = Nota.fromMap(map);
-          if (nota != null) validas.add(nota);
-        } catch (_) {}
+      try {
+        for (final map in await LocalStorageService.loadList(_storageKey)) {
+          try {
+            final nota = Nota.fromMap(map);
+            if (nota != null) validas.add(nota);
+          } on TypeError {
+            // Registro com campo de tipo inesperado: descartado.
+          }
+        }
+      } on FormatException {
+        // JSON ilegível: não há registro recuperável.
+      } on TypeError {
+        // Conteúdo não é uma lista: não há registro recuperável.
       }
-    } catch (_) {
-      // Conteúdo ilegível como lista: não há registro recuperável.
-    }
-    try {
+      // Qualquer outra falha (ex.: leitura indisponível) interrompe o
+      // descarte sem gravar, para não apagar dados que ainda existem.
       await LocalStorageService.saveList(
         _storageKey,
         validas.map((nota) => nota.toMap()).toList(growable: false),
@@ -286,7 +292,7 @@ class _NotasPageState extends State<NotasPage> {
 
   Future<void> _criarOuEditarNota({Nota? nota}) async {
     if (!_canChange || _dialogOpen) return;
-    setState(() => _dialogOpen = true);
+    _marcarDialogoAberto();
     var textoEditado = nota?.texto ?? '';
     var categoria = nota?.categoria ?? 'Geral';
     var saving = false;
@@ -408,7 +414,7 @@ class _NotasPageState extends State<NotasPage> {
 
   Future<void> _excluirNota(Nota nota) async {
     if (!_canChange || _dialogOpen) return;
-    setState(() => _dialogOpen = true);
+    _marcarDialogoAberto();
     final confirmar = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -445,8 +451,16 @@ class _NotasPageState extends State<NotasPage> {
     );
   }
 
+  /// Tira o foco da busca antes de abrir um diálogo, para que o teclado não
+  /// reabra quando o diálogo fechar.
+  void _marcarDialogoAberto() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() => _dialogOpen = true);
+  }
+
   void _gerenciarFixadas() {
     if (!_canChange) return;
+    FocusManager.instance.primaryFocus?.unfocus();
     var failed = false;
     showModalBottomSheet(
       context: context,
@@ -542,12 +556,15 @@ class _NotasPageState extends State<NotasPage> {
     final canCreate = _canChange && !_dialogOpen;
     // Em altura reduzida (paisagem), o FAB compacto cobre menos conteúdo.
     final compactHeight = MediaQuery.sizeOf(context).height < 400;
+    // Com fonte ampliada, o rótulo do FAB estendido não cabe em retrato.
+    final compactFab =
+        compactHeight || MediaQuery.textScalerOf(context).scale(14) / 14 > 1.2;
 
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         tooltip: l10n.notaNova,
         onPressed: canCreate ? () => _criarOuEditarNota() : null,
-        isExtended: !compactHeight,
+        isExtended: !compactFab,
         backgroundColor: canCreate ? null : colors.surfaceContainerHighest,
         foregroundColor: canCreate
             ? null
@@ -637,9 +654,13 @@ class _NotasPageState extends State<NotasPage> {
                       ),
                     ],
                   ),
-                  TextButton(
-                    onPressed: _canChange ? _gerenciarFixadas : null,
-                    child: Text(context.l10n.notaGerenciarFixadas),
+                  Padding(
+                    // Reserva a faixa do FAB compacto em telas baixas.
+                    padding: EdgeInsets.only(right: compactFab ? 64 : 0),
+                    child: TextButton(
+                      onPressed: _canChange ? _gerenciarFixadas : null,
+                      child: Text(context.l10n.notaGerenciarFixadas),
+                    ),
                   ),
                 ],
               ),
