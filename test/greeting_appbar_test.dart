@@ -8,6 +8,7 @@ import 'package:sigad/core/models/user.dart';
 import 'package:sigad/core/models/user_role.dart';
 import 'package:sigad/core/services/user_context_provider.dart';
 import 'package:sigad/core/services/greeting_name_provider.dart';
+import 'package:sigad/features/dashboard/presentation/pages/dashboard_page.dart';
 import 'package:sigad/features/home/presentation/pages/home_shell_page.dart';
 import 'package:sigad/shared/widgets/greeting_title.dart';
 
@@ -58,9 +59,9 @@ void main() {
                 ).copyWith(textScaler: TextScaler.linear(scale)),
                 child: child!,
               ),
-              home: const HomeShellPage(
+              home: HomeShellPage(
                 currentRoute: AppRoutes.dashboard,
-                child: SizedBox(),
+                child: DashboardPage(agora: DateTime(2026, 11, 12, 7, 33)),
               ),
             ),
           ),
@@ -69,6 +70,8 @@ void main() {
         expect(find.byType(GreetingTitle), findsOneWidget);
         expect(find.textContaining(longName), findsOneWidget);
         expect(tester.takeException(), isNull);
+        await tester.ensureVisible(find.byType(GreetingTitle));
+        await tester.pumpAndSettle();
         await tester.tap(find.byType(GreetingTitle));
         await tester.pumpAndSettle();
         expect(find.byType(SelectableText), findsOneWidget);

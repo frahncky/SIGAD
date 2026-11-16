@@ -25,8 +25,8 @@ void main() {
       expect(KanbanService.nextId(cards), 3);
     });
 
-    test('valida título do card', () {
-      expect(KanbanService.validateTitulo(' '), 'Informe o título do card');
+    test('valida título da tarefa', () {
+      expect(KanbanService.validateTitulo(' '), 'Informe o título da tarefa');
       expect(KanbanService.validateTitulo('OK'), isNull);
     });
   });

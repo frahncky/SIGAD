@@ -11,6 +11,8 @@ import 'package:sigad/features/kanban/presentation/kanban_l10n.dart';
 import 'package:sigad/features/kanban/presentation/pages/kanban_page.dart';
 import 'package:sigad/l10n/l10n.dart';
 
+import 'helpers/work_items_fixtures.dart';
+
 Future<void> _pump(WidgetTester tester, Widget page, Locale locale) async {
   tester.view.physicalSize = const Size(390, 844);
   tester.view.devicePixelRatio = 1;
@@ -59,25 +61,42 @@ void main() {
   });
 
   testWidgets('quadro de tarefas em português e inglês', (tester) async {
-    await _pump(tester, const KanbanPage(), const Locale('pt'));
-    expect(find.text('Em Progresso'), findsOneWidget);
+    await _pump(
+      tester,
+      KanbanPage(repository: FakeKanbanRepository()),
+      const Locale('pt'),
+    );
+    expect(find.text('Em Progresso · 2'), findsOneWidget);
 
-    await _pump(tester, const KanbanPage(), const Locale('en'));
-    expect(find.text('In Progress'), findsOneWidget);
+    await _pump(
+      tester,
+      KanbanPage(repository: FakeKanbanRepository()),
+      const Locale('en'),
+    );
+    expect(find.text('In Progress · 2'), findsOneWidget);
     expect(find.text('High'), findsWidgets);
 
-    await tester.tap(find.byTooltip('New card'));
+    await tester.tap(find.byTooltip('New task'));
     await tester.pumpAndSettle();
-    expect(find.text('Enter the card title'), findsOneWidget);
+    expect(find.text('Enter the task title'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
   testWidgets('atividades em português e inglês', (tester) async {
-    await _pump(tester, const AtividadesPage(), const Locale('pt'));
-    expect(find.text('Agenda operacional'), findsOneWidget);
+    await _pump(
+      tester,
+      AtividadesPage(repository: FakeAtividadeRepository()),
+      const Locale('pt'),
+    );
+    expect(find.text('Na semana'), findsOneWidget);
+    expect(find.text('Agenda operacional'), findsNothing);
 
-    await _pump(tester, const AtividadesPage(), const Locale('en'));
-    expect(find.text('Operational agenda'), findsOneWidget);
+    await _pump(
+      tester,
+      AtividadesPage(repository: FakeAtividadeRepository()),
+      const Locale('en'),
+    );
+    expect(find.text('This week'), findsOneWidget);
     expect(find.byTooltip('Filter activities'), findsOneWidget);
     expect(find.text('Completed'), findsWidgets);
 

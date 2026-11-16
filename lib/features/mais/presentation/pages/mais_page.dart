@@ -84,7 +84,7 @@ class MaisPage extends StatelessWidget {
               icon: SigadIcons.aviso,
               label: l10n.maisNoticias,
               description: l10n.maisNoticiasDesc,
-              route: AppRoutes.batePapo,
+              route: AppRoutes.mural,
             ),
             _QuickAccessItem(
               icon: SigadIcons.graficoBarras,

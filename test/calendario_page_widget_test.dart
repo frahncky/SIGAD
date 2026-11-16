@@ -142,7 +142,7 @@ void main() {
     },
   );
 
-  testWidgets('filtros empilham sem truncar em 320x568 com texto a 200%', (
+  testWidgets('filtro de laboratório fica acima do calendário, sem truncar', (
     tester,
   ) async {
     configurarTela(tester, const Size(320, 568));
@@ -151,32 +151,27 @@ void main() {
     await tester.pumpWidget(comTextoAmpliado(const CalendarioPage()));
     await tester.pumpAndSettle();
 
-    final departamento = find.text('Departamento');
+    // Filtros sem efeito real (departamento e tipo de item) não aparecem.
+    expect(find.text('Departamento'), findsNothing);
+    expect(find.text('Tipo de item'), findsNothing);
+
+    final filtro = find.bySemanticsLabel(RegExp('^Laboratórios: Todos'));
+    expect(filtro, findsOneWidget);
+    expect(tester.getSize(filtro).width, greaterThan(250));
+    // O filtro vem antes do calendário na rolagem.
+    final topoFiltro = tester.getTopLeft(filtro).dy;
+    final rolagem = find.byType(Scrollable).first;
     await tester.scrollUntilVisible(
-      departamento,
-      300,
-      scrollable: find.byType(Scrollable).first,
+      find.byTooltip('Próximo mês'),
+      200,
+      scrollable: rolagem,
     );
     await tester.pumpAndSettle();
-
-    final tipoItem = find.text('Tipo de item');
-    final laboratorios = find.text('Laboratórios');
-    expect(departamento, findsOneWidget);
-    expect(tipoItem, findsOneWidget);
-    expect(laboratorios, findsOneWidget);
-    expect(find.text('Eletroeletrônica (DEE)'), findsOneWidget);
-
-    final topoDepartamento = tester.getTopLeft(departamento).dy;
-    final topoTipoItem = tester.getTopLeft(tipoItem).dy;
-    final topoLaboratorios = tester.getTopLeft(laboratorios).dy;
-    expect(topoTipoItem, greaterThan(topoDepartamento));
-    expect(topoLaboratorios, greaterThan(topoTipoItem));
-
-    final filtroDepartamento = find.bySemanticsLabel(
-      'Departamento: Eletroeletrônica (DEE)',
+    final deslocamento = tester.state<ScrollableState>(rolagem).position.pixels;
+    expect(
+      tester.getTopLeft(find.byTooltip('Próximo mês')).dy + deslocamento,
+      greaterThan(topoFiltro),
     );
-    expect(filtroDepartamento, findsOneWidget);
-    expect(tester.getSize(filtroDepartamento).width, greaterThan(250));
 
     final ocupacaoLaboratorios = find.text('Ocupação dos laboratórios (hoje)');
     await tester.scrollUntilVisible(
@@ -187,6 +182,58 @@ void main() {
     await tester.pumpAndSettle();
     expect(ocupacaoLaboratorios, findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('resumo usa a semana útil e só mostra dados reais', (
+    tester,
+  ) async {
+    configurarTela(tester, const Size(390, 844));
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light(),
+        home: const Scaffold(body: CalendarioPage()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final agora = DateTime.now();
+    final deslocamento = agora.weekday >= DateTime.saturday
+        ? 7 - (agora.weekday - DateTime.monday)
+        : -(agora.weekday - DateTime.monday);
+    final segunda = DateTime(agora.year, agora.month, agora.day + deslocamento);
+    final sexta = DateTime(segunda.year, segunda.month, segunda.day + 4);
+    final resumo = find.byKey(const Key('calendario-resumo-semana'));
+    final fimFormatado = DateFormat.MMMMd('pt_BR').format(sexta);
+    expect(
+      find.descendant(of: resumo, matching: find.textContaining(fimFormatado)),
+      findsOneWidget,
+    );
+    expect(find.descendant(of: resumo, matching: find.text('—')), findsNothing);
+    expect(find.text('Eventos agendados'), findsNothing);
+    expect(find.text('Reunião marcada'), findsNothing);
+  });
+
+  testWidgets('mês sem reservas não exibe marcadores fixos', (tester) async {
+    configurarTela(tester, const Size(390, 844));
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light(),
+        home: const Scaffold(body: CalendarioPage()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Avança dois meses: as reservas padrão são do mês atual.
+    for (var i = 0; i < 2; i++) {
+      await tester.tap(find.byTooltip('Próximo mês'));
+      await tester.pumpAndSettle();
+    }
+    final widget = tester.widget<CalendarioMesWidget>(
+      find.byType(CalendarioMesWidget),
+    );
+    expect(widget.marcadores, isEmpty);
   });
 
   testWidgets(
@@ -254,9 +301,8 @@ void main() {
         ).format(data);
         final dataCapitalizada =
             dataFormatada[0].toUpperCase() + dataFormatada.substring(1);
-        // A contagem no rótulo inclui marcadores fixos do mês (ex.: dia 22),
-        // então o dia é localizado só pela data; as 18 reservas são
-        // conferidas pela lista da agenda completa.
+        // O dia é localizado só pela data; as 18 reservas são conferidas
+        // pela lista da agenda completa.
         final dia = find.bySemanticsLabel(
           RegExp('^${RegExp.escape(dataCapitalizada)},'),
         );

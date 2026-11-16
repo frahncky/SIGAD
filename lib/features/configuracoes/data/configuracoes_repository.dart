@@ -1,5 +1,6 @@
 import '../../../core/services/local_storage_service.dart';
 import '../domain/configuracoes_models.dart';
+import '../domain/configuracoes_service.dart';
 
 class ConfiguracoesRepository {
   ConfiguracoesRepository({this.storageKey = 'sigad_configuracoes'});
@@ -17,8 +18,66 @@ class ConfiguracoesRepository {
     }
   }
 
+  /// Grava o objeto inteiro. Prefira [atualizar] ou [salvarPreferencias],
+  /// que partem do valor atual do armazenamento e não sobrescrevem campos
+  /// gravados por outras partes do app (como os convites da agenda).
   Future<void> save(ConfiguracoesData data) {
-    return LocalStorageService.saveMap(storageKey, _toMap(data));
+    return _emSequencia(
+      () => LocalStorageService.saveMap(storageKey, _toMap(data)),
+    );
+  }
+
+  /// Lê o valor atual, aplica [alterar] e grava, sem intercalar com outras
+  /// gravações da mesma chave feitas neste processo.
+  ///
+  /// Se o valor salvo não puder ser lido, lança [FormatException] e não grava
+  /// nada, para não substituir dados existentes pelos valores padrão.
+  Future<void> atualizar(
+    ConfiguracoesData Function(ConfiguracoesData atual) alterar,
+  ) {
+    return _emSequencia(() async {
+      final bruto = await LocalStorageService.loadMap(storageKey);
+      final ConfiguracoesData atual;
+      if (bruto == null) {
+        atual = ConfiguracoesService.defaultData();
+      } else {
+        try {
+          atual = _fromMap(bruto);
+        } catch (error) {
+          throw FormatException('Configurações salvas inválidas: $error');
+        }
+      }
+      await LocalStorageService.saveMap(storageKey, _toMap(alterar(atual)));
+    });
+  }
+
+  /// Grava somente as preferências informadas, preservando todos os demais
+  /// campos já salvos (inclusive os que este repositório não conhece).
+  Future<void> salvarPreferencias({
+    bool? modoDark,
+    String? tamanhoFonte,
+    String? idioma,
+  }) {
+    return _emSequencia(() async {
+      final atual = await LocalStorageService.loadMap(storageKey) ?? {};
+      await LocalStorageService.saveMap(storageKey, {
+        ...atual,
+        'modoDark': ?modoDark,
+        'tamanhoFonte': ?tamanhoFonte,
+        'idioma': ?idioma,
+      });
+    });
+  }
+
+  /// Fila de gravações por chave: cada leitura-alteração-gravação espera a
+  /// anterior terminar, para que uma não apague o que a outra gravou.
+  static final Map<String, Future<void>> _filas = {};
+
+  Future<T> _emSequencia<T>(Future<T> Function() acao) {
+    final anterior = _filas[storageKey] ?? Future<void>.value();
+    final resultado = anterior.then((_) => acao());
+    _filas[storageKey] = resultado.then<void>((_) {}, onError: (_) {});
+    return resultado;
   }
 
   Map<String, dynamic> _toMap(ConfiguracoesData data) => {

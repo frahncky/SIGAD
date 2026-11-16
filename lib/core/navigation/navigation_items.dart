@@ -10,12 +10,9 @@ const List<NavigationItem> kNavigationItems = [
     subtitle: 'Indicadores, prioridades e atalhos',
     icon: SigadIcons.painel,
   ),
-  NavigationItem(
-    route: AppRoutes.batePapo,
-    label: 'Bate-papo',
-    subtitle: 'Conversas individuais e em grupo',
-    icon: SigadIcons.conversa,
-  ),
+  // Bate-papo fica fora da navegação até existir servidor: hoje as mensagens
+  // ficam só no aparelho e não chegam a ninguém. A rota e a tela continuam no
+  // código para voltar quando houver entrega real.
   NavigationItem(
     route: AppRoutes.demandas,
     label: 'Demandas',

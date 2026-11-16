@@ -22,8 +22,11 @@ String greetingText(BuildContext context, {DateTime? now}) {
 }
 
 class GreetingTitle extends StatelessWidget {
-  const GreetingTitle({super.key, required this.text});
+  const GreetingTitle({super.key, required this.text, this.style});
   final String text;
+
+  /// Estilo opcional, usado quando a saudação fica sobre o fundo do topo.
+  final TextStyle? style;
 
   @override
   Widget build(BuildContext context) => Tooltip(
@@ -46,13 +49,23 @@ class GreetingTitle extends StatelessWidget {
         label: text,
         button: true,
         excludeSemantics: true,
-        child: Text(
-          text,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+        // Alvo de toque mínimo de 48 dp, com o texto centralizado.
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 48),
+          child: Align(
+            alignment: AlignmentDirectional.centerStart,
+            widthFactor: 1,
+            child: Text(
+              text,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style:
+                  style ??
+                  Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+          ),
         ),
       ),
     ),

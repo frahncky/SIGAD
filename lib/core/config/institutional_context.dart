@@ -1,6 +1,9 @@
 abstract final class InstitutionalContext {
   static const department = 'Departamento de Eletroeletrônica';
   static const departmentAcronym = 'DEE';
+  static const institution = 'Instituto Federal do Maranhão';
+  static const institutionAcronym = 'IFMA';
+  static const campus = 'Campus São Luís – Monte Castelo';
   static const emailDomain = 'exemplo.edu.br';
 
   static const courses = <String>[

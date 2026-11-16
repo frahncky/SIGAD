@@ -12,6 +12,8 @@ import 'package:sigad/features/relatorios/presentation/pages/relatorios_page.dar
 import 'package:sigad/features/relatorios/presentation/relatorios_l10n.dart';
 import 'package:sigad/l10n/l10n.dart';
 
+import 'helpers/relatorios_fixtures.dart';
+
 Future<void> _pump(
   WidgetTester tester,
   UserRole role,
@@ -47,7 +49,11 @@ Future<void> _pump(
           ).copyWith(textScaler: TextScaler.linear(textScale)),
           child: child!,
         ),
-        home: const RelatoriosPage(),
+        home: Scaffold(
+          body: RelatoriosPage(
+            repository: FakeRelatorioRepository(dados: relatoriosFixture),
+          ),
+        ),
       ),
     ),
   );
@@ -61,15 +67,13 @@ void main() {
 
   test('status e tipos de relatório têm tradução', () {
     final en = lookupAppLocalizations(const Locale('en'));
-    for (final relatorio in RelatoriosService.defaultRelatorios()) {
+    for (final relatorio in relatoriosFixture) {
       expect(en.opcaoRelatorio(relatorio.tipo), isNot(relatorio.tipo));
       expect(en.opcaoRelatorio(relatorio.status), isNot(relatorio.status));
     }
     for (final status in [
       ...RelatoriosService.statusDisponiveis,
       'Disponível',
-      'PDF baixado agora',
-      'Compartilhado agora',
     ]) {
       expect(en.opcaoRelatorio(status), isNot(status), reason: status);
     }
@@ -77,10 +81,13 @@ void main() {
 
   testWidgets('relatórios em português e inglês', (tester) async {
     await _pump(tester, UserRole.coordenador, const Locale('pt'));
-    expect(find.text('Central de relatórios'), findsOneWidget);
+    expect(find.text('Total'), findsOneWidget);
+    expect(find.text('Publicados'), findsOneWidget);
+    expect(find.text('Central de relatórios'), findsNothing);
 
     await _pump(tester, UserRole.coordenador, const Locale('en'));
-    expect(find.text('Reports center'), findsOneWidget);
+    expect(find.text('Reports center'), findsNothing);
+    expect(find.text('Copy summary'), findsNothing);
     expect(find.text('Published'), findsWidgets);
     expect(find.text('Human Resources'), findsOneWidget);
     expect(tester.takeException(), isNull);

@@ -29,10 +29,7 @@ void main() {
     await tester.pumpWidget(_buildApp());
     await tester.pumpAndSettle();
 
-    expect(
-      find.text('Nenhuma anotação. Toque em "+" para criar.'),
-      findsOneWidget,
-    );
+    expect(find.text('Nenhuma anotação ainda.'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Nova anotação'));
     await tester.pumpAndSettle();
@@ -58,18 +55,12 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(textoNota), findsNothing);
-    expect(
-      find.text('Nenhuma anotação. Toque em "+" para criar.'),
-      findsOneWidget,
-    );
+    expect(find.text('Nenhuma anotação ainda.'), findsOneWidget);
 
     await _remountNotasPage(tester);
 
     expect(find.text(textoNota), findsNothing);
-    expect(
-      find.text('Nenhuma anotação. Toque em "+" para criar.'),
-      findsOneWidget,
-    );
+    expect(find.text('Nenhuma anotação ainda.'), findsOneWidget);
   });
 
   testWidgets('anotações em inglês', (tester) async {
@@ -83,7 +74,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('No notes. Tap "+" to create one.'), findsOneWidget);
+    expect(find.text('No notes yet.'), findsOneWidget);
     expect(find.text('All notes'), findsOneWidget);
     expect(find.text('Sort by: Newest'), findsOneWidget);
     expect(find.text('Meetings'), findsOneWidget);
