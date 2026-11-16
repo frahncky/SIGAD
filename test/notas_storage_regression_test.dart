@@ -306,10 +306,7 @@ void main() {
       (tester) async {
         raw = invalid;
         await mount(tester);
-        expect(
-          find.text('Nenhuma anotação. Toque em "+" para criar.'),
-          findsNothing,
-        );
+        expect(find.text('Nenhuma anotação ainda.'), findsNothing);
         expect(
           tester
               .widget<FloatingActionButton>(find.byType(FloatingActionButton))

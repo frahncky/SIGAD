@@ -11,22 +11,16 @@ import '../../../../core/navigation/navigation_items.dart';
 import '../../../../core/services/notificacoes_service.dart';
 import '../../../../core/services/user_context_provider.dart';
 import '../../../../shared/widgets/brand_title.dart';
-import '../../../../shared/widgets/greeting_title.dart';
 
 class HomeShellPage extends StatelessWidget {
   const HomeShellPage({
     super.key,
     required this.currentRoute,
     required this.child,
-    this.greetingNow,
   });
 
   final String currentRoute;
   final Widget child;
-
-  /// Relógio opcional para capturas visuais determinísticas.
-  /// Em uso real a saudação continua acompanhando a hora do aparelho.
-  final DateTime? greetingNow;
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +31,6 @@ class HomeShellPage extends StatelessWidget {
         final userContext = context.watch<UserContextProvider>();
         final userRole = userContext.userRole;
         final isDashboard = currentRoute == AppRoutes.dashboard;
-        final greeting = isDashboard
-            ? greetingText(context, now: greetingNow)
-            : null;
-        // unreadChatCount removido pois não é mais utilizado
         final availableItems = userRole == null
             ? kNavigationItems
             : kNavigationItems
@@ -49,7 +39,6 @@ class HomeShellPage extends StatelessWidget {
         final selectedIndex = availableItems.indexWhere(
           (item) => item.route == currentRoute,
         );
-        final bottomNavIndex = _bottomNavIndex();
 
         return Scaffold(
           drawer: isWide
@@ -61,46 +50,46 @@ class HomeShellPage extends StatelessWidget {
                       _navigate(context, availableItems[index].route),
                   onLogout: () => _confirmLogout(context, userContext),
                 ),
-          appBar: isWide
+          appBar: isWide || isDashboard
               ? null
               : AppBar(
-                  toolbarHeight: isDashboard
-                      ? (MediaQuery.textScalerOf(context).scale(16) * 2.6 + 16)
-                            .clamp(64.0, 120.0)
-                      : 64,
-                  title: greeting == null
-                      ? null
-                      : GreetingTitle(text: greeting),
+                  toolbarHeight: 64,
                   backgroundColor: colors.surface,
                   surfaceTintColor: Colors.transparent,
                   elevation: 0,
+                  // Diz em que tela a pessoa está; antes a barra ficava vazia.
+                  title: Text(
+                    rotuloDaRota(currentRoute, context.l10n) ?? '',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                   actions: [
-                    if (!isDashboard)
-                      FutureBuilder<List<NotificacaoModel>>(
-                        future: NotificacoesService.carregar(
-                          userRole,
-                          userName: userContext.currentUser?.name,
-                        ),
-                        builder: (context, snapshot) {
-                          final notifCount = snapshot.data?.length ?? 0;
-                          return IconButton(
-                            onPressed: () => _showNotifications(context),
-                            tooltip: context.l10n.notificacoes,
-                            icon: notifCount > 0
-                                ? Badge(
-                                    label: Text(
-                                      notifCount > 99 ? '99+' : '$notifCount',
-                                    ),
-                                    child: const SigadIcon(
-                                      SigadIcons.notificacao,
-                                    ),
-                                  )
-                                : const SigadIcon(SigadIcons.notificacao),
-                          );
-                        },
+                    FutureBuilder<List<NotificacaoModel>>(
+                      future: NotificacoesService.carregar(
+                        userRole,
+                        userName: userContext.currentUser?.name,
                       ),
+                      builder: (context, snapshot) {
+                        final notifCount = snapshot.data?.length ?? 0;
+                        return IconButton(
+                          onPressed: () => mostrarNotificacoes(context),
+                          tooltip: context.l10n.notificacoes,
+                          icon: notifCount > 0
+                              ? Badge(
+                                  label: Text(
+                                    notifCount > 99 ? '99+' : '$notifCount',
+                                  ),
+                                  child: const SigadIcon(
+                                    SigadIcons.notificacao,
+                                  ),
+                                )
+                              : const SigadIcon(SigadIcons.notificacao),
+                        );
+                      },
+                    ),
                     IconButton(
-                      onPressed: () => _showProfileMenu(context, userContext),
+                      onPressed: () => mostrarMenuPerfil(context),
                       tooltip: context.l10n.perfil,
                       icon: _UserAvatar(userContext: userContext, radius: 18),
                     ),
@@ -109,27 +98,9 @@ class HomeShellPage extends StatelessWidget {
                 ),
           bottomNavigationBar: isWide
               ? null
-              : bottomNavIndex == null
-              ? _UnselectedMobileNavigationBar(
-                  items: _bottomNavItems,
-                  onDestinationSelected: (index) {
-                    final item = _bottomNavItems[index];
-                    _navigate(context, item['route'] as String);
-                  },
-                )
-              : NavigationBar(
-                  selectedIndex: bottomNavIndex,
-                  onDestinationSelected: (index) {
-                    final item = _bottomNavItems[index];
-                    _navigate(context, item['route'] as String);
-                  },
-                  destinations: [
-                    for (final item in _bottomNavItems)
-                      NavigationDestination(
-                        icon: SigadIcon(item['icon'] as IconData),
-                        label: _rotulo(context, item),
-                      ),
-                  ],
+              : _SigadBottomBar(
+                  currentRoute: currentRoute,
+                  onNavigate: (route) => _navigate(context, route),
                 ),
           body: isWide
               ? Row(
@@ -172,17 +143,7 @@ class HomeShellPage extends StatelessWidget {
                                   currentRoute == AppRoutes.dashboard ? 16 : 28,
                                   28,
                                 ),
-                                child: isDashboard
-                                    ? Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        children: [
-                                          GreetingTitle(text: greeting!),
-                                          const SizedBox(height: 16),
-                                          Expanded(child: child),
-                                        ],
-                                      )
-                                    : child,
+                                child: child,
                               ),
                             ),
                           ),
@@ -191,129 +152,15 @@ class HomeShellPage extends StatelessWidget {
                     ),
                   ],
                 )
-              : SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: child,
-                  ),
-                ),
+              : SafeArea(top: !isDashboard, bottom: false, child: child),
         );
       },
     );
   }
 
-  // Menu inferior fixo e independente
-  static const _bottomNavItems = [
-    {
-      'route': AppRoutes.dashboard,
-      'label': 'Visão geral',
-      'icon': SigadIcons.painel,
-    },
-    {
-      'route': AppRoutes.calendario,
-      'label': 'Calendário',
-      'icon': SigadIcons.calendario,
-    },
-    {
-      'route': AppRoutes.notas,
-      'label': 'Anotações',
-      'icon': SigadIcons.editarNota,
-    },
-  ];
-
-  int? _bottomNavIndex() {
-    final idx = _bottomNavItems.indexWhere(
-      (item) => item['route'] == currentRoute,
-    );
-    return idx < 0 ? null : idx;
-  }
-
   void _navigate(BuildContext context, String route) {
     if (currentRoute == route) return;
     Navigator.of(context).pushReplacementNamed(route);
-  }
-
-  void _showProfileMenu(BuildContext context, UserContextProvider userContext) {
-    showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      isScrollControlled: true,
-      builder: (_) => _ProfileMenu(userContext: userContext),
-    );
-  }
-
-  void _showNotifications(BuildContext context) {
-    final usuario = context.read<UserContextProvider>();
-    final future = NotificacoesService.carregar(
-      usuario.userRole,
-      userName: usuario.currentUser?.name,
-    );
-
-    showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      isScrollControlled: true,
-      builder: (context) => SafeArea(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.sizeOf(context).height * 0.72,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  context.l10n.notificacoes,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 8),
-                Flexible(
-                  child: FutureBuilder<List<NotificacaoModel>>(
-                    future: future,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState != ConnectionState.done) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      if (snapshot.hasError) {
-                        return const Center(
-                          child: Text(
-                            'Não foi possível carregar as notificações.',
-                          ),
-                        );
-                      }
-                      final notificacoes = snapshot.data ?? const [];
-                      if (notificacoes.isEmpty) {
-                        return Center(
-                          child: Text(context.l10n.nenhumaNotificacao),
-                        );
-                      }
-                      return ListView.separated(
-                        shrinkWrap: true,
-                        itemCount: notificacoes.length,
-                        separatorBuilder: (_, _) => const Divider(height: 1),
-                        itemBuilder: (context, index) {
-                          final notificacao = notificacoes[index];
-                          return ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: SigadIcon(notificacao.icone),
-                            title: Text(notificacao.titulo),
-                            subtitle: Text(notificacao.subtitulo),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   void _showQuickAccess(
@@ -413,78 +260,6 @@ class HomeShellPage extends StatelessWidget {
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-/// Mantém os três destinos principais disponíveis em módulos secundários sem
-/// anunciar ou destacar falsamente a Visão geral como a rota atual.
-class _UnselectedMobileNavigationBar extends StatelessWidget {
-  const _UnselectedMobileNavigationBar({
-    required this.items,
-    required this.onDestinationSelected,
-  });
-
-  final List<Map<String, Object>> items;
-  final ValueChanged<int> onDestinationSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-
-    return Material(
-      color: colors.surface,
-      elevation: 0,
-      child: SafeArea(
-        top: false,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 70),
-          child: Row(
-            children: [
-              for (var index = 0; index < items.length; index++)
-                Expanded(
-                  child: Semantics(
-                    button: true,
-                    label: _rotulo(context, items[index]),
-                    child: InkWell(
-                      onTap: () => onDestinationSelected(index),
-                      child: ExcludeSemantics(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 8,
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SigadIcon(
-                                items[index]['icon'] as IconData,
-                                size: 23,
-                                color: colors.onSurfaceVariant,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                _rotulo(context, items[index]),
-                                maxLines: 2,
-                                textAlign: TextAlign.center,
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: colors.onSurfaceVariant,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -894,8 +669,16 @@ class _ProfileMenu extends StatelessWidget {
               title: Text(context.l10n.navConfiguracoes),
               onTap: () {
                 final navigator = Navigator.of(context);
-                navigator.pop();
-                navigator.pushNamed(AppRoutes.configuracoes);
+                String? rotaAtual;
+                // Fecha o menu e identifica a página por baixo dele; troca a
+                // rota como o _navigate do shell, sem empilhar outro shell.
+                navigator.popUntil((route) {
+                  if (route is PopupRoute) return false;
+                  rotaAtual = route.settings.name;
+                  return true;
+                });
+                if (rotaAtual == AppRoutes.configuracoes) return;
+                navigator.pushReplacementNamed(AppRoutes.configuracoes);
               },
             ),
             ListTile(
@@ -943,6 +726,200 @@ void _confirmLogout(BuildContext context, UserContextProvider userContext) {
   );
 }
 
-String _rotulo(BuildContext context, Map<String, dynamic> item) =>
-    rotuloDaRota(item['route'] as String, context.l10n) ??
-    _rotulo(context, item);
+/// Abre o menu do perfil do usuário autenticado.
+void mostrarMenuPerfil(BuildContext context) {
+  final userContext = context.read<UserContextProvider>();
+  showModalBottomSheet<void>(
+    context: context,
+    showDragHandle: true,
+    isScrollControlled: true,
+    builder: (_) => _ProfileMenu(userContext: userContext),
+  );
+}
+
+/// Abre a lista de notificações do usuário autenticado.
+void mostrarNotificacoes(BuildContext context) {
+  final usuario = context.read<UserContextProvider>();
+  final future = NotificacoesService.carregar(
+    usuario.userRole,
+    userName: usuario.currentUser?.name,
+  );
+
+  showModalBottomSheet<void>(
+    context: context,
+    showDragHandle: true,
+    isScrollControlled: true,
+    builder: (context) => SafeArea(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(context).height * 0.72,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                context.l10n.notificacoes,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              Flexible(
+                child: FutureBuilder<List<NotificacaoModel>>(
+                  future: future,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Text(context.l10n.erroCarregarNotificacoes),
+                      );
+                    }
+                    final notificacoes = snapshot.data ?? const [];
+                    if (notificacoes.isEmpty) {
+                      return Center(
+                        child: Text(context.l10n.nenhumaNotificacao),
+                      );
+                    }
+                    return ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: notificacoes.length,
+                      separatorBuilder: (_, _) => const Divider(height: 1),
+                      itemBuilder: (context, index) {
+                        final notificacao = notificacoes[index];
+                        return ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: SigadIcon(notificacao.icone),
+                          title: Text(notificacao.titulo),
+                          subtitle: Text(notificacao.subtitulo),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+/// Barra inferior com os três destinos principais: Visão geral, Calendário
+/// e Anotações. Em módulos secundários nenhum destino aparece selecionado.
+class _SigadBottomBar extends StatelessWidget {
+  const _SigadBottomBar({required this.currentRoute, required this.onNavigate});
+
+  final String currentRoute;
+  final ValueChanged<String> onNavigate;
+
+  static const _destinos = [
+    (AppRoutes.dashboard, SigadIcons.painel),
+    (AppRoutes.calendario, SigadIcons.calendario),
+    (AppRoutes.notas, SigadIcons.editarNota),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      key: const ValueKey('sigad-bottom-bar'),
+      color: SigadColors.brandDeep,
+      elevation: 8,
+      shadowColor: const Color(0x55000000),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Row(
+            children: [
+              for (final (route, icon) in _destinos)
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: _BottomBarItem(
+                      icon: icon,
+                      label: rotuloDaRota(route, context.l10n) ?? route,
+                      selected: currentRoute == route,
+                      onTap: () => onNavigate(route),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BottomBarItem extends StatelessWidget {
+  const _BottomBarItem({
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    // Selecionado: pílula clara com tinta escura, contraste alto contra a
+    // barra; não depende só do peso da fonte.
+    final tinta = selected ? SigadColors.brandDeep : Colors.white;
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: label,
+      onTap: onTap,
+      excludeSemantics: true,
+      child: Material(
+        color: selected ? SigadColors.mint : Colors.transparent,
+        borderRadius: BorderRadius.circular(18),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: onTap,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 56),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SigadIcon(icon, color: tinta, size: 24),
+                  const SizedBox(height: 4),
+                  MediaQuery.withClampedTextScaling(
+                    maxScaleFactor: 1.3,
+                    child: Text(
+                      label,
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: tinta,
+                        fontWeight: selected
+                            ? FontWeight.w800
+                            : FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

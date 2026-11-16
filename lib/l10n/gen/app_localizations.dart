@@ -854,18 +854,6 @@ abstract class AppLocalizations {
   /// **'Equipe de Desenvolvimento SIGAD'**
   String get equipeDesenvolvimento;
 
-  /// No description provided for @dataLancamento.
-  ///
-  /// In pt, this message translates to:
-  /// **'Data de lançamento'**
-  String get dataLancamento;
-
-  /// No description provided for @compatibilidade.
-  ///
-  /// In pt, this message translates to:
-  /// **'Compatibilidade'**
-  String get compatibilidade;
-
   /// No description provided for @sobreDescricao.
   ///
   /// In pt, this message translates to:
@@ -2710,7 +2698,7 @@ abstract class AppLocalizations {
   /// No description provided for @notaVazio.
   ///
   /// In pt, this message translates to:
-  /// **'Nenhuma anotação. Toque em \"+\" para criar.'**
+  /// **'Nenhuma anotação ainda.'**
   String get notaVazio;
 
   /// No description provided for @notaVazioDica.
@@ -3127,12 +3115,6 @@ abstract class AppLocalizations {
   /// **'Informe a descrição da demanda'**
   String get demInformeDescricao;
 
-  /// No description provided for @demResumo.
-  ///
-  /// In pt, this message translates to:
-  /// **'Resumo das demandas'**
-  String get demResumo;
-
   /// No description provided for @demNoTotal.
   ///
   /// In pt, this message translates to:
@@ -3145,11 +3127,11 @@ abstract class AppLocalizations {
   /// **'Abertas'**
   String get demAbertas;
 
-  /// No description provided for @demUrgentes.
+  /// No description provided for @demPrioridadeAltaKpi.
   ///
   /// In pt, this message translates to:
-  /// **'Urgentes'**
-  String get demUrgentes;
+  /// **'Prioridade alta'**
+  String get demPrioridadeAltaKpi;
 
   /// No description provided for @demEditarAcao.
   ///
@@ -3174,6 +3156,48 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Prazo'**
   String get demPrazo;
+
+  /// No description provided for @demPrazoOpcional.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prazo (opcional)'**
+  String get demPrazoOpcional;
+
+  /// No description provided for @demSemPrazo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem prazo'**
+  String get demSemPrazo;
+
+  /// No description provided for @demSelecionarPrazo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecionar prazo'**
+  String get demSelecionarPrazo;
+
+  /// No description provided for @demRemoverPrazo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Remover prazo'**
+  String get demRemoverPrazo;
+
+  /// No description provided for @demAtrasadaEm.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atrasada · {data}'**
+  String demAtrasadaEm(String data);
+
+  /// No description provided for @demVenceHoje.
+  ///
+  /// In pt, this message translates to:
+  /// **'Vence hoje'**
+  String get demVenceHoje;
+
+  /// No description provided for @demPrazoValor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prazo: {data}'**
+  String demPrazoValor(String data);
 
   /// No description provided for @demTodas.
   ///
@@ -3250,7 +3274,7 @@ abstract class AppLocalizations {
   /// No description provided for @tarNovoCard.
   ///
   /// In pt, this message translates to:
-  /// **'Novo card'**
+  /// **'Nova tarefa'**
   String get tarNovoCard;
 
   /// No description provided for @tarCarregando.
@@ -3262,20 +3286,14 @@ abstract class AppLocalizations {
   /// No description provided for @tarNenhumCard.
   ///
   /// In pt, this message translates to:
-  /// **'Nenhum card criado'**
+  /// **'Nenhuma tarefa criada'**
   String get tarNenhumCard;
 
   /// No description provided for @tarNenhumCardDica.
   ///
   /// In pt, this message translates to:
-  /// **'Toque no + para adicionar o primeiro card ao quadro.'**
+  /// **'Toque no + para adicionar a primeira tarefa ao quadro.'**
   String get tarNenhumCardDica;
-
-  /// No description provided for @tarCriarCard.
-  ///
-  /// In pt, this message translates to:
-  /// **'Criar card'**
-  String get tarCriarCard;
 
   /// No description provided for @tarArrasteDica.
   ///
@@ -3286,19 +3304,19 @@ abstract class AppLocalizations {
   /// No description provided for @tarExcluirCardMensagem.
   ///
   /// In pt, this message translates to:
-  /// **'Deseja excluir o card \"{titulo}\"?'**
+  /// **'Deseja excluir a tarefa \"{titulo}\"?'**
   String tarExcluirCardMensagem(String titulo);
 
   /// No description provided for @tarCardRemovido.
   ///
   /// In pt, this message translates to:
-  /// **'Card \"{titulo}\" removido'**
+  /// **'Tarefa \"{titulo}\" removida'**
   String tarCardRemovido(String titulo);
 
   /// No description provided for @tarTituloDica.
   ///
   /// In pt, this message translates to:
-  /// **'Digite o título do card'**
+  /// **'Digite o título da tarefa'**
   String get tarTituloDica;
 
   /// No description provided for @tarColuna.
@@ -3310,7 +3328,7 @@ abstract class AppLocalizations {
   /// No description provided for @tarCardCriado.
   ///
   /// In pt, this message translates to:
-  /// **'Card criado com sucesso!'**
+  /// **'Tarefa criada com sucesso!'**
   String get tarCardCriado;
 
   /// No description provided for @tarSolteAqui.
@@ -3322,43 +3340,19 @@ abstract class AppLocalizations {
   /// No description provided for @tarCardSemantica.
   ///
   /// In pt, this message translates to:
-  /// **'Card: {titulo}. Prioridade {prioridade}.'**
+  /// **'Tarefa: {titulo}. Prioridade {prioridade}.'**
   String tarCardSemantica(String titulo, String prioridade);
 
   /// No description provided for @tarMaisAcoes.
   ///
   /// In pt, this message translates to:
-  /// **'Mais ações do card'**
+  /// **'Mais ações da tarefa'**
   String get tarMaisAcoes;
-
-  /// No description provided for @tarId.
-  ///
-  /// In pt, this message translates to:
-  /// **'ID: {id}'**
-  String tarId(String id);
-
-  /// No description provided for @tarColunaValor.
-  ///
-  /// In pt, this message translates to:
-  /// **'Coluna: {coluna}'**
-  String tarColunaValor(String coluna);
-
-  /// No description provided for @tarPrioridadeValor.
-  ///
-  /// In pt, this message translates to:
-  /// **'Prioridade: {prioridade}'**
-  String tarPrioridadeValor(String prioridade);
-
-  /// No description provided for @tarExcluirEsteCard.
-  ///
-  /// In pt, this message translates to:
-  /// **'Tem certeza que deseja excluir este card?'**
-  String get tarExcluirEsteCard;
 
   /// No description provided for @tarInformeTitulo.
   ///
   /// In pt, this message translates to:
-  /// **'Informe o título do card'**
+  /// **'Informe o título da tarefa'**
   String get tarInformeTitulo;
 
   /// No description provided for @tarColunaBacklog.
@@ -3385,6 +3379,60 @@ abstract class AppLocalizations {
   /// **'Concluído'**
   String get tarColunaConcluido;
 
+  /// No description provided for @tarColunaVazia.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhuma tarefa'**
+  String get tarColunaVazia;
+
+  /// No description provided for @tarMoverPara.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mover para…'**
+  String get tarMoverPara;
+
+  /// No description provided for @tarMoverParaColuna.
+  ///
+  /// In pt, this message translates to:
+  /// **'Mover para {coluna}'**
+  String tarMoverParaColuna(String coluna);
+
+  /// No description provided for @tarMovida.
+  ///
+  /// In pt, this message translates to:
+  /// **'Tarefa movida para {coluna}'**
+  String tarMovida(String coluna);
+
+  /// No description provided for @tarErroSalvar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível salvar o quadro. Tente novamente.'**
+  String get tarErroSalvar;
+
+  /// No description provided for @tarColunasDoQuadro.
+  ///
+  /// In pt, this message translates to:
+  /// **'Colunas do quadro'**
+  String get tarColunasDoQuadro;
+
+  /// No description provided for @tarColunaContagem.
+  ///
+  /// In pt, this message translates to:
+  /// **'{coluna} · {count}'**
+  String tarColunaContagem(String coluna, int count);
+
+  /// No description provided for @tarQuantidade.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =0{Nenhuma tarefa} =1{1 tarefa} other{{count} tarefas}}'**
+  String tarQuantidade(int count);
+
+  /// No description provided for @tarSegureParaMover.
+  ///
+  /// In pt, this message translates to:
+  /// **'Toque e segure uma tarefa para arrastá-la, ou use o menu da tarefa.'**
+  String get tarSegureParaMover;
+
   /// No description provided for @atvFiltrar.
   ///
   /// In pt, this message translates to:
@@ -3409,6 +3457,12 @@ abstract class AppLocalizations {
   /// **'Buscar por título, descrição ou responsável'**
   String get atvBuscarDica;
 
+  /// No description provided for @atvBuscar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Buscar atividades'**
+  String get atvBuscar;
+
   /// No description provided for @atvCarregando.
   ///
   /// In pt, this message translates to:
@@ -3421,11 +3475,11 @@ abstract class AppLocalizations {
   /// **'Nenhuma atividade encontrada'**
   String get atvNenhuma;
 
-  /// No description provided for @atvNenhumaDica.
+  /// No description provided for @atvCrieNova.
   ///
   /// In pt, this message translates to:
-  /// **'Ajuste os filtros ou crie uma nova atividade.'**
-  String get atvNenhumaDica;
+  /// **'Crie uma nova atividade para começar.'**
+  String get atvCrieNova;
 
   /// No description provided for @atvCriarNova.
   ///
@@ -3487,23 +3541,23 @@ abstract class AppLocalizations {
   /// **'Atividade excluída com sucesso!'**
   String get atvExcluida;
 
-  /// No description provided for @atvAgendaOperacional.
+  /// No description provided for @atvAbertas.
   ///
   /// In pt, this message translates to:
-  /// **'Agenda operacional'**
-  String get atvAgendaOperacional;
+  /// **'Abertas'**
+  String get atvAbertas;
 
-  /// No description provided for @atvConcluidas.
+  /// No description provided for @atvNaSemana.
   ///
   /// In pt, this message translates to:
-  /// **'Concluídas'**
-  String get atvConcluidas;
+  /// **'Na semana'**
+  String get atvNaSemana;
 
-  /// No description provided for @atvPendentes.
+  /// No description provided for @atvAtrasadas.
   ///
   /// In pt, this message translates to:
-  /// **'Pendentes'**
-  String get atvPendentes;
+  /// **'Atrasadas'**
+  String get atvAtrasadas;
 
   /// No description provided for @atvAbrir.
   ///
@@ -3528,6 +3582,78 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Data'**
   String get atvData;
+
+  /// No description provided for @atvDataOpcional.
+  ///
+  /// In pt, this message translates to:
+  /// **'Data (opcional)'**
+  String get atvDataOpcional;
+
+  /// No description provided for @atvHoraOpcional.
+  ///
+  /// In pt, this message translates to:
+  /// **'Hora (opcional)'**
+  String get atvHoraOpcional;
+
+  /// No description provided for @atvSemData.
+  ///
+  /// In pt, this message translates to:
+  /// **'Sem data'**
+  String get atvSemData;
+
+  /// No description provided for @atvSelecionarData.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecionar data'**
+  String get atvSelecionarData;
+
+  /// No description provided for @atvSelecionarHora.
+  ///
+  /// In pt, this message translates to:
+  /// **'Selecionar hora'**
+  String get atvSelecionarHora;
+
+  /// No description provided for @atvRemoverData.
+  ///
+  /// In pt, this message translates to:
+  /// **'Remover data'**
+  String get atvRemoverData;
+
+  /// No description provided for @atvRemoverHora.
+  ///
+  /// In pt, this message translates to:
+  /// **'Remover hora'**
+  String get atvRemoverHora;
+
+  /// No description provided for @atvHoraSemData.
+  ///
+  /// In pt, this message translates to:
+  /// **'Escolha uma data para definir a hora.'**
+  String get atvHoraSemData;
+
+  /// No description provided for @atvAtrasadaEm.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atrasada · {data}'**
+  String atvAtrasadaEm(String data);
+
+  /// No description provided for @atvHojeEm.
+  ///
+  /// In pt, this message translates to:
+  /// **'Hoje · {data}'**
+  String atvHojeEm(String data);
+
+  /// No description provided for @atvDataValor.
+  ///
+  /// In pt, this message translates to:
+  /// **'Data: {data}'**
+  String atvDataValor(String data);
+
+  /// No description provided for @atvErroSalvar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível salvar a atividade. Seus dados foram mantidos. Tente novamente.'**
+  String get atvErroSalvar;
 
   /// No description provided for @atvInformeTitulo.
   ///
@@ -3571,35 +3697,11 @@ abstract class AppLocalizations {
   /// **'Não foi possível carregar os relatórios.'**
   String get relErroCarregar;
 
-  /// No description provided for @relBaixado.
-  ///
-  /// In pt, this message translates to:
-  /// **'Relatório baixado: {titulo}'**
-  String relBaixado(String titulo);
-
-  /// No description provided for @relLinkGerado.
-  ///
-  /// In pt, this message translates to:
-  /// **'Link de compartilhamento gerado para {titulo}'**
-  String relLinkGerado(String titulo);
-
   /// No description provided for @relBuscarDica.
   ///
   /// In pt, this message translates to:
   /// **'Buscar por título, descrição ou autor'**
   String get relBuscarDica;
-
-  /// No description provided for @relArrasteDica.
-  ///
-  /// In pt, this message translates to:
-  /// **'Arraste lateralmente para ver todos os status.'**
-  String get relArrasteDica;
-
-  /// No description provided for @relDisponiveisConsulta.
-  ///
-  /// In pt, this message translates to:
-  /// **'relatórios disponíveis para consulta'**
-  String get relDisponiveisConsulta;
 
   /// No description provided for @relCarregando.
   ///
@@ -3631,18 +3733,6 @@ abstract class AppLocalizations {
   /// **'Acesso não permitido para este perfil.'**
   String get relAcessoNegado;
 
-  /// No description provided for @relCentral.
-  ///
-  /// In pt, this message translates to:
-  /// **'Central de relatórios'**
-  String get relCentral;
-
-  /// No description provided for @relDisponiveis.
-  ///
-  /// In pt, this message translates to:
-  /// **'Disponíveis'**
-  String get relDisponiveis;
-
   /// No description provided for @relPublicados.
   ///
   /// In pt, this message translates to:
@@ -3654,6 +3744,78 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Em revisão'**
   String get relEmRevisao;
+
+  /// No description provided for @relTotal.
+  ///
+  /// In pt, this message translates to:
+  /// **'Total'**
+  String get relTotal;
+
+  /// No description provided for @relResultados.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =0{Nenhum resultado} =1{1 resultado} other{{count} resultados}}'**
+  String relResultados(int count);
+
+  /// No description provided for @relNenhumDisponivel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum relatório disponível'**
+  String get relNenhumDisponivel;
+
+  /// No description provided for @relNenhumDisponivelDica.
+  ///
+  /// In pt, this message translates to:
+  /// **'Quando houver relatórios publicados para o seu perfil, eles aparecerão aqui.'**
+  String get relNenhumDisponivelDica;
+
+  /// No description provided for @relCopiarResumo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Copiar resumo'**
+  String get relCopiarResumo;
+
+  /// No description provided for @relEnviarEmail.
+  ///
+  /// In pt, this message translates to:
+  /// **'Enviar por e-mail'**
+  String get relEnviarEmail;
+
+  /// No description provided for @relResumoCopiado.
+  ///
+  /// In pt, this message translates to:
+  /// **'Resumo copiado. Não foi gerado um arquivo PDF.'**
+  String get relResumoCopiado;
+
+  /// No description provided for @relErroCopiar.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível copiar o resumo.'**
+  String get relErroCopiar;
+
+  /// No description provided for @relEmailAberto.
+  ///
+  /// In pt, this message translates to:
+  /// **'Rascunho aberto no aplicativo de e-mail. Confirme o envio nele.'**
+  String get relEmailAberto;
+
+  /// No description provided for @relSemAppEmail.
+  ///
+  /// In pt, this message translates to:
+  /// **'Nenhum aplicativo de e-mail está disponível.'**
+  String get relSemAppEmail;
+
+  /// No description provided for @relErroEmail.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível abrir o e-mail.'**
+  String get relErroEmail;
+
+  /// No description provided for @relStatusRotulo.
+  ///
+  /// In pt, this message translates to:
+  /// **'Situação: {status}'**
+  String relStatusRotulo(String status);
 
   /// No description provided for @relVer.
   ///
@@ -3673,18 +3835,6 @@ abstract class AppLocalizations {
   /// **'Visualizar'**
   String get relVisualizar;
 
-  /// No description provided for @relBaixarPdf.
-  ///
-  /// In pt, this message translates to:
-  /// **'Baixar PDF'**
-  String get relBaixarPdf;
-
-  /// No description provided for @relCompartilhar.
-  ///
-  /// In pt, this message translates to:
-  /// **'Compartilhar'**
-  String get relCompartilhar;
-
   /// No description provided for @relFecharDetalhes.
   ///
   /// In pt, this message translates to:
@@ -3702,18 +3852,6 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Autor'**
   String get relAutor;
-
-  /// No description provided for @relDownloads.
-  ///
-  /// In pt, this message translates to:
-  /// **'Downloads'**
-  String get relDownloads;
-
-  /// No description provided for @relCompartilhamentos.
-  ///
-  /// In pt, this message translates to:
-  /// **'Compartilhamentos'**
-  String get relCompartilhamentos;
 
   /// No description provided for @relStatusTodos.
   ///
@@ -3768,18 +3906,6 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Conformidade'**
   String get relTipoConformidade;
-
-  /// No description provided for @relPdfBaixadoAgora.
-  ///
-  /// In pt, this message translates to:
-  /// **'PDF baixado agora'**
-  String get relPdfBaixadoAgora;
-
-  /// No description provided for @relCompartilhadoAgora.
-  ///
-  /// In pt, this message translates to:
-  /// **'Compartilhado agora'**
-  String get relCompartilhadoAgora;
 
   /// No description provided for @cdBuscarDocente.
   ///
@@ -5513,6 +5639,78 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Produtividade'**
   String get vgOpProdutividade;
+
+  /// No description provided for @vgPrioritarias.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =0{Nenhuma prioritária} =1{1 prioritária} other{{count} prioritárias}}'**
+  String vgPrioritarias(int count);
+
+  /// No description provided for @vgEmAndamento.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count} em andamento'**
+  String vgEmAndamento(int count);
+
+  /// No description provided for @vgEstaSemana.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =0{Nenhuma na semana} =1{1 na semana} other{{count} na semana}}'**
+  String vgEstaSemana(int count);
+
+  /// No description provided for @vgLabsManutencao.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =0{Todos operando} =1{1 em manutenção} other{{count} em manutenção}}'**
+  String vgLabsManutencao(int count);
+
+  /// No description provided for @vgPendenciasPrazos.
+  ///
+  /// In pt, this message translates to:
+  /// **'Pendências e prazos'**
+  String get vgPendenciasPrazos;
+
+  /// No description provided for @vgPrazoDe.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prazo: {prazo} • {responsavel}'**
+  String vgPrazoDe(String prazo, String responsavel);
+
+  /// No description provided for @vgHoje.
+  ///
+  /// In pt, this message translates to:
+  /// **'Hoje'**
+  String get vgHoje;
+
+  /// No description provided for @vgAtrasada.
+  ///
+  /// In pt, this message translates to:
+  /// **'Atrasada'**
+  String get vgAtrasada;
+
+  /// No description provided for @vgIndicadorSemantica.
+  ///
+  /// In pt, this message translates to:
+  /// **'{titulo}: {valor}. {detalhe}'**
+  String vgIndicadorSemantica(String titulo, String valor, String detalhe);
+
+  /// No description provided for @vgPrioridadeNivel.
+  ///
+  /// In pt, this message translates to:
+  /// **'Prioridade {nivel}'**
+  String vgPrioridadeNivel(String nivel);
+
+  /// No description provided for @vgNotificacoesNovas.
+  ///
+  /// In pt, this message translates to:
+  /// **'{count, plural, =0{Notificações} =1{Notificações, 1 nova} other{Notificações, {count} novas}}'**
+  String vgNotificacoesNovas(int count);
+
+  /// No description provided for @erroCarregarNotificacoes.
+  ///
+  /// In pt, this message translates to:
+  /// **'Não foi possível carregar as notificações.'**
+  String get erroCarregarNotificacoes;
 }
 
 class _AppLocalizationsDelegate

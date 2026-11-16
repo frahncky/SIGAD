@@ -17,7 +17,7 @@ extension KanbanL10n on AppLocalizations {
 
   /// Mensagens de `KanbanService.validateTitulo`.
   String erroKanban(String erro) => switch (erro) {
-    'Informe o título do card' => tarInformeTitulo,
+    'Informe o título da tarefa' => tarInformeTitulo,
     _ => erro,
   };
 }

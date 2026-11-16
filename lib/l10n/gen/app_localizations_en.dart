@@ -439,12 +439,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get equipeDesenvolvimento => 'SIGAD Development Team';
 
   @override
-  String get dataLancamento => 'Release date';
-
-  @override
-  String get compatibilidade => 'Compatibility';
-
-  @override
   String get sobreDescricao =>
       'SIGAD is an integrated academic management system designed to streamline administrative and academic processes.';
 
@@ -1550,7 +1544,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notaNenhumaEncontrada => 'No notes found.';
 
   @override
-  String get notaVazio => 'No notes. Tap \"+\" to create one.';
+  String get notaVazio => 'No notes yet.';
 
   @override
   String get notaVazioDica =>
@@ -1775,16 +1769,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get demInformeDescricao => 'Enter the request description';
 
   @override
-  String get demResumo => 'Requests summary';
-
-  @override
   String get demNoTotal => 'Total';
 
   @override
   String get demAbertas => 'Open';
 
   @override
-  String get demUrgentes => 'Urgent';
+  String get demPrioridadeAltaKpi => 'High priority';
 
   @override
   String get demEditarAcao => 'Edit';
@@ -1799,6 +1790,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get demPrazo => 'Due date';
+
+  @override
+  String get demPrazoOpcional => 'Deadline (optional)';
+
+  @override
+  String get demSemPrazo => 'No deadline';
+
+  @override
+  String get demSelecionarPrazo => 'Select deadline';
+
+  @override
+  String get demRemoverPrazo => 'Remove deadline';
+
+  @override
+  String demAtrasadaEm(String data) {
+    return 'Overdue · $data';
+  }
+
+  @override
+  String get demVenceHoje => 'Due today';
+
+  @override
+  String demPrazoValor(String data) {
+    return 'Deadline: $data';
+  }
 
   @override
   String get demTodas => 'All';
@@ -1837,19 +1853,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tarErroCarregar => 'Could not load the task board.';
 
   @override
-  String get tarNovoCard => 'New card';
+  String get tarNovoCard => 'New task';
 
   @override
   String get tarCarregando => 'Loading task board...';
 
   @override
-  String get tarNenhumCard => 'No cards yet';
+  String get tarNenhumCard => 'No tasks yet';
 
   @override
-  String get tarNenhumCardDica => 'Tap + to add the first card to the board.';
-
-  @override
-  String get tarCriarCard => 'Create card';
+  String get tarNenhumCardDica => 'Tap + to add the first task to the board.';
 
   @override
   String get tarArrasteDica =>
@@ -1857,54 +1870,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String tarExcluirCardMensagem(String titulo) {
-    return 'Delete the card \"$titulo\"?';
+    return 'Delete the task \"$titulo\"?';
   }
 
   @override
   String tarCardRemovido(String titulo) {
-    return 'Card \"$titulo\" removed';
+    return 'Task \"$titulo\" removed';
   }
 
   @override
-  String get tarTituloDica => 'Enter the card title';
+  String get tarTituloDica => 'Enter the task title';
 
   @override
   String get tarColuna => 'Column';
 
   @override
-  String get tarCardCriado => 'Card created successfully!';
+  String get tarCardCriado => 'Task created successfully!';
 
   @override
   String get tarSolteAqui => 'Drop here';
 
   @override
   String tarCardSemantica(String titulo, String prioridade) {
-    return 'Card: $titulo. Priority $prioridade.';
+    return 'Task: $titulo. Priority $prioridade.';
   }
 
   @override
-  String get tarMaisAcoes => 'More card actions';
+  String get tarMaisAcoes => 'More task actions';
 
   @override
-  String tarId(String id) {
-    return 'ID: $id';
-  }
-
-  @override
-  String tarColunaValor(String coluna) {
-    return 'Column: $coluna';
-  }
-
-  @override
-  String tarPrioridadeValor(String prioridade) {
-    return 'Priority: $prioridade';
-  }
-
-  @override
-  String get tarExcluirEsteCard => 'Are you sure you want to delete this card?';
-
-  @override
-  String get tarInformeTitulo => 'Enter the card title';
+  String get tarInformeTitulo => 'Enter the task title';
 
   @override
   String get tarColunaBacklog => 'Backlog';
@@ -1919,6 +1914,49 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tarColunaConcluido => 'Done';
 
   @override
+  String get tarColunaVazia => 'No tasks';
+
+  @override
+  String get tarMoverPara => 'Move to…';
+
+  @override
+  String tarMoverParaColuna(String coluna) {
+    return 'Move to $coluna';
+  }
+
+  @override
+  String tarMovida(String coluna) {
+    return 'Task moved to $coluna';
+  }
+
+  @override
+  String get tarErroSalvar => 'Could not save the board. Please try again.';
+
+  @override
+  String get tarColunasDoQuadro => 'Board columns';
+
+  @override
+  String tarColunaContagem(String coluna, int count) {
+    return '$coluna · $count';
+  }
+
+  @override
+  String tarQuantidade(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tasks',
+      one: '1 task',
+      zero: 'No tasks',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get tarSegureParaMover =>
+      'Touch and hold a task to drag it, or use the task menu.';
+
+  @override
   String get atvFiltrar => 'Filter activities';
 
   @override
@@ -1931,13 +1969,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get atvBuscarDica => 'Search by title, description or owner';
 
   @override
+  String get atvBuscar => 'Search activities';
+
+  @override
   String get atvCarregando => 'Loading activities...';
 
   @override
   String get atvNenhuma => 'No activities found';
 
   @override
-  String get atvNenhumaDica => 'Adjust the filters or create a new activity.';
+  String get atvCrieNova => 'Create a new activity to get started.';
 
   @override
   String get atvCriarNova => 'Create new activity';
@@ -1970,13 +2011,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get atvExcluida => 'Activity deleted successfully!';
 
   @override
-  String get atvAgendaOperacional => 'Operational agenda';
+  String get atvAbertas => 'Open';
 
   @override
-  String get atvConcluidas => 'Completed';
+  String get atvNaSemana => 'This week';
 
   @override
-  String get atvPendentes => 'Pending';
+  String get atvAtrasadas => 'Overdue';
 
   @override
   String atvAbrir(String titulo) {
@@ -1991,6 +2032,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get atvData => 'Date';
+
+  @override
+  String get atvDataOpcional => 'Date (optional)';
+
+  @override
+  String get atvHoraOpcional => 'Time (optional)';
+
+  @override
+  String get atvSemData => 'No date';
+
+  @override
+  String get atvSelecionarData => 'Select date';
+
+  @override
+  String get atvSelecionarHora => 'Select time';
+
+  @override
+  String get atvRemoverData => 'Remove date';
+
+  @override
+  String get atvRemoverHora => 'Remove time';
+
+  @override
+  String get atvHoraSemData => 'Choose a date to set the time.';
+
+  @override
+  String atvAtrasadaEm(String data) {
+    return 'Overdue · $data';
+  }
+
+  @override
+  String atvHojeEm(String data) {
+    return 'Today · $data';
+  }
+
+  @override
+  String atvDataValor(String data) {
+    return 'Date: $data';
+  }
+
+  @override
+  String get atvErroSalvar =>
+      'Could not save the activity. Your data was kept. Please try again.';
 
   @override
   String get atvInformeTitulo => 'Enter the activity title';
@@ -2014,23 +2098,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get relErroCarregar => 'Could not load the reports.';
 
   @override
-  String relBaixado(String titulo) {
-    return 'Report downloaded: $titulo';
-  }
-
-  @override
-  String relLinkGerado(String titulo) {
-    return 'Share link created for $titulo';
-  }
-
-  @override
   String get relBuscarDica => 'Search by title, description or author';
-
-  @override
-  String get relArrasteDica => 'Swipe sideways to see all statuses.';
-
-  @override
-  String get relDisponiveisConsulta => 'reports available';
 
   @override
   String get relCarregando => 'Loading reports...';
@@ -2049,16 +2117,59 @@ class AppLocalizationsEn extends AppLocalizations {
   String get relAcessoNegado => 'Access not allowed for this profile.';
 
   @override
-  String get relCentral => 'Reports center';
-
-  @override
-  String get relDisponiveis => 'Available';
-
-  @override
   String get relPublicados => 'Published';
 
   @override
   String get relEmRevisao => 'In review';
+
+  @override
+  String get relTotal => 'Total';
+
+  @override
+  String relResultados(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count results',
+      one: '1 result',
+      zero: 'No results',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get relNenhumDisponivel => 'No reports available';
+
+  @override
+  String get relNenhumDisponivelDica =>
+      'When reports are published for your profile, they will appear here.';
+
+  @override
+  String get relCopiarResumo => 'Copy summary';
+
+  @override
+  String get relEnviarEmail => 'Send by email';
+
+  @override
+  String get relResumoCopiado => 'Summary copied. No PDF file was generated.';
+
+  @override
+  String get relErroCopiar => 'Could not copy the summary.';
+
+  @override
+  String get relEmailAberto =>
+      'Draft opened in your email app. Confirm sending there.';
+
+  @override
+  String get relSemAppEmail => 'No email app is available.';
+
+  @override
+  String get relErroEmail => 'Could not open email.';
+
+  @override
+  String relStatusRotulo(String status) {
+    return 'Status: $status';
+  }
 
   @override
   String relVer(String titulo) {
@@ -2072,12 +2183,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get relVisualizar => 'View';
 
   @override
-  String get relBaixarPdf => 'Download PDF';
-
-  @override
-  String get relCompartilhar => 'Share';
-
-  @override
   String get relFecharDetalhes => 'Close report details';
 
   @override
@@ -2085,12 +2190,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get relAutor => 'Author';
-
-  @override
-  String get relDownloads => 'Downloads';
-
-  @override
-  String get relCompartilhamentos => 'Shares';
 
   @override
   String get relStatusTodos => 'All';
@@ -2118,12 +2217,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get relTipoConformidade => 'Compliance';
-
-  @override
-  String get relPdfBaixadoAgora => 'PDF downloaded just now';
-
-  @override
-  String get relCompartilhadoAgora => 'Shared just now';
 
   @override
   String get cdBuscarDocente => 'Search teacher by name, email or department';
@@ -3108,4 +3201,84 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get vgOpProdutividade => 'Productivity';
+
+  @override
+  String vgPrioritarias(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count high priority',
+      one: '1 high priority',
+      zero: 'No high priority',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String vgEmAndamento(int count) {
+    return '$count in progress';
+  }
+
+  @override
+  String vgEstaSemana(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count this week',
+      one: '1 this week',
+      zero: 'None this week',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String vgLabsManutencao(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count under maintenance',
+      one: '1 under maintenance',
+      zero: 'All operating',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get vgPendenciasPrazos => 'Pending items and deadlines';
+
+  @override
+  String vgPrazoDe(String prazo, String responsavel) {
+    return 'Due: $prazo • $responsavel';
+  }
+
+  @override
+  String get vgHoje => 'Today';
+
+  @override
+  String get vgAtrasada => 'Overdue';
+
+  @override
+  String vgIndicadorSemantica(String titulo, String valor, String detalhe) {
+    return '$titulo: $valor. $detalhe';
+  }
+
+  @override
+  String vgPrioridadeNivel(String nivel) {
+    return '$nivel priority';
+  }
+
+  @override
+  String vgNotificacoesNovas(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Notifications, $count new',
+      one: 'Notifications, 1 new',
+      zero: 'Notifications',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get erroCarregarNotificacoes => 'Could not load notifications.';
 }

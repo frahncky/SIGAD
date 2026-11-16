@@ -745,9 +745,7 @@ class _NotasPageState extends State<NotasPage> {
                 child: Center(child: CircularProgressIndicator()),
               )
             else if (_notas.isEmpty)
-              _EmptyNotes(
-                onCreate: canCreate ? () => _criarOuEditarNota() : null,
-              )
+              const _EmptyNotes()
             else if (notas.isEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 56),
@@ -862,9 +860,9 @@ class _LoadError extends StatelessWidget {
 }
 
 class _EmptyNotes extends StatelessWidget {
-  const _EmptyNotes({required this.onCreate});
-
-  final VoidCallback? onCreate;
+  // Criar fica no botão "Nova anotação", sempre visível; aqui não se
+  // repete a mesma ação.
+  const _EmptyNotes();
 
   @override
   Widget build(BuildContext context) {
@@ -897,12 +895,6 @@ class _EmptyNotes extends StatelessWidget {
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 18),
-          OutlinedButton.icon(
-            onPressed: onCreate,
-            icon: const SigadIcon(SigadIcons.adicionar),
-            label: Text(context.l10n.notaCriarPrimeira),
           ),
         ],
       ),

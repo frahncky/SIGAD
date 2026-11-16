@@ -253,17 +253,20 @@ void main() {
     await tester.pumpAndSettle();
 
     final banner = tester.widget<Container>(
-      find.byKey(const ValueKey('demandas_summary_banner')),
+      find
+          .descendant(
+            of: find.byKey(const ValueKey('demandas_summary_banner')),
+            matching: find.byType(Container),
+          )
+          .first,
     );
     final decoration = banner.decoration! as BoxDecoration;
     final border = decoration.border! as Border;
     expect(decoration.color, theme.colorScheme.surface);
     expect(border.top.color, theme.colorScheme.outlineVariant);
 
-    final title = tester.widget<Text>(find.text('Resumo das demandas'));
-    expect(title.style?.color, theme.colorScheme.onSurface);
-    final icon = tester.widget<Icon>(find.byIcon(SigadIcons.demanda));
-    expect(icon.color, theme.colorScheme.primary);
+    // O título do resumo repetia o nome da tela e foi removido.
+    expect(find.text('Resumo das demandas'), findsNothing);
     final kpiLabel = tester.widget<Text>(find.text('No total'));
     expect(kpiLabel.style?.color, theme.colorScheme.onSurfaceVariant);
     expect(tester.takeException(), isNull);
@@ -285,8 +288,10 @@ void main() {
     await tester.tap(createButton);
     await tester.pumpAndSettle();
 
-    expect(find.text('Erro'), findsOneWidget);
+    // Os erros de validação aparecem no próprio campo, não em snackbar.
+    expect(find.text('Erro'), findsNothing);
     expect(find.text('Informe o título da demanda'), findsOneWidget);
+    expect(find.text('Informe a descrição da demanda'), findsOneWidget);
     expect(find.text('Informação'), findsNothing);
 
     await tester.enterText(_textFieldWithLabel('Título'), 'Demanda de teste');
@@ -310,7 +315,7 @@ void main() {
 
     await tester.pumpWidget(_buildApp(userContext, locale: const Locale('en')));
     await tester.pumpAndSettle();
-    expect(find.text('Requests summary'), findsOneWidget);
+    expect(find.text('High priority'), findsOneWidget);
     expect(find.text('Open'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Create new request'));

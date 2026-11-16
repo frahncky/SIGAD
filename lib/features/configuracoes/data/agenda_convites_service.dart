@@ -14,7 +14,6 @@ abstract final class AgendaConvitesService {
     ConfiguracoesRepository? repository,
   }) async {
     final repo = repository ?? ConfiguracoesRepository();
-    final atual = await repo.load() ?? ConfiguracoesService.defaultData();
 
     final convite = CompromissoAgenda(
       id: 'convite_${DateTime.now().microsecondsSinceEpoch}',
@@ -29,11 +28,13 @@ abstract final class AgendaConvitesService {
       destinatarioUserId: destinatarioUserId,
     );
 
-    final atualizado = ConfiguracoesService.adicionarConviteNaAgenda(
-      data: atual,
-      convite: convite,
+    // Lê e grava em sequência com as demais gravações da mesma chave, para
+    // não apagar preferências alteradas ao mesmo tempo (e vice-versa).
+    await repo.atualizar(
+      (atual) => ConfiguracoesService.adicionarConviteNaAgenda(
+        data: atual,
+        convite: convite,
+      ),
     );
-
-    await repo.save(atualizado);
   }
 }

@@ -225,20 +225,26 @@ abstract final class DemandasService {
     return '#DEM-${proximoId.toString().padLeft(3, '0')}';
   }
 
-  static String dataAtual() {
-    final agora = DateTime.now();
-    final dia = agora.day.toString().padLeft(2, '0');
-    final mes = agora.month.toString().padLeft(2, '0');
-    final ano = agora.year.toString();
-    return '$dia/$mes/$ano';
+  /// Formata um prazo no padrão gravado (`dd/MM/aaaa`).
+  static String formatarPrazo(DateTime data) {
+    final dia = data.day.toString().padLeft(2, '0');
+    final mes = data.month.toString().padLeft(2, '0');
+    return '$dia/$mes/${data.year}';
   }
+
+  /// Prazo é opcional: vazio significa "sem prazo".
+  static bool temPrazo(String prazo) => prazo.trim().isNotEmpty;
+
+  static String? validarTituloDemanda(String titulo) =>
+      titulo.trim().isEmpty ? 'Informe o título da demanda' : null;
+
+  static String? validarDescricaoDemanda(String descricao) =>
+      descricao.trim().isEmpty ? 'Informe a descrição da demanda' : null;
 
   static String? validarDemanda({
     required String titulo,
     required String descricao,
   }) {
-    if (titulo.trim().isEmpty) return 'Informe o título da demanda';
-    if (descricao.trim().isEmpty) return 'Informe a descrição da demanda';
-    return null;
+    return validarTituloDemanda(titulo) ?? validarDescricaoDemanda(descricao);
   }
 }

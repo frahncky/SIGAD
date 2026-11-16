@@ -11,19 +11,24 @@ import '../../../../core/models/user_role.dart';
 import '../../../../core/navigation/navigation_items.dart';
 import '../../../../core/security/authorization_policy.dart';
 import '../../../../core/services/user_context_provider.dart';
+import '../../../../l10n/l10n.dart';
 import '../../../atividades/data/atividade_repository.dart';
 import '../../../atividades/domain/atividade_models.dart';
 import '../../../atividades/domain/atividades_service.dart';
+import '../../../aulas_praticas/data/laboratorio_repository.dart';
+import '../../../aulas_praticas/domain/laboratorio_models.dart';
 import '../../../demandas/data/demanda_repository.dart';
 import '../../../demandas/domain/demanda_models.dart';
 import '../../../demandas/domain/demandas_service.dart';
+import '../../../demandas/presentation/demandas_l10n.dart';
+import '../../../atividades/presentation/atividades_l10n.dart';
+import '../../../home/presentation/pages/home_shell_page.dart';
 import '../../../kanban/data/kanban_repository.dart';
 import '../../../kanban/domain/kanban_models.dart';
 import '../../../mural/presentation/mural_visual.dart';
 import '../../../mural/presentation/state/mural_controller.dart';
-import '../../../../shared/widgets/icon_avatar.dart';
-import '../../../../shared/widgets/welcome_hero.dart';
-import '../../../../l10n/l10n.dart';
+import '../../domain/dashboard_summary.dart';
+import '../widgets/overview_header.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key, this.agora});
@@ -45,170 +50,213 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<_DashboardData> _loadDashboardData() async {
+    // Demandas só são consultadas por quem pode gerenciá-las; assim uma
+    // recusa do servidor para outros perfis não derruba a Visão geral.
+    final role = context.read<UserContextProvider>().userRole;
     final results = await Future.wait<Object>([
-      DemandaRepository().loadDemandas(),
+      AuthorizationPolicy.canManageDemandas(role)
+          ? DemandaRepository().loadDemandas()
+          : Future.value(const <Demanda>[]),
       KanbanRepository().loadCards(),
       AtividadeRepository().loadAtividades(),
+      LaboratorioRepository().load(),
     ]);
 
-    final storedDemandas = results[0] as List<Demanda>;
-    final storedCards = results[1] as List<KanbanCardModel>;
-    final storedAtividades = results[2] as List<Atividade>;
-
     return _DashboardData(
-      demandas: storedDemandas,
-      cards: storedCards,
-      atividades: storedAtividades,
+      demandas: results[0] as List<Demanda>,
+      cards: results[1] as List<KanbanCardModel>,
+      atividades: results[2] as List<Atividade>,
+      laboratorios: results[3] as List<Laboratorio>,
     );
+  }
+
+  /// Topo fixo só quando sobra espaço útil para rolar os cards.
+  static const _fracaoMaximaDoTopo = 0.55;
+  final _chaveTopo = GlobalKey();
+
+  /// Altura medida do topo; nula até o primeiro quadro, que sempre rola
+  /// junto para nunca estourar a tela antes da medição.
+  double? _alturaTopo;
+
+  bool _topoCabeFixo(double alturaDisponivel) {
+    final altura = _alturaTopo;
+    return altura != null &&
+        alturaDisponivel.isFinite &&
+        altura <= alturaDisponivel * _fracaoMaximaDoTopo;
+  }
+
+  void _medirTopo() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final caixa = _chaveTopo.currentContext?.findRenderObject();
+      if (caixa is! RenderBox || !caixa.hasSize) return;
+      final altura = caixa.size.height;
+      final anterior = _alturaTopo;
+      if (anterior == null || (anterior - altura).abs() > 0.5) {
+        setState(() => _alturaTopo = altura);
+      }
+    });
   }
 
   Future<void> _refresh() async {
     final next = _loadDashboardData();
     setState(() => _dashboardData = next);
-    await next;
+    try {
+      await next;
+    } catch (_) {
+      // O FutureBuilder já mostra o estado de erro com "Tentar novamente".
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final userContext = context.watch<UserContextProvider>();
-    final role = userContext.userRole;
+    final role = context.watch<UserContextProvider>().userRole;
     final mural = _maybeMural(context);
     final avisos = mural?.avisosVisiveis(role) ?? const [];
+    final agora = widget.agora ?? DateTime.now();
+    final canManageDemandas = AuthorizationPolicy.canManageDemandas(role);
+    final fundo = Theme.of(context).brightness == Brightness.dark
+        ? Theme.of(context).colorScheme.surfaceContainerLowest
+        : SigadColors.canvas;
+    const sobreposicao = 20.0;
 
     return FutureBuilder<_DashboardData>(
       future: _dashboardData,
-      builder: (context, snapshot) => LayoutBuilder(
-        builder: (context, constraints) {
-          final isWide = constraints.maxWidth >= 1024;
-          final canManageDemandas = AuthorizationPolicy.canManageDemandas(role);
-          final alerts = _buildDashboardAlerts(
-            l10n: context.l10n,
-            snapshot.data,
-            canManageDemandas: canManageDemandas,
-            hasError: snapshot.hasError,
-          );
-          return RefreshIndicator(
-            onRefresh: _refresh,
-            child: Stack(
-              children: [
-                const _AmbientBackground(),
-                SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: EdgeInsets.fromLTRB(
-                    isWide ? 8 : 10,
-                    isWide ? 20 : 16,
-                    isWide ? 8 : 10,
-                    24,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      WelcomeHero(
-                        agora: widget.agora,
-                        avisos: [
-                          for (final aviso in avisos)
-                            WelcomeHeroItem(
-                              icon: aviso.modelo.icone,
-                              title: aviso.titulo,
-                              subtitle: aviso.conteudo,
-                              color: aviso.modelo.cor,
+      builder: (context, snapshot) {
+        final carregando = snapshot.connectionState != ConnectionState.done;
+        final data = carregando || snapshot.hasError ? null : snapshot.data;
+        final resumo = data == null
+            ? null
+            : DashboardSummary.calcular(
+                demandas: data.demandas,
+                cards: data.cards,
+                atividades: data.atividades,
+                laboratorios: data.laboratorios,
+                agora: agora,
+              );
+
+        final conteudo = Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _Indicadores(role: role, resumo: resumo, carregando: carregando),
+            const SizedBox(height: 22),
+            _CustomizableIndicators(role: role),
+            const SizedBox(height: 22),
+            if (carregando)
+              const _DashboardLoading()
+            else if (snapshot.hasError)
+              _DashboardInlineError(onRetry: _refresh)
+            else if (canManageDemandas)
+              _PendenciasDemandas(demandas: data!.demandas, agora: agora)
+            else
+              _PendenciasAtividades(atividades: data!.atividades, agora: agora),
+            const SizedBox(height: 16),
+          ],
+        );
+
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            _medirTopo();
+            final topoFixo = _topoCabeFixo(constraints.maxHeight);
+            final cabecalho = KeyedSubtree(
+              key: _chaveTopo,
+              child: OverviewHeader(
+                agora: agora,
+                frase: mural?.fraseAtual?.texto,
+                onNotificacoes: () => mostrarNotificacoes(context),
+                onPerfil: () => mostrarMenuPerfil(context),
+                avisos: [
+                  for (final aviso in avisos)
+                    AvisoNoTopo(
+                      icone: aviso.modelo.icone,
+                      titulo: aviso.titulo,
+                      conteudo: aviso.conteudo,
+                    ),
+                ],
+                bottomInset: sobreposicao,
+              ),
+            );
+            const cantoDoPainel = BorderRadius.vertical(
+              top: Radius.circular(28),
+            );
+
+            if (topoFixo) {
+              // O topo fica parado; só o painel dos cards rola por baixo
+              // da borda arredondada, que faz parte do topo.
+              return ColoredBox(
+                color: fundo,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Stack(
+                      children: [
+                        cabecalho,
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          height: sobreposicao,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: fundo,
+                              borderRadius: cantoDoPainel,
                             ),
-                        ],
-                        frase: mural?.fraseAtual?.texto,
-                        resumo: [
-                          for (final alert in alerts)
-                            WelcomeHeroItem(
-                              icon: alert.icon,
-                              title: alert.title,
-                              subtitle: alert.subtitle,
-                              color: alert.tone,
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      _CustomizableIndicators(role: role),
-                      const SizedBox(height: 20),
-                      if (snapshot.connectionState != ConnectionState.done)
-                        const _DashboardLoading()
-                      else if (snapshot.hasError)
-                        _DashboardInlineError(onRetry: _refresh)
-                      else if (canManageDemandas)
-                        _AttentionPanel(demandas: snapshot.requireData.demandas)
-                      else
-                        _ActivitiesPanel(
-                          atividades: snapshot.requireData.atividades,
+                          ),
                         ),
+                      ],
+                    ),
+                    Expanded(
+                      child: RefreshIndicator(
+                        onRefresh: _refresh,
+                        child: SingleChildScrollView(
+                          key: const Key('dashboard-rolagem'),
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.fromLTRB(14, 2, 14, 0),
+                          child: conteudo,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            // Tela baixa ou fonte muito grande: o topo fixo tomaria quase
+            // toda a altura, então ele rola junto com o conteúdo.
+            return RefreshIndicator(
+              onRefresh: _refresh,
+              // O topo fica sob a barra de status.
+              edgeOffset: MediaQuery.paddingOf(context).top,
+              child: ColoredBox(
+                color: fundo,
+                child: SingleChildScrollView(
+                  key: const Key('dashboard-rolagem'),
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      cabecalho,
+                      Transform.translate(
+                        offset: const Offset(0, -sobreposicao),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: fundo,
+                            borderRadius: cantoDoPainel,
+                          ),
+                          padding: const EdgeInsets.fromLTRB(14, 18, 14, 0),
+                          child: conteudo,
+                        ),
+                      ),
                     ],
                   ),
                 ),
-              ],
-            ),
-          );
-        },
-      ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
-}
-
-List<DashboardAlertItem> _buildDashboardAlerts(
-  _DashboardData? data, {
-  required AppLocalizations l10n,
-  required bool canManageDemandas,
-  required bool hasError,
-}) {
-  final fallback = hasError
-      ? l10n.dadosIndisponiveis
-      : l10n.atualizandoInformacoes;
-  final atividades = data == null
-      ? fallback
-      : l10n.atividadesRegistradas(data.atividades.length);
-  final cards = data == null ? fallback : l10n.itensFluxo(data.cards.length);
-  final demandas = data == null
-      ? fallback
-      : l10n.demandasRegistradas(data.demandas.length);
-
-  return [
-    DashboardAlertItem(
-      icon: SigadIcons.eventoNota,
-      title: l10n.atividadesDepartamento,
-      subtitle: atividades,
-      tone: SigadColors.success,
-    ),
-    DashboardAlertItem(
-      icon: SigadIcons.kanban,
-      title: l10n.quadroTrabalho,
-      subtitle: cards,
-      tone: SigadColors.info,
-    ),
-    if (canManageDemandas)
-      DashboardAlertItem(
-        icon: SigadIcons.demanda,
-        title: l10n.demandasDepartamento,
-        subtitle: demandas,
-        tone: SigadColors.warning,
-      )
-    else
-      DashboardAlertItem(
-        icon: SigadIcons.escudo,
-        title: l10n.acessoDepartamento,
-        subtitle: l10n.acessoDepartamentoSub,
-        tone: SigadColors.info,
-      ),
-  ];
-}
-
-class DashboardAlertItem {
-  const DashboardAlertItem({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.tone,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final Color tone;
 }
 
 class _DashboardData {
@@ -216,292 +264,751 @@ class _DashboardData {
     required this.demandas,
     required this.cards,
     required this.atividades,
+    required this.laboratorios,
   });
 
   final List<Demanda> demandas;
   final List<KanbanCardModel> cards;
   final List<Atividade> atividades;
+  final List<Laboratorio> laboratorios;
 }
 
-class _AttentionPanel extends StatelessWidget {
-  const _AttentionPanel({required this.demandas});
+bool _rotaDisponivel(UserRole? role, String route) {
+  if (role == null) return true;
+  for (final item in kNavigationItems) {
+    if (item.route == route) return item.isAvailableFor(role);
+  }
+  return false;
+}
 
-  final List<Demanda> demandas;
+/// Ajusta o tom para manter contraste no tema claro e no escuro.
+Color _tomLegivel(BuildContext context, Color tom) {
+  final escuro = Theme.of(context).brightness == Brightness.dark;
+  return escuro
+      ? Color.lerp(tom, Colors.white, 0.45)!
+      : Color.lerp(tom, Colors.black, 0.26)!;
+}
+
+// ---------------------------------------------------------------------------
+// Indicadores
+// ---------------------------------------------------------------------------
+
+class _IndicadorDef {
+  const _IndicadorDef({
+    required this.id,
+    required this.titulo,
+    required this.icone,
+    required this.tom,
+    required this.valor,
+    required this.detalhe,
+    required this.route,
+  });
+
+  final String id;
+  final String titulo;
+  final IconData icone;
+  final Color tom;
+  final int? valor;
+  final String detalhe;
+  final String route;
+}
+
+class _Indicadores extends StatelessWidget {
+  const _Indicadores({
+    required this.role,
+    required this.resumo,
+    required this.carregando,
+  });
+
+  final UserRole? role;
+  final DashboardSummary? resumo;
+  final bool carregando;
 
   @override
   Widget build(BuildContext context) {
-    final abertas =
-        demandas.where((item) => item.statusLabel != 'Concluído').toList()
-          ..sort(
-            (a, b) => DemandasService.pesoPrioridade(
-              a.prioridade,
-            ).compareTo(DemandasService.pesoPrioridade(b.prioridade)),
-          );
+    final l10n = context.l10n;
+    final resumo = this.resumo;
+    String detalhe(String Function(DashboardSummary r) texto) => resumo == null
+        ? (carregando ? l10n.atualizandoInformacoes : l10n.dadosIndisponiveis)
+        : texto(resumo);
 
-    return _DashboardPanel(
-      title: context.l10n.atencaoAgora,
-      subtitle: context.l10n.atencaoAgoraSub,
-      actionLabel: context.l10n.verTodas,
-      icon: SigadIcons.prioridade,
-      tone: SigadColors.risk,
-      onAction: () =>
-          Navigator.of(context).pushReplacementNamed(AppRoutes.demandas),
-      child: abertas.isEmpty
-          ? _CompactEmptyState(
-              icon: SigadIcons.concluido,
-              message: context.l10n.nenhumaDemandaAberta,
-            )
-          : Column(
-              children: abertas
-                  .take(3)
-                  .map((item) => _DemandAttentionRow(demanda: item))
-                  .toList(growable: false),
-            ),
+    final indicadores = [
+      if (AuthorizationPolicy.canManageDemandas(role))
+        _IndicadorDef(
+          id: 'demandas',
+          titulo: l10n.navDemandas,
+          icone: SigadIcons.demanda,
+          tom: SigadColors.success,
+          valor: resumo?.demandasAbertas,
+          detalhe: detalhe((r) => l10n.vgPrioritarias(r.demandasPrioritarias)),
+          route: AppRoutes.demandas,
+        ),
+      _IndicadorDef(
+        id: 'tarefas',
+        titulo: l10n.navTarefas,
+        icone: SigadIcons.concluido,
+        tom: SigadColors.info,
+        valor: resumo?.tarefasAbertas,
+        detalhe: detalhe((r) => l10n.vgEmAndamento(r.tarefasEmAndamento)),
+        route: AppRoutes.kanban,
+      ),
+      _IndicadorDef(
+        id: 'atividades',
+        titulo: l10n.navAtividades,
+        icone: SigadIcons.calendario,
+        tom: SigadColors.violet,
+        valor: resumo?.atividadesAbertas,
+        detalhe: detalhe((r) => l10n.vgEstaSemana(r.atividadesSemana)),
+        route: AppRoutes.atividades,
+      ),
+      if (_rotaDisponivel(role, AppRoutes.aulasPraticas))
+        _IndicadorDef(
+          id: 'laboratorios',
+          titulo: l10n.navLaboratorios,
+          icone: SigadIcons.laboratorio,
+          tom: SigadColors.warning,
+          valor: resumo?.laboratorios,
+          detalhe: detalhe(
+            (r) => l10n.vgLabsManutencao(r.laboratoriosManutencao),
+          ),
+          route: AppRoutes.aulasPraticas,
+        ),
+    ];
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const espaco = 8.0;
+        final medidas = _MedidasIndicador(context);
+        final colunas = colunasIndicadores(
+          larguraDisponivel: constraints.maxWidth,
+          larguraMinimaCard: medidas.larguraMinima(indicadores),
+          quantidade: indicadores.length,
+          espaco: espaco,
+        );
+        final larguraCard =
+            (constraints.maxWidth - (colunas - 1) * espaco) / colunas;
+        final linhas = [
+          for (var i = 0; i < indicadores.length; i += colunas)
+            indicadores.skip(i).take(colunas).toList(growable: false),
+        ];
+        return Column(
+          children: [
+            for (final linha in linhas) ...[
+              if (linha != linhas.first) const SizedBox(height: espaco),
+              // Cards da mesma linha ficam com a mesma altura.
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (var i = 0; i < colunas; i++) ...[
+                      if (i > 0) const SizedBox(width: espaco),
+                      Expanded(
+                        child: i < linha.length
+                            ? _IndicadorCard(
+                                item: linha[i],
+                                nomeAoLado: medidas.nomeCabeAoLado(
+                                  linha[i],
+                                  larguraCard,
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ],
+        );
+      },
     );
   }
 }
 
-class _DemandAttentionRow extends StatelessWidget {
-  const _DemandAttentionRow({required this.demanda});
+/// Mede os textos dos indicadores com a fonte e a escala atuais.
+class _MedidasIndicador {
+  _MedidasIndicador(this.context) : estilos = _IndicadorCard.estilos(context);
 
-  final Demanda demanda;
+  final BuildContext context;
+  final _EstilosIndicador estilos;
+
+  double medir(String texto, TextStyle? estilo) {
+    final painter = TextPainter(
+      text: TextSpan(text: texto, style: estilo),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+      maxLines: 1,
+    )..layout();
+    final largura = painter.width;
+    painter.dispose();
+    return largura;
+  }
+
+  double _valor(_IndicadorDef item) =>
+      medir(item.valor?.toString() ?? '—', estilos.valor);
+
+  /// Área útil do card, descontadas a margem interna e a borda.
+  static double _interna(double larguraCard) =>
+      larguraCard - _IndicadorCard.padding * 2 - 2;
+
+  /// Número e nome cabem lado a lado na primeira linha do card?
+  bool nomeCabeAoLado(_IndicadorDef item, double larguraCard) =>
+      _valor(item) +
+          _IndicadorCard.espacoNome +
+          medir(item.titulo, estilos.titulo) <=
+      _interna(larguraCard) - 1;
+
+  /// Menor largura em que nenhum texto do card é partido no meio da palavra.
+  /// Considera o nome abaixo do número, a forma mais estreita do card.
+  double larguraMinima(List<_IndicadorDef> indicadores) {
+    var necessaria = 0.0;
+    for (final item in indicadores) {
+      var maiorPalavra = 0.0;
+      for (final palavra in item.detalhe.split(RegExp(r'\s+'))) {
+        final largura = medir(palavra, estilos.detalhe);
+        if (largura > maiorPalavra) maiorPalavra = largura;
+      }
+      final candidatos = [
+        medir(item.titulo, estilos.titulo),
+        _valor(item),
+        _IndicadorCard.seloPadding * 2 +
+            _IndicadorCard.iconeSelo +
+            _IndicadorCard.espacoIconeSelo +
+            maiorPalavra,
+      ];
+      for (final largura in candidatos) {
+        if (largura > necessaria) necessaria = largura;
+      }
+    }
+    // Margem interna, borda e folga para arredondamentos de layout.
+    return necessaria + _IndicadorCard.padding * 2 + 4;
+  }
+}
+
+/// Quantos indicadores cabem por linha sem quebrar palavras.
+///
+/// Prefere todos na mesma linha. Quando não cabem, evita deixar um card
+/// sozinho: quatro viram duas linhas de dois e três viram uma coluna.
+@visibleForTesting
+int colunasIndicadores({
+  required double larguraDisponivel,
+  required double larguraMinimaCard,
+  required int quantidade,
+  double espaco = 8,
+}) {
+  if (quantidade <= 1) return 1;
+  bool cabe(int colunas) =>
+      (larguraDisponivel - (colunas - 1) * espaco) / colunas >=
+      larguraMinimaCard;
+  for (var colunas = quantidade; colunas > 1; colunas--) {
+    if (quantidade == 4 && colunas == 3) continue;
+    if (quantidade == 3 && colunas == 2) continue;
+    if (cabe(colunas)) return colunas;
+  }
+  return 1;
+}
+
+class _EstilosIndicador {
+  const _EstilosIndicador({
+    required this.titulo,
+    required this.valor,
+    required this.detalhe,
+  });
+
+  final TextStyle? titulo;
+  final TextStyle? valor;
+  final TextStyle? detalhe;
+}
+
+class _IndicadorCard extends StatelessWidget {
+  const _IndicadorCard({required this.item, required this.nomeAoLado});
+
+  final _IndicadorDef item;
+
+  /// Número e nome na mesma linha; falso coloca o nome abaixo do número.
+  final bool nomeAoLado;
+
+  static const padding = 10.0;
+  static const espacoNome = 6.0;
+  static const seloPadding = 8.0;
+  static const iconeSelo = 14.0;
+  static const espacoIconeSelo = 4.0;
+
+  static _EstilosIndicador estilos(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colors = Theme.of(context).colorScheme;
+    return _EstilosIndicador(
+      titulo: textTheme.labelLarge?.copyWith(
+        fontWeight: FontWeight.w700,
+        color: colors.onSurface,
+      ),
+      valor: textTheme.headlineSmall?.copyWith(
+        fontWeight: FontWeight.w800,
+        color: colors.onSurface,
+        height: 1.1,
+      ),
+      detalhe: textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w700),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final tone = DemandasService.tonePrioridade(demanda.prioridade);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Container(
-            width: 7,
-            height: 40,
+    final colors = Theme.of(context).colorScheme;
+    final estilos = _IndicadorCard.estilos(context);
+    final tom = _tomLegivel(context, item.tom);
+    final valor = item.valor?.toString() ?? '—';
+    final fundo = Color.alphaBlend(
+      item.tom.withValues(alpha: 0.09),
+      colors.surface,
+    );
+    // Zero fica mais discreto para destacar os números que pedem atenção;
+    // o detalhe por escrito continua igual.
+    final numero = Text(
+      valor,
+      style: item.valor == 0
+          ? estilos.valor?.copyWith(color: colors.onSurfaceVariant)
+          : estilos.valor,
+    );
+    final nome = Text(item.titulo, style: estilos.titulo);
+
+    void abrir() => Navigator.of(context).pushReplacementNamed(item.route);
+
+    return Semantics(
+      button: true,
+      // Sem valor ainda, não lê o travessão: só o nome e o "atualizando".
+      label: item.valor == null
+          ? '${item.titulo}. ${item.detalhe}'
+          : context.l10n.vgIndicadorSemantica(item.titulo, valor, item.detalhe),
+      onTap: abrir,
+      excludeSemantics: true,
+      child: Material(
+        key: ValueKey('indicador-${item.id}'),
+        color: fundo,
+        borderRadius: BorderRadius.circular(16),
+        elevation: 1.5,
+        shadowColor: item.tom.withValues(alpha: 0.25),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: abrir,
+          child: Container(
+            padding: const EdgeInsets.all(padding),
             decoration: BoxDecoration(
-              color: tone,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: item.tom.withValues(alpha: 0.22)),
             ),
-          ),
-          const SizedBox(width: 11),
-          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  demanda.titulo,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  context.l10n.responsavelPrazo(
-                    demanda.proprietario,
-                    demanda.prazo,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            demanda.prioridade,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: tone,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ActivitiesPanel extends StatelessWidget {
-  const _ActivitiesPanel({required this.atividades});
-
-  final List<Atividade> atividades;
-
-  @override
-  Widget build(BuildContext context) {
-    final abertas = atividades
-        .where((item) => item.status != 'Concluída')
-        .take(3)
-        .toList(growable: false);
-
-    return _DashboardPanel(
-      title: context.l10n.proximasAtividades,
-      subtitle: context.l10n.proximasAtividadesSub,
-      actionLabel: context.l10n.verTodas,
-      icon: SigadIcons.eventoNota,
-      tone: SigadColors.info,
-      onAction: () =>
-          Navigator.of(context).pushReplacementNamed(AppRoutes.atividades),
-      child: abertas.isEmpty
-          ? _CompactEmptyState(
-              icon: SigadIcons.concluido,
-              message: context.l10n.nenhumaAtividadeAberta,
-            )
-          : Column(
-              children: abertas
-                  .map(
-                    (atividade) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Row(
-                        children: [
-                          SigadIcon(
-                            SigadIcons.eventoNota,
-                            color: AtividadesService.statusColor(
-                              atividade.status,
-                            ),
-                          ),
-                          const SizedBox(width: 11),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  atividade.titulo,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: Theme.of(context).textTheme.bodyMedium
-                                      ?.copyWith(fontWeight: FontWeight.w700),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  '${atividade.responsavel} • ${atividade.data}',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: Theme.of(context).textTheme.bodySmall
-                                      ?.copyWith(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onSurfaceVariant,
-                                      ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            atividade.status,
-                            style: Theme.of(context).textTheme.labelSmall
-                                ?.copyWith(
-                                  color: AtividadesService.statusColor(
-                                    atividade.status,
-                                  ),
-                                  fontWeight: FontWeight.w800,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
+                if (nomeAoLado)
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      numero,
+                      const SizedBox(width: espacoNome),
+                      Expanded(child: nome),
+                    ],
                   )
-                  .toList(growable: false),
-            ),
-    );
-  }
-}
-
-class _DashboardPanel extends StatelessWidget {
-  const _DashboardPanel({
-    required this.title,
-    required this.subtitle,
-    required this.actionLabel,
-    required this.onAction,
-    required this.child,
-    required this.icon,
-    required this.tone,
-  });
-
-  final String title;
-  final String subtitle;
-  final String actionLabel;
-  final VoidCallback onAction;
-  final Widget child;
-  final IconData icon;
-  final Color tone;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      margin: EdgeInsets.zero,
-      elevation: 0,
-      color: theme.colorScheme.surface,
-      surfaceTintColor: Colors.transparent,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(22),
-        side: BorderSide(color: tone.withValues(alpha: 0.16)),
-      ),
-      shadowColor: tone.withValues(alpha: 0.25),
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                SigadIconAvatar(icon: icon, tone: tone),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
+                else ...[
+                  numero,
+                  const SizedBox(height: 2),
+                  nome,
+                ],
+                const SizedBox(height: 8),
+                const Spacer(),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: seloPadding,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: item.tom.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SigadIcon(item.icone, color: tom, size: iconeSelo),
+                      const SizedBox(width: espacoIconeSelo),
+                      Flexible(
+                        child: Text(
+                          item.detalhe,
+                          textAlign: TextAlign.center,
+                          style: estilos.detalhe?.copyWith(color: tom),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 6),
-            Text(
-              subtitle,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: onAction,
-                child: Text(actionLabel, textAlign: TextAlign.end),
-              ),
-            ),
-            const Divider(height: 20),
-            child,
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _CompactEmptyState extends StatelessWidget {
-  const _CompactEmptyState({required this.icon, required this.message});
+// ---------------------------------------------------------------------------
+// Pendências e prazos
+// ---------------------------------------------------------------------------
 
-  final IconData icon;
-  final String message;
+class _PendenciaItem {
+  const _PendenciaItem({
+    required this.icone,
+    required this.tom,
+    required this.titulo,
+    required this.subtitulo,
+    required this.situacao,
+    required this.tomSituacao,
+    this.urgente = false,
+    this.atrasada = false,
+  });
+
+  final IconData icone;
+  final Color tom;
+  final String titulo;
+  final String subtitulo;
+  final String situacao;
+  final Color tomSituacao;
+  final bool urgente;
+
+  /// Prazo vencido; diferencia o ícone do selo de "Hoje".
+  final bool atrasada;
+}
+
+class _PendenciasDemandas extends StatelessWidget {
+  const _PendenciasDemandas({required this.demandas, required this.agora});
+
+  final List<Demanda> demandas;
+  final DateTime agora;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 22),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SigadIcon(icon, size: 20),
-        const SizedBox(width: 8),
-        Flexible(child: Text(message)),
-      ],
-    ),
-  );
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final itens = [
+      for (final demanda in DashboardSummary.demandasPorPrazo(demandas).take(3))
+        _itemDe(l10n, demanda),
+    ];
+    return _PendenciasPanel(
+      itens: itens,
+      vazio: l10n.nenhumaDemandaAberta,
+      route: AppRoutes.demandas,
+    );
+  }
+
+  _PendenciaItem _itemDe(AppLocalizations l10n, Demanda demanda) {
+    final situacao = DashboardSummary.situacaoPrazo(demanda.prazo, agora);
+    final (rotulo, tom, urgente) = switch (situacao) {
+      SituacaoPrazo.atrasada => (l10n.vgAtrasada, SigadColors.risk, true),
+      SituacaoPrazo.hoje => (l10n.vgHoje, SigadColors.risk, true),
+      _ => (
+        l10n.opcaoDemanda(demanda.statusLabel),
+        DemandasService.toneStatus(demanda.statusLabel),
+        false,
+      ),
+    };
+    final prioridade = l10n.vgPrioridadeNivel(
+      l10n.opcaoDemanda(demanda.prioridade).toLowerCase(),
+    );
+    return _PendenciaItem(
+      icone: SigadIcons.demanda,
+      tom: urgente
+          ? SigadColors.risk
+          : DemandasService.tonePrioridade(demanda.prioridade),
+      titulo: demanda.titulo,
+      subtitulo:
+          '${l10n.vgPrazoDe(demanda.prazo, demanda.proprietario)} • '
+          '$prioridade',
+      situacao: rotulo,
+      tomSituacao: tom,
+      urgente: urgente,
+      atrasada: situacao == SituacaoPrazo.atrasada,
+    );
+  }
+}
+
+class _PendenciasAtividades extends StatelessWidget {
+  const _PendenciasAtividades({required this.atividades, required this.agora});
+
+  final List<Atividade> atividades;
+  final DateTime agora;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final itens = [
+      for (final atividade in DashboardSummary.atividadesPorData(
+        atividades,
+      ).take(3))
+        _itemDe(l10n, atividade),
+    ];
+    return _PendenciasPanel(
+      itens: itens,
+      vazio: l10n.nenhumaAtividadeAberta,
+      route: AppRoutes.atividades,
+    );
+  }
+
+  _PendenciaItem _itemDe(AppLocalizations l10n, Atividade atividade) {
+    final tom = AtividadesService.statusColor(atividade.status);
+    final situacao = DashboardSummary.situacaoPrazo(atividade.data, agora);
+    final (rotulo, urgente) = switch (situacao) {
+      SituacaoPrazo.atrasada => (l10n.vgAtrasada, true),
+      SituacaoPrazo.hoje => (l10n.vgHoje, true),
+      _ => (l10n.statusAtividade(atividade.status), false),
+    };
+    return _PendenciaItem(
+      icone: SigadIcons.eventoNota,
+      tom: urgente ? SigadColors.risk : tom,
+      titulo: atividade.titulo,
+      subtitulo: '${atividade.responsavel} • ${atividade.data}',
+      situacao: rotulo,
+      tomSituacao: urgente ? SigadColors.risk : tom,
+      urgente: urgente,
+      atrasada: situacao == SituacaoPrazo.atrasada,
+    );
+  }
+}
+
+class _PendenciasPanel extends StatelessWidget {
+  const _PendenciasPanel({
+    required this.itens,
+    required this.vazio,
+    required this.route,
+  });
+
+  final List<_PendenciaItem> itens;
+  final String vazio;
+  final String route;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    void abrir() => Navigator.of(context).pushReplacementNamed(route);
+
+    return Container(
+      key: const Key('dashboard-pendencias'),
+      padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            alignment: WrapAlignment.spaceBetween,
+            runSpacing: 4,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SigadIcon(
+                    SigadIcons.alvo,
+                    color: _tomLegivel(context, SigadColors.accent),
+                    size: 24,
+                  ),
+                  const SizedBox(width: 10),
+                  Flexible(
+                    child: Text(
+                      context.l10n.vgPendenciasPrazos,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              TextButton.icon(
+                onPressed: abrir,
+                iconAlignment: IconAlignment.end,
+                icon: const SigadIcon(SigadIcons.setaDireita, size: 18),
+                label: Text(context.l10n.verTodas),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          if (itens.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Column(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: SigadColors.success.withValues(alpha: 0.14),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: SigadIcon(
+                        SigadIcons.concluido,
+                        color: _tomLegivel(context, SigadColors.success),
+                        size: 22,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    vazio,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            for (final item in itens) ...[
+              _PendenciaTile(item: item, onTap: abrir),
+              if (item != itens.last) const SizedBox(height: 8),
+            ],
+        ],
+      ),
+    );
+  }
+}
+
+class _PendenciaTile extends StatelessWidget {
+  const _PendenciaTile({required this.item, required this.onTap});
+
+  final _PendenciaItem item;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    // Só o que vence hoje ou já venceu ganha cor; o resto fica neutro e a
+    // prioridade aparece por escrito no subtítulo.
+    final tom = item.urgente
+        ? _tomLegivel(context, item.tom)
+        : colors.onSurfaceVariant;
+    final faixa = item.urgente ? item.tom : colors.outlineVariant;
+    final tomSituacao = _tomLegivel(context, item.tomSituacao);
+    final textoAmpliado = MediaQuery.textScalerOf(context).scale(14) > 19;
+
+    final selo = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: item.tomSituacao.withValues(alpha: 0.13),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (item.urgente) ...[
+            SigadIcon(
+              item.atrasada ? SigadIcons.alerta : SigadIcons.relogio,
+              color: tomSituacao,
+              size: 15,
+            ),
+            const SizedBox(width: 4),
+          ],
+          Flexible(
+            child: Text(
+              item.situacao,
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: tomSituacao,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    // Em cartões estreitos o selo desce para baixo do texto e devolve ao
+    // título a largura que ocuparia ao lado.
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final seloAbaixo = textoAmpliado || constraints.maxWidth < 340;
+        return Semantics(
+          button: true,
+          label: '${item.titulo}. ${item.subtitulo}. ${item.situacao}',
+          onTap: onTap,
+          excludeSemantics: true,
+          child: Material(
+            color: colors.surface,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+              side: BorderSide(color: colors.outlineVariant),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: onTap,
+              // Faixa lateral com o tom da pendência; o contorno vem do shape.
+              child: ColoredBox(
+                color: faixa,
+                child: Container(
+                  margin: const EdgeInsets.only(left: 5),
+                  color: colors.surface,
+                  padding: const EdgeInsets.fromLTRB(11, 12, 6, 12),
+                  child: Row(
+                    children: [
+                      SigadIcon(item.icone, color: tom, size: 22),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.titulo,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              item.subtitulo,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ),
+                            if (seloAbaixo) ...[
+                              const SizedBox(height: 6),
+                              selo,
+                            ],
+                          ],
+                        ),
+                      ),
+                      if (!seloAbaixo) ...[
+                        const SizedBox(width: 8),
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 120),
+                          child: selo,
+                        ),
+                      ],
+                      SigadIcon(
+                        SigadIcons.chevronDireita,
+                        color: colors.onSurfaceVariant,
+                        size: 20,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 
 class _DashboardLoading extends StatelessWidget {
@@ -512,16 +1019,16 @@ class _DashboardLoading extends StatelessWidget {
     margin: EdgeInsets.zero,
     elevation: 0,
     child: Padding(
-      padding: EdgeInsets.all(24),
+      padding: const EdgeInsets.all(24),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(
+          const SizedBox(
             width: 20,
             height: 20,
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           Flexible(child: Text(context.l10n.atualizandoVisao)),
         ],
       ),
@@ -540,14 +1047,16 @@ class _DashboardInlineError extends StatelessWidget {
     elevation: 0,
     child: Padding(
       padding: const EdgeInsets.all(20),
-      child: Row(
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 12,
+        runSpacing: 8,
         children: [
           const SigadIcon(
             SigadIcons.sincronizacaoErro,
             color: SigadColors.risk,
           ),
-          const SizedBox(width: 12),
-          Expanded(child: Text(context.l10n.erroIndicadores)),
+          Text(context.l10n.erroIndicadores),
           TextButton.icon(
             onPressed: onRetry,
             icon: const SigadIcon(SigadIcons.atualizar),
@@ -559,8 +1068,12 @@ class _DashboardInlineError extends StatelessWidget {
   );
 }
 
+// ---------------------------------------------------------------------------
+// Acesso rápido
+// ---------------------------------------------------------------------------
+
 /// Atalhos compactos e personalizáveis para os itens mais importantes do
-/// menu lateral: o usuário escolhe, pelo ícone de ajuste, quais aparecem
+/// menu lateral: o usuário escolhe, pelo botão Personalizar, quais aparecem
 /// na Visão geral.
 class _CustomizableIndicators extends StatefulWidget {
   const _CustomizableIndicators({required this.role});
@@ -613,7 +1126,7 @@ class _CustomizableIndicatorsState extends State<_CustomizableIndicators> {
       ),
       builder: (context) => StatefulBuilder(
         builder: (context, setModalState) => SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -676,29 +1189,39 @@ class _CustomizableIndicatorsState extends State<_CustomizableIndicators> {
         .toList(growable: false);
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          alignment: WrapAlignment.spaceBetween,
+          runSpacing: 4,
           children: [
-            const SigadIcon(
-              SigadIcons.raio,
-              color: SigadColors.brand,
-              size: 20,
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SigadIcon(
+                  SigadIcons.raio,
+                  color: _tomLegivel(context, SigadColors.accent),
+                  size: 24,
+                ),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    context.l10n.acessoRapido,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                context.l10n.acessoRapido,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            Tooltip(
+              message: context.l10n.personalizarAtalhos,
+              child: TextButton.icon(
+                onPressed: _abrirSeletorDeAtalhos,
+                icon: const SigadIcon(SigadIcons.configuracoes, size: 18),
+                label: Text(context.l10n.vgPersonalizar),
               ),
-            ),
-            IconButton(
-              onPressed: _abrirSeletorDeAtalhos,
-              tooltip: context.l10n.personalizarAtalhos,
-              icon: const SigadIcon(SigadIcons.painelPersonalizar),
-              visualDensity: VisualDensity.compact,
             ),
           ],
         ),
@@ -733,12 +1256,13 @@ class _CustomizableIndicatorsState extends State<_CustomizableIndicators> {
         else
           LayoutBuilder(
             builder: (context, constraints) {
-              final largeText = MediaQuery.textScalerOf(context).scale(14) > 19;
-              final colunas = constraints.maxWidth >= 640
-                  ? 4
-                  : constraints.maxWidth >= 320 && !largeText
-                  ? 3
-                  : 2;
+              final colunas = colunasAtalhos(
+                larguraDisponivel: constraints.maxWidth,
+                larguraMinimaCard: _AtalhoCard.larguraMinima(
+                  context,
+                  atalhosVisiveis.map((item) => item.rotuloEm(context.l10n)),
+                ),
+              );
               final largura =
                   ((constraints.maxWidth - ((colunas - 1) * 10)) / colunas)
                       .clamp(0.0, double.infinity);
@@ -760,73 +1284,100 @@ class _CustomizableIndicatorsState extends State<_CustomizableIndicators> {
   }
 }
 
+/// Colunas do Acesso rápido: o máximo que cabe sem quebrar palavras.
+@visibleForTesting
+int colunasAtalhos({
+  required double larguraDisponivel,
+  required double larguraMinimaCard,
+  double espaco = 10,
+}) {
+  final maximo = larguraDisponivel >= 640 ? 5 : 3;
+  for (var colunas = maximo; colunas > 1; colunas--) {
+    final largura = (larguraDisponivel - (colunas - 1) * espaco) / colunas;
+    if (largura >= larguraMinimaCard) return colunas;
+  }
+  return 1;
+}
+
 class _AtalhoCard extends StatelessWidget {
   const _AtalhoCard({required this.item});
 
   final NavigationItem item;
 
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Container(
-      constraints: const BoxConstraints(minHeight: 96),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.outlineVariant),
-      ),
-      child: Material(
-        type: MaterialType.transparency,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () => Navigator.of(context).pushReplacementNamed(item.route),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SigadIcon(item.icon, color: SigadColors.brand, size: 24),
-                const SizedBox(height: 8),
-                Text(
-                  item.rotuloEm(context.l10n),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+  static const _paddingHorizontal = 8.0;
+
+  static TextStyle? estiloRotulo(BuildContext context) => Theme.of(
+    context,
+  ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700);
+
+  /// Largura em que a maior palavra dos rótulos cabe sem ser partida.
+  static double larguraMinima(BuildContext context, Iterable<String> rotulos) {
+    final estilo = estiloRotulo(context);
+    var maior = 0.0;
+    for (final rotulo in rotulos) {
+      for (final palavra in rotulo.split(RegExp(r'\s+'))) {
+        final painter = TextPainter(
+          text: TextSpan(text: palavra, style: estilo),
+          textDirection: Directionality.of(context),
+          textScaler: MediaQuery.textScalerOf(context),
+          maxLines: 1,
+        )..layout();
+        if (painter.width > maior) maior = painter.width;
+        painter.dispose();
+      }
+    }
+    // Margem interna, borda e folga para arredondamentos.
+    return maior + _paddingHorizontal * 2 + 4;
   }
-}
-
-class _AmbientBackground extends StatelessWidget {
-  const _AmbientBackground();
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-
-    return IgnorePointer(
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [colors.surface, colors.surfaceContainerLow],
-                ),
+    return Semantics(
+      button: true,
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 76),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: colors.outlineVariant.withValues(alpha: 0.6),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () => Navigator.of(context).pushReplacementNamed(item.route),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 10,
+                horizontal: _paddingHorizontal,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SigadIcon(item.icon, color: SigadColors.brand, size: 26),
+                  const SizedBox(height: 6),
+                  Text(
+                    item.rotuloEm(context.l10n),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: estiloRotulo(context),
+                  ),
+                ],
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

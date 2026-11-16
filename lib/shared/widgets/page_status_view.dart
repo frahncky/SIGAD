@@ -11,6 +11,7 @@ class PageStatusView extends StatelessWidget {
     this.actionLabel,
     this.onAction,
     this.showProgress = false,
+    this.actionIcon = SigadIcons.atualizar,
   });
 
   const PageStatusView.loading({
@@ -20,6 +21,7 @@ class PageStatusView extends StatelessWidget {
   }) : icon = SigadIcons.ampulheta,
        actionLabel = null,
        onAction = null,
+       actionIcon = SigadIcons.atualizar,
        showProgress = true;
 
   const PageStatusView.empty({
@@ -29,6 +31,7 @@ class PageStatusView extends StatelessWidget {
     this.subtitle,
     this.actionLabel,
     this.onAction,
+    this.actionIcon = SigadIcons.atualizar,
   }) : showProgress = false;
 
   const PageStatusView.error({
@@ -38,6 +41,7 @@ class PageStatusView extends StatelessWidget {
     this.subtitle,
     this.actionLabel = 'Tentar novamente',
     this.onAction,
+    this.actionIcon = SigadIcons.atualizar,
   }) : showProgress = false;
 
   final IconData icon;
@@ -46,6 +50,9 @@ class PageStatusView extends StatelessWidget {
   final String? actionLabel;
   final VoidCallback? onAction;
   final bool showProgress;
+
+  /// Ícone do botão de ação. Padrão: atualizar (tentar novamente).
+  final IconData actionIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +134,7 @@ class PageStatusView extends StatelessWidget {
                     const SizedBox(height: 14),
                     OutlinedButton.icon(
                       onPressed: onAction,
-                      icon: const SigadIcon(SigadIcons.atualizar),
+                      icon: SigadIcon(actionIcon),
                       label: Text(actionLabel!),
                     ),
                   ],

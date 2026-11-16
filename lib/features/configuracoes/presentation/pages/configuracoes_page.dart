@@ -1,111 +1,72 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../app/routes/app_routes.dart';
-import '../../../../app/theme/sigad_colors.dart';
 import '../../../../app/theme/sigad_icon.dart';
 import '../../../../app/theme/sigad_icons.dart';
+import '../../../../core/models/user.dart';
+import '../../../../core/models/user_role.dart';
 import '../../../../core/security/authorization_policy.dart';
-import '../../../../core/services/theme_provider.dart';
-import '../../../../core/services/locale_provider.dart';
-import '../../../../l10n/l10n.dart';
-import '../../../../core/services/user_context_provider.dart';
+import '../../../../core/services/app_event_logger.dart';
+import '../../../../core/services/app_feedback_service.dart';
 import '../../../../core/services/greeting_name_provider.dart';
-import '../greeting_name_dialog.dart';
-import '../../../../shared/widgets/icon_avatar.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/services/theme_provider.dart';
+import '../../../../core/services/user_context_provider.dart';
+import '../../../../l10n/l10n.dart';
+import '../../../../shared/widgets/page_status_view.dart';
+import '../../../../shared/widgets/sigad_sheet.dart';
+import '../../../../shared/widgets/work_item_ui.dart';
 import '../../data/configuracoes_repository.dart';
-import '../../domain/configuracoes_models.dart';
-import '../../domain/configuracoes_service.dart';
+import '../../domain/app_versao.dart';
+import '../greeting_name_dialog.dart';
 
+/// Preferências do usuário e informações da conta.
+///
+/// O estado exibido vem dos providers ([ThemeProvider], [LocaleProvider],
+/// [GreetingNameProvider], [UserContextProvider]). A tela não guarda uma
+/// cópia das configurações: ao alterar uma preferência, grava somente aquele
+/// campo a partir do valor atual do armazenamento, sem apagar o que outras
+/// partes do app gravaram na mesma chave (como os convites da agenda).
 class ConfiguracoesPage extends StatefulWidget {
-  const ConfiguracoesPage({super.key});
+  const ConfiguracoesPage({super.key, this.repository, this.versao});
+
+  /// Onde as preferências são gravadas. Padrão: [ConfiguracoesRepository].
+  final ConfiguracoesRepository? repository;
+
+  /// Versão exibida em "Sobre". Padrão: [AppVersao.atual].
+  final String? versao;
 
   @override
   State<ConfiguracoesPage> createState() => _ConfiguracoesPageState();
 }
 
 class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
-  bool _notificacoesAtivas =
-      ConfiguracoesService.defaultData().notificacoesAtivas;
-  bool _notificarAntesDaDisciplina =
-      ConfiguracoesService.defaultData().notificarAntesDaDisciplina;
-  int _antecedenciaNotificacaoMinutos =
-      ConfiguracoesService.defaultData().antecedenciaNotificacaoMinutos;
-  bool _modoDark = ConfiguracoesService.defaultData().modoDark;
-  bool _biometriaAtiva = ConfiguracoesService.defaultData().biometriaAtiva;
-  bool _backupAutomaticoAtivo =
-      ConfiguracoesService.defaultData().backupAutomaticoAtivo;
-  String _idioma = ConfiguracoesService.defaultData().idioma;
-  String _tamanhoFonte = ConfiguracoesService.defaultData().tamanhoFonte;
-  String _nomePerfil = ConfiguracoesService.defaultData().nomePerfil;
-  String _cargoPerfil = ConfiguracoesService.defaultData().cargoPerfil;
-  String _emailUsuario = ConfiguracoesService.defaultData().emailUsuario;
-  String _ultimaAlteracaoSenha =
-      ConfiguracoesService.defaultData().ultimaAlteracaoSenha;
-  String _proximoBackup = ConfiguracoesService.defaultData().proximoBackup;
-  String _ultimoBackup = ConfiguracoesService.defaultData().ultimoBackup;
-  int _problemasReportados =
-      ConfiguracoesService.defaultData().problemasReportados;
-  List<CompromissoAgenda> _agendaCompromissos = List<CompromissoAgenda>.of(
-    ConfiguracoesService.defaultData().agendaCompromissos,
-    growable: true,
-  );
+  late final ConfiguracoesRepository _repository =
+      widget.repository ?? ConfiguracoesRepository();
 
-  final ConfiguracoesRepository _configuracoesRepository =
-      ConfiguracoesRepository();
+  String? get _versao => widget.versao ?? AppVersao.atual;
 
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
-
-  Future<void> _loadData() async {
-    final data = await _configuracoesRepository.load();
-    if (data == null) return;
-    setState(() {
-      _notificacoesAtivas = data.notificacoesAtivas;
-      _notificarAntesDaDisciplina = data.notificarAntesDaDisciplina;
-      _antecedenciaNotificacaoMinutos = data.antecedenciaNotificacaoMinutos;
-      _modoDark = data.modoDark;
-      _biometriaAtiva = data.biometriaAtiva;
-      _backupAutomaticoAtivo = data.backupAutomaticoAtivo;
-      _idioma = data.idioma;
-      _tamanhoFonte = data.tamanhoFonte;
-      _nomePerfil = data.nomePerfil;
-      _cargoPerfil = data.cargoPerfil;
-      _emailUsuario = data.emailUsuario;
-      _ultimaAlteracaoSenha = data.ultimaAlteracaoSenha;
-      _proximoBackup = data.proximoBackup;
-      _ultimoBackup = data.ultimoBackup;
-      _problemasReportados = data.problemasReportados;
-      _agendaCompromissos = List<CompromissoAgenda>.of(
-        data.agendaCompromissos,
-        growable: true,
+  Future<void> _salvarPreferencias({
+    bool? modoDark,
+    String? tamanhoFonte,
+    String? idioma,
+  }) async {
+    try {
+      await _repository.salvarPreferencias(
+        modoDark: modoDark,
+        tamanhoFonte: tamanhoFonte,
+        idioma: idioma,
       );
-    });
-  }
-
-  void _saveData() {
-    _configuracoesRepository.save(
-      ConfiguracoesData(
-        notificacoesAtivas: _notificacoesAtivas,
-        notificarAntesDaDisciplina: _notificarAntesDaDisciplina,
-        antecedenciaNotificacaoMinutos: _antecedenciaNotificacaoMinutos,
-        modoDark: _modoDark,
-        biometriaAtiva: _biometriaAtiva,
-        backupAutomaticoAtivo: _backupAutomaticoAtivo,
-        idioma: _idioma,
-        tamanhoFonte: _tamanhoFonte,
-        nomePerfil: _nomePerfil,
-        cargoPerfil: _cargoPerfil,
-        emailUsuario: _emailUsuario,
-        ultimaAlteracaoSenha: _ultimaAlteracaoSenha,
-        proximoBackup: _proximoBackup,
-        ultimoBackup: _ultimoBackup,
-        problemasReportados: _problemasReportados,
-        agendaCompromissos: _agendaCompromissos,
-      ),
-    );
+    } catch (error, stackTrace) {
+      AppEventLogger.error(
+        'configuracoes_save_error',
+        error,
+        stackTrace: stackTrace,
+      );
+      if (!mounted) return;
+      AppFeedbackService.error(context, context.l10n.erroSalvar);
+    }
   }
 
   @override
@@ -113,307 +74,191 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
     final userContext = context.watch<UserContextProvider>();
     final role = userContext.userRole;
     if (!AuthorizationPolicy.canAccessConfiguracoes(role)) {
-      return const _ConfiguracoesAccessDenied();
+      return PageStatusView(
+        icon: SigadIcons.cadeado,
+        title: context.l10n.facaLogin,
+      );
     }
+    final l10n = context.l10n;
     final usuario = userContext.currentUser;
     final tema = context.watch<ThemeProvider>();
+    final locale = context.watch<LocaleProvider>();
     final greeting = context.watch<GreetingNameProvider>();
+    final versao = _versao;
 
-    return Scaffold(
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-        children: [
-          _ConfigSection(
-            titulo: context.l10n.minhaConta,
-            icon: SigadIcons.pessoa,
-            children: [
-              ListTile(
-                leading: const SigadIcon(SigadIcons.pessoa),
-                title: Text(greetingNameLabel(context)),
-                subtitle: Text(greeting.displayName),
-                trailing: const Icon(Icons.edit_outlined),
-                enabled: usuario != null && !greeting.loading,
-                onTap: () async {
-                  final saved = await showDialog<bool>(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (_) => GreetingNameDialog(preference: greeting),
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      children: [
+        _ConfigSection(
+          titulo: l10n.minhaConta,
+          children: [
+            _ContaResumo(usuario: usuario, role: role),
+            ListTile(
+              leading: const _IconeLinha(SigadIcons.pessoa),
+              title: Text(greetingNameLabel(context)),
+              subtitle: Text(greeting.displayName),
+              trailing: const _IconeLinha(SigadIcons.editar),
+              enabled: usuario != null && !greeting.loading,
+              onTap: () async {
+                final saved = await showDialog<bool>(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (_) => GreetingNameDialog(preference: greeting),
+                );
+                if (saved == true && context.mounted) {
+                  AppFeedbackService.success(
+                    context,
+                    context.l10n.nomeSaudacaoSalvo,
                   );
-                  if (saved == true && context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(context.l10n.nomeSaudacaoSalvo)),
-                    );
-                  }
-                },
-              ),
-              _ConfigInfo(
-                icon: SigadIcons.pessoa,
-                titulo: context.l10n.nome,
-                valor: usuario?.name ?? '—',
-              ),
-              _ConfigInfo(
-                icon: SigadIcons.email,
-                titulo: context.l10n.email,
-                valor: usuario?.email ?? '—',
-                tone: SigadColors.info,
-              ),
-              _ConfigInfo(
-                icon: SigadIcons.cracha,
-                titulo: context.l10n.perfilAcesso,
-                valor: role?.nomeEm(context.l10n) ?? '—',
-                tone: SigadColors.success,
-              ),
-            ],
-          ),
-          _ConfigSection(
-            titulo: context.l10n.aparenciaLeitura,
-            icon: SigadIcons.paleta,
-            tone: SigadColors.info,
-            children: [
-              _ConfigToggle(
-                icon: SigadIcons.lua,
-                titulo: context.l10n.modoNoturno,
-                subtitulo: context.l10n.modoNoturnoSub,
-                value: _modoDark,
-                onChanged: (value) {
-                  setState(() => _modoDark = value);
-                  context.read<ThemeProvider>().setDark(value);
-                  _saveData();
-                },
-                tone: SigadColors.info,
-              ),
-              _ConfigDropdown(
-                icon: SigadIcons.texto,
-                titulo: context.l10n.tamanhoTexto,
-                valor: tema.tamanhoTexto,
-                opcoes: ThemeProvider.tamanhosTexto.keys.toList(
-                  growable: false,
-                ),
-                rotulo: (opcao) => switch (opcao) {
-                  'Normal' => context.l10n.tamanhoNormal,
-                  'Grande' => context.l10n.tamanhoGrande,
-                  'Muito grande' => context.l10n.tamanhoMuitoGrande,
-                  _ => context.l10n.tamanhoMedio,
-                },
-                onChanged: (valor) {
-                  setState(() => _tamanhoFonte = valor);
-                  context.read<ThemeProvider>().setTamanhoTexto(valor);
-                  _saveData();
-                },
-                tone: SigadColors.warning,
-              ),
-              _ConfigDropdown(
-                icon: SigadIcons.idioma,
-                titulo: context.l10n.idioma,
-                valor: context.watch<LocaleProvider>().idioma,
-                opcoes: LocaleProvider.opcoes,
-                rotulo: (opcao) => opcao == LocaleProvider.automatico
-                    ? context.l10n.idiomaAutomatico
-                    : opcao,
-                onChanged: (valor) {
-                  setState(() => _idioma = valor);
-                  context.read<LocaleProvider>().setIdioma(valor);
-                  _saveData();
-                },
-                tone: SigadColors.info,
-              ),
-            ],
-          ),
-          if (AuthorizationPolicy.canManageMural(role))
-            _ConfigSection(
-              titulo: context.l10n.departamento,
-              icon: SigadIcons.predio,
-              children: [
-                _ConfigItem(
-                  icon: SigadIcons.aviso,
-                  titulo: context.l10n.navMural,
-                  subtitulo: context.l10n.muralDepartamentoSub,
-                  onTap: () =>
-                      Navigator.pushReplacementNamed(context, AppRoutes.mural),
-                ),
-              ],
+                }
+              },
             ),
+          ],
+        ),
+        _ConfigSection(
+          titulo: l10n.aparenciaLeitura,
+          children: [
+            SwitchListTile(
+              secondary: const _IconeLinha(SigadIcons.lua),
+              title: Text(l10n.modoNoturno),
+              subtitle: Text(l10n.modoNoturnoSub),
+              value: tema.isDark,
+              onChanged: (value) {
+                context.read<ThemeProvider>().setDark(value);
+                _salvarPreferencias(modoDark: value);
+              },
+            ),
+            _ConfigSelector(
+              icon: SigadIcons.texto,
+              titulo: l10n.tamanhoTexto,
+              valor: tema.tamanhoTexto,
+              opcoes: ThemeProvider.tamanhosTexto.keys.toList(growable: false),
+              rotulo: (opcao) => switch (opcao) {
+                'Normal' => l10n.tamanhoNormal,
+                'Grande' => l10n.tamanhoGrande,
+                'Muito grande' => l10n.tamanhoMuitoGrande,
+                _ => l10n.tamanhoMedio,
+              },
+              onChanged: (valor) {
+                context.read<ThemeProvider>().setTamanhoTexto(valor);
+                _salvarPreferencias(tamanhoFonte: valor);
+              },
+            ),
+            _ConfigSelector(
+              icon: SigadIcons.idioma,
+              titulo: l10n.idioma,
+              valor: locale.idioma,
+              opcoes: LocaleProvider.opcoes,
+              rotulo: (opcao) => opcao == LocaleProvider.automatico
+                  ? l10n.idiomaAutomatico
+                  : opcao,
+              onChanged: (valor) {
+                context.read<LocaleProvider>().setIdioma(valor);
+                _salvarPreferencias(idioma: valor);
+              },
+            ),
+          ],
+        ),
+        if (AuthorizationPolicy.canManageMural(role))
           _ConfigSection(
-            titulo: context.l10n.sobre,
-            icon: SigadIcons.info,
+            titulo: l10n.departamento,
             children: [
               _ConfigItem(
-                icon: SigadIcons.info,
-                titulo: context.l10n.sobreSigad,
-                subtitulo: context.l10n.versaoBuild('1.0.0 (Build 42)'),
-                onTap: () => _showSobre(context),
+                icon: SigadIcons.aviso,
+                titulo: l10n.navMural,
+                subtitulo: l10n.muralDepartamentoSub,
+                onTap: () =>
+                    Navigator.pushReplacementNamed(context, AppRoutes.mural),
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          ElevatedButton.icon(
-            onPressed: () => _showConfirmacaoLogout(context),
-            icon: const SigadIcon(SigadIcons.sair),
-            label: Text(context.l10n.sairDaConta),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: SigadColors.risk,
-              foregroundColor: Colors.white,
-              minimumSize: const Size.fromHeight(52),
+        _ConfigSection(
+          titulo: l10n.sobre,
+          children: [
+            _ConfigItem(
+              icon: SigadIcons.info,
+              titulo: l10n.sobreSigad,
+              subtitulo: versao == null ? null : l10n.versaoBuild(versao),
+              onTap: () => _showSobre(context, versao),
             ),
-          ),
-        ],
+          ],
+        ),
+        const SizedBox(height: 4),
+        _BotaoSair(onPressed: () => _showConfirmacaoLogout(context)),
+      ],
+    );
+  }
+
+  void _showSobre(BuildContext context, String? versao) {
+    final l10n = context.l10n;
+    showSigadSheet<void>(
+      context: context,
+      builder: (sheetContext) => SigadSheetFrame(
+        title: l10n.sobreSigad,
+        closeTooltip: l10n.fecharSobre,
+        onClose: () => Navigator.pop(sheetContext),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Ativo oficial do aplicativo; decorativo (o título já diz SIGAD).
+            ExcludeSemantics(
+              child: Center(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: Image.asset(
+                    'assets/images/app_icon.png',
+                    width: 64,
+                    height: 64,
+                    errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            if (versao != null) DetailRow(label: l10n.versao, value: versao),
+            DetailRow(
+              label: l10n.desenvolvidoPor,
+              value: l10n.equipeDesenvolvimento,
+            ),
+            Text(
+              l10n.sobreDescricao,
+              style: Theme.of(sheetContext).textTheme.bodyMedium,
+            ),
+          ],
+        ),
+        footer: ElevatedButton(
+          onPressed: () => Navigator.pop(sheetContext),
+          child: Text(l10n.fechar),
+        ),
       ),
     );
   }
 
-  void _showSobre(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      builder: (sheetContext) {
-        final screenWidth = MediaQuery.sizeOf(sheetContext).width;
-        final horizontalPadding = screenWidth <= 360 ? 16.0 : 24.0;
-
-        return FractionallySizedBox(
-          heightFactor: 0.92,
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 560),
-              child: SizedBox(
-                width: double.infinity,
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    horizontalPadding,
-                    8,
-                    horizontalPadding,
-                    horizontalPadding,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              context.l10n.sobreSigad,
-                              style: textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          IconButton(
-                            tooltip: context.l10n.fecharSobre,
-                            onPressed: () => Navigator.pop(sheetContext),
-                            icon: const SigadIcon(SigadIcons.fechar),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 8),
-                              Center(
-                                child: Semantics(
-                                  image: true,
-                                  label: 'SIGAD',
-                                  child: ExcludeSemantics(
-                                    child: Container(
-                                      width: 80,
-                                      height: 80,
-                                      padding: const EdgeInsets.all(12),
-                                      decoration: BoxDecoration(
-                                        color: SigadColors.brand,
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                      child: const FittedBox(
-                                        fit: BoxFit.scaleDown,
-                                        child: Text(
-                                          'SIGAD',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-                              _DetailSection(
-                                label: context.l10n.versao,
-                                value: '1.0.0 (Build 42)',
-                              ),
-                              _DetailSection(
-                                label: context.l10n.desenvolvidoPor,
-                                value: context.l10n.equipeDesenvolvimento,
-                              ),
-                              _DetailSection(
-                                label: context.l10n.dataLancamento,
-                                value: '15/03/2026',
-                              ),
-                              _DetailSection(
-                                label: context.l10n.compatibilidade,
-                                value: 'Android 8.0+, iOS 12.0+',
-                              ),
-                              const SizedBox(height: 24),
-                              Text(
-                                context.l10n.sobreDescricao,
-                                style: textTheme.bodyMedium,
-                              ),
-                              const SizedBox(height: 8),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () => Navigator.pop(sheetContext),
-                          child: Text(context.l10n.fechar),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   void _showConfirmacaoLogout(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    showDialog(
+    showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(context.l10n.sair),
-        content: Text(context.l10n.sairPergunta, style: textTheme.bodyMedium),
+      builder: (dialogContext) => AlertDialog(
+        title: Text(dialogContext.l10n.sair),
+        content: Text(dialogContext.l10n.sairPergunta),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(context.l10n.cancelar),
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(dialogContext.l10n.cancelar),
           ),
           TextButton(
+            style: TextButton.styleFrom(
+              foregroundColor: corRisco(dialogContext),
+            ),
             onPressed: () async {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
               await context.read<UserContextProvider>().logout();
               if (!context.mounted) return;
               await Navigator.of(
                 context,
               ).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
             },
-            child: Text(
-              context.l10n.sair,
-              style: TextStyle(color: SigadColors.risk),
-            ),
+            child: Text(dialogContext.l10n.sair),
           ),
         ],
       ),
@@ -421,95 +266,129 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
   }
 }
 
-class _ConfiguracoesAccessDenied extends StatelessWidget {
-  const _ConfiguracoesAccessDenied();
+/// Ícone das linhas, sempre no mesmo tom (a cor não carrega significado).
+class _IconeLinha extends StatelessWidget {
+  const _IconeLinha(this.icon);
+
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SigadIcon(SigadIcons.cadeado, size: 56),
-            const SizedBox(height: 12),
-            Text(
-              context.l10n.facaLogin,
-              style: Theme.of(context).textTheme.titleMedium,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
+    return SigadIcon(icon, color: Theme.of(context).colorScheme.primary);
   }
 }
 
+/// Seção com título discreto e cartão de linhas separadas por divisórias.
 class _ConfigSection extends StatelessWidget {
-  const _ConfigSection({
-    required this.titulo,
-    required this.icon,
-    this.tone = SigadColors.brand,
-    required this.children,
-  });
+  const _ConfigSection({required this.titulo, required this.children});
 
   final String titulo;
-  final IconData icon;
-  final Color tone;
   final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Semantics(
-            header: true,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
-              child: Row(
-                children: [
-                  SigadIcon(icon, color: tone, size: 20),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      titulo,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ),
-                ],
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
+            child: Semantics(
+              header: true,
+              child: Text(
+                titulo,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: colors.onSurfaceVariant,
+                ),
               ),
             ),
           ),
           Material(
-            color: theme.colorScheme.surface,
+            color: colors.surface,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18),
-              side: BorderSide(color: theme.colorScheme.outlineVariant),
+              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(color: colors.outlineVariant),
             ),
             clipBehavior: Clip.antiAlias,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 for (var i = 0; i < children.length; i++) ...[
-                  children[i],
-                  if (i < children.length - 1)
+                  if (i > 0)
                     Divider(
                       height: 1,
                       indent: 16,
                       endIndent: 16,
-                      color: theme.colorScheme.outlineVariant,
+                      color: colors.outlineVariant,
                     ),
+                  children[i],
                 ],
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Dados da conta autenticada em bloco compacto (somente leitura).
+class _ContaResumo extends StatelessWidget {
+  const _ContaResumo({required this.usuario, required this.role});
+
+  final User? usuario;
+  final UserRole? role;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final nome = usuario?.name.trim() ?? '';
+    final secundario = theme.textTheme.bodySmall?.copyWith(
+      color: colors.onSurfaceVariant,
+    );
+    return MergeSemantics(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ExcludeSemantics(
+              child: CircleAvatar(
+                radius: 20,
+                backgroundColor: colors.primaryContainer,
+                child: Text(
+                  nome.isEmpty ? '?' : nome[0].toUpperCase(),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: colors.onPrimaryContainer,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    nome.isEmpty ? '—' : nome,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(usuario?.email ?? '—', style: secundario),
+                  Text(role?.nomeEm(context.l10n) ?? '—', style: secundario),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -519,114 +398,42 @@ class _ConfigItem extends StatelessWidget {
   const _ConfigItem({
     required this.icon,
     required this.titulo,
-    required this.subtitulo,
     required this.onTap,
+    this.subtitulo,
   });
 
   final IconData icon;
   final String titulo;
-  final String subtitulo;
+  final String? subtitulo;
   final VoidCallback onTap;
-  static const tone = SigadColors.brand;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      leading: SigadIcon(icon, color: tone),
-      title: Text(
-        titulo,
-        style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+      leading: _IconeLinha(icon),
+      title: Text(titulo),
+      subtitle: subtitulo == null ? null : Text(subtitulo!),
+      trailing: SigadIcon(
+        SigadIcons.chevronDireita,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
-      subtitle: Text(
-        subtitulo,
-        style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-      ),
-      trailing: SigadIcon(SigadIcons.chevronDireita, color: SigadColors.muted),
       onTap: onTap,
     );
   }
 }
 
-class _ConfigToggle extends StatelessWidget {
-  const _ConfigToggle({
-    required this.icon,
-    required this.titulo,
-    required this.subtitulo,
-    required this.value,
-    required this.onChanged,
-    this.tone = SigadColors.brand,
-  });
-
-  final IconData icon;
-  final String titulo;
-  final String subtitulo;
-  final bool value;
-  final ValueChanged<bool> onChanged;
-  final Color tone;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      leading: SigadIcon(icon, color: tone),
-      title: Text(
-        titulo,
-        style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-      ),
-      subtitle: Text(
-        subtitulo,
-        style: textTheme.bodySmall?.copyWith(color: SigadColors.muted),
-      ),
-      trailing: Switch(
-        value: value,
-        onChanged: onChanged,
-        activeThumbColor: SigadColors.brand,
-      ),
-    );
-  }
-}
-
-class _DetailSection extends StatelessWidget {
-  const _DetailSection({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: textTheme.labelSmall?.copyWith(
-              color: SigadColors.muted,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(value, style: textTheme.bodyMedium),
-        ],
-      ),
-    );
-  }
-}
-
-class _ConfigDropdown extends StatelessWidget {
-  const _ConfigDropdown({
+/// Linha que mostra a opção escolhida e abre a lista de opções em um sheet.
+///
+/// O leitor de tela anuncia o nome da configuração e a opção atual; a lista
+/// usa itens de rádio com texto em tamanho de leitura e alvo de 48dp ou mais.
+class _ConfigSelector extends StatelessWidget {
+  const _ConfigSelector({
     required this.icon,
     required this.titulo,
     required this.valor,
     required this.opcoes,
+    required this.rotulo,
     required this.onChanged,
-    this.tone = SigadColors.brand,
-    this.rotulo,
   });
 
   final IconData icon;
@@ -634,112 +441,75 @@ class _ConfigDropdown extends StatelessWidget {
   final String valor;
   final List<String> opcoes;
   final ValueChanged<String> onChanged;
-  final Color tone;
 
   /// Texto exibido para cada opção (o valor salvo continua o mesmo).
-  final String Function(String opcao)? rotulo;
+  final String Function(String opcao) rotulo;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        children: [
-          SigadIcon(icon, color: tone),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  titulo,
-                  style: textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+    return ListTile(
+      leading: _IconeLinha(icon),
+      title: Text(titulo),
+      subtitle: Text(rotulo(valor)),
+      trailing: SigadIcon(
+        SigadIcons.chevronDireita,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
+      onTap: () => _abrirOpcoes(context),
+    );
+  }
+
+  void _abrirOpcoes(BuildContext context) {
+    final l10n = context.l10n;
+    showSigadSheet<void>(
+      context: context,
+      builder: (sheetContext) => SigadSheetFrame(
+        title: titulo,
+        closeTooltip: l10n.fechar,
+        onClose: () => Navigator.pop(sheetContext),
+        body: RadioGroup<String>(
+          groupValue: valor,
+          onChanged: (novo) {
+            Navigator.pop(sheetContext);
+            if (novo != null && novo != valor) onChanged(novo);
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final opcao in opcoes)
+                RadioListTile<String>(
+                  value: opcao,
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    rotulo(opcao),
+                    style: Theme.of(sheetContext).textTheme.bodyLarge,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: SigadColors.divider),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: DropdownButton<String>(
-                    value: valor,
-                    isExpanded: true,
-                    underline: const SizedBox(),
-                    items: opcoes
-                        .map(
-                          (opcao) => DropdownMenuItem(
-                            value: opcao,
-                            child: Text(
-                              rotulo?.call(opcao) ?? opcao,
-                              style: textTheme.bodySmall,
-                            ),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (newValue) {
-                      if (newValue != null) {
-                        onChanged(newValue);
-                      }
-                    },
-                  ),
-                ),
-              ],
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 }
 
-/// Linha só de leitura (dados da conta).
-class _ConfigInfo extends StatelessWidget {
-  const _ConfigInfo({
-    required this.icon,
-    required this.titulo,
-    required this.valor,
-    this.tone = SigadColors.brand,
-  });
+/// Ação de saída em contorno na cor de risco (a confirmação vem a seguir).
+class _BotaoSair extends StatelessWidget {
+  const _BotaoSair({required this.onPressed});
 
-  final IconData icon;
-  final String titulo;
-  final String valor;
-  final Color tone;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Semantics(
-      container: true,
-      label: '$titulo: $valor',
-      excludeSemantics: true,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            SigadIconAvatar(icon: icon, tone: tone),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    titulo,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: SigadColors.muted,
-                    ),
-                  ),
-                  Text(valor, style: textTheme.bodyLarge),
-                ],
-              ),
-            ),
-          ],
-        ),
+    final risco = corRisco(context);
+    return OutlinedButton.icon(
+      onPressed: onPressed,
+      icon: const SigadIcon(SigadIcons.sair),
+      label: Text(context.l10n.sairDaConta),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: risco,
+        side: BorderSide(color: risco),
+        minimumSize: const Size.fromHeight(52),
       ),
     );
   }

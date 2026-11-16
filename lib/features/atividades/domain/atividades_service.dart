@@ -20,59 +20,6 @@ abstract final class AtividadesService {
     'Comunicação',
   ];
 
-  static List<Atividade> defaultAtividades() {
-    return const [
-      Atividade(
-        id: '#ATV-001',
-        titulo: 'Entrega de levantamento de demandas',
-        descricao: 'Documento consolidado com todas as solicitações do período',
-        data: '15/04/2026 - 10:30',
-        responsavel: 'Coordenação',
-        status: 'Concluída',
-      ),
-      Atividade(
-        id: '#ATV-002',
-        titulo: 'Reunião de validação de requisitos',
-        descricao: 'Apresentação dos requisitos para stakeholders',
-        data: '18/04/2026 - 14:00',
-        responsavel: 'Gestão',
-        status: 'Concluída',
-      ),
-      Atividade(
-        id: '#ATV-003',
-        titulo: 'Implementação de sistema de priorização',
-        descricao: 'Desenvolvimento da matriz de priorização',
-        data: '22/04/2026 - 09:00',
-        responsavel: 'TI',
-        status: 'Em progresso',
-      ),
-      Atividade(
-        id: '#ATV-004',
-        titulo: 'Treinamento de usuários',
-        descricao: 'Capacitação de 150 usuários no novo sistema',
-        data: '28/04/2026 - 08:00',
-        responsavel: 'RH',
-        status: 'Agendada',
-      ),
-      Atividade(
-        id: '#ATV-005',
-        titulo: 'Auditoria de conformidade',
-        descricao: 'Verificação de conformidade com normas ISO',
-        data: '05/05/2026 - 13:00',
-        responsavel: 'Auditoria',
-        status: 'Agendada',
-      ),
-      Atividade(
-        id: '#ATV-006',
-        titulo: 'Publicação de resultados',
-        descricao: 'Divulgação dos resultados para a comunidade acadêmica',
-        data: '10/05/2026',
-        responsavel: 'Comunicação',
-        status: 'Pendente',
-      ),
-    ];
-  }
-
   static List<Atividade> filtrarAtividades({
     required List<Atividade> atividades,
     required String busca,
@@ -135,28 +82,49 @@ abstract final class AtividadesService {
     return '#ATV-${proximoId.toString().padLeft(3, '0')}';
   }
 
-  static String dataPadraoNovaAtividade() {
-    final agora = DateTime.now();
-    final dia = agora.day.toString().padLeft(2, '0');
-    final mes = agora.month.toString().padLeft(2, '0');
-    final ano = agora.year.toString();
-    final hora = agora.hour.toString().padLeft(2, '0');
-    final minuto = agora.minute.toString().padLeft(2, '0');
-    return '$dia/$mes/$ano - $hora:$minuto';
+  /// Opções do filtro de status, na ordem exibida.
+  static const List<String> opcoesFiltro = [
+    'Todas',
+    'Pendente',
+    'Agendada',
+    'Em progresso',
+    'Concluída',
+  ];
+
+  /// Formata a data no padrão gravado: `dd/MM/aaaa` ou, com hora,
+  /// `dd/MM/aaaa - HH:mm`. A data é opcional; sem ela, grava texto vazio.
+  static String formatarData(DateTime? data, {int? hora, int? minuto}) {
+    if (data == null) return '';
+    final dia = data.day.toString().padLeft(2, '0');
+    final mes = data.month.toString().padLeft(2, '0');
+    final texto = '$dia/$mes/${data.year}';
+    if (hora == null || minuto == null) return texto;
+    final hh = hora.toString().padLeft(2, '0');
+    final mm = minuto.toString().padLeft(2, '0');
+    return '$texto - $hh:$mm';
   }
+
+  /// Lê a hora (`HH:mm`) de um texto como `15/04/2026 - 10:30`.
+  static ({int hora, int minuto})? horaDaAtividade(String texto) {
+    final match = RegExp(r'(?<!\d)(\d{1,2}):(\d{2})(?!\d)').firstMatch(texto);
+    if (match == null) return null;
+    final hora = int.parse(match.group(1)!);
+    final minuto = int.parse(match.group(2)!);
+    if (hora > 23 || minuto > 59) return null;
+    return (hora: hora, minuto: minuto);
+  }
+
+  static String? validarTituloAtividade(String titulo) =>
+      titulo.trim().isEmpty ? 'Informe o título da atividade' : null;
+
+  static String? validarDescricaoAtividade(String descricao) =>
+      descricao.trim().isEmpty ? 'Informe a descrição da atividade' : null;
 
   static String? validarAtividade({
     required String titulo,
     required String descricao,
   }) {
-    if (titulo.trim().isEmpty) {
-      return 'Informe o título da atividade';
-    }
-
-    if (descricao.trim().isEmpty) {
-      return 'Informe a descrição da atividade';
-    }
-
-    return null;
+    return validarTituloAtividade(titulo) ??
+        validarDescricaoAtividade(descricao);
   }
 }

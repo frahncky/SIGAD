@@ -195,8 +195,6 @@
   "versao": "Versão",
   "desenvolvidoPor": "Desenvolvido por",
   "equipeDesenvolvimento": "Equipe de Desenvolvimento SIGAD",
-  "dataLancamento": "Data de lançamento",
-  "compatibilidade": "Compatibilidade",
   "sobreDescricao": "O SIGAD é um sistema integrado de gestão acadêmica desenvolvido para otimizar processos administrativos e acadêmicos.",
   "sairPergunta": "Tem certeza que deseja sair da aplicação?",
   "facaLogin": "Faça login para acessar configurações.",
@@ -885,7 +883,7 @@
     }
   },
   "notaNenhumaEncontrada": "Nenhuma anotação encontrada.",
-  "notaVazio": "Nenhuma anotação. Toque em \"+\" para criar.",
+  "notaVazio": "Nenhuma anotação ainda.",
   "notaVazioDica": "Use este espaço para registrar encaminhamentos, ideias e lembretes rápidos.",
   "notaCriarPrimeira": "Criar primeira anotação",
   "notaDesafixar": "Desafixar",
@@ -992,10 +990,9 @@
   "demSemPermissaoExcluir": "Seu perfil não possui permissão para excluir demandas.",
   "demInformeTitulo": "Informe o título da demanda",
   "demInformeDescricao": "Informe a descrição da demanda",
-  "demResumo": "Resumo das demandas",
   "demNoTotal": "No total",
   "demAbertas": "Abertas",
-  "demUrgentes": "Urgentes",
+  "demPrioridadeAltaKpi": "Prioridade alta",
   "demEditarAcao": "Editar",
   "demAbrir": "Abrir demanda {titulo}",
   "@demAbrir": {
@@ -1007,6 +1004,27 @@
   },
   "demFecharDetalhes": "Fechar detalhes da demanda",
   "demPrazo": "Prazo",
+  "demPrazoOpcional": "Prazo (opcional)",
+  "demSemPrazo": "Sem prazo",
+  "demSelecionarPrazo": "Selecionar prazo",
+  "demRemoverPrazo": "Remover prazo",
+  "demAtrasadaEm": "Atrasada · {data}",
+  "@demAtrasadaEm": {
+    "placeholders": {
+      "data": {
+        "type": "String"
+      }
+    }
+  },
+  "demVenceHoje": "Vence hoje",
+  "demPrazoValor": "Prazo: {data}",
+  "@demPrazoValor": {
+    "placeholders": {
+      "data": {
+        "type": "String"
+      }
+    }
+  },
   "demTodas": "Todas",
   "demStatusNovo": "Novo",
   "demStatusEmAndamento": "Em andamento",
@@ -1019,13 +1037,12 @@
   "demOrdemPrazo": "Prazo mais próximo",
   "demOrdemRecentes": "Recém-criadas",
   "tarErroCarregar": "Não foi possível carregar o quadro de tarefas.",
-  "tarNovoCard": "Novo card",
+  "tarNovoCard": "Nova tarefa",
   "tarCarregando": "Carregando quadro de tarefas...",
-  "tarNenhumCard": "Nenhum card criado",
-  "tarNenhumCardDica": "Toque no + para adicionar o primeiro card ao quadro.",
-  "tarCriarCard": "Criar card",
+  "tarNenhumCard": "Nenhuma tarefa criada",
+  "tarNenhumCardDica": "Toque no + para adicionar a primeira tarefa ao quadro.",
   "tarArrasteDica": "Arraste lateralmente para navegar entre as colunas do quadro.",
-  "tarExcluirCardMensagem": "Deseja excluir o card \"{titulo}\"?",
+  "tarExcluirCardMensagem": "Deseja excluir a tarefa \"{titulo}\"?",
   "@tarExcluirCardMensagem": {
     "placeholders": {
       "titulo": {
@@ -1033,7 +1050,7 @@
       }
     }
   },
-  "tarCardRemovido": "Card \"{titulo}\" removido",
+  "tarCardRemovido": "Tarefa \"{titulo}\" removida",
   "@tarCardRemovido": {
     "placeholders": {
       "titulo": {
@@ -1041,11 +1058,11 @@
       }
     }
   },
-  "tarTituloDica": "Digite o título do card",
+  "tarTituloDica": "Digite o título da tarefa",
   "tarColuna": "Coluna",
-  "tarCardCriado": "Card criado com sucesso!",
+  "tarCardCriado": "Tarefa criada com sucesso!",
   "tarSolteAqui": "Solte aqui",
-  "tarCardSemantica": "Card: {titulo}. Prioridade {prioridade}.",
+  "tarCardSemantica": "Tarefa: {titulo}. Prioridade {prioridade}.",
   "@tarCardSemantica": {
     "placeholders": {
       "titulo": {
@@ -1056,44 +1073,60 @@
       }
     }
   },
-  "tarMaisAcoes": "Mais ações do card",
-  "tarId": "ID: {id}",
-  "@tarId": {
-    "placeholders": {
-      "id": {
-        "type": "String"
-      }
-    }
-  },
-  "tarColunaValor": "Coluna: {coluna}",
-  "@tarColunaValor": {
+  "tarMaisAcoes": "Mais ações da tarefa",
+  "tarInformeTitulo": "Informe o título da tarefa",
+  "tarColunaBacklog": "Backlog",
+  "tarColunaEmProgresso": "Em Progresso",
+  "tarColunaEmRevisao": "Em Revisão",
+  "tarColunaConcluido": "Concluído",
+  "tarColunaVazia": "Nenhuma tarefa",
+  "tarMoverPara": "Mover para…",
+  "tarMoverParaColuna": "Mover para {coluna}",
+  "@tarMoverParaColuna": {
     "placeholders": {
       "coluna": {
         "type": "String"
       }
     }
   },
-  "tarPrioridadeValor": "Prioridade: {prioridade}",
-  "@tarPrioridadeValor": {
+  "tarMovida": "Tarefa movida para {coluna}",
+  "@tarMovida": {
     "placeholders": {
-      "prioridade": {
+      "coluna": {
         "type": "String"
       }
     }
   },
-  "tarExcluirEsteCard": "Tem certeza que deseja excluir este card?",
-  "tarInformeTitulo": "Informe o título do card",
-  "tarColunaBacklog": "Backlog",
-  "tarColunaEmProgresso": "Em Progresso",
-  "tarColunaEmRevisao": "Em Revisão",
-  "tarColunaConcluido": "Concluído",
+  "tarErroSalvar": "Não foi possível salvar o quadro. Tente novamente.",
+  "tarColunasDoQuadro": "Colunas do quadro",
+  "tarColunaContagem": "{coluna} · {count}",
+  "@tarColunaContagem": {
+    "placeholders": {
+      "coluna": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tarQuantidade": "{count, plural, =0{Nenhuma tarefa} =1{1 tarefa} other{{count} tarefas}}",
+  "@tarQuantidade": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tarSegureParaMover": "Toque e segure uma tarefa para arrastá-la, ou use o menu da tarefa.",
   "atvFiltrar": "Filtrar atividades",
   "atvFecharFiltro": "Fechar filtro",
   "atvErroCarregar": "Não foi possível carregar as atividades.",
   "atvBuscarDica": "Buscar por título, descrição ou responsável",
+  "atvBuscar": "Buscar atividades",
   "atvCarregando": "Carregando atividades...",
   "atvNenhuma": "Nenhuma atividade encontrada",
-  "atvNenhumaDica": "Ajuste os filtros ou crie uma nova atividade.",
+  "atvCrieNova": "Crie uma nova atividade para começar.",
   "atvCriarNova": "Criar nova atividade",
   "atvNova": "Nova Atividade",
   "atvEditar": "Editar Atividade",
@@ -1104,9 +1137,9 @@
   "atvCriada": "Atividade criada com sucesso!",
   "atvAtualizada": "Atividade atualizada com sucesso!",
   "atvExcluida": "Atividade excluída com sucesso!",
-  "atvAgendaOperacional": "Agenda operacional",
-  "atvConcluidas": "Concluídas",
-  "atvPendentes": "Pendentes",
+  "atvAbertas": "Abertas",
+  "atvNaSemana": "Na semana",
+  "atvAtrasadas": "Atrasadas",
   "atvAbrir": "Abrir atividade {titulo}",
   "@atvAbrir": {
     "placeholders": {
@@ -1118,6 +1151,39 @@
   "atvMaisAcoes": "Mais ações da atividade",
   "atvFecharDetalhes": "Fechar detalhes da atividade",
   "atvData": "Data",
+  "atvDataOpcional": "Data (opcional)",
+  "atvHoraOpcional": "Hora (opcional)",
+  "atvSemData": "Sem data",
+  "atvSelecionarData": "Selecionar data",
+  "atvSelecionarHora": "Selecionar hora",
+  "atvRemoverData": "Remover data",
+  "atvRemoverHora": "Remover hora",
+  "atvHoraSemData": "Escolha uma data para definir a hora.",
+  "atvAtrasadaEm": "Atrasada · {data}",
+  "@atvAtrasadaEm": {
+    "placeholders": {
+      "data": {
+        "type": "String"
+      }
+    }
+  },
+  "atvHojeEm": "Hoje · {data}",
+  "@atvHojeEm": {
+    "placeholders": {
+      "data": {
+        "type": "String"
+      }
+    }
+  },
+  "atvDataValor": "Data: {data}",
+  "@atvDataValor": {
+    "placeholders": {
+      "data": {
+        "type": "String"
+      }
+    }
+  },
+  "atvErroSalvar": "Não foi possível salvar a atividade. Seus dados foram mantidos. Tente novamente.",
   "atvInformeTitulo": "Informe o título da atividade",
   "atvInformeDescricao": "Informe a descrição da atividade",
   "atvStatusConcluida": "Concluída",
@@ -1125,34 +1191,40 @@
   "atvStatusAgendada": "Agendada",
   "atvStatusPendente": "Pendente",
   "relErroCarregar": "Não foi possível carregar os relatórios.",
-  "relBaixado": "Relatório baixado: {titulo}",
-  "@relBaixado": {
-    "placeholders": {
-      "titulo": {
-        "type": "String"
-      }
-    }
-  },
-  "relLinkGerado": "Link de compartilhamento gerado para {titulo}",
-  "@relLinkGerado": {
-    "placeholders": {
-      "titulo": {
-        "type": "String"
-      }
-    }
-  },
   "relBuscarDica": "Buscar por título, descrição ou autor",
-  "relArrasteDica": "Arraste lateralmente para ver todos os status.",
-  "relDisponiveisConsulta": "relatórios disponíveis para consulta",
   "relCarregando": "Carregando relatórios...",
   "relNenhum": "Nenhum relatório encontrado",
   "relNenhumDica": "Ajuste os filtros para visualizar resultados.",
   "relSemPermissao": "Seu perfil não possui permissão para relatórios.",
   "relAcessoNegado": "Acesso não permitido para este perfil.",
-  "relCentral": "Central de relatórios",
-  "relDisponiveis": "Disponíveis",
   "relPublicados": "Publicados",
   "relEmRevisao": "Em revisão",
+  "relTotal": "Total",
+  "relResultados": "{count, plural, =0{Nenhum resultado} =1{1 resultado} other{{count} resultados}}",
+  "@relResultados": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "relNenhumDisponivel": "Nenhum relatório disponível",
+  "relNenhumDisponivelDica": "Quando houver relatórios publicados para o seu perfil, eles aparecerão aqui.",
+  "relCopiarResumo": "Copiar resumo",
+  "relEnviarEmail": "Enviar por e-mail",
+  "relResumoCopiado": "Resumo copiado. Não foi gerado um arquivo PDF.",
+  "relErroCopiar": "Não foi possível copiar o resumo.",
+  "relEmailAberto": "Rascunho aberto no aplicativo de e-mail. Confirme o envio nele.",
+  "relSemAppEmail": "Nenhum aplicativo de e-mail está disponível.",
+  "relErroEmail": "Não foi possível abrir o e-mail.",
+  "relStatusRotulo": "Situação: {status}",
+  "@relStatusRotulo": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
   "relVer": "Ver relatório {titulo}",
   "@relVer": {
     "placeholders": {
@@ -1163,13 +1235,9 @@
   },
   "relMaisAcoes": "Mais ações do relatório",
   "relVisualizar": "Visualizar",
-  "relBaixarPdf": "Baixar PDF",
-  "relCompartilhar": "Compartilhar",
   "relFecharDetalhes": "Fechar detalhes do relatório",
   "relTipo": "Tipo de relatório",
   "relAutor": "Autor",
-  "relDownloads": "Downloads",
-  "relCompartilhamentos": "Compartilhamentos",
   "relStatusTodos": "Todos",
   "relStatusPublicado": "Publicado",
   "relStatusAgendado": "Agendado",
@@ -1179,8 +1247,6 @@
   "relTipoDesempenho": "Desempenho",
   "relTipoInfraestrutura": "Infraestrutura",
   "relTipoConformidade": "Conformidade",
-  "relPdfBaixadoAgora": "PDF baixado agora",
-  "relCompartilhadoAgora": "Compartilhado agora",
   "cdBuscarDocente": "Buscar docente por nome, e-mail ou departamento",
   "cdOrdemCrescente": "Ordem crescente",
   "cdOrdemDecrescente": "Ordem decrescente",
@@ -1752,5 +1818,82 @@
   "vgOpOcupacao": "Ocupação",
   "vgOpAcademico": "Acadêmico",
   "vgOpGestao": "Gestão",
-  "vgOpProdutividade": "Produtividade"
+  "vgOpProdutividade": "Produtividade",
+  "vgPrioritarias": "{count, plural, =0{Nenhuma prioritária} =1{1 prioritária} other{{count} prioritárias}}",
+  "@vgPrioritarias": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vgEmAndamento": "{count} em andamento",
+  "@vgEmAndamento": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vgEstaSemana": "{count, plural, =0{Nenhuma na semana} =1{1 na semana} other{{count} na semana}}",
+  "@vgEstaSemana": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vgLabsManutencao": "{count, plural, =0{Todos operando} =1{1 em manutenção} other{{count} em manutenção}}",
+  "@vgLabsManutencao": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vgPendenciasPrazos": "Pendências e prazos",
+  "vgPrazoDe": "Prazo: {prazo} • {responsavel}",
+  "@vgPrazoDe": {
+    "placeholders": {
+      "prazo": {
+        "type": "String"
+      },
+      "responsavel": {
+        "type": "String"
+      }
+    }
+  },
+  "vgHoje": "Hoje",
+  "vgAtrasada": "Atrasada",
+  "vgIndicadorSemantica": "{titulo}: {valor}. {detalhe}",
+  "@vgIndicadorSemantica": {
+    "placeholders": {
+      "titulo": {
+        "type": "String"
+      },
+      "valor": {
+        "type": "String"
+      },
+      "detalhe": {
+        "type": "String"
+      }
+    }
+  },
+  "vgPrioridadeNivel": "Prioridade {nivel}",
+  "@vgPrioridadeNivel": {
+    "placeholders": {
+      "nivel": {
+        "type": "String"
+      }
+    }
+  },
+  "vgNotificacoesNovas": "{count, plural, =0{Notificações} =1{Notificações, 1 nova} other{Notificações, {count} novas}}",
+  "@vgNotificacoesNovas": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "erroCarregarNotificacoes": "Não foi possível carregar as notificações."
 }
