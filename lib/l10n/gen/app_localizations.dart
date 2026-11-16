@@ -650,12 +650,6 @@ abstract class AppLocalizations {
   /// **'Itens abertos ordenados por impacto'**
   String get atencaoAgoraSub;
 
-  /// No description provided for @nenhumaDemandaAberta.
-  ///
-  /// In pt, this message translates to:
-  /// **'Nenhuma demanda aberta.'**
-  String get nenhumaDemandaAberta;
-
   /// No description provided for @responsavelPrazo.
   ///
   /// In pt, this message translates to:
@@ -673,12 +667,6 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Compromissos pendentes'**
   String get proximasAtividadesSub;
-
-  /// No description provided for @nenhumaAtividadeAberta.
-  ///
-  /// In pt, this message translates to:
-  /// **'Nenhuma atividade aberta.'**
-  String get nenhumaAtividadeAberta;
 
   /// No description provided for @atualizandoVisao.
   ///
@@ -5664,41 +5652,17 @@ abstract class AppLocalizations {
   /// **'{count, plural, =0{Todos operando} =1{1 em manutenção} other{{count} em manutenção}}'**
   String vgLabsManutencao(int count);
 
-  /// No description provided for @vgPendenciasPrazos.
-  ///
-  /// In pt, this message translates to:
-  /// **'Pendências e prazos'**
-  String get vgPendenciasPrazos;
-
-  /// No description provided for @vgPrazoDe.
-  ///
-  /// In pt, this message translates to:
-  /// **'Prazo: {prazo} • {responsavel}'**
-  String vgPrazoDe(String prazo, String responsavel);
-
   /// No description provided for @vgHoje.
   ///
   /// In pt, this message translates to:
   /// **'Hoje'**
   String get vgHoje;
 
-  /// No description provided for @vgAtrasada.
-  ///
-  /// In pt, this message translates to:
-  /// **'Atrasada'**
-  String get vgAtrasada;
-
   /// No description provided for @vgIndicadorSemantica.
   ///
   /// In pt, this message translates to:
   /// **'{titulo}: {valor}. {detalhe}'**
   String vgIndicadorSemantica(String titulo, String valor, String detalhe);
-
-  /// No description provided for @vgPrioridadeNivel.
-  ///
-  /// In pt, this message translates to:
-  /// **'Prioridade {nivel}'**
-  String vgPrioridadeNivel(String nivel);
 
   /// No description provided for @vgNotificacoesNovas.
   ///

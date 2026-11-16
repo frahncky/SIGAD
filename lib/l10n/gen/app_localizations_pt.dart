@@ -335,9 +335,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get atencaoAgoraSub => 'Itens abertos ordenados por impacto';
 
   @override
-  String get nenhumaDemandaAberta => 'Nenhuma demanda aberta.';
-
-  @override
   String responsavelPrazo(String responsavel, String prazo) {
     return '$responsavel • prazo $prazo';
   }
@@ -347,9 +344,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get proximasAtividadesSub => 'Compromissos pendentes';
-
-  @override
-  String get nenhumaAtividadeAberta => 'Nenhuma atividade aberta.';
 
   @override
   String get atualizandoVisao => 'Atualizando visão operacional...';
@@ -3268,27 +3262,11 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get vgPendenciasPrazos => 'Pendências e prazos';
-
-  @override
-  String vgPrazoDe(String prazo, String responsavel) {
-    return 'Prazo: $prazo • $responsavel';
-  }
-
-  @override
   String get vgHoje => 'Hoje';
-
-  @override
-  String get vgAtrasada => 'Atrasada';
 
   @override
   String vgIndicadorSemantica(String titulo, String valor, String detalhe) {
     return '$titulo: $valor. $detalhe';
-  }
-
-  @override
-  String vgPrioridadeNivel(String nivel) {
-    return 'Prioridade $nivel';
   }
 
   @override

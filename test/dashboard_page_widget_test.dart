@@ -131,7 +131,9 @@ void main() {
     expect(find.byTooltip('Perfil'), findsOneWidget);
     expect(find.text('Acesso rápido'), findsOneWidget);
     expect(find.byTooltip('Personalizar atalhos'), findsOneWidget);
-    expect(find.text('Pendências e prazos'), findsOneWidget);
+    // A lista de pendências repetia o que os indicadores já mostram.
+    expect(find.text('Pendências e prazos'), findsNothing);
+    expect(find.byKey(const Key('dashboard-pendencias')), findsNothing);
     expect(tester.takeException(), isNull);
   });
 
@@ -161,8 +163,6 @@ void main() {
 
     expect(indicador('demandas'), findsNothing);
     expect(indicador('laboratorios'), findsOneWidget);
-    await rolarAte(tester, find.text('Nenhuma atividade aberta.'));
-    expect(find.text('Nenhuma atividade aberta.'), findsOneWidget);
   });
 
   testWidgets('servidor administrativo vê apenas indicadores do seu perfil', (
@@ -184,7 +184,7 @@ void main() {
     expect(find.text('rota /kanban'), findsOneWidget);
   });
 
-  testWidgets('pendências mostram demandas por prazo com situação', (
+  testWidgets('indicador de demandas conta as demandas abertas', (
     tester,
   ) async {
     Map<String, Object> demanda(String id, String titulo, String prazo) => {
@@ -207,19 +207,7 @@ void main() {
       },
     );
 
-    await rolarAte(tester, find.text('Relatório final'));
-    final atrasada = tester.getTopLeft(find.text('Parecer atrasado')).dy;
-    final hoje = tester.getTopLeft(find.text('Indicação de servidor')).dy;
-    final depois = tester.getTopLeft(find.text('Relatório final')).dy;
-    expect(atrasada, lessThan(hoje));
-    expect(hoje, lessThan(depois));
-    expect(find.text('Atrasada'), findsOneWidget);
-    expect(find.text('Hoje'), findsOneWidget);
-    expect(find.text('Em andamento'), findsOneWidget);
-    expect(
-      find.text('Prazo: 12/11/2026 • Chefia do DEE • Prioridade média'),
-      findsOneWidget,
-    );
+    expect(find.text('Relatório final'), findsNothing);
     expect(
       find.descendant(of: indicador('demandas'), matching: find.text('3')),
       findsOneWidget,
@@ -390,7 +378,7 @@ void main() {
                 avisos: [avisoReuniao],
               );
               expect(tester.takeException(), isNull);
-              await rolarAte(tester, find.text('Pendências e prazos'));
+              await rolarAte(tester, find.text('Acesso rápido'));
               await tester.drag(
                 find.byType(Scrollable).first,
                 const Offset(0, -2000),
@@ -416,35 +404,10 @@ void main() {
       );
       expect(tester.takeException(), isNull);
       expect(find.byKey(const Key('dashboard-avisos')), findsOneWidget);
-      await rolarAte(tester, find.text('Pendências e prazos'));
+      await rolarAte(tester, find.text('Acesso rápido'));
       expect(tester.takeException(), isNull);
     });
   }
-
-  testWidgets('atividades vencidas recebem o selo Atrasada', (tester) async {
-    Map<String, Object> atividade(String id, String titulo, String data) => {
-      'id': id,
-      'titulo': titulo,
-      'descricao': '',
-      'data': data,
-      'responsavel': 'Coordenação',
-      'status': 'Agendada',
-    };
-    await pumpDashboard(
-      tester,
-      role: UserRole.professor,
-      prefs: {
-        'sigad_atividades': jsonEncode([
-          atividade('a1', 'Banca de TCC', '10/11/2026 - 14:00'),
-          atividade('a2', 'Visita técnica', '20/11/2026'),
-        ]),
-      },
-    );
-
-    await rolarAte(tester, find.text('Visita técnica'));
-    expect(find.text('Atrasada'), findsOneWidget);
-    expect(find.text('Agendada'), findsOneWidget);
-  });
 
   group('colunasIndicadores', () {
     test('três indicadores ficam na mesma linha quando cabem', () {

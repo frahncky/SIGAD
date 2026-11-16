@@ -144,7 +144,6 @@
   "acessoDepartamentoSub": "Informações exibidas conforme seu perfil",
   "atencaoAgora": "Atenção agora",
   "atencaoAgoraSub": "Itens abertos ordenados por impacto",
-  "nenhumaDemandaAberta": "Nenhuma demanda aberta.",
   "responsavelPrazo": "{responsavel} • prazo {prazo}",
   "@responsavelPrazo": {
     "placeholders": {
@@ -158,7 +157,6 @@
   },
   "proximasAtividades": "Próximas atividades",
   "proximasAtividadesSub": "Compromissos pendentes",
-  "nenhumaAtividadeAberta": "Nenhuma atividade aberta.",
   "atualizandoVisao": "Atualizando visão operacional...",
   "erroIndicadores": "Não foi possível atualizar os indicadores.",
   "escolhaAtalhos": "Escolha quais atalhos do menu aparecem na visão geral.",
@@ -1851,20 +1849,7 @@
       }
     }
   },
-  "vgPendenciasPrazos": "Pendências e prazos",
-  "vgPrazoDe": "Prazo: {prazo} • {responsavel}",
-  "@vgPrazoDe": {
-    "placeholders": {
-      "prazo": {
-        "type": "String"
-      },
-      "responsavel": {
-        "type": "String"
-      }
-    }
-  },
   "vgHoje": "Hoje",
-  "vgAtrasada": "Atrasada",
   "vgIndicadorSemantica": "{titulo}: {valor}. {detalhe}",
   "@vgIndicadorSemantica": {
     "placeholders": {
@@ -1875,14 +1860,6 @@
         "type": "String"
       },
       "detalhe": {
-        "type": "String"
-      }
-    }
-  },
-  "vgPrioridadeNivel": "Prioridade {nivel}",
-  "@vgPrioridadeNivel": {
-    "placeholders": {
-      "nivel": {
         "type": "String"
       }
     }
