@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../../../core/services/local_storage_service.dart';
 import '../domain/configuracoes_models.dart';
 import '../domain/configuracoes_service.dart';
@@ -72,6 +74,12 @@ class ConfiguracoesRepository {
   /// Fila de gravações por chave: cada leitura-alteração-gravação espera a
   /// anterior terminar, para que uma não apague o que a outra gravou.
   static final Map<String, Future<void>> _filas = {};
+
+  /// Esvazia a fila entre testes. Cada `testWidgets` roda numa zona de tempo
+  /// simulado própria; um `Future` da fila criado em um teste anterior nunca
+  /// completa no seguinte, e as gravações ficariam esperando para sempre.
+  @visibleForTesting
+  static void limparFilas() => _filas.clear();
 
   Future<T> _emSequencia<T>(Future<T> Function() acao) {
     final anterior = _filas[storageKey] ?? Future<void>.value();

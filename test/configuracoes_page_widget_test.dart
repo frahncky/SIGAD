@@ -14,12 +14,14 @@ import 'package:sigad/core/services/theme_provider.dart';
 import 'package:sigad/core/services/user_context_provider.dart';
 import 'package:sigad/core/services/greeting_name_provider.dart';
 import 'package:sigad/features/configuracoes/data/agenda_convites_service.dart';
+import 'package:sigad/features/configuracoes/data/configuracoes_repository.dart';
 import 'package:sigad/features/configuracoes/domain/app_versao.dart';
 import 'package:sigad/features/configuracoes/presentation/pages/configuracoes_page.dart';
 
 void main() {
   setUp(() {
     SharedPreferences.setMockInitialValues({});
+    ConfiguracoesRepository.limparFilas();
   });
 
   Future<ThemeProvider> abrir(
@@ -80,6 +82,15 @@ void main() {
     tester,
   ) async {
     await abrir(tester, tamanho: const Size(320, 568), escala: 2);
+    // Em 320x568 a 200% o aviso de "salvo" cobre a linha por alguns
+    // segundos; o teste o dispensa antes de tocar de novo.
+    Future<void> dispensarAviso() async {
+      ScaffoldMessenger.of(
+        tester.element(find.byType(ConfiguracoesPage)),
+      ).removeCurrentSnackBar();
+      await tester.pumpAndSettle();
+    }
+
     await tester.tap(find.text('Nome na saudação'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'Maria Clara Souza');
@@ -88,6 +99,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Maria Clara Souza'), findsOneWidget);
     expect(find.text('Maria Souza'), findsOneWidget);
+    await dispensarAviso();
     await tester.tap(find.text('Nome na saudação'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'Outro nome');
@@ -492,7 +504,14 @@ void main() {
           perfil: UserRole.chefeDepartamento,
         );
         expect(tester.takeException(), isNull);
+        await tester.scrollUntilVisible(
+          find.text('Sair da conta'),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.pumpAndSettle();
         expect(find.text('Sair da conta'), findsOneWidget);
+        expect(tester.takeException(), isNull);
       });
     }
   });
